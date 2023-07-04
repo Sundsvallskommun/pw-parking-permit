@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <bpmn:process id="template-camunda-process" name="Template process" isExecutable="true">
+    <bpmn:documentation>This is a template process schema</bpmn:documentation>
+    <bpmn:startEvent id="StartExecution" name="Start execution">
+      <bpmn:documentation>The start of the process execution</bpmn:documentation>
+      <bpmn:outgoing>Flow_1u69f2x</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndExecution" name="End execution">
+      <bpmn:documentation>The end of the process execution</bpmn:documentation>
+      <bpmn:incoming>Flow_19h5rxt</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1u69f2x" sourceRef="StartExecution" targetRef="ExternalTask_MyWorker" />
+    <bpmn:serviceTask id="ExternalTask_MyWorker" name="My Worker" camunda:type="external" camunda:topic="myWorker">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1u69f2x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1f6wbo1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1oe4i3p" sourceRef="ExternalTask_CheckData" targetRef="Gateway_1esqn4q" />
+    <bpmn:serviceTask id="ExternalTask_CheckData" name="Check data" camunda:type="external" camunda:topic="checkData">
+      <bpmn:incoming>Flow_1f6wbo1</bpmn:incoming>
+      <bpmn:incoming>Flow_1jvtl6r</bpmn:incoming>
+      <bpmn:outgoing>Flow_1oe4i3p</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1f6wbo1" sourceRef="ExternalTask_MyWorker" targetRef="ExternalTask_CheckData" />
+    <bpmn:exclusiveGateway id="Gateway_1esqn4q" name="Missing data?">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1oe4i3p</bpmn:incoming>
+      <bpmn:outgoing>Flow_19h5rxt</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04f1y92</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_19h5rxt" name="no" sourceRef="Gateway_1esqn4q" targetRef="EndExecution">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!dataMissing}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateCatchEvent id="Event_UpdateAvailable" name="Update Available?">
+      <bpmn:incoming>Flow_04f1y92</bpmn:incoming>
+      <bpmn:outgoing>Flow_1jvtl6r</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0599108" camunda:variableName="updateAvailable">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable}</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_04f1y92" name="yes" sourceRef="Gateway_1esqn4q" targetRef="Event_UpdateAvailable">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${dataMissing}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1jvtl6r" sourceRef="Event_UpdateAvailable" targetRef="ExternalTask_CheckData" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="template-camunda-process">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartExecution">
+        <dc:Bounds x="149" y="89" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="130" y="132" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xn5j7g_di" bpmnElement="ExternalTask_MyWorker">
+        <dc:Bounds x="240" y="67" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_139te3x_di" bpmnElement="ExternalTask_CheckData">
+        <dc:Bounds x="440" y="67" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1esqn4q_di" bpmnElement="Gateway_1esqn4q" isMarkerVisible="true">
+        <dc:Bounds x="585" y="82" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="576" y="63" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bki9at_di" bpmnElement="Event_UpdateAvailable">
+        <dc:Bounds x="472" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="446" y="235" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="EndExecution">
+        <dc:Bounds x="712" y="89" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="132" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1u69f2x_di" bpmnElement="Flow_1u69f2x">
+        <di:waypoint x="185" y="107" />
+        <di:waypoint x="240" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oe4i3p_di" bpmnElement="Flow_1oe4i3p">
+        <di:waypoint x="540" y="107" />
+        <di:waypoint x="585" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1f6wbo1_di" bpmnElement="Flow_1f6wbo1">
+        <di:waypoint x="340" y="107" />
+        <di:waypoint x="440" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19h5rxt_di" bpmnElement="Flow_19h5rxt">
+        <di:waypoint x="635" y="107" />
+        <di:waypoint x="712" y="107" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="667" y="89" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04f1y92_di" bpmnElement="Flow_04f1y92">
+        <di:waypoint x="610" y="132" />
+        <di:waypoint x="610" y="210" />
+        <di:waypoint x="508" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="617" y="168" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jvtl6r_di" bpmnElement="Flow_1jvtl6r">
+        <di:waypoint x="490" y="192" />
+        <di:waypoint x="490" y="147" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
