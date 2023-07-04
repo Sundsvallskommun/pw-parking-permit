@@ -39,6 +39,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		await()
 			.ignoreExceptions()
+			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getDeployments("template-process.bpmn", null, null).size(), equalTo(1));
 	}
 
@@ -54,6 +55,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.andReturnBody(StartProcessResponse.class);
 
 		await()
+			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// ExternalTask_MyWorker has been executed 1 time
@@ -76,6 +78,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		// Wait for process to start
 		await()
 			.ignoreExceptions()
+			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(ACTIVE));
 
 		// Wait for process to be in state "Update Available?"

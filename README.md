@@ -7,18 +7,7 @@
 
 <h2>pw-parking-permit</h2>
 
-<p>This is a template repository that can be used when developing processes in Camunda together with SpringBoot.</p>
-
-<h3>Template content</h3>
-
-<p>The template consists of:</p>
-
-<ul>
-	<li>An automatic tenant aware deployment mechanism for processes defined in the service (if no tenant id is present in the configuration, the defined processes will not use tenant namespace when deployed and can be used by all tenants - a.k.a shared processes)</li>
-	<li>A template API for starting and updating process instances in Camunda</li>
-	<li>A template process consisting of one external task</li>
-	<li>A java worker class that is mapped to the external task in the template process</li>
-</ul>
+<p>ParkingPermit is a service which integrates with Camunda process engine for starting and updating processes regarding parking permits. It also support processes with business logic and integration to other services.</p>
 
 <h3>Automatic deployment</h3>
 
@@ -134,17 +123,4 @@
 		</tr>
 	</tbody>
 </table>
-
-<h3>Template API, process and worker</h3>
-
-<p>The template API consists of a resource class with two endpoints used for starting and updating process instances in Camunda. The template contains a demo process with a connected worker class, which prints a message in the console (and randomly throws exceptions) and some boilerplate code for mapping data to messages understandable by Camunda and for handling exceptions that might occur in the worker class.</p>
-
-<ul>
-	<li>
-		<span style="font-family:Courier New,Courier,monospace; background-color:#D3D3D3;">POST&nbsp;start/{businessKey}</span> is used to start a new process (create a new process instance) for the provided business key.
-	</li>
-	<li>
-		<span style="font-family:Courier New,Courier,monospace; background-color:#D3D3D3;">POST&nbsp;update/{businessKey}/phase/{phase}</span> is used to update an existing process instance matching the provided business key and phase.
-	</li>
-</ul>
 <p>&nbsp;</p>
