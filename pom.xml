@@ -15,9 +15,9 @@
 		<!-- Pipeline properties -->
 		<docker.image.name>ms-parking-permit</docker.image.name>
 		<exposed.app.port>8080</exposed.app.port>
-		<published.container.port.sandbox>xxx</published.container.port.sandbox>
-		<published.container.port.test>xxx</published.container.port.test>
-		<published.container.port.production>xxx</published.container.port.production>
+		<published.container.port.sandbox>8791</published.container.port.sandbox>
+		<published.container.port.test>8790</published.container.port.test>
+		<published.container.port.production>8790</published.container.port.production>
 		<!-- Camunda properties -->
 		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
 		<camunda-engine.version>7.19.0</camunda-engine.version>
