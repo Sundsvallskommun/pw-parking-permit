@@ -1,22 +1,9 @@
 package apptest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-
-import java.time.Duration;
-
-import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.ACTIVE;
 import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.setDefaultPollDelay;
 import static org.awaitility.Awaitility.setDefaultPollInterval;
@@ -24,6 +11,20 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+
+import java.time.Duration;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 @WireMockAppTestSuite(files = "classpath:/CreateProcess/", classes = Application.class)
 class CreateProcessIT extends AbstractCamundaAppTest {
@@ -40,15 +41,15 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(30, SECONDS)
-			.until(() -> camundaClient.getDeployments("template-process.bpmn", null, null).size(), equalTo(1));
+			.until(() -> camundaClient.getDeployments(null, "%.bpmn", null).size(), equalTo(7));
 	}
 
 	@Test
-	void test001_createProcessWithoutUpdates() throws JsonProcessingException, ClassNotFoundException {
+	void test001_createProcessForCitizen() throws JsonProcessingException, ClassNotFoundException {
 
 		// === Start process ===
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/businessKey")
+			.withServicePath("/process/start/citizen")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequestAndVerifyResponse()
@@ -58,18 +59,35 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// ExternalTask_MyWorker has been executed 1 time
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_MyWorker", false, true, false)).hasSize(1);
-		// ExternalTask_CheckData has been executed 1 time
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_CheckData", false, true, false)).hasSize(1);
+		final var historicalActivities = camundaClient.getHistoricActivities(startResponse.getProcessId());
+
+		// Activity actualization has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_actualization"::equals).count()).isOne();
+		// Activity investigation has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_investigation"::equals).count()).isOne();
+		// Activity decision has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_decision"::equals).count()).isOne();
+		// Activity handling has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_handling"::equals).count()).isOne();
+		// Activity execution has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_execution"::equals).count()).isOne();
+		// Activity follow up has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_follow_up"::equals).count()).isOne();
+
+		// External tasks for automatic denial has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_update_errand_phase"::equals).count()).isZero();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_add_denial_decision"::equals).count()).isZero();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_update_errand_status"::equals).count()).isZero();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_send_denial_decision"::equals).count()).isZero();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_add_message"::equals).count()).isZero();
 	}
 
 	@Test
-	void test002_createProcessWithTwoUpdates() throws JsonProcessingException, ClassNotFoundException {
+	void test002_createProcessForNonCititzen() throws JsonProcessingException, ClassNotFoundException {
 
 		// === Start process ===
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/will_need_two_updates")
+			.withServicePath("/process/start/nonCitizen")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequestAndVerifyResponse()
@@ -79,71 +97,28 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(30, SECONDS)
-			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(ACTIVE));
-
-		// Wait for process to be in state "Update Available?"
-		await()
-			.until(() -> camundaClient.getProcessActivityInstance(startResponse.getProcessId()).getChildActivityInstances().get(0).getActivityName(), equalTo("Update Available?"));
-
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_CheckData", false, true, false)).hasSize(1);
-
-		// === Update process first time ===
-		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
-			.withHttpMethod(POST)
-			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse();
-
-		// Wait for process to execute worker
-		await()
-			.atMost(30, SECONDS)
-			.until(() -> camundaClient.getProcessInstanceVariables(startResponse.getProcessId()).get("updateAvailable").getValue(), equalTo(false));
-		// Wait for process to be in state "Update Available?"
-		await()
-			.atMost(30, SECONDS)
-			.until(() -> camundaClient.getProcessActivityInstance(startResponse.getProcessId()).getChildActivityInstances().get(0).getActivityName(), equalTo("Update Available?"));
-
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_CheckData", false, true, false)).hasSize(2);
-
-		// === Update process second time ===
-		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
-			.withHttpMethod(POST)
-			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse();
-
-		// Wait for process to complete
-		await()
-			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
+		final var historicalActivities = camundaClient.getHistoricActivities(startResponse.getProcessId());
 
-		// ExternalTask_MyWorker has been executed 1 time
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_MyWorker", false, true, false)).hasSize(1);
-		// ExternalTask_CheckData has been executed 3 time
-		assertThat(camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_CheckData", false, true, false)).hasSize(3);
+		// Activity actualization has been executed 1 time
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_actualization"::equals).count()).isOne();
+		// External tasks for automatic denial has been executed 1 time each
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_update_errand_phase"::equals).count()).isOne();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_add_denial_decision"::equals).count()).isOne();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_update_errand_status"::equals).count()).isOne();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_send_denial_decision"::equals).count()).isOne();
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("external_task_add_message"::equals).count()).isOne();
 
-	}
-
-	@Test
-	void test003_testMyWorkerThrowsException()  throws JsonProcessingException, ClassNotFoundException {
-		// === Start process ===
-		final var startResponse = setupCall()
-			.withServicePath("/process/start/throw_exception")
-			.withHttpMethod(POST)
-			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse()
-			.andReturnBody(StartProcessResponse.class);
-
-		// Wait for 4 failure (1 ordinary and 3 retries)
-		await()
-			.atMost(30, SECONDS)
-			.ignoreExceptions()
-			.until(() -> camundaClient.getHistoricExternalTaskLog(startResponse.getProcessId(), "ExternalTask_MyWorker", false, false, true).size(), equalTo(4));
-
-		var incidents = camundaClient.getHistoricIncidents(startResponse.getProcessId());
-		assertThat(incidents).hasSize(1);
-		assertThat(incidents.get(0).getIncidentType()).isEqualTo("failedExternalTask");
-		assertThat(incidents.get(0).getActivityId()).isEqualTo("ExternalTask_MyWorker");
+		// Activity investigation has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_investigation"::equals).count()).isZero();
+		// Activity decision has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_decision"::equals).count()).isZero();
+		// Activity handling has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_handling"::equals).count()).isZero();
+		// Activity execution has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_execution"::equals).count()).isZero();
+		// Activity follow up has not been executed
+		assertThat(historicalActivities.stream().map(HistoricActivityInstanceDto::getActivityId).filter("call_activity_follow_up"::equals).count()).isZero();
 	}
 }
