@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1bp6kn3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="subprocess_investigation" name="SUBPROCESS Investigation" isExecutable="true">
+    <bpmn:startEvent id="start_investigation_phase" name="Start investigation phase">
+      <bpmn:outgoing>Flow_0vhktxr</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="external_task_investigation_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="InvestigationDummyTask">
+      <bpmn:incoming>Flow_0vhktxr</bpmn:incoming>
+      <bpmn:outgoing>Flow_0s0xo3o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end_investigation_phase" name="End investigation phase">
+      <bpmn:incoming>Flow_0s0xo3o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0vhktxr" sourceRef="start_investigation_phase" targetRef="external_task_investigation_dummy_task" />
+    <bpmn:sequenceFlow id="Flow_0s0xo3o" sourceRef="external_task_investigation_dummy_task" targetRef="end_investigation_phase" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subprocess_investigation">
+      <bpmndi:BPMNShape id="Event_0kbmzjk_di" bpmnElement="start_investigation_phase">
+        <dc:Bounds x="172" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="159" y="142" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0em2j85_di" bpmnElement="external_task_investigation_dummy_task">
+        <dc:Bounds x="262" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rauact_di" bpmnElement="end_investigation_phase">
+        <dc:Bounds x="424" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="401" y="142" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0vhktxr_di" bpmnElement="Flow_0vhktxr">
+        <di:waypoint x="208" y="117" />
+        <di:waypoint x="262" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s0xo3o_di" bpmnElement="Flow_0s0xo3o">
+        <di:waypoint x="362" y="117" />
+        <di:waypoint x="424" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

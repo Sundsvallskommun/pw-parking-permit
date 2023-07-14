@@ -17,13 +17,6 @@ camunda:
   bpm:
     client:
       base-url: http://replaced_by_test:8080
-    deployment:
-      processes:
-        - name: Template process
-          tenant: TEMPLATE_NAMESPACE
-          bpmnResourcePattern: classpath*:processmodels/*.bpmn
-          dmnResourcePattern: classpath*:processmodels/*.dmn
-          formResourcePattern: classpath*:processmodels/*.form
   
 #----------------------------------------
 # Camunda integration settings
