@@ -15,7 +15,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -52,7 +51,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 			// "decidedBy" on decision
 			final var stakeholder = ofNullable(errand.getStakeholders()).orElse(emptyList())
 				.stream()
-				.filter(isProcessEngineStakeholder())
+				.filter(AutomaticDenialDecisionTaskWorker::isProcessEngineStakeholder)
 				.findAny()
 				.orElseGet(() -> createProcessEngineStakeholder(errand));
 
@@ -87,9 +86,9 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 			.orElseThrow(() -> Problem.valueOf(Status.BAD_GATEWAY, "CaseData integration did not return any location for created stakeholder"));
 	}
 
-	private static Predicate<StakeholderDTO> isProcessEngineStakeholder() {
-		return st -> st.getRoles().contains(ADMINISTRATOR) &&
-			PROCESS_ENGINE_FIRST_NAME.equals(st.getFirstName()) &&
-			PROCESS_ENGINE_LAST_NAME.equals(st.getLastName());
+	private static boolean isProcessEngineStakeholder(StakeholderDTO stakeholder) {
+		return stakeholder.getRoles().contains(ADMINISTRATOR) &&
+			PROCESS_ENGINE_FIRST_NAME.equals(stakeholder.getFirstName()) &&
+			PROCESS_ENGINE_LAST_NAME.equals(stakeholder.getLastName());
 	}
 }
