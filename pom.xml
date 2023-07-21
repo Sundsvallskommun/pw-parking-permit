@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>1.35</version>
+		<version>1.36</version>
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
@@ -18,11 +18,12 @@
 		<published.container.port.sandbox>8791</published.container.port.sandbox>
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
-		<!-- Camunda properties -->
+		<!-- Service properties -->
 		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
 		<camunda-engine.version>7.19.0</camunda-engine.version>
 		<testcontainers.version>1.18.3</testcontainers.version>
 		<openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+		<apache-commons-text.version>1.10.0</apache-commons-text.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 	</properties>
@@ -44,6 +45,13 @@
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
 			<version>${camunda-external-task-client.version}</version>
+		</dependency>
+
+		<!--Other dependencies-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${apache-commons-text.version}</version>
 		</dependency>
 
 		<!-- Test -->
@@ -100,6 +108,80 @@
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
 								<modelPackage>generated.se.sundsvall.camunda</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>case-data-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/case-data.yaml
+							</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.casedata</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>messaging-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/messaging.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.messaging</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>templating-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/templating.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<skipValidateSpec>true</skipValidateSpec>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.templating</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
 								<useBeanValidation>false</useBeanValidation>

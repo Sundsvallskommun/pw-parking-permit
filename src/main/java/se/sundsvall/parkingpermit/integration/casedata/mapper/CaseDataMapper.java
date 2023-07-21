@@ -1,0 +1,114 @@
+package se.sundsvall.parkingpermit.integration.casedata.mapper;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.util.Optional.ofNullable;
+
+import java.time.ZoneId;
+
+import generated.se.sundsvall.casedata.AttachmentDTO;
+import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.LawDTO;
+import generated.se.sundsvall.casedata.MessageAttachment;
+import generated.se.sundsvall.casedata.MessageRequest;
+import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
+import generated.se.sundsvall.casedata.PatchErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
+import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
+import generated.se.sundsvall.casedata.StatusDTO;
+import generated.se.sundsvall.templating.RenderResponse;
+
+public class CaseDataMapper {
+
+	private CaseDataMapper() {}
+
+	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase) {
+		return new PatchErrandDTO()
+			.externalCaseId(externalCaseId)
+			.phase(phase);
+	}
+
+	public static StakeholderDTO toStakeholder(RolesEnum role, TypeEnum type, String firstName, String lastName) {
+		final var bean = new StakeholderDTO()
+			.firstName(firstName)
+			.lastName(lastName)
+			.type(type);
+
+		ofNullable(role).ifPresent(bean::addRolesItem);
+
+		return bean;
+	}
+
+	public static DecisionDTO toDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcome, String description) {
+		return new DecisionDTO()
+			.created(now(ZoneId.systemDefault()))
+			.decisionType(decisionType)
+			.decisionOutcome(decisionOutcome)
+			.description(description);
+	}
+
+	public static LawDTO toLaw(String heading, String sfs, String chapter, String article) {
+		return new LawDTO()
+			.heading(heading)
+			.sfs(sfs)
+			.chapter(chapter)
+			.article(article);
+	}
+
+	public static AttachmentDTO toAttachment(CategoryEnum category, String name, String extension, String mimeType, RenderResponse renderedContent) {
+		final var bean = new AttachmentDTO()
+			.category(category)
+			.name(name)
+			.extension(extension)
+			.mimeType(mimeType);
+
+		ofNullable(renderedContent)
+			.map(RenderResponse::getOutput)
+			.ifPresent(bean::setFile);
+
+		return bean;
+	}
+
+	public static MessageAttachment toMessageAttachment(String fileName, String contentType, RenderResponse renderedContent) {
+		final var bean = new MessageAttachment()
+			.name(fileName)
+			.contentType(contentType);
+
+		ofNullable(renderedContent)
+			.map(RenderResponse::getOutput)
+			.ifPresent(bean::setContent);
+
+		return bean;
+	}
+
+	public static MessageRequest toMessageRequest(String messageId, String subject, String message, ErrandDTO errandDTO, DirectionEnum direction, String username, MessageAttachment attachment) {
+		final var bean = new MessageRequest()
+			.messageID(messageId)
+			.direction(direction)
+			.message(message)
+			.subject(subject)
+			.sent(ISO_OFFSET_DATE_TIME.format(now(ZoneId.systemDefault())))
+			.username(username);
+
+		ofNullable(errandDTO).ifPresent(errand -> bean
+			.errandNumber(errand.getErrandNumber())
+			.externalCaseID(errand.getExternalCaseId()));
+
+		ofNullable(attachment)
+			.ifPresent(bean::addAttachmentRequestsItem);
+
+		return bean;
+	}
+
+	public static StatusDTO toStatus(String statusType, String description) {
+		return new StatusDTO()
+			.statusType(statusType)
+			.dateTime(now(ZoneId.systemDefault()))
+			.description(description);
+	}
+}

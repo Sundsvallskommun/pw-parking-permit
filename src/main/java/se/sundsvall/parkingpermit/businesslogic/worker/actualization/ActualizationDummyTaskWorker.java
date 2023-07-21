@@ -2,6 +2,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -21,7 +22,8 @@ public class ActualizationDummyTaskWorker extends AbstractWorker {
 		try {
 			LOGGER.info("Execute Worker for ActualizationDummyTask");
 
-			externalTaskService.complete(externalTask, Map.of("isResidentOfMunicipality", "citizen".equalsIgnoreCase(externalTask.getBusinessKey())));
+			// Cases with even caseNumber is considered to have an applicant residing in municipality
+			externalTaskService.complete(externalTask, Map.of("isResidentOfMunicipality", NumberUtils.isCreatable(externalTask.getBusinessKey()) && NumberUtils.createLong(externalTask.getBusinessKey()) % 2 == 0));
 		} catch (Exception exception) {
 			LOGGER.error("Exception occurred in execution for task with id {} and businesskey {}", externalTask.getId(), externalTask.getBusinessKey());
 

@@ -1,5 +1,8 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static se.sundsvall.parkingpermit.Constants.PHASE_DECISION;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
+
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -15,11 +18,13 @@ public class UpdateErrandPhaseTaskWorker extends AbstractWorker {
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			LOGGER.info("Execute Worker for UpdateErrandPhaseTask");
+			final var errand = getErrand(externalTask);
+			LOGGER.info("Executing update of phase for errand with id {}", errand.getId());
 
+			caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), PHASE_DECISION));
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
-			LOGGER.error("Exception occurred in execution for task with id {} and businesskey {}", externalTask.getId(), externalTask.getBusinessKey());
+			LOGGER.error("Exception occurred in {} for task with id {} and businesskey {}", this.getClass().getSimpleName(), externalTask.getId(), externalTask.getBusinessKey(), exception);
 
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
