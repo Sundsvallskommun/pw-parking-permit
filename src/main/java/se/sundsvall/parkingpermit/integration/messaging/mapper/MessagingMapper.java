@@ -20,40 +20,41 @@ import generated.se.sundsvall.messaging.WebMessageAttachment;
 import generated.se.sundsvall.messaging.WebMessageParty;
 import generated.se.sundsvall.messaging.WebMessageRequest;
 import generated.se.sundsvall.templating.RenderResponse;
+import se.sundsvall.parkingpermit.util.CommonMessageProperties;
+import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @Service
 public class MessagingMapper {
 
 	@Autowired
-	private MessagingMapperProperties properties;
+	private CommonMessageProperties commonMessageProperties;
 
-	public MessagingMapperProperties getProperties() {
-		return properties;
-	}
+	@Autowired
+	private DenialMessageProperties denialMessageProperties;
 
 	public WebMessageRequest toWebMessageRequest(RenderResponse renderResponse, String partyId) {
 		return new WebMessageRequest()
 			.addAttachmentsItem(toWebMessageAttachment(renderResponse))
-			.message(properties.message())
+			.message(denialMessageProperties.message())
 			.party(new WebMessageParty().partyId(UUID.fromString(partyId)));
 	}
 
 	private WebMessageAttachment toWebMessageAttachment(RenderResponse renderResponse) {
 		return new WebMessageAttachment()
 			.base64Data(renderResponse.getOutput())
-			.fileName(properties.filename())
+			.fileName(denialMessageProperties.filename())
 			.mimeType(APPLICATION_PDF.value());
 	}
 
 	public LetterRequest toLetterRequest(RenderResponse renderResponse, String partyId) {
 		return new LetterRequest()
 			.addAttachmentsItem(toLetterAttachment(renderResponse))
-			.body(Base64.getEncoder().encodeToString(properties.htmlBody().getBytes(defaultCharset())))
+			.body(Base64.getEncoder().encodeToString(denialMessageProperties.htmlBody().getBytes(defaultCharset())))
 			.contentType(HTML)
-			.department(properties.department())
+			.department(commonMessageProperties.department())
 			.party(new LetterParty().addPartyIdsItem(UUID.fromString(partyId)))
 			.sender(toLetterSender())
-			.subject(properties.subject());
+			.subject(denialMessageProperties.subject());
 	}
 
 	private LetterSender toLetterSender() {
@@ -63,10 +64,10 @@ public class MessagingMapper {
 
 	private LetterSenderSupportInfo toLetterSenderSupportInfo() {
 		return new LetterSenderSupportInfo()
-			.emailAddress(properties.contactInfoEmail())
-			.phoneNumber(properties.contactInfoPhonenumber())
-			.text(properties.contactInfoText())
-			.url(properties.contactInfoUrl());
+			.emailAddress(commonMessageProperties.contactInfoEmail())
+			.phoneNumber(commonMessageProperties.contactInfoPhonenumber())
+			.text(commonMessageProperties.contactInfoText())
+			.url(commonMessageProperties.contactInfoUrl());
 	}
 
 	private LetterAttachment toLetterAttachment(RenderResponse renderResponse) {
@@ -74,6 +75,6 @@ public class MessagingMapper {
 			.content(renderResponse.getOutput())
 			.contentType(APPLICATION_PDF)
 			.deliveryMode(ANY)
-			.filename(properties.filename());
+			.filename(denialMessageProperties.filename());
 	}
 }

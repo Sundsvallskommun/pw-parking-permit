@@ -36,8 +36,8 @@ import generated.se.sundsvall.templating.RenderResponse;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapperProperties;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @ExtendWith(MockitoExtension.class)
 class AddMessageToErrandTaskWorkerTest {
@@ -60,6 +60,9 @@ class AddMessageToErrandTaskWorkerTest {
 
 	@Mock
 	private MessagingService messagingServiceMock;
+
+	@Mock
+	private DenialMessageProperties denialMessagePropertiesMock;
 
 	@Mock
 	private ErrandDTO errandMock;
@@ -88,14 +91,15 @@ class AddMessageToErrandTaskWorkerTest {
 		final var subject = "subject";
 		final var plainBody = "plainBody";
 
-		final var messagingMapperProperties = new MessagingMapperProperties(null, filename, null, subject, null, plainBody, null, null, null, null, null, null, null, null, null, null);
 		final var messageId = UUID.randomUUID().toString();
 
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
-		when(messagingServiceMock.getProperties()).thenReturn(messagingMapperProperties);
+		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
+		when(denialMessagePropertiesMock.subject()).thenReturn(subject);
+		when(denialMessagePropertiesMock.plainBody()).thenReturn(plainBody);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID)).thenReturn(messageId);
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseID);
 		when(errandMock.getErrandNumber()).thenReturn(errandNumber);
@@ -107,7 +111,9 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(errandMock);
-		verify(messagingServiceMock).getProperties();
+		verify(denialMessagePropertiesMock).filename();
+		verify(denialMessagePropertiesMock).subject();
+		verify(denialMessagePropertiesMock).plainBody();
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
 		verify(caseDataClientMock).addMessage(messageRequestCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -125,14 +131,10 @@ class AddMessageToErrandTaskWorkerTest {
 
 	@Test
 	void executeThrowsException() {
-		// Setup
-		final var messagingMapperProperties = new MessagingMapperProperties(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-
 		// Mock to simulate not finding id of sent message as a process variable
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
-		when(messagingServiceMock.getProperties()).thenReturn(messagingMapperProperties);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -141,7 +143,6 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(errandMock);
-		verify(messagingServiceMock).getProperties();
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Internal Server Error: Id of sent message could not be retreived from stored process variables");
 		verify(externalTaskMock).getId();

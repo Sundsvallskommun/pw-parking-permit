@@ -30,6 +30,7 @@ import org.zalando.problem.Status;
 import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -40,6 +41,9 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 
 	@Autowired
 	private MessagingService messagingService;
+
+	@Autowired
+	DenialMessageProperties denialMessageProperties;
 
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -55,12 +59,11 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 				.findAny()
 				.orElseGet(() -> createProcessEngineStakeholder(errand));
 
-			final var props = messagingService.getProperties();
 			final var pdf = messagingService.renderPdf(errand);
-			final var decision = toDecision(FINAL, DISMISSAL, props.dismissalDescription())
+			final var decision = toDecision(FINAL, DISMISSAL, denialMessageProperties.description())
 				.decidedBy(stakeholder)
-				.addLawItem(toLaw(props.lawHeading(), props.lawSfs(), props.lawChapter(), props.lawArticle()))
-				.addAttachmentsItem(toAttachment(BESLUT, props.filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
+				.addLawItem(toLaw(denialMessageProperties.lawHeading(), denialMessageProperties.lawSfs(), denialMessageProperties.lawChapter(), denialMessageProperties.lawArticle()))
+				.addAttachmentsItem(toAttachment(BESLUT, denialMessageProperties.filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
 			caseDataClient.patchNewDecision(errand.getId(), decision);
 

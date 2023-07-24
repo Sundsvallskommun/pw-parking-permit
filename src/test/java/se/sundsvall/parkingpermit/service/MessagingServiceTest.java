@@ -70,14 +70,6 @@ class MessagingServiceTest {
 	}
 	
 	@Test
-	void getProperties() {
-		messagingService.getProperties();
-
-		verify(messagingMapperMock).getProperties();
-		verifyNoInteractions(messagingClientMock, templatingClientMock);
-	}
-
-	@Test
 	void sendMessageToNonCitizenWithExternalCaseIdPresentInErrand() throws Exception {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());

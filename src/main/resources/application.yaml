@@ -101,13 +101,20 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
 
 #----------------------------------------
-# MessagingMapper settings
+# Message properties
 #----------------------------------------
-mappers:
-  messaging:
+message:
+  common:
+    department: SBK(Gatuavdelningen, Trafiksektionen)
+    contact-info-email: sundsvalls.kommun@sundsvall.se
+    contact-info-phonenumber: 4660191000
+    contact-info-text: Kontakta oss via epost eller telefon.
+    contact-info-url: https://sundsvall.se/
+  approval:
+    description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
+  denial:
     message: Ärendet avskrivs
     filename: beslut.pdf
-    department: SBK(Gatuavdelningen, Trafiksektionen)
     subject: Beslut från Sundsvalls kommun
     htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
     plainBody: |-
@@ -117,12 +124,7 @@ mappers:
 
       Med vänlig hälsning
       Sundsvalls kommun
-    contact-info-email: sundsvalls.kommun@sundsvall.se
-    contact-info-phonenumber: 4660191000
-    contact-info-text: Kontakta oss via epost eller telefon.
-    contact-info-url: https://sundsvall.se/
-    approvalDescription: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
-    dismissalDescription: Personen inte folkbokförd i Sundsvalls kommun.
+    description: Personen inte folkbokförd i Sundsvalls kommun.
     lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
     lawSfs: Trafikförordningen (1998:1276)
     lawChapter: 13

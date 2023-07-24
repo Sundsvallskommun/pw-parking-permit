@@ -47,8 +47,8 @@ import generated.se.sundsvall.templating.RenderResponse;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapperProperties;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
@@ -73,6 +73,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private MessagingService messagingServiceMock;
 
 	@Mock
+	private DenialMessageProperties denialMessagePropertiesMock;
+
+	@Mock
 	private ErrandDTO errandMock;
 
 	@InjectMocks
@@ -94,12 +97,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	void executeProcessEngineStakeholderDoesNotExist() {
 		// Setup
 		final var filename = "filename";
-		final var dismissalDescription = "dismissalDescription";
+		final var description = "description";
 		final var lawHeading = "lawHeading";
 		final var lawSfs = "lawSfs";
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
-		final var messagingMapperProperties = new MessagingMapperProperties(null, filename, null, null, null, null, null, null, null, null, null, dismissalDescription, lawHeading, lawSfs, lawChapter, lawArticle);
 		final var stakeholderId = RandomUtils.nextLong();
 		final var stakeholderDTO = new StakeholderDTO().id(stakeholderId);
 		final var output = "output";
@@ -111,7 +113,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(caseDataClientMock.addStakeholderToErrand(any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
 		when(caseDataClientMock.getStakeholder(stakeholderId)).thenReturn(stakeholderDTO);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse().output(output));
-		when(messagingServiceMock.getProperties()).thenReturn(messagingMapperProperties);
+		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
+		when(denialMessagePropertiesMock.description()).thenReturn(description);
+		when(denialMessagePropertiesMock.lawHeading()).thenReturn(lawHeading);
+		when(denialMessagePropertiesMock.lawSfs()).thenReturn(lawSfs);
+		when(denialMessagePropertiesMock.lawChapter()).thenReturn(lawChapter);
+		when(denialMessagePropertiesMock.lawArticle()).thenReturn(lawArticle);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -121,7 +128,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(ERRAND_ID), stakeholderCaptor.capture());
 		verify(caseDataClientMock).getStakeholder(stakeholderId);
-		verify(messagingServiceMock).getProperties();
+		verify(denialMessagePropertiesMock).filename();
+		verify(denialMessagePropertiesMock).description();
+		verify(denialMessagePropertiesMock).lawHeading();
+		verify(denialMessagePropertiesMock).lawSfs();
+		verify(denialMessagePropertiesMock).lawChapter();
+		verify(denialMessagePropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(errandMock);
 		verify(caseDataClientMock).patchNewDecision(eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -134,7 +146,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);
-		assertThat(decisionCaptor.getValue().getDescription()).isEqualTo(dismissalDescription);
+		assertThat(decisionCaptor.getValue().getDescription()).isEqualTo(description);
 		assertThat(decisionCaptor.getValue().getDecidedBy()).isEqualTo(stakeholderDTO);
 		assertThat(decisionCaptor.getValue().getLaw())
 			.extracting(
@@ -166,12 +178,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	void executeProcessEngineStakeholderExists() {
 		// Setup
 		final var filename = "filename";
-		final var dismissalDescription = "dismissalDescription";
+		final var description = "description";
 		final var lawHeading = "lawHeading";
 		final var lawSfs = "lawSfs";
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
-		final var messagingMapperProperties = new MessagingMapperProperties(null, filename, null, null, null, null, null, null, null, null, null, dismissalDescription, lawHeading, lawSfs, lawChapter, lawArticle);
 		final var stakeholderId = RandomUtils.nextLong();
 		final var processEngineStakeholder = createStakeholder(stakeholderId, ADMINISTRATOR, "Process", "Engine");
 		final var output = "output";
@@ -187,7 +198,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 			processEngineStakeholder));
 
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse().output(output));
-		when(messagingServiceMock.getProperties()).thenReturn(messagingMapperProperties);
+		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
+		when(denialMessagePropertiesMock.description()).thenReturn(description);
+		when(denialMessagePropertiesMock.lawHeading()).thenReturn(lawHeading);
+		when(denialMessagePropertiesMock.lawSfs()).thenReturn(lawSfs);
+		when(denialMessagePropertiesMock.lawChapter()).thenReturn(lawChapter);
+		when(denialMessagePropertiesMock.lawArticle()).thenReturn(lawArticle);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -197,7 +213,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock, never()).addStakeholderToErrand(any(), any());
 		verify(caseDataClientMock, never()).getStakeholder(any());
-		verify(messagingServiceMock).getProperties();
+		verify(denialMessagePropertiesMock).filename();
+		verify(denialMessagePropertiesMock).description();
+		verify(denialMessagePropertiesMock).lawHeading();
+		verify(denialMessagePropertiesMock).lawSfs();
+		verify(denialMessagePropertiesMock).lawChapter();
+		verify(denialMessagePropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(errandMock);
 		verify(caseDataClientMock).patchNewDecision(eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -206,7 +227,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);
-		assertThat(decisionCaptor.getValue().getDescription()).isEqualTo(dismissalDescription);
+		assertThat(decisionCaptor.getValue().getDescription()).isEqualTo(description);
 		assertThat(decisionCaptor.getValue().getDecidedBy()).isEqualTo(processEngineStakeholder);
 		assertThat(decisionCaptor.getValue().getLaw())
 			.extracting(
@@ -250,14 +271,13 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(ERRAND_ID), any());
 		verify(caseDataClientMock, never()).getStakeholder(any());
-		verify(messagingServiceMock, never()).getProperties();
 		verify(messagingServiceMock, never()).renderPdf(any());
 		verify(caseDataClientMock, never()).patchNewDecision(any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(camundaClientMock, denialMessagePropertiesMock);
 
 	}
 

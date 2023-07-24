@@ -22,7 +22,6 @@ import generated.se.sundsvall.messaging.MessageResult;
 import generated.se.sundsvall.templating.RenderResponse;
 import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
 import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapperProperties;
 import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 
 @Service
@@ -39,10 +38,6 @@ public class MessagingService {
 
 	public RenderResponse renderPdf(ErrandDTO errand) {
 		return templatingClient.renderPdf(toRenderRequestWhenNotMemberOfMunicipality(errand));
-	}
-
-	public MessagingMapperProperties getProperties() {
-		return messagingMapper.getProperties();
 	}
 
 	public UUID sendMessageToNonCitizen(ErrandDTO errand, RenderResponse pdf) {

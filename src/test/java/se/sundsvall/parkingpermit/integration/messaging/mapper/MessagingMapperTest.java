@@ -26,6 +26,8 @@ import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
 import generated.se.sundsvall.messaging.WebMessageAttachment;
 import generated.se.sundsvall.messaging.WebMessageParty;
 import generated.se.sundsvall.templating.RenderResponse;
+import se.sundsvall.parkingpermit.util.CommonMessageProperties;
+import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("junit")
@@ -45,15 +47,18 @@ class MessagingMapperTest {
 	private static final String CONTACTINFO_URL = "contactinfoUrl";
 
 	@Mock
-	private MessagingMapperProperties propertiesMock;
+	private CommonMessageProperties commonMessagePropertiesMock;
+
+	@Mock
+	private DenialMessageProperties denialMessagePropertiesMock;
 
 	@InjectMocks
 	private MessagingMapper messagingMapper;
 
 	@Test
 	void toWebMessageRequest() {
-		when(propertiesMock.filename()).thenReturn(FILENAME);
-		when(propertiesMock.message()).thenReturn(MESSAGE);
+		when(denialMessagePropertiesMock.filename()).thenReturn(FILENAME);
+		when(denialMessagePropertiesMock.message()).thenReturn(MESSAGE);
 
 		final var request = messagingMapper.toWebMessageRequest(RENDER_RESPONSE, PARTY_ID.toString());
 
@@ -69,21 +74,21 @@ class MessagingMapperTest {
 				FILENAME,
 				APPLICATION_PDF.value()));
 
-		verify(propertiesMock).filename();
-		verify(propertiesMock).message();
-		verifyNoMoreInteractions(propertiesMock);
+		verify(denialMessagePropertiesMock).filename();
+		verify(denialMessagePropertiesMock).message();
+		verifyNoMoreInteractions(commonMessagePropertiesMock);
 	}
 
 	@Test
 	void toLetterRequest() {
-		when(propertiesMock.subject()).thenReturn(SUBJECT);
-		when(propertiesMock.htmlBody()).thenReturn(BODY);
-		when(propertiesMock.contactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
-		when(propertiesMock.contactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
-		when(propertiesMock.contactInfoText()).thenReturn(CONTACTINFO_TEXT);
-		when(propertiesMock.contactInfoUrl()).thenReturn(CONTACTINFO_URL);
-		when(propertiesMock.department()).thenReturn(DEPARTMENT);
-		when(propertiesMock.filename()).thenReturn(FILENAME);
+		when(denialMessagePropertiesMock.subject()).thenReturn(SUBJECT);
+		when(denialMessagePropertiesMock.htmlBody()).thenReturn(BODY);
+		when(commonMessagePropertiesMock.contactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
+		when(commonMessagePropertiesMock.contactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
+		when(commonMessagePropertiesMock.contactInfoText()).thenReturn(CONTACTINFO_TEXT);
+		when(commonMessagePropertiesMock.contactInfoUrl()).thenReturn(CONTACTINFO_URL);
+		when(commonMessagePropertiesMock.department()).thenReturn(DEPARTMENT);
+		when(denialMessagePropertiesMock.filename()).thenReturn(FILENAME);
 
 		final var request = messagingMapper.toLetterRequest(RENDER_RESPONSE, PARTY_ID.toString());
 
@@ -116,14 +121,14 @@ class MessagingMapperTest {
 				DeliveryModeEnum.ANY,
 				FILENAME));
 
-		verify(propertiesMock).htmlBody();
-		verify(propertiesMock).contactInfoEmail();
-		verify(propertiesMock).contactInfoPhonenumber();
-		verify(propertiesMock).contactInfoText();
-		verify(propertiesMock).contactInfoUrl();
-		verify(propertiesMock).department();
-		verify(propertiesMock).filename();
-		verify(propertiesMock).subject();
-		verifyNoMoreInteractions(propertiesMock);
+		verify(denialMessagePropertiesMock).htmlBody();
+		verify(commonMessagePropertiesMock).contactInfoEmail();
+		verify(commonMessagePropertiesMock).contactInfoPhonenumber();
+		verify(commonMessagePropertiesMock).contactInfoText();
+		verify(commonMessagePropertiesMock).contactInfoUrl();
+		verify(commonMessagePropertiesMock).department();
+		verify(denialMessagePropertiesMock).filename();
+		verify(denialMessagePropertiesMock).subject();
+		verifyNoMoreInteractions(commonMessagePropertiesMock);
 	}
 }
