@@ -19,9 +19,9 @@ import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractWorkerTest {
+class AbstractTaskWorkerTest {
 
-	private static class Worker extends AbstractWorker { // Test class extending the abstract class containing the clearUpdateAvailable method
+	private static class Worker extends AbstractTaskWorker { // Test class extending the abstract class containing the clearUpdateAvailable method
 		@Override
 		public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {}
 	}

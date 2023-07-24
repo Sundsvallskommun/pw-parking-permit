@@ -40,7 +40,7 @@ public class ErrandUtil {
 	public static Optional<AddressDTO> getAddress(StakeholderDTO stakeholder, AddressCategoryEnum addressCategory) {
 		return ofNullable(stakeholder.getAddresses()).orElse(emptyList())
 			.stream()
-			.filter(address -> addressCategory.equals(address.getAddressCategory()))
+			.filter(address -> isNull(addressCategory) || addressCategory.equals(address.getAddressCategory()))
 			.findAny();
 	}
 }

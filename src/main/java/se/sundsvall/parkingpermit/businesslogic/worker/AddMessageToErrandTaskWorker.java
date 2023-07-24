@@ -10,8 +10,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
@@ -22,9 +20,7 @@ import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @Component
 @ExternalTaskSubscription("AddMessageToErrandTask")
-public class AddMessageToErrandTaskWorker extends AbstractWorker {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AddMessageToErrandTaskWorker.class);
-
+public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 	@Autowired
 	private MessagingService messagingService;
 
@@ -35,7 +31,7 @@ public class AddMessageToErrandTaskWorker extends AbstractWorker {
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
-			LOGGER.info("Executing addition of decision message to errand with id {}", errand.getId());
+			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdf(errand);
 			final var attachment = toMessageAttachment(denialMessageProperties.filename(), APPLICATION_PDF_VALUE, pdf);
@@ -47,8 +43,7 @@ public class AddMessageToErrandTaskWorker extends AbstractWorker {
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
-			LOGGER.error("Exception occurred in {} for task with id {} and businesskey {}", this.getClass().getSimpleName(), externalTask.getId(), externalTask.getBusinessKey(), exception);
-
+			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
 	}

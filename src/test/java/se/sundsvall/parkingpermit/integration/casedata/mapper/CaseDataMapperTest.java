@@ -35,7 +35,7 @@ class CaseDataMapperTest {
 	public static final String STATUS_CASE_PROCESSED = "Under utredning";
 
 	@Mock
-	DecisionDTO decisionMock;
+	private DecisionDTO decisionMock;
 
 	@Test
 	void toDecisionBasedOnNullValues() {

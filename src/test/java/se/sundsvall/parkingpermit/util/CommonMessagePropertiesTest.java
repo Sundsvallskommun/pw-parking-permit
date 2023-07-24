@@ -15,7 +15,7 @@ import se.sundsvall.parkingpermit.Application;
 class CommonMessagePropertiesTest {
 	private static final String DEPARTMENT = "SBK(Gatuavdelningen, Trafiksektionen)";
 	private static final String CONTACTINFO_EMAIL = "sundsvalls.kommun@sundsvall.se";
-	private static final String CONTACTINFO_PHONENUMBER = "4660191000";
+	private static final String CONTACTINFO_PHONENUMBER = "+46 60 191000";
 	private static final String CONTACTINFO_TEXT = "Kontakta oss via epost eller telefon.";
 	private static final String CONTACTINFO_URL = "https://sundsvall.se/";
 

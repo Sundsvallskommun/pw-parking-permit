@@ -4,6 +4,7 @@ import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.util.Optional.ofNullable;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 import generated.se.sundsvall.casedata.AttachmentDTO;
@@ -46,7 +47,7 @@ public class CaseDataMapper {
 
 	public static DecisionDTO toDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcome, String description) {
 		return new DecisionDTO()
-			.created(now(ZoneId.systemDefault()))
+			.created(getNow())
 			.decisionType(decisionType)
 			.decisionOutcome(decisionOutcome)
 			.description(description);
@@ -92,7 +93,7 @@ public class CaseDataMapper {
 			.direction(direction)
 			.message(message)
 			.subject(subject)
-			.sent(ISO_OFFSET_DATE_TIME.format(now(ZoneId.systemDefault())))
+			.sent(ISO_OFFSET_DATE_TIME.format(getNow()))
 			.username(username);
 
 		ofNullable(errandDTO).ifPresent(errand -> bean
@@ -108,7 +109,11 @@ public class CaseDataMapper {
 	public static StatusDTO toStatus(String statusType, String description) {
 		return new StatusDTO()
 			.statusType(statusType)
-			.dateTime(now(ZoneId.systemDefault()))
+			.dateTime(getNow())
 			.description(description);
+	}
+
+	private static OffsetDateTime getNow() {
+		return now(ZoneId.systemDefault());
 	}
 }

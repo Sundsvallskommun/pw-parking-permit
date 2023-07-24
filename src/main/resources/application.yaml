@@ -107,7 +107,7 @@ message:
   common:
     department: SBK(Gatuavdelningen, Trafiksektionen)
     contact-info-email: sundsvalls.kommun@sundsvall.se
-    contact-info-phonenumber: 4660191000
+    contact-info-phonenumber: +46 60 191000
     contact-info-text: Kontakta oss via epost eller telefon.
     contact-info-url: https://sundsvall.se/
   approval:

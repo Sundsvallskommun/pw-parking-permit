@@ -278,6 +278,31 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
 		verifyNoInteractions(camundaClientMock, denialMessagePropertiesMock);
+	}
+
+	@Test
+	void executeProcessEngineStakeholderCreationDoesNotReturnIdOfTypeLong() {
+		// Mock to simulate case data not returning stakeholder id upon creation
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.addStakeholderToErrand(any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/abc")).build());
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify and assert
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(caseDataClientMock).addStakeholderToErrand(eq(ERRAND_ID), any());
+		verify(caseDataClientMock, never()).getStakeholder(any());
+		verify(messagingServiceMock, never()).renderPdf(any());
+		verify(caseDataClientMock, never()).patchNewDecision(any(), any());
+		verify(externalTaskServiceMock, never()).complete(any());
+		verify(externalTaskServiceMock, never()).complete(any(), any());
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
+		verify(externalTaskMock).getId();
+		verifyNoInteractions(camundaClientMock, denialMessagePropertiesMock);
 
 	}
 

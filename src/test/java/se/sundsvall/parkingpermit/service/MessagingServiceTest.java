@@ -54,10 +54,10 @@ class MessagingServiceTest {
 	private MessagingService messagingService;
 	
 	@Captor
-	ArgumentCaptor<LetterRequest> letterRequestCaptor;
+	private ArgumentCaptor<LetterRequest> letterRequestCaptor;
 	
 	@Captor
-	ArgumentCaptor<WebMessageRequest> webMessageRequestCaptor;
+	private ArgumentCaptor<WebMessageRequest> webMessageRequestCaptor;
 
 	@Test
 	void renderPdf() throws Exception {

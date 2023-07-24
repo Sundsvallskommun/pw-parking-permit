@@ -61,7 +61,7 @@ class UpdateErrandStatusTaskWorkerTest {
 	private UpdateErrandStatusTaskWorker worker;
 
 	@Captor
-	ArgumentCaptor<List<StatusDTO>> statusCaptor;
+	private ArgumentCaptor<List<StatusDTO>> statusCaptor;
 
 	@Test
 	void verifyAnnotations() {

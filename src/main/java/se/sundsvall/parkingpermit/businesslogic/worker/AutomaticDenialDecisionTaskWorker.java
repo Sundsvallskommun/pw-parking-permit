@@ -16,11 +16,10 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -34,8 +33,7 @@ import se.sundsvall.parkingpermit.util.DenialMessageProperties;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
-public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AutomaticDenialDecisionTaskWorker.class);
+public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private static final String PROCESS_ENGINE_FIRST_NAME = "Process";
 	private static final String PROCESS_ENGINE_LAST_NAME = "Engine";
 
@@ -49,7 +47,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
-			LOGGER.info("Executing automatic addition of dismissal to errand with id {}", errand.getId());
+			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());
 
 			// PE needs to be added as stakeholder to the errand (if not already present) and store for later use when setting
 			// "decidedBy" on decision
@@ -69,8 +67,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
-			LOGGER.error("Exception occurred in {} for task with id {} and businesskey {}", this.getClass().getSimpleName(), externalTask.getId(), externalTask.getBusinessKey(), exception);
-
+			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
 	}
@@ -84,6 +81,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractWorker {
 		return ofNullable(response.getHeaders().get(LOCATION)).orElse(emptyList()).stream()
 			.filter(Objects::nonNull)
 			.map(locationValue -> locationValue.substring(locationValue.lastIndexOf('/') + 1))
+			.filter(NumberUtils::isCreatable)
 			.map(Long::valueOf)
 			.findFirst()
 			.orElseThrow(() -> Problem.valueOf(Status.BAD_GATEWAY, "CaseData integration did not return any location for created stakeholder"));

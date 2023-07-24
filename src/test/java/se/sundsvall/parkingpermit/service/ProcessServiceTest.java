@@ -58,7 +58,7 @@ class ProcessServiceTest {
 			.containsKey("caseNumber")
 			.extractingByKey("caseNumber")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
-			.isEqualTo(List.of("Long", businessKey));
+			.isEqualTo(List.of(ValueType.LONG.getName(), businessKey));
 	}
 
 	@Test
