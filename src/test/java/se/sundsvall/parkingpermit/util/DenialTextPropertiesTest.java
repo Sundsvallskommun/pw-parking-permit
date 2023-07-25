@@ -12,7 +12,7 @@ import se.sundsvall.parkingpermit.Application;
 
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
-class DenialMessagePropertiesTest {
+class DenialTextPropertiesTest {
 	private static final String FILE_NAME = "beslut.pdf";
 	private static final String MESSAGE = "Ärendet avskrivs";
 	private static final String SUBJECT = "Beslut från Sundsvalls kommun";
@@ -31,19 +31,19 @@ class DenialMessagePropertiesTest {
 	private static final String LAW_SFS = "Trafikförordningen (1998:1276)";
 
 	@Autowired
-	private DenialMessageProperties denialMessageProperties;
+	private DenialTextProperties denialTextProperties;
 
 	@Test
 	void toWebMessageRequest() {
-		assertThat(denialMessageProperties.description()).isEqualTo(DESCRIPTION);
-		assertThat(denialMessageProperties.filename()).isEqualTo(FILE_NAME);
-		assertThat(denialMessageProperties.htmlBody()).isEqualTo(HTML_BODY);
-		assertThat(denialMessageProperties.lawArticle()).isEqualTo(LAW_ARTICLE);
-		assertThat(denialMessageProperties.lawChapter()).isEqualTo(LAW_CHAPTER);
-		assertThat(denialMessageProperties.lawHeading()).isEqualTo(LAW_HEADING);
-		assertThat(denialMessageProperties.lawSfs()).isEqualTo(LAW_SFS);
-		assertThat(denialMessageProperties.message()).isEqualTo(MESSAGE);
-		assertThat(denialMessageProperties.plainBody()).isEqualTo(PLAIN_BODY);
-		assertThat(denialMessageProperties.subject()).isEqualTo(SUBJECT);
+		assertThat(denialTextProperties.description()).isEqualTo(DESCRIPTION);
+		assertThat(denialTextProperties.filename()).isEqualTo(FILE_NAME);
+		assertThat(denialTextProperties.htmlBody()).isEqualTo(HTML_BODY);
+		assertThat(denialTextProperties.lawArticle()).isEqualTo(LAW_ARTICLE);
+		assertThat(denialTextProperties.lawChapter()).isEqualTo(LAW_CHAPTER);
+		assertThat(denialTextProperties.lawHeading()).isEqualTo(LAW_HEADING);
+		assertThat(denialTextProperties.lawSfs()).isEqualTo(LAW_SFS);
+		assertThat(denialTextProperties.message()).isEqualTo(MESSAGE);
+		assertThat(denialTextProperties.plainBody()).isEqualTo(PLAIN_BODY);
+		assertThat(denialTextProperties.subject()).isEqualTo(SUBJECT);
 	}
 }

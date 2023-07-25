@@ -2,8 +2,8 @@ package se.sundsvall.parkingpermit.util;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("message.common")
-public record CommonMessageProperties(
+@ConfigurationProperties("texts.common")
+public record CommonTextProperties(
 	String department,
 	String contactInfoEmail,
 	String contactInfoPhonenumber,

@@ -12,7 +12,7 @@ import se.sundsvall.parkingpermit.Application;
 
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
-class CommonMessagePropertiesTest {
+class CommonTextPropertiesTest {
 	private static final String DEPARTMENT = "SBK(Gatuavdelningen, Trafiksektionen)";
 	private static final String CONTACTINFO_EMAIL = "sundsvalls.kommun@sundsvall.se";
 	private static final String CONTACTINFO_PHONENUMBER = "+46 60 191000";
@@ -20,14 +20,14 @@ class CommonMessagePropertiesTest {
 	private static final String CONTACTINFO_URL = "https://sundsvall.se/";
 
 	@Autowired
-	private CommonMessageProperties commonMessageProperties;
+	private CommonTextProperties commonTextProperties;
 
 	@Test
 	void toWebMessageRequest() {
-		assertThat(commonMessageProperties.department()).isEqualTo(DEPARTMENT);
-		assertThat(commonMessageProperties.contactInfoEmail()).isEqualTo(CONTACTINFO_EMAIL);
-		assertThat(commonMessageProperties.contactInfoPhonenumber()).isEqualTo(CONTACTINFO_PHONENUMBER);
-		assertThat(commonMessageProperties.contactInfoText()).isEqualTo(CONTACTINFO_TEXT);
-		assertThat(commonMessageProperties.contactInfoUrl()).isEqualTo(CONTACTINFO_URL);
+		assertThat(commonTextProperties.department()).isEqualTo(DEPARTMENT);
+		assertThat(commonTextProperties.contactInfoEmail()).isEqualTo(CONTACTINFO_EMAIL);
+		assertThat(commonTextProperties.contactInfoPhonenumber()).isEqualTo(CONTACTINFO_PHONENUMBER);
+		assertThat(commonTextProperties.contactInfoText()).isEqualTo(CONTACTINFO_TEXT);
+		assertThat(commonTextProperties.contactInfoUrl()).isEqualTo(CONTACTINFO_URL);
 	}
 }

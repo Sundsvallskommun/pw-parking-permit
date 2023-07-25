@@ -101,9 +101,9 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
 
 #----------------------------------------
-# Message properties
+# Text properties
 #----------------------------------------
-message:
+texts:
   common:
     department: SBK(Gatuavdelningen, Trafiksektionen)
     contact-info-email: sundsvalls.kommun@sundsvall.se

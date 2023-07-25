@@ -2,8 +2,8 @@ package se.sundsvall.parkingpermit.util;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("message.denial")
-public record DenialMessageProperties(
+@ConfigurationProperties("texts.denial")
+public record DenialTextProperties(
 	String message,
 	String filename,
 	String subject,

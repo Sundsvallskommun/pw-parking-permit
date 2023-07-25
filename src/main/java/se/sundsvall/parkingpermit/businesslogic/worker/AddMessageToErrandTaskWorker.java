@@ -16,7 +16,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialMessageProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @Component
 @ExternalTaskSubscription("AddMessageToErrandTask")
@@ -25,7 +25,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 	private MessagingService messagingService;
 
 	@Autowired
-	DenialMessageProperties denialMessageProperties;
+	private TextProvider textProvider;
 
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -34,12 +34,12 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdf(errand);
-			final var attachment = toMessageAttachment(denialMessageProperties.filename(), APPLICATION_PDF_VALUE, pdf);
+			final var attachment = toMessageAttachment(textProvider.getDenialTexts().filename(), APPLICATION_PDF_VALUE, pdf);
 			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)
 				.orElseThrow(() -> Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Id of sent message could not be retreived from stored process variables"));
 
-			caseDataClient.addMessage(toMessageRequest(messageId, denialMessageProperties.subject(), denialMessageProperties.plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
+			caseDataClient.addMessage(toMessageRequest(messageId, textProvider.getDenialTexts().subject(), textProvider.getDenialTexts().plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {

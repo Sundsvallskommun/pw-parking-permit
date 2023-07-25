@@ -1,6 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static se.sundsvall.parkingpermit.Constants.PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -17,7 +17,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing update of phase for errand with id {}", errand.getId());
 
-			caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), PHASE_DECISION));
+			caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
 			logException(externalTask, exception);

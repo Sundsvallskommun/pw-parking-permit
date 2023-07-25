@@ -1,6 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static se.sundsvall.parkingpermit.Constants.STATUS_DECISION_EXECUTED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing update of status for errand with id {}", errand.getId());
 
-			caseDataClient.putStatus(errand.getId(), List.of(toStatus(STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
+			caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
 			logException(externalTask, exception);

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -86,7 +86,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo(PHASE_DECISION);
+		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
 	}
 
 	@Test

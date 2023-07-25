@@ -12,14 +12,14 @@ import se.sundsvall.parkingpermit.Application;
 
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
-class ApprovalMessagePropertiesTest {
+class ApprovalTextPropertiesTest {
 	private static final String DESCRIPTION = "Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.";
 
 	@Autowired
-	private ApprovalMessageProperties approvalMessageProperties;
+	private ApprovalTextProperties approvalTextProperties;
 
 	@Test
 	void toWebMessageRequest() {
-		assertThat(approvalMessageProperties.description()).isEqualTo(DESCRIPTION);
+		assertThat(approvalTextProperties.description()).isEqualTo(DESCRIPTION);
 	}
 }

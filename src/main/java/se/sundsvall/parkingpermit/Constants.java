@@ -16,14 +16,14 @@ public class Constants {
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
-	public static final String PHASE_ACTUALIZATION = "Aktualisering";
-	public static final String PHASE_INVESTIGATION = "Utreda";
-	public static final String PHASE_DECISION = "Beslut";
+	public static final String CASEDATA_PHASE_ACTUALIZATION = "Aktualisering";
+	public static final String CASEDATA_PHASE_INVESTIGATION = "Utreda";
+	public static final String CASEDATA_PHASE_DECISION = "Beslut";
 
-	public static final String STATUS_CASE_RECEIVED = "Ärende inkommit";
-	public static final String STATUS_AWAITING_COMPLETION = "Väntar på komplettering";
-	public static final String STATUS_CASE_DECIDED = "Beslutad";
-	public static final String STATUS_COMPLETION_RECEIVED = "Komplettering inkommen";
-	public static final String STATUS_CASE_PROCESSED = "Under utredning";
-	public static final String STATUS_DECISION_EXECUTED = "Beslut verkställt";
+	public static final String CASEDATA_STATUS_CASE_RECEIVED = "Ärende inkommit";
+	public static final String CASEDATA_STATUS_AWAITING_COMPLETION = "Väntar på komplettering";
+	public static final String CASEDATA_STATUS_CASE_DECIDED = "Beslutad";
+	public static final String CASEDATA_STATUS_COMPLETION_RECEIVED = "Komplettering inkommen";
+	public static final String CASEDATA_STATUS_CASE_PROCESSED = "Under utredning";
+	public static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
 }

@@ -37,7 +37,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialMessageProperties;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AddMessageToErrandTaskWorkerTest {
@@ -62,7 +63,10 @@ class AddMessageToErrandTaskWorkerTest {
 	private MessagingService messagingServiceMock;
 
 	@Mock
-	private DenialMessageProperties denialMessagePropertiesMock;
+	private TextProvider textProviderMock;
+
+	@Mock
+	private DenialTextProperties denialTextPropertiesMock;
 
 	@Mock
 	private ErrandDTO errandMock;
@@ -97,9 +101,10 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
-		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
-		when(denialMessagePropertiesMock.subject()).thenReturn(subject);
-		when(denialMessagePropertiesMock.plainBody()).thenReturn(plainBody);
+		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.filename()).thenReturn(filename);
+		when(denialTextPropertiesMock.subject()).thenReturn(subject);
+		when(denialTextPropertiesMock.plainBody()).thenReturn(plainBody);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID)).thenReturn(messageId);
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseID);
 		when(errandMock.getErrandNumber()).thenReturn(errandNumber);
@@ -111,9 +116,9 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(errandMock);
-		verify(denialMessagePropertiesMock).filename();
-		verify(denialMessagePropertiesMock).subject();
-		verify(denialMessagePropertiesMock).plainBody();
+		verify(denialTextPropertiesMock).filename();
+		verify(denialTextPropertiesMock).subject();
+		verify(denialTextPropertiesMock).plainBody();
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
 		verify(caseDataClientMock).addMessage(messageRequestCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -135,6 +140,7 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
+		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

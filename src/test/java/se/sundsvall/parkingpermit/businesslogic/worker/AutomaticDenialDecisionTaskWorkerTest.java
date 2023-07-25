@@ -48,7 +48,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialMessageProperties;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
@@ -73,7 +74,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private MessagingService messagingServiceMock;
 
 	@Mock
-	private DenialMessageProperties denialMessagePropertiesMock;
+	private TextProvider textProviderMock;
+
+	@Mock
+	private DenialTextProperties denialTextPropertiesMock;
 
 	@Mock
 	private ErrandDTO errandMock;
@@ -113,12 +117,13 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(caseDataClientMock.addStakeholderToErrand(any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
 		when(caseDataClientMock.getStakeholder(stakeholderId)).thenReturn(stakeholderDTO);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse().output(output));
-		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
-		when(denialMessagePropertiesMock.description()).thenReturn(description);
-		when(denialMessagePropertiesMock.lawHeading()).thenReturn(lawHeading);
-		when(denialMessagePropertiesMock.lawSfs()).thenReturn(lawSfs);
-		when(denialMessagePropertiesMock.lawChapter()).thenReturn(lawChapter);
-		when(denialMessagePropertiesMock.lawArticle()).thenReturn(lawArticle);
+		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.filename()).thenReturn(filename);
+		when(denialTextPropertiesMock.description()).thenReturn(description);
+		when(denialTextPropertiesMock.lawHeading()).thenReturn(lawHeading);
+		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
+		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
+		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -128,12 +133,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(ERRAND_ID), stakeholderCaptor.capture());
 		verify(caseDataClientMock).getStakeholder(stakeholderId);
-		verify(denialMessagePropertiesMock).filename();
-		verify(denialMessagePropertiesMock).description();
-		verify(denialMessagePropertiesMock).lawHeading();
-		verify(denialMessagePropertiesMock).lawSfs();
-		verify(denialMessagePropertiesMock).lawChapter();
-		verify(denialMessagePropertiesMock).lawArticle();
+		verify(denialTextPropertiesMock).filename();
+		verify(denialTextPropertiesMock).description();
+		verify(denialTextPropertiesMock).lawHeading();
+		verify(denialTextPropertiesMock).lawSfs();
+		verify(denialTextPropertiesMock).lawChapter();
+		verify(denialTextPropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(errandMock);
 		verify(caseDataClientMock).patchNewDecision(eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -198,12 +203,13 @@ class AutomaticDenialDecisionTaskWorkerTest {
 			processEngineStakeholder));
 
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse().output(output));
-		when(denialMessagePropertiesMock.filename()).thenReturn(filename);
-		when(denialMessagePropertiesMock.description()).thenReturn(description);
-		when(denialMessagePropertiesMock.lawHeading()).thenReturn(lawHeading);
-		when(denialMessagePropertiesMock.lawSfs()).thenReturn(lawSfs);
-		when(denialMessagePropertiesMock.lawChapter()).thenReturn(lawChapter);
-		when(denialMessagePropertiesMock.lawArticle()).thenReturn(lawArticle);
+		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.filename()).thenReturn(filename);
+		when(denialTextPropertiesMock.description()).thenReturn(description);
+		when(denialTextPropertiesMock.lawHeading()).thenReturn(lawHeading);
+		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
+		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
+		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -213,12 +219,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock, never()).addStakeholderToErrand(any(), any());
 		verify(caseDataClientMock, never()).getStakeholder(any());
-		verify(denialMessagePropertiesMock).filename();
-		verify(denialMessagePropertiesMock).description();
-		verify(denialMessagePropertiesMock).lawHeading();
-		verify(denialMessagePropertiesMock).lawSfs();
-		verify(denialMessagePropertiesMock).lawChapter();
-		verify(denialMessagePropertiesMock).lawArticle();
+		verify(denialTextPropertiesMock).filename();
+		verify(denialTextPropertiesMock).description();
+		verify(denialTextPropertiesMock).lawHeading();
+		verify(denialTextPropertiesMock).lawSfs();
+		verify(denialTextPropertiesMock).lawChapter();
+		verify(denialTextPropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(errandMock);
 		verify(caseDataClientMock).patchNewDecision(eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
@@ -277,7 +283,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
-		verifyNoInteractions(camundaClientMock, denialMessagePropertiesMock);
+		verifyNoInteractions(camundaClientMock, textProviderMock);
 	}
 
 	@Test
@@ -302,7 +308,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
-		verifyNoInteractions(camundaClientMock, denialMessagePropertiesMock);
+		verifyNoInteractions(camundaClientMock, textProviderMock);
 
 	}
 

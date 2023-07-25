@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.STATUS_DECISION_EXECUTED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 
 import java.util.List;
 
@@ -89,7 +89,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		assertThat(statusCaptor.getValue().size()).isOne();
 		assertThat(statusCaptor.getValue().get(0).getDateTime()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(statusCaptor.getValue().get(0).getDescription()).isEqualTo("Ärendet avvisas");
-		assertThat(statusCaptor.getValue().get(0).getStatusType()).isEqualTo(STATUS_DECISION_EXECUTED);
+		assertThat(statusCaptor.getValue().get(0).getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
 	}
 
 	@Test
