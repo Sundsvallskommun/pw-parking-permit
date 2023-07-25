@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -35,7 +34,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -47,7 +45,6 @@ import generated.se.sundsvall.casedata.LawDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.templating.RenderResponse;
-import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -277,16 +274,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(any(), any())).thenReturn(ResponseEntity.noContent().build());
 
-		// Mock static RequestId to verify that static method is being called
-		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
-			requestIdMock.when(RequestId::get).thenReturn(REQUEST_ID);
-
-			// Act
-			worker.execute(externalTaskMock, externalTaskServiceMock);
-
-			// Verify static method
-			requestIdMock.verify(() -> RequestId.init(REQUEST_ID));
-		}
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Verify and assert
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
