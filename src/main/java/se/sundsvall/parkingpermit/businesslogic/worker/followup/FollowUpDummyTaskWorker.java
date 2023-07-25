@@ -11,7 +11,7 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 @ExternalTaskSubscription("FollowUpDummyTask")
 public class FollowUpDummyTaskWorker extends AbstractTaskWorker {
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for FollowUpDummyTask");
 

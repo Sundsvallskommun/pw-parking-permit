@@ -44,7 +44,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private TextProvider textProvider;
 
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());

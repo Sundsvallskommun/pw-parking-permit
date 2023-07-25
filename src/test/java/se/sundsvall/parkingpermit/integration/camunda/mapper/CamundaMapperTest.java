@@ -1,0 +1,58 @@
+package se.sundsvall.parkingpermit.integration.camunda.mapper;
+
+import static java.util.Map.entry;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+
+import java.util.Map;
+
+import org.apache.commons.lang3.RandomUtils;
+import org.camunda.bpm.engine.variable.type.ValueType;
+import org.junit.jupiter.api.Test;
+
+import generated.se.sundsvall.camunda.VariableValueDto;
+import se.sundsvall.dept44.requestid.RequestId;
+class CamundaMapperTest {
+
+	@Test
+	void toStartProcessInstanceDto() {
+		final var caseNumber = String.valueOf(RandomUtils.nextLong());
+
+		if (isEmpty(RequestId.get())) {
+			RequestId.init();
+		}
+
+		final var dto = CamundaMapper.toStartProcessInstanceDto(caseNumber);
+
+		assertThat(dto.getBusinessKey()).isEqualTo(caseNumber);
+		assertThat(dto.getVariables().entrySet()).containsExactlyInAnyOrder(
+			entry(CAMUNDA_VARIABLE_CASE_NUMBER, new VariableValueDto()
+				.type(ValueType.LONG.getName())
+				.value(caseNumber)),
+			entry(CAMUNDA_VARIABLE_REQUEST_ID, new VariableValueDto()
+				.type(ValueType.STRING.getName())
+				.value(RequestId.get())));
+	}
+
+	@Test
+	void toVariableValueDto() {
+		final var value = "value";
+
+		final var dto = CamundaMapper.toVariableValueDto(ValueType.STRING, value);
+
+		assertThat(dto.getType()).isEqualTo(ValueType.STRING.getName());
+		assertThat(dto.getValue()).isEqualTo(value);
+	}
+
+	@Test
+	void toPatchVariablesDto() {
+		final var key = "key";
+		final var value = CamundaMapper.toVariableValueDto(ValueType.STRING, "value");
+		final var dto = CamundaMapper.toPatchVariablesDto(Map.of(key, value));
+
+		assertThat(dto.getDeletions()).isNullOrEmpty();
+		assertThat(dto.getModifications()).hasSize(1).containsExactly(entry(key, value));
+	}
+}

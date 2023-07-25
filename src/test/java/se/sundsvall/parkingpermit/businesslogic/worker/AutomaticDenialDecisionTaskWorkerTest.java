@@ -13,12 +13,14 @@ import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.net.URI;
 import java.util.List;
@@ -33,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -44,6 +47,7 @@ import generated.se.sundsvall.casedata.LawDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.templating.RenderResponse;
+import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -53,6 +57,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
+	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 
 	@Mock
@@ -111,6 +116,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -193,6 +199,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -264,13 +271,22 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnId() {
 		// Mock to simulate case data not returning stakeholder id upon creation
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(any(), any())).thenReturn(ResponseEntity.noContent().build());
 
-		// Act
-		worker.execute(externalTaskMock, externalTaskServiceMock);
+		// Mock static RequestId to verify that static method is being called
+		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
+			requestIdMock.when(RequestId::get).thenReturn(REQUEST_ID);
+
+			// Act
+			worker.execute(externalTaskMock, externalTaskServiceMock);
+
+			// Verify static method
+			requestIdMock.verify(() -> RequestId.init(REQUEST_ID));
+		}
 
 		// Verify and assert
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
@@ -289,6 +305,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnIdOfTypeLong() {
 		// Mock to simulate case data not returning stakeholder id upon creation
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);

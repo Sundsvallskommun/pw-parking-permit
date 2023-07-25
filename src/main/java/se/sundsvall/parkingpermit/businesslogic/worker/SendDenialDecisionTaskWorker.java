@@ -20,7 +20,7 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private MessagingService messagingService;
 
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing delivery of decision message to applicant for errand with id {}", errand.getId());

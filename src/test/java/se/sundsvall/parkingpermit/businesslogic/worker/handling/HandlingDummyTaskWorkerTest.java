@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
@@ -42,8 +43,9 @@ class HandlingDummyTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoInteractions(camundaClientMock, externalTaskMock, failureHandlerMock);
+		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -58,6 +60,7 @@ class HandlingDummyTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
