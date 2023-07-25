@@ -45,5 +45,9 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
-
+  citizen:
+    base-url: http://localhost:${wiremock.server.port:}/api-citizen
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
     
