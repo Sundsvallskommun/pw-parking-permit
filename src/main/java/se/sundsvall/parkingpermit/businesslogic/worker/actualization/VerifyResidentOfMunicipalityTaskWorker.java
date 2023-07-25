@@ -3,8 +3,8 @@ package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
@@ -42,15 +42,14 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
 			final var variables = new HashMap<String, Object>();
 			final var errand = getErrand(externalTask);
-			final var applicant = getOptionalStakeholder(errand, PERSON, APPLICANT);
 
-			if (applicant.isPresent()) {
+			getOptionalStakeholder(errand, PERSON, APPLICANT).ifPresent(applicant -> {
 
-				final var personId = applicant.get().getPersonId();
+				final var personId = applicant.getPersonId();
 
-				// If applicant belongs to another municipality, set corresponding variable to indicate this.
 				getMunicipalityId(personId).ifPresent(applicantMunicipalityId -> {
 
+					// If applicant belongs to another municipality, set corresponding variable to indicate this.
 					if (!applicantMunicipalityId.equals(requiredMunicipalityId)) {
 						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
 							personId, requiredMunicipalityId, applicantMunicipalityId);
@@ -58,7 +57,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 					}
 				});
-			}
+			});
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {
@@ -71,11 +70,12 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	 * Get municipalityId of the persons population registration address (folkbokföringsadress).
 	 *
 	 * @param  personId the personId of the citizen.
-	 * @return          the municipalityId of the person, or null if no municipalityId could be identified (due to missing
+	 * @return          an Optional municipalityId for the person, or an empty Optional if no municipalityId could be
+	 *                  identified (due to missing
 	 *                  citizen, address, etc).
 	 */
 	private Optional<String> getMunicipalityId(String personId) {
-		if (isNull(personId)) {
+		if (isBlank(personId)) {
 			return empty();
 		}
 
