@@ -4,11 +4,12 @@ import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -46,15 +47,17 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			if (applicant.isPresent()) {
 
 				final var personId = applicant.get().getPersonId();
-				final var applicantMunicipalityId = getMunicipalityId(personId);
 
 				// If applicant belongs to another municipality, set corresponding variable to indicate this.
-				if (nonNull(applicantMunicipalityId) && !applicantMunicipalityId.equals(requiredMunicipalityId)) {
-					logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
-						personId, requiredMunicipalityId, applicantMunicipalityId);
+				getMunicipalityId(personId).ifPresent(applicantMunicipalityId -> {
 
-					variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
-				}
+					if (!applicantMunicipalityId.equals(requiredMunicipalityId)) {
+						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
+							personId, requiredMunicipalityId, applicantMunicipalityId);
+
+						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
+					}
+				});
 			}
 
 			externalTaskService.complete(externalTask, variables);
@@ -67,13 +70,13 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	/**
 	 * Get municipalityId of the persons population registration address (folkbokföringsadress).
 	 *
-	 * @param  personId
+	 * @param  personId the personId of the citizen.
 	 * @return          the municipalityId of the person, or null if no municipalityId could be identified (due to missing
 	 *                  citizen, address, etc).
 	 */
-	private String getMunicipalityId(String personId) {
+	private Optional<String> getMunicipalityId(String personId) {
 		if (isNull(personId)) {
-			return null;
+			return empty();
 		}
 
 		return citizenClient.getCitizen(personId)
@@ -82,7 +85,6 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			.stream()
 			.filter(address -> MAIN_ADDRESS_TYPE.equals(address.getAddressType()))
 			.map(CitizenAddress::getMunicipality)
-			.findAny()
-			.orElse(null);
+			.findAny();
 	}
 }

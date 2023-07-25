@@ -23,7 +23,7 @@ import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
-public class CitizenConfigurationTest {
+class CitizenConfigurationTest {
 
 	@Mock
 	private ClientRegistrationRepository clientRepositoryMock;
