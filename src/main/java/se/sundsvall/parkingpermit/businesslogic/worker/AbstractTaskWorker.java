@@ -28,7 +28,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	@Autowired
 	protected FailureHandler failureHandler;
 
-	public AbstractTaskWorker() {
+	protected AbstractTaskWorker() {
 		this.logger = LoggerFactory.getLogger(getClass());
 	}
 
