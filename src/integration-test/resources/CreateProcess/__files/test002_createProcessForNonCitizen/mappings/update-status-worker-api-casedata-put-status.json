@@ -1,0 +1,28 @@
+{
+	"name": "update-status-worker-api-casedata-put-status",
+	"scenarioName": "verify-non-citizen",
+	"requiredScenarioState": "Errand retrieved for update status worker",
+	"newScenarioState": "Errand updated with denial status",
+	"request": {
+		"urlPath": "/api-casedata/errands/1/statuses",
+		"method": "PUT",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [{
+			"equalToJson": [{
+				"statusType": "Beslut verkställt",
+				"description" :"Ärendet avvisas",
+				"dateTime": "${json-unit.any-string}"
+			}]
+		}]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

@@ -17,6 +17,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -47,18 +48,21 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	@Test
 	void test001_createProcessForCitizen() throws JsonProcessingException, ClassNotFoundException {
 
-		// === Start process ===
+		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/citizen")
+			.withServicePath("/process/start/0") // Even number indicates a citizen
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequestAndVerifyResponse()
 			.andReturnBody(StartProcessResponse.class);
 
+		// Wait for process to finish
 		await()
+			.ignoreExceptions()
 			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
+		// Verify process pathways in schema
 		final var historicalActivities = camundaClient.getHistoricActivities(startResponse.getProcessId());
 
 		// Activity actualization has been executed 1 time
@@ -83,22 +87,26 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test002_createProcessForNonCititzen() throws JsonProcessingException, ClassNotFoundException {
+	void test002_createProcessForNonCitizen() throws JsonProcessingException, ClassNotFoundException {
 
-		// === Start process ===
+		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/nonCitizen")
+			.withServicePath("/process/start/1") // Odd number indicates a non citizen
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse()
+			.sendRequestAndVerifyResponse(MediaType.APPLICATION_JSON, false)
 			.andReturnBody(StartProcessResponse.class);
 
-		// Wait for process to start
+		// Wait for process to finish
 		await()
 			.ignoreExceptions()
 			.atMost(30, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
+		// Verify stubs and reset wiremock
+		verifyStubsAndResetWiremock();
+
+		// Verify process pathways in schema
 		final var historicalActivities = camundaClient.getHistoricActivities(startResponse.getProcessId());
 
 		// Activity actualization has been executed 1 time

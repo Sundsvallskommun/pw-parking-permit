@@ -1,26 +1,26 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
+
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 @ExternalTaskSubscription("UpdateErrandPhaseTask")
-public class UpdateErrandPhaseTaskWorker extends AbstractWorker {
-	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateErrandPhaseTaskWorker.class);
-
+public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			LOGGER.info("Execute Worker for UpdateErrandPhaseTask");
+			final var errand = getErrand(externalTask);
+			logInfo("Executing update of phase for errand with id {}", errand.getId());
 
+			caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
-			LOGGER.error("Exception occurred in execution for task with id {} and businesskey {}", externalTask.getId(), externalTask.getBusinessKey());
-
+			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
 	}

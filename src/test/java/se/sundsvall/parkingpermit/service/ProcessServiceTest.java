@@ -2,16 +2,20 @@ package se.sundsvall.parkingpermit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,11 +34,14 @@ class ProcessServiceTest {
 	@InjectMocks
 	private ProcessService processService;
 
+	@Captor
+	private ArgumentCaptor<StartProcessInstanceDto> startProcessArgumentCaptor;
+
 	@Test
 	void startProcess() {
 		final var process = "process-parking-permit";
 		final var tenant = "PARKING_PERMIT";
-		final var businessKey = RandomStringUtils.random(10);
+		final var businessKey = RandomStringUtils.randomNumeric(10);
 		final var uuid = UUID.randomUUID().toString();
 		final var processInstance = new ProcessInstanceWithVariablesDto().id(uuid);
 
@@ -42,9 +49,16 @@ class ProcessServiceTest {
 
 		final var processId = processService.startProcess(businessKey);
 
-		assertThat(processId).isEqualTo(uuid);
-		verify(camundaClientMock).startProcessWithTenant(process, tenant, new StartProcessInstanceDto().businessKey(businessKey));
+		verify(camundaClientMock).startProcessWithTenant(eq(process), eq(tenant), startProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
+
+		assertThat(processId).isEqualTo(uuid);
+		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(businessKey);
+		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(1)
+			.containsKey("caseNumber")
+			.extractingByKey("caseNumber")
+			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
+			.isEqualTo(List.of(ValueType.LONG.getName(), businessKey));
 	}
 
 	@Test

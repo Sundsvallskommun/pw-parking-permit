@@ -1,0 +1,22 @@
+{
+	"name": "automatic-denial-decision-worker-api-casedata-get-errand",
+	"scenarioName": "verify-non-citizen",
+	"requiredScenarioState": "Errand patched in update phase worker",
+	"newScenarioState": "Errand retrieved for automatic denial decision worker",
+	"request": {
+		"urlPath": "/api-casedata/errands/1",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}	
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test002_createProcessForNonCitizen/responses/automatic-denial-decision-worker-api-casedata-get-errand-response.json"
+	}
+}

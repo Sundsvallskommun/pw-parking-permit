@@ -44,28 +44,28 @@ class ActualizationDummyTaskWorkerTest {
 	@Test
 	void executeForCitizen() {
 		// Mock
-		when(externalTaskMock.getBusinessKey()).thenReturn("citizen");
+		when(externalTaskMock.getBusinessKey()).thenReturn("2");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("isResidentOfMunicipality", true));
-		verify(externalTaskMock).getBusinessKey();
+		verify(externalTaskMock, times(2)).getBusinessKey();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
 	@Test
 	void executeForNonCitizen() {
 		// Mock
-		when(externalTaskMock.getBusinessKey()).thenReturn("non_citizen");
+		when(externalTaskMock.getBusinessKey()).thenReturn("1");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("isResidentOfMunicipality", false));
-		verify(externalTaskMock).getBusinessKey();
+		verify(externalTaskMock, times(2)).getBusinessKey();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
@@ -75,6 +75,7 @@ class ActualizationDummyTaskWorkerTest {
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
 		// Mock
+		when(externalTaskMock.getBusinessKey()).thenReturn("1");
 		doThrow(thrownException).when(externalTaskServiceMock).complete(any(), anyMap());
 
 		// Act
@@ -84,7 +85,7 @@ class ActualizationDummyTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("isResidentOfMunicipality", false));
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
-		verify(externalTaskMock, times(2)).getBusinessKey();
+		verify(externalTaskMock, times(3)).getBusinessKey();
 		verifyNoInteractions(camundaClientMock);
 	}
 }

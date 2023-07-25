@@ -19,11 +19,31 @@ camunda:
       base-url: http://replaced_by_test:8080
   
 #----------------------------------------
-# Camunda integration settings
+# Integration settings
 #----------------------------------------
-# Rest client
 integration:
   camunda:
-    connectTimeout: 5
-    readTimeout: 20
     url: http://replaced_by_test:8080
+
+config:
+  common:
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+  casedata:
+    base-url: http://localhost:${wiremock.server.port:}/api-casedata
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  templating:
+    base-url: http://localhost:${wiremock.server.port:}/api-templating
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  messaging:
+    base-url: http://localhost:${wiremock.server.port:}/api-messaging
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+
+    

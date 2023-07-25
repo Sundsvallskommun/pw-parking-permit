@@ -23,10 +23,28 @@ camunda:
           formResourcePattern: formResourcePattern_2
 
 #----------------------------------------
-# Camunda integration settings
+# Integration settings
 #----------------------------------------
-integration:
+config:
+  common:
+    token-uri: token.url
+    client-id: client.id
+    client-secret: client.secret
+
   camunda:
-    connectTimeout: 5
-    readTimeout: 20
-    url: camunda.url
+    base-url: camunda.base.url
+  casedata:
+    base-url: casedata.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  templating:
+    base-url: templating.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  messaging:
+    base-url: messaging.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
