@@ -11,6 +11,8 @@ spring:
             token-uri: ${config.templating.token-uri}
           messaging:
             token-uri: ${config.messaging.token-uri}
+          citizen:
+            token-uri: ${config.citizen.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -27,6 +29,18 @@ spring:
             provider: messaging
             client-id: ${config.messaging.client-id}
             client-secret: ${config.messaging.client-secret}
+          citizen:
+            authorization-grant-type: client_credentials
+            provider: citizen
+            client-id: ${config.citizen.client-id}
+            client-secret: ${config.citizen.client-secret}
+
+#----------------------------------------
+# Common
+#----------------------------------------
+common:
+  application:
+    municipality-id: 2281
 
 #----------------------------------------
 # Open API
@@ -87,6 +101,10 @@ integration:
     connectTimeout: 5
     readTimeout: 20
     url: ${config.messaging.base-url}
+  citizen:
+    connectTimeout: 5
+    readTimeout: 20
+    url: ${config.citizen.base-url}
 
 #----------------------------------------
 # Circuit breakers
@@ -99,7 +117,9 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     messaging:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-
+    citizen:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      
 #----------------------------------------
 # Text properties
 #----------------------------------------

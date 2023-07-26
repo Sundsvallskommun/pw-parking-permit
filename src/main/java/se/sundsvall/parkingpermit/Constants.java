@@ -10,6 +10,7 @@ public class Constants {
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema
 	public static final String TENANTID_TEMPLATE = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
 
+	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";

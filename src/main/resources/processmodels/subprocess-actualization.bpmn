@@ -4,15 +4,15 @@
     <bpmn:startEvent id="start_actualization_phase" name="Start actualization phase">
       <bpmn:outgoing>Flow_0uze4jm</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="external_task_actualization_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="ActualizationDummyTask">
+    <bpmn:serviceTask id="external_task_verify_resident_of_municipality_task" name="Verify resident of municipality" camunda:type="external" camunda:topic="VerifyResidentOfMunicipalityTask">
       <bpmn:incoming>Flow_0uze4jm</bpmn:incoming>
       <bpmn:outgoing>Flow_0xlufuw</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="end_actualization_phase" name="End actualization phase">
       <bpmn:incoming>Flow_0xlufuw</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0uze4jm" sourceRef="start_actualization_phase" targetRef="external_task_actualization_dummy_task" />
-    <bpmn:sequenceFlow id="Flow_0xlufuw" sourceRef="external_task_actualization_dummy_task" targetRef="end_actualization_phase" />
+    <bpmn:sequenceFlow id="Flow_0uze4jm" sourceRef="start_actualization_phase" targetRef="external_task_verify_resident_of_municipality_task" />
+    <bpmn:sequenceFlow id="Flow_0xlufuw" sourceRef="external_task_verify_resident_of_municipality_task" targetRef="end_actualization_phase" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subprocess_actualization">
@@ -22,7 +22,7 @@
           <dc:Bounds x="161" y="145" width="62" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1u7xeov_di" bpmnElement="external_task_actualization_dummy_task">
+      <bpmndi:BPMNShape id="Activity_1u7xeov_di" bpmnElement="external_task_verify_resident_of_municipality_task">
         <dc:Bounds x="282" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
