@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.dept44.requestid.RequestId;
+
 class CamundaMapperTest {
 
 	@Test
