@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @ExternalTaskSubscription("UpdateErrandPhaseTask")
 public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing update of phase for errand with id {}", errand.getId());

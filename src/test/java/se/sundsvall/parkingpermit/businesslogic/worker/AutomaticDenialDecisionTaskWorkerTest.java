@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.net.URI;
 import java.util.List;
@@ -53,6 +54,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
+	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 
 	@Mock
@@ -111,6 +113,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -193,6 +196,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -264,6 +268,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnId() {
 		// Mock to simulate case data not returning stakeholder id upon creation
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -289,6 +294,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnIdOfTypeLong() {
 		// Mock to simulate case data not returning stakeholder id upon creation
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);

@@ -13,6 +13,7 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
+	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);

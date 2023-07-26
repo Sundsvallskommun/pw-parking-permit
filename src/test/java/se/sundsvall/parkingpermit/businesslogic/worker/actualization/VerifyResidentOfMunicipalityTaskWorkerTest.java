@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
 
 import java.util.List;
@@ -46,6 +47,7 @@ import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 @ExtendWith(MockitoExtension.class)
 class VerifyResidentOfMunicipalityTaskWorkerTest {
 
+	private static final String REQUEST_ID = "RequestId";
 	private static final UUID PERSON_ID = randomUUID();
 	private static final long ERRAND_ID = 123L;
 	private static final String THIS_MUNICIPALITY_ID = "2281";
@@ -84,6 +86,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	void executeForExistingCitizenThatBelongsToCorrectMunicipality() {
 
 		// Arrange
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, THIS_MUNICIPALITY_ID)));
@@ -109,6 +112,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	void executeForExistingCitizenThatBelongsToWrongMunicipality() {
 
 		// Arrange
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID)));
@@ -134,6 +138,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	void executeForNonExistingCitizen() {
 
 		// Arrange
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.empty());
@@ -159,6 +164,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	void executeForExistingCitizenWithoutPopulationregistrationAddress() {
 
 		// Arrange
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID).addresses(null)));
@@ -186,6 +192,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		// Arrange
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, THIS_MUNICIPALITY_ID)));

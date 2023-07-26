@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AddMessageToErrandTaskWorkerTest {
+	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 
 	@Mock
@@ -98,6 +100,7 @@ class AddMessageToErrandTaskWorkerTest {
 		final var messageId = UUID.randomUUID().toString();
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
@@ -137,6 +140,7 @@ class AddMessageToErrandTaskWorkerTest {
 	@Test
 	void executeThrowsException() {
 		// Mock to simulate not finding id of sent message as a process variable
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());

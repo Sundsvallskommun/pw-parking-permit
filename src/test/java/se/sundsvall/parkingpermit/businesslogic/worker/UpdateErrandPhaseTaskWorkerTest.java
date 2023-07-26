@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -32,6 +33,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateErrandPhaseTaskWorkerTest {
+	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 
 	@Mock
@@ -70,6 +72,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		final var externalCaseId = "externalCaseId";
 
 		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
@@ -95,6 +98,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		final var problem = Problem.valueOf(Status.I_AM_A_TEAPOT, "Big and stout");
 
 		// Mock to simulate exception upon patching errand with new phase
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);

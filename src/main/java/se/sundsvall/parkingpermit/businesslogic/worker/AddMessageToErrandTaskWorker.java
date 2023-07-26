@@ -28,7 +28,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 	private TextProvider textProvider;
 
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final var errand = getErrand(externalTask);
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
