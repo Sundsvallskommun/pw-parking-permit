@@ -36,7 +36,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	private CitizenClient citizenClient;
 
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
