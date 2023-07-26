@@ -60,27 +60,33 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify process pathway.
-		assertThat(getCompleteProcessInstanceRoute(startResponse.getProcessId()))
+		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.doesNotHaveDuplicates()
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
+				tuple("Actualization", "call_activity_actualization"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("End actualization phase", "end_actualization_phase"),
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
+				tuple("Investigation", "call_activity_investigation"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Dummy Task", "external_task_investigation_dummy_task"),
 				tuple("End investigation phase", "end_investigation_phase"),
+				tuple("Decision", "call_activity_decision"),
 				tuple("Start decision phase", "Event_17p8i8h"),
 				tuple("Dummy Task", "external_task_decsion_dummy_task"),
 				tuple("End decision phase", "end_decision_phase"),
+				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("Dummy Task", "external_task_handling_dummy_task"),
 				tuple("End handling phase", "end_handling_phase"),
+				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Dummy Task", "external_task_execution_dummy_task"),
 				tuple("End execution phase", "end_execution_phase"),
+				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Dummy Task", "external_task_follow_up_dummy_task"),
 				tuple("End follow up phase", "end_follow_up_phase"),

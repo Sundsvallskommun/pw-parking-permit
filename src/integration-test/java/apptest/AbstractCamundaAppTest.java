@@ -1,9 +1,10 @@
 package apptest;
 
-import static java.util.Objects.nonNull;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
+import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -49,19 +50,19 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		CAMUNDA.stop();
 	}
 
-	List<HistoricActivityInstanceDto> getCompleteProcessInstanceRoute(String processInstanceId) {
+	List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
 		return getRoute(processInstanceId, new ArrayList<HistoricActivityInstanceDto>());
 	}
 
 	private List<HistoricActivityInstanceDto> getRoute(String processInstanceId, List<HistoricActivityInstanceDto> route) {
+		if (isNull(processInstanceId)) {
+			return route;
+		}
 		return camundaClient.getHistoricActivities(processInstanceId).stream()
-			.sorted(Comparator.comparing(HistoricActivityInstanceDto::getEndTime))
-			.flatMap(activity -> {
-				if (nonNull(activity.getCalledProcessInstanceId())) {
-					return getRoute(activity.getCalledProcessInstanceId(), route).stream();
-				}
-				return List.of(activity).stream();
-			})
+			.sorted(comparing(HistoricActivityInstanceDto::getEndTime))
+			.flatMap(activity -> concat(
+				List.of(activity).stream(),
+				getRoute(activity.getCalledProcessInstanceId(), route).stream()))
 			.toList();
 	}
 }
