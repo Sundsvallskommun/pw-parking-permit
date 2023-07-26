@@ -1,13 +1,23 @@
 package apptest;
 
+import static java.util.Objects.nonNull;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import se.sundsvall.dept44.test.AbstractAppTest;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 /**
  * Test class using testcontainer to execute the process.
@@ -18,16 +28,18 @@ import se.sundsvall.dept44.test.AbstractAppTest;
 @Testcontainers
 abstract class AbstractCamundaAppTest extends AbstractAppTest {
 
+	@Autowired
+	protected CamundaClient camundaClient;
+
 	@Container
-	private static final GenericContainer<?> CAMUNDA =
-		new GenericContainer<>("camunda/camunda-bpm-platform:run-7.19.0")
-			.waitingFor(Wait.forHttp("/"))
-			.withExposedPorts(8080);
+	private static final GenericContainer<?> CAMUNDA = new GenericContainer<>("camunda/camunda-bpm-platform:run-7.19.0")
+		.waitingFor(Wait.forHttp("/"))
+		.withExposedPorts(8080);
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
 		CAMUNDA.start();
-		var camundaBaseUrl = "http://" + "localhost:" + CAMUNDA.getMappedPort(8080) + "/engine-rest";
+		final var camundaBaseUrl = "http://" + "localhost:" + CAMUNDA.getMappedPort(8080) + "/engine-rest";
 		registry.add("integration.camunda.url", () -> camundaBaseUrl);
 		registry.add("camunda.bpm.client.base-url", () -> camundaBaseUrl);
 	}
@@ -35,5 +47,21 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 	@AfterAll
 	static void teardown() {
 		CAMUNDA.stop();
+	}
+
+	List<HistoricActivityInstanceDto> getCompleteProcessInstanceRoute(String processInstanceId) {
+		return getRoute(processInstanceId, new ArrayList<HistoricActivityInstanceDto>());
+	}
+
+	private List<HistoricActivityInstanceDto> getRoute(String processInstanceId, List<HistoricActivityInstanceDto> route) {
+		return camundaClient.getHistoricActivities(processInstanceId).stream()
+			.sorted(Comparator.comparing(HistoricActivityInstanceDto::getEndTime))
+			.flatMap(activity -> {
+				if (nonNull(activity.getCalledProcessInstanceId())) {
+					return getRoute(activity.getCalledProcessInstanceId(), route).stream();
+				}
+				return List.of(activity).stream();
+			})
+			.toList();
 	}
 }

@@ -11,7 +11,7 @@
       <bpmn:incoming>Flow_1vfil4i</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="call_activity_actualization" />
-    <bpmn:exclusiveGateway id="gateway_is_citizen" default="applicant_resident_of_municipality">
+    <bpmn:exclusiveGateway id="gateway_is_citizen" name="Gateway isCitizen" default="applicant_resident_of_municipality">
       <bpmn:incoming>Flow_0uwt2gd</bpmn:incoming>
       <bpmn:outgoing>applicant_resident_of_municipality</bpmn:outgoing>
       <bpmn:outgoing>applicant_not_resident_of_municipality</bpmn:outgoing>
@@ -87,9 +87,9 @@
         <bpmn:outgoing>Flow_0t23uk5</bpmn:outgoing>
       </bpmn:serviceTask>
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="gateway_closing_is_citizen">
-      <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
+    <bpmn:exclusiveGateway id="gateway_closing_is_citizen" name="Gateway closing isCitizen">
       <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
+      <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
       <bpmn:outgoing>Flow_1vfil4i</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1vfil4i" sourceRef="gateway_closing_is_citizen" targetRef="end_process" />
@@ -140,6 +140,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
         <dc:Bounds x="375" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="359" y="75" width="89" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0veym3o_di" bpmnElement="call_activity_actualization">
         <dc:Bounds x="240" y="90" width="100" height="80" />
@@ -159,6 +162,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0cclxwc_di" bpmnElement="gateway_closing_is_citizen" isMarkerVisible="true">
         <dc:Bounds x="1115" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1100" y="75" width="81" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1uqvjnm" bpmnElement="call_activity_handling">
         <dc:Bounds x="720" y="90" width="100" height="80" />
@@ -203,7 +209,7 @@
       <bpmndi:BPMNEdge id="Flow_0uzrwpk_di" bpmnElement="Flow_0uzrwpk">
         <di:waypoint x="560" y="310" />
         <di:waypoint x="1140" y="310" />
-        <di:waypoint x="1140" y="156" />
+        <di:waypoint x="1140" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1vfil4i_di" bpmnElement="Flow_1vfil4i">
         <di:waypoint x="1165" y="130" />

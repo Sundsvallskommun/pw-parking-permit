@@ -1,10 +1,3 @@
-<style>
-	.settings { border-collapse: collapse; }
-	.settings th, .settings td { padding: 5px; border: solid 1px #777; vertical-align: top }
-	.settings th { background-color: lightblue; text-transform: uppercase; font-weight: normal; text-align: left}
-	.code {font-family:Courier New,Courier,monospace; background-color:#dddddd; font-size: 14px }
-</style>
-
 <h2>pw-parking-permit</h2>
 
 <p>ParkingPermit is a service which integrates with Camunda process engine for starting and updating processes regarding parking permits. It also support processes with business logic and integration to other services.</p>

@@ -4,7 +4,6 @@ import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTR
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.DOCTOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -100,7 +99,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert
-		verify(externalTaskServiceMock).complete(externalTaskMock, emptyMap());
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
@@ -152,7 +151,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert
-		verify(externalTaskServiceMock).complete(externalTaskMock, emptyMap());
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
@@ -178,7 +177,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert
-		verify(externalTaskServiceMock).complete(externalTaskMock, emptyMap());
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
@@ -208,7 +207,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert
-		verify(externalTaskServiceMock).complete(externalTaskMock, emptyMap());
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);

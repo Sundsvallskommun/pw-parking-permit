@@ -9,6 +9,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NO
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -40,7 +41,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
-			final var variables = new HashMap<String, Object>();
+			final var variables = new HashMap<String, Object>(Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 			final var errand = getErrand(externalTask);
 
 			getOptionalStakeholder(errand, PERSON, APPLICANT).ifPresent(applicant -> {
