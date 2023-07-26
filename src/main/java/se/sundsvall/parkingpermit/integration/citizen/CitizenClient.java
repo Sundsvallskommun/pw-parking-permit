@@ -1,6 +1,6 @@
 package se.sundsvall.parkingpermit.integration.citizen;
 
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.integration.citizen.configuration.CitizenConfiguration.CLIENT_ID;
 
 import java.util.Optional;
@@ -16,12 +16,12 @@ import se.sundsvall.parkingpermit.integration.citizen.configuration.CitizenConfi
 public interface CitizenClient {
 
 	/**
-	 * Method for retrieving a citizen
+	 * Method for retrieving a citizen.
 	 *
 	 * @param  personId                             the person ID
-	 * @return                                      object with citizen data.
-	 * @throws org.zalando.problem.ThrowableProblem when called service responds with error code
+	 * @return                                      An object with citizen data.
+	 * @throws org.zalando.problem.ThrowableProblem when called service responds with error code.
 	 */
-	@GetMapping(path = "/{personId}", produces = TEXT_PLAIN_VALUE)
+	@GetMapping(path = "/{personId}", produces = APPLICATION_JSON_VALUE)
 	Optional<CitizenExtended> getCitizen(@PathVariable("personId") String personId);
 }
