@@ -27,9 +27,9 @@ import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 @ExternalTaskSubscription("VerifyResidentOfMunicipalityTask")
 public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
-	private static final String MAIN_ADDRESS_TYPE = "POPULATION_REGISTRATION_ADDRESS";
+	static final String MAIN_ADDRESS_TYPE = "POPULATION_REGISTRATION_ADDRESS";
 
-	@Value("${common.application.municipality-id:0}")
+	@Value("${common.application.municipality-id}")
 	private String requiredMunicipalityId;
 
 	@Autowired

@@ -12,8 +12,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
 
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 
 	@BeforeEach
 	void setup() {
-		ReflectionTestUtils.setField(worker, "requiredMunicipalityId", "2281");
+		ReflectionTestUtils.setField(worker, "requiredMunicipalityId", THIS_MUNICIPALITY_ID);
 	}
 
 	@Test
@@ -222,7 +223,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		return new CitizenExtended()
 			.personId(personId)
 			.addresses(List.of(new CitizenAddress()
-				.addressType("POPULATION_REGISTRATION_ADDRESS")
+				.addressType(MAIN_ADDRESS_TYPE)
 				.municipality(municipalityId)));
 	}
 }
