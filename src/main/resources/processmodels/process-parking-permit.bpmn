@@ -54,18 +54,18 @@
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
       <bpmn:outgoing>Flow_0uzrwpk</bpmn:outgoing>
-      <bpmn:startEvent id="Event_0t8toxm">
+      <bpmn:startEvent id="start_automatic_denial_phase" name="Start automatic denial phase">
         <bpmn:outgoing>Flow_094lgnf</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:sequenceFlow id="Flow_094lgnf" sourceRef="Event_0t8toxm" targetRef="external_task_update_errand_phase" />
+      <bpmn:sequenceFlow id="Flow_094lgnf" sourceRef="start_automatic_denial_phase" targetRef="external_task_update_errand_phase" />
       <bpmn:sequenceFlow id="Flow_1ge4pse" sourceRef="external_task_update_errand_phase" targetRef="external_task_add_denial_decision" />
       <bpmn:sequenceFlow id="Flow_1jka2xy" sourceRef="external_task_add_denial_decision" targetRef="external_task_update_errand_status" />
       <bpmn:sequenceFlow id="Flow_18owkk3" sourceRef="external_task_update_errand_status" targetRef="external_task_send_denial_decision" />
       <bpmn:sequenceFlow id="Flow_0ppjpc1" sourceRef="external_task_send_denial_decision" targetRef="external_task_add_message" />
-      <bpmn:endEvent id="Event_11hhelj">
+      <bpmn:endEvent id="end_automatic_denial_phase" name="End automatic denial phase">
         <bpmn:incoming>Flow_0t23uk5</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_0t23uk5" sourceRef="external_task_add_message" targetRef="Event_11hhelj" />
+      <bpmn:sequenceFlow id="Flow_0t23uk5" sourceRef="external_task_add_message" targetRef="end_automatic_denial_phase" />
       <bpmn:serviceTask id="external_task_update_errand_phase" name="Update phase on errand" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:incoming>Flow_094lgnf</bpmn:incoming>
         <bpmn:outgoing>Flow_1ge4pse</bpmn:outgoing>
@@ -231,52 +231,58 @@
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_0zw84sv">
     <bpmndi:BPMNPlane id="BPMNPlane_0u7aswv" bpmnElement="subprocess_automatic_denial">
-      <bpmndi:BPMNShape id="Event_0t8toxm_di" bpmnElement="Event_0t8toxm">
-        <dc:Bounds x="162" y="172" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0t8toxm_di" bpmnElement="start_automatic_denial_phase">
+        <dc:Bounds x="162" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="143" y="145" width="75" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_11hhelj_di" bpmnElement="Event_11hhelj">
-        <dc:Bounds x="1052" y="172" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_11hhelj_di" bpmnElement="end_automatic_denial_phase">
+        <dc:Bounds x="1052" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1035" y="145" width="71" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0veok4u_di" bpmnElement="external_task_update_errand_phase">
-        <dc:Bounds x="250" y="150" width="100" height="80" />
+        <dc:Bounds x="250" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0k8kms2_di" bpmnElement="external_task_add_denial_decision">
-        <dc:Bounds x="410" y="150" width="100" height="80" />
+        <dc:Bounds x="410" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15t9jo4_di" bpmnElement="external_task_update_errand_status">
-        <dc:Bounds x="570" y="150" width="100" height="80" />
+        <dc:Bounds x="570" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0kbzfwn_di" bpmnElement="external_task_send_denial_decision">
-        <dc:Bounds x="730" y="150" width="100" height="80" />
+        <dc:Bounds x="730" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0o2l8oh_di" bpmnElement="external_task_add_message">
-        <dc:Bounds x="890" y="150" width="100" height="80" />
+        <dc:Bounds x="890" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_094lgnf_di" bpmnElement="Flow_094lgnf">
-        <di:waypoint x="198" y="190" />
-        <di:waypoint x="250" y="190" />
+        <di:waypoint x="198" y="120" />
+        <di:waypoint x="250" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ge4pse_di" bpmnElement="Flow_1ge4pse">
-        <di:waypoint x="350" y="190" />
-        <di:waypoint x="410" y="190" />
+        <di:waypoint x="350" y="120" />
+        <di:waypoint x="410" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jka2xy_di" bpmnElement="Flow_1jka2xy">
-        <di:waypoint x="510" y="190" />
-        <di:waypoint x="570" y="190" />
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="570" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_18owkk3_di" bpmnElement="Flow_18owkk3">
-        <di:waypoint x="670" y="190" />
-        <di:waypoint x="730" y="190" />
+        <di:waypoint x="670" y="120" />
+        <di:waypoint x="730" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ppjpc1_di" bpmnElement="Flow_0ppjpc1">
-        <di:waypoint x="830" y="190" />
-        <di:waypoint x="890" y="190" />
+        <di:waypoint x="830" y="120" />
+        <di:waypoint x="890" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0t23uk5_di" bpmnElement="Flow_0t23uk5">
-        <di:waypoint x="990" y="190" />
-        <di:waypoint x="1052" y="190" />
+        <di:waypoint x="990" y="120" />
+        <di:waypoint x="1052" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -18,9 +18,9 @@ public interface MessagingClient {
 
 	/**
 	 * Send a single web-message
-	 * 
-	 * @param webMessageRequest request containing message to send
-	 * @return a MessageResult with delivery results and id for sent message
+	 *
+	 * @param  webMessageRequest                    request containing message to send
+	 * @return                                      a MessageResult with delivery results and id for sent message
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/webmessage", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
@@ -29,9 +29,9 @@ public interface MessagingClient {
 	/**
 	 * Send a single letter as digital mail with fallback as snail mail if
 	 * recipient does not have digital mail
-	 * 
-	 * @param letterRequest request containing message to send
-	 * @return a MessageBatchResult with delivery results and id for sent message
+	 *
+	 * @param  letterRequest                        request containing message to send
+	 * @return                                      a MessageBatchResult with delivery results and id for sent message
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/letter", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)

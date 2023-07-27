@@ -13,6 +13,7 @@ import se.sundsvall.parkingpermit.Application;
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
 class ApprovalTextPropertiesTest {
+
 	private static final String DESCRIPTION = "Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.";
 
 	@Autowired

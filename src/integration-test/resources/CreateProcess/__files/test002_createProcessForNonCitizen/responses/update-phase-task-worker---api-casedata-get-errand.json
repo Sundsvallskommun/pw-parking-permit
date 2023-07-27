@@ -1,8 +1,8 @@
 {
-	"id": 123,
-	"version": 2,
+	"id": 456,
+	"version": 1,
 	"created": "2022-12-02T15:13:45.363499+01:00",
-	"updated": "2022-12-02T15:17:01.5636+01:00",
+	"updated": "2022-12-02T15:15:01.5636+01:00",
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
 	"caseType": "PARKING_PERMIT",
@@ -10,7 +10,7 @@
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",
 	"diaryNumber": "",
-	"phase": "Beslut",
+	"phase": "Aktualisering",
 	"statuses": [],
 	"municipalityId": "2281",
 	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
@@ -21,17 +21,17 @@
 			"created": "2022-12-02T15:13:45.371645+01:00",
 			"updated": "2022-12-02T15:13:45.371676+01:00",
 			"type": "PERSON",
-			"firstName": "John",
-			"lastName": "Doe",
-			"personId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+			"firstName": "Fozzy",
+			"lastName": "Bear",
+			"personId": "d7af5f83-166a-468b-ab86-da8ca30ea97c",
 			"roles": [
 				"APPLICANT"
 			],
 			"addresses": [
 				{
 					"street": "STORGATAN 1",
-					"postalCode": "850 00",
-					"city": "SUNDSVALL"
+					"postalCode": "903 20",
+					"city": "UMEÅ"
 				}
 			],
 			"contactInformation": [
@@ -41,7 +41,7 @@
 				},
 				{
 					"contactType": "EMAIL",
-					"value": "john.doe@example.com"
+					"value": "fozzy.bear@example.com"
 				}
 			],
 			"extraParameters": {}
@@ -54,7 +54,6 @@
 	"messageIds": [],
 	"createdByClient": "WSO2_CaseManagementUI",
 	"createdBy": "UNKNOWN",
-	"updatedBy": "UNKNOWN",
 	"extraParameters": {
 		"disability.walkingAbility": "true",
 		"application.applicant.testimonial": "true",

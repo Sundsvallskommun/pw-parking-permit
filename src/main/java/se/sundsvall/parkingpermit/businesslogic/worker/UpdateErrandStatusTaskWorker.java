@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ExternalTaskSubscription("UpdateErrandStatusTask")
 public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
+
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
@@ -21,7 +22,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 
 			caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

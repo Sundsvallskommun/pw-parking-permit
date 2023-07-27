@@ -1,0 +1,41 @@
+{
+	"scenarioName": "create-process-for-non-citizen",
+	"requiredScenarioState": "add-message-to-errand-task-worker---api-templating-render-pdf",
+	"newScenarioState": "Scenario completed",
+	"request": {
+		"urlPath": "/api-casedata/messages",
+		"method": "POST",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"messageID": "570c3e28-b640-49e9-899c-9d290eb0539a",
+					"errandNumber": "PRH-2022-000001",
+					"direction": "OUTBOUND",
+					"externalCaseID": "2971",
+					"message": "Hej\n\nDu har fått ett beslut från Sundsvalls kommun.\n\nMed vänlig hälsning\nSundsvalls kommun",
+					"sent": "${json-unit.any-string}",
+					"subject": "Beslut från Sundsvalls kommun",
+					"username": "ProcessEngine",
+					"attachmentRequests": [
+						{
+							"content": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
+							"name": "beslut.pdf",
+							"contentType": "application/pdf"
+						}
+					]
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

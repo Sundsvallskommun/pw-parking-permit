@@ -46,10 +46,9 @@ public class MessagingService {
 		if (isNotEmpty(errand.getExternalCaseId())) {
 			final var messageResult = messagingClient.sendWebMessage(messagingMapper.toWebMessageRequest(pdf, partyId));
 			return extractId(List.of(messageResult));
-		} else {
-			final var messageResult = messagingClient.sendLetter(messagingMapper.toLetterRequest(pdf, partyId));
-			return extractId(messageResult.getMessages());
 		}
+		final var messageResult = messagingClient.sendLetter(messagingMapper.toLetterRequest(pdf, partyId));
+		return extractId(messageResult.getMessages());
 	}
 
 	private UUID extractId(List<MessageResult> messageResults) {

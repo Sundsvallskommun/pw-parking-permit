@@ -24,16 +24,19 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
  * Test class using testcontainer to execute the process.
  * There are a lot of resources that can be added to CamundaClient
  * to make good assertions. This test class contains a few examples.
- * See Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.19/
+ *
+ * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.19/
  */
 @Testcontainers
 abstract class AbstractCamundaAppTest extends AbstractAppTest {
+
+	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.19.0";
 
 	@Autowired
 	protected CamundaClient camundaClient;
 
 	@Container
-	private static final GenericContainer<?> CAMUNDA = new GenericContainer<>("camunda/camunda-bpm-platform:run-7.19.0")
+	private static final GenericContainer<?> CAMUNDA = new GenericContainer<>(CAMUNDA_IMAGE_NAME)
 		.waitingFor(Wait.forHttp("/"))
 		.withExposedPorts(8080);
 
@@ -50,7 +53,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		CAMUNDA.stop();
 	}
 
-	List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
+	protected List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
 		return getRoute(processInstanceId, new ArrayList<HistoricActivityInstanceDto>());
 	}
 
@@ -60,9 +63,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		}
 		return camundaClient.getHistoricActivities(processInstanceId).stream()
 			.sorted(comparing(HistoricActivityInstanceDto::getEndTime))
-			.flatMap(activity -> concat(
-				List.of(activity).stream(),
-				getRoute(activity.getCalledProcessInstanceId(), route).stream()))
+			.flatMap(activity -> concat(List.of(activity).stream(), getRoute(activity.getCalledProcessInstanceId(), route).stream()))
 			.toList();
 	}
 }

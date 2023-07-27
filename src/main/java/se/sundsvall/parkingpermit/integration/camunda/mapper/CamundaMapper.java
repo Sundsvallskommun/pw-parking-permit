@@ -13,6 +13,7 @@ import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.dept44.requestid.RequestId;
 
 public class CamundaMapper {
+
 	private CamundaMapper() {}
 
 	public static StartProcessInstanceDto toStartProcessInstanceDto(Long caseNumber) {

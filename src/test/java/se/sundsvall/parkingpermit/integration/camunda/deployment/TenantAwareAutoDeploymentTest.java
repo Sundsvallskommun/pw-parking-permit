@@ -34,7 +34,6 @@ import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentPrope
 @ExtendWith(MockitoExtension.class)
 class TenantAwareAutoDeploymentTest {
 
-
 	private static final String PROCESSMODEL_PATH = "processmodels/";
 	private static final String PROCESSMODEL_FILE = "process-parking-permit.bpmn";
 
@@ -57,7 +56,7 @@ class TenantAwareAutoDeploymentTest {
 
 	@Mock
 	private Resource resourceMock;
-	
+
 	@InjectMocks
 	private TenantAwareAutoDeployment tenantAwareAutoDeployment;
 

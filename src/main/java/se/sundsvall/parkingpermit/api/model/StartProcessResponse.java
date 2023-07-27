@@ -1,10 +1,10 @@
 package se.sundsvall.parkingpermit.api.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 import java.util.Objects;
 
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Start process response")
 public class StartProcessResponse {
@@ -31,10 +31,10 @@ public class StartProcessResponse {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if ((o == null) || (getClass() != o.getClass())) {
 			return false;
 		}
-		StartProcessResponse that = (StartProcessResponse) o;
+		final StartProcessResponse that = (StartProcessResponse) o;
 		return Objects.equals(processId, that.processId);
 	}
 

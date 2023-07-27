@@ -34,6 +34,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
 public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
+
 	private static final String PROCESS_ENGINE_FIRST_NAME = "Process";
 	private static final String PROCESS_ENGINE_LAST_NAME = "Engine";
 
@@ -66,7 +67,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			caseDataClient.patchNewDecision(errand.getId(), decision);
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

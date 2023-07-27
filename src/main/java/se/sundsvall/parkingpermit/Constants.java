@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.variable.type.ValueType;
 import generated.se.sundsvall.camunda.VariableValueDto;
 
 public class Constants {
+
 	private Constants() {}
 
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema

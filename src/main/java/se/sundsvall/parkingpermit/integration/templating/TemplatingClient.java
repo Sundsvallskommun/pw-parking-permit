@@ -16,9 +16,9 @@ public interface TemplatingClient {
 
 	/**
 	 * Render a stored template (with optional parameters) as a PDF
-	 * 
-	 * @param pdfRequest containing information regarding what template and version to use
-	 * @return a RenderResponse containing the rendered PDF
+	 *
+	 * @param  pdfRequest containing information regarding what template and version to use
+	 * @return            a RenderResponse containing the rendered PDF
 	 */
 	@PostMapping(path = "/render/pdf", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	RenderResponse renderPdf(@RequestBody RenderRequest pdfRequest);
