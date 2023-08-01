@@ -1,11 +1,4 @@
-<style>
-	.settings { border-collapse: collapse; }
-	.settings th, .settings td { padding: 5px; border: solid 1px #777; vertical-align: top }
-	.settings th { background-color: lightblue; text-transform: uppercase; font-weight: normal; text-align: left}
-	.code {font-family:Courier New,Courier,monospace; background-color:#dddddd; font-size: 14px }
-</style>
-
-<h2>pw-parking-permit</h2>
+# PwParkingPermit
 
 <p>ParkingPermit is a service which integrates with Camunda process engine for starting and updating processes regarding parking permits. It also support processes with business logic and integration to other services.</p>
 
@@ -123,4 +116,15 @@
 		</tr>
 	</tbody>
 </table>
-<p>&nbsp;</p>
+
+## Status
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=security_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=bugs)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
+
+## 
+Copyright (c) 2021 Sundsvalls kommun
