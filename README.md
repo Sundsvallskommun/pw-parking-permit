@@ -127,4 +127,4 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_pw-parking-permit&metric=bugs)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_pw-parking-permit)
 
 ## 
-Copyright (c) 2021 Sundsvalls kommun
+Copyright (c) 2023 Sundsvalls kommun
