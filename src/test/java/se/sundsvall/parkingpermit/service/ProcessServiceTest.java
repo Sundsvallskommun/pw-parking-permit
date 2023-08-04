@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,9 +46,10 @@ class ProcessServiceTest {
 
 	@Test
 	void startProcess() {
+
 		final var process = "process-parking-permit";
 		final var tenant = "PARKING_PERMIT";
-		final var businessKey = RandomStringUtils.randomNumeric(10);
+		final var caseNumber = RandomUtils.nextLong();
 		final var uuid = UUID.randomUUID().toString();
 		final var logId = UUID.randomUUID().toString();
 		final var processInstance = new ProcessInstanceWithVariablesDto().id(uuid);
@@ -59,22 +60,25 @@ class ProcessServiceTest {
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
-			assertThat(processService.startProcess(businessKey)).isEqualTo(uuid);
+			assertThat(processService.startProcess(caseNumber)).isEqualTo(uuid);
 		}
 
 		verify(camundaClientMock).startProcessWithTenant(eq(process), eq(tenant), startProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
 
-		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(businessKey);
+		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
 		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(2)
 			.containsKeys("caseNumber", "requestId")
 			.extractingByKeys("caseNumber", "requestId")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
-			.contains(tuple(ValueType.LONG.getName(), businessKey), tuple(ValueType.STRING.getName(), logId));
+			.contains(
+				tuple(ValueType.LONG.getName(), caseNumber),
+				tuple(ValueType.STRING.getName(), logId));
 	}
 
 	@Test
 	void updateProcess() {
+
 		final var uuid = UUID.randomUUID().toString();
 		final var logId = UUID.randomUUID().toString();
 

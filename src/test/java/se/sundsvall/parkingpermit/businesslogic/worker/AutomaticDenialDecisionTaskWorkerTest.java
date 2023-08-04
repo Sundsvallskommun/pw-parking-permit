@@ -54,6 +54,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
+
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 

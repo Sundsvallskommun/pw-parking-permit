@@ -13,6 +13,7 @@ import se.sundsvall.parkingpermit.Application;
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
 class DenialTextPropertiesTest {
+
 	private static final String FILE_NAME = "beslut.pdf";
 	private static final String MESSAGE = "Ärendet avskrivs";
 	private static final String SUBJECT = "Beslut från Sundsvalls kommun";

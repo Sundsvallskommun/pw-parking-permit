@@ -13,17 +13,18 @@ import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.dept44.requestid.RequestId;
 
 public class CamundaMapper {
+
 	private CamundaMapper() {}
 
-	public static StartProcessInstanceDto toStartProcessInstanceDto(String caseNumber) {
+	public static StartProcessInstanceDto toStartProcessInstanceDto(Long caseNumber) {
 		return new StartProcessInstanceDto()
-			.businessKey(caseNumber)
+			.businessKey(Long.toString(caseNumber))
 			.variables(Map.of(
 				CAMUNDA_VARIABLE_CASE_NUMBER, toVariableValueDto(ValueType.LONG, caseNumber),
 				CAMUNDA_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}
 
-	public static VariableValueDto toVariableValueDto(ValueType valueType, String value) {
+	public static VariableValueDto toVariableValueDto(ValueType valueType, Object value) {
 		return new VariableValueDto()
 			.type(valueType.getName())
 			.value(value);

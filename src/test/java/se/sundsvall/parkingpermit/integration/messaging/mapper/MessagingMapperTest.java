@@ -33,6 +33,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("junit")
 class MessagingMapperTest {
+
 	private static final UUID PARTY_ID = UUID.randomUUID();
 	private static final String OUTPUT = "output";
 	private static final RenderResponse RENDER_RESPONSE = new RenderResponse().output(OUTPUT);

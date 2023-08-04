@@ -21,6 +21,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @Component
 @ExternalTaskSubscription("AddMessageToErrandTask")
 public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
+
 	@Autowired
 	private MessagingService messagingService;
 
@@ -42,7 +43,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 			caseDataClient.addMessage(toMessageRequest(messageId, textProvider.getDenialTexts().subject(), textProvider.getDenialTexts().plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

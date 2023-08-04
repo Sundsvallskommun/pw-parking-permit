@@ -29,7 +29,7 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var messageId = messagingService.sendMessageToNonCitizen(errand, pdf).toString();
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

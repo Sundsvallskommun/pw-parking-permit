@@ -5,13 +5,19 @@
 	"updated": "2022-12-02T15:17:01.5636+01:00",
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
- 	"caseType": "PARKING_PERMIT",
+	"caseType": "PARKING_PERMIT",
 	"priority": "MEDIUM",
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",
 	"diaryNumber": "",
 	"phase": "Beslut",
-	"statuses": [],
+	"statuses": [
+		{
+			"statusType": "Beslut verkställt",
+			"description": "Ärendet avvisas",
+			"dateTime": "2022-12-02T15:20:01.5636+01:00"
+		}
+	],
 	"municipalityId": "2281",
 	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
 	"stakeholders": [
@@ -64,46 +70,48 @@
 	],
 	"facilities": [],
 	"attachments": [],
-	"decisions": [{
-		"created": "2022-12-02T15:21:03.363499+01:00",
-		"decisionType": "FINAL",
-		"decisionOutcome": "DISMISSAL",
-		"description": "Personen inte folkbokförd i Sundsvalls kommun.",
-		"law": [
-			{
-				"heading": "13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
-				"sfs": "Trafikförordningen (1998:1276)",
-				"chapter": "13",
-				"article": "8"
-			}
-		],
-		"decidedBy": {
-			"id": 2,
-			"version": 2,
-			"created": "2022-12-02T15:18:45.363499+01:00",
-			"updated": "2022-12-02T15:19:01.5636+01:00",
-			"type": "PERSON",
-			"firstName": "Process",
-			"lastName": "Engine",
-			"roles": [
-				"ADMINISTRATOR"
+	"decisions": [
+		{
+			"created": "2022-12-02T15:21:03.363499+01:00",
+			"decisionType": "FINAL",
+			"decisionOutcome": "DISMISSAL",
+			"description": "Personen inte folkbokförd i Sundsvalls kommun.",
+			"law": [
+				{
+					"heading": "13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
+					"sfs": "Trafikförordningen (1998:1276)",
+					"chapter": "13",
+					"article": "8"
+				}
 			],
-			"addresses": [],
-			"contactInformation": [],
+			"decidedBy": {
+				"id": 2,
+				"version": 2,
+				"created": "2022-12-02T15:18:45.363499+01:00",
+				"updated": "2022-12-02T15:19:01.5636+01:00",
+				"type": "PERSON",
+				"firstName": "Process",
+				"lastName": "Engine",
+				"roles": [
+					"ADMINISTRATOR"
+				],
+				"addresses": [],
+				"contactInformation": [],
+				"extraParameters": {}
+			},
+			"attachments": [
+				{
+					"category": "BESLUT",
+					"name": "beslut.pdf",
+					"extension": "pdf",
+					"mimeType": "application/pdf",
+					"extraParameters": {},
+					"file": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
+				}
+			],
 			"extraParameters": {}
-		},
-		"attachments": [
-			{
-				"category": "BESLUT",
-				"name": "beslut.pdf",
-				"extension": "pdf",
-				"mimeType": "application/pdf",
-				"extraParameters": {},
-				"file": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
-			}
-		],
-		"extraParameters": {}
-	}],
+		}
+	],
 	"notes": [],
 	"messageIds": [],
 	"createdByClient": "WSO2_CaseManagementUI",

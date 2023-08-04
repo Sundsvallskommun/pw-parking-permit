@@ -34,6 +34,7 @@ import se.sundsvall.parkingpermit.service.MessagingService;
 
 @ExtendWith(MockitoExtension.class)
 class SendDenialDecisionTaskWorkerTest {
+
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 
@@ -72,14 +73,14 @@ class SendDenialDecisionTaskWorkerTest {
 		// Setup
 		final var pdf = new RenderResponse();
 		final var messageUUID = UUID.randomUUID();
-		
+
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(pdf);
 		when(messagingServiceMock.sendMessageToNonCitizen(errandMock, pdf)).thenReturn(messageUUID);
-		
+
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 

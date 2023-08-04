@@ -33,6 +33,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateErrandPhaseTaskWorkerTest {
+
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 

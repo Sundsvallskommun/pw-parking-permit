@@ -19,7 +19,7 @@ class CamundaMapperTest {
 
 	@Test
 	void toStartProcessInstanceDto() {
-		final var caseNumber = String.valueOf(RandomUtils.nextLong());
+		final var caseNumber = RandomUtils.nextLong();
 
 		if (isEmpty(RequestId.get())) {
 			RequestId.init();
@@ -27,7 +27,7 @@ class CamundaMapperTest {
 
 		final var dto = CamundaMapper.toStartProcessInstanceDto(caseNumber);
 
-		assertThat(dto.getBusinessKey()).isEqualTo(caseNumber);
+		assertThat(dto.getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
 		assertThat(dto.getVariables().entrySet()).containsExactlyInAnyOrder(
 			entry(CAMUNDA_VARIABLE_CASE_NUMBER, new VariableValueDto()
 				.type(ValueType.LONG.getName())

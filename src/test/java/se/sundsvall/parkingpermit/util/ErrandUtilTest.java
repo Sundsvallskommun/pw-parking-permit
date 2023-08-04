@@ -11,6 +11,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ class ErrandUtilTest {
 	void getStakeholderWithRoleWhenNoMatches() {
 		final var e = assertThrows(ThrowableProblem.class, () -> ErrandUtil.getStakeholder(ERRAND, DOCTOR));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Errand is missing stakeholder with role 'DOCTOR'");
 	}
 

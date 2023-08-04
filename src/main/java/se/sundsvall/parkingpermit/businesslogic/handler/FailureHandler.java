@@ -1,14 +1,14 @@
 package se.sundsvall.parkingpermit.businesslogic.handler;
 
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Collections.emptyMap;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class FailureHandler {

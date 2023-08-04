@@ -2,6 +2,7 @@ package se.sundsvall.parkingpermit.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.accepted;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +42,12 @@ public class ProcessResource {
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<StartProcessResponse> startProcess(
-		@Parameter(name = "caseNumber") @PathVariable final String caseNumber) {
+		@Parameter(name = "caseNumber") @PathVariable final Long caseNumber) {
 
-		var startProcessResponse = new StartProcessResponse(service.startProcess(caseNumber));
+		final var startProcessResponse = new StartProcessResponse(service.startProcess(caseNumber));
 		LOGGER.info("Request for start of process for caseNumber {} has been received, resulting in an instance with id {}", caseNumber, startProcessResponse.getProcessId());
-		return ResponseEntity.accepted().body(startProcessResponse);
+
+		return accepted().body(startProcessResponse);
 	}
 
 	@PostMapping(path = "update/{processInstanceId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
@@ -60,6 +62,7 @@ public class ProcessResource {
 
 		LOGGER.info("Request for update of process instance with id {} has been received", processInstanceId);
 		service.updateProcess(processInstanceId);
-		return ResponseEntity.accepted().build();
+
+		return accepted().build();
 	}
 }

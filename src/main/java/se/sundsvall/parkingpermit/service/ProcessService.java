@@ -20,10 +20,11 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 @Service
 public class ProcessService {
+
 	@Autowired
 	private CamundaClient client;
 
-	public String startProcess(String caseNumber) {
+	public String startProcess(Long caseNumber) {
 		return client.startProcessWithTenant(PROCESS_KEY, TENANTID_TEMPLATE, toStartProcessInstanceDto(caseNumber)).getId();
 	}
 

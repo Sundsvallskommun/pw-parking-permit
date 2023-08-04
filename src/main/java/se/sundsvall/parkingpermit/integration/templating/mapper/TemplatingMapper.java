@@ -21,6 +21,7 @@ import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.templating.RenderRequest;
 
 public class TemplatingMapper {
+
 	private static final String TEMPLATE_IDENTIFIER = "sbk.prh.decision.all.rejection.municipality";
 	private static final String ADDRESS_CO = "addressCo";
 	private static final String ADDRESS_FIRSTNAME = "addressFirstname";
