@@ -38,47 +38,59 @@ import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
+
 	@Mock
 	private MessagingClient messagingClientMock;
 
 	@Mock
 	private TemplatingClient templatingClientMock;
-	
+
 	@Mock
 	private RenderResponse renderResponseMock;
-	
+
 	@Mock
 	private MessagingMapper messagingMapperMock;
 
 	@InjectMocks
 	private MessagingService messagingService;
-	
+
 	@Captor
 	private ArgumentCaptor<LetterRequest> letterRequestCaptor;
-	
+
 	@Captor
 	private ArgumentCaptor<WebMessageRequest> webMessageRequestCaptor;
 
 	@Test
 	void renderPdf() throws Exception {
+
+		// Arrange
+		final var errand = createErrand(true);
 		when(templatingClientMock.renderPdf(any())).thenReturn(renderResponseMock);
 
-		messagingService.renderPdf(createErrand(true));
+		// Act
+		messagingService.renderPdf(errand);
 
+		// Assert
 		verify(templatingClientMock).renderPdf(any());
 		verifyNoInteractions(messagingClientMock, messagingMapperMock);
 	}
-	
+
 	@Test
 	void sendMessageToNonCitizenWithExternalCaseIdPresentInErrand() throws Exception {
+
+		// Arrange
+		final var errand = createErrand(true);
+		final var renderResponse = new RenderResponse();
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 
 		when(messagingMapperMock.toWebMessageRequest(any(), any())).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(any())).thenReturn(messageResult);
-		
-		final var uuid = messagingService.sendMessageToNonCitizen(createErrand(true), new RenderResponse());
 
+		// Act
+		final var uuid = messagingService.sendMessageToNonCitizen(errand, renderResponse);
+
+		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
 		verify(messagingClientMock).sendWebMessage(webMessageRequest);
 		verify(messagingClientMock, never()).sendLetter(any());
@@ -87,6 +99,10 @@ class MessagingServiceTest {
 
 	@Test
 	void sendMessageToNonCitizenWithExternalCaseIdAbsent() throws Exception {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
 		final var letterRequest = new LetterRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
@@ -94,8 +110,10 @@ class MessagingServiceTest {
 		when(messagingMapperMock.toLetterRequest(any(), any())).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(any())).thenReturn(messageBatchResult);
 
-		final var uuid = messagingService.sendMessageToNonCitizen(createErrand(false), new RenderResponse());
+		// Act
+		final var uuid = messagingService.sendMessageToNonCitizen(errand, renderResponse);
 
+		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
 		verify(messagingClientMock).sendLetter(letterRequest);
 		verify(messagingClientMock, never()).sendWebMessage(any());
@@ -104,14 +122,20 @@ class MessagingServiceTest {
 
 	@Test
 	void noMessageIdReturnedFromMessagingWebmessageResource() throws Exception {
+
+		// Arrangte
+		final var errand = createErrand(true);
+		final var renderResponse = new RenderResponse();
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult();
 
 		when(messagingMapperMock.toWebMessageRequest(any(), any())).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(any())).thenReturn(messageResult);
 
-		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(createErrand(true), new RenderResponse()));
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(errand, renderResponse));
 
+		// Assert
 		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
 		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
@@ -122,14 +146,20 @@ class MessagingServiceTest {
 
 	@Test
 	void noMessageIdReturnedFromMessagingLetterResource() throws Exception {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
 		final var letterRequest = new LetterRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
 		when(messagingMapperMock.toLetterRequest(any(), any())).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(any())).thenReturn(messageBatchResult);
 
-		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(createErrand(false), new RenderResponse()));
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(errand, renderResponse));
 
+		// Assert
 		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
 		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
