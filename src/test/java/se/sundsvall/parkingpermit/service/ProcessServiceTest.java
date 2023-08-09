@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.service;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,8 +9,6 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-
-import java.util.UUID;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.camunda.bpm.engine.variable.type.ValueType;
@@ -47,11 +46,12 @@ class ProcessServiceTest {
 	@Test
 	void startProcess() {
 
+		// Arrange
 		final var process = "process-parking-permit";
 		final var tenant = "PARKING_PERMIT";
 		final var caseNumber = RandomUtils.nextLong();
-		final var uuid = UUID.randomUUID().toString();
-		final var logId = UUID.randomUUID().toString();
+		final var uuid = randomUUID().toString();
+		final var logId = randomUUID().toString();
 		final var processInstance = new ProcessInstanceWithVariablesDto().id(uuid);
 
 		when(camundaClientMock.startProcessWithTenant(any(), any(), any())).thenReturn(processInstance);
@@ -60,12 +60,13 @@ class ProcessServiceTest {
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
+			// Act
 			assertThat(processService.startProcess(caseNumber)).isEqualTo(uuid);
 		}
 
+		// Assert
 		verify(camundaClientMock).startProcessWithTenant(eq(process), eq(tenant), startProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
-
 		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
 		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(2)
 			.containsKeys("caseNumber", "requestId")
@@ -79,19 +80,21 @@ class ProcessServiceTest {
 	@Test
 	void updateProcess() {
 
-		final var uuid = UUID.randomUUID().toString();
-		final var logId = UUID.randomUUID().toString();
+		// Arrange
+		final var uuid = randomUUID().toString();
+		final var logId = randomUUID().toString();
 
 		// Mock static RequestId to enable spy and to verify that static method is being called
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
+			// Act
 			processService.updateProcess(uuid);
 		}
 
+		// Assert
 		verify(camundaClientMock).setProcessInstanceVariables(eq(uuid), updateProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
-
 		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(2)
 			.containsKeys("updateAvailable", "requestId")
 			.extractingByKeys("updateAvailable", "requestId")
