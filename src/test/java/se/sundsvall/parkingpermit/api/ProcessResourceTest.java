@@ -1,13 +1,13 @@
 package se.sundsvall.parkingpermit.api;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 import se.sundsvall.parkingpermit.service.ProcessService;
 
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class ProcessResourceTest {
 
@@ -37,11 +37,10 @@ class ProcessResourceTest {
 	@Test
 	void startProcess() {
 
-		// Setup
+		// Arrange
 		final var caseNumber = 123L;
-		final var uuid = UUID.randomUUID().toString();
+		final var uuid = randomUUID().toString();
 
-		// Mock
 		when(processServiceMock.startProcess(any())).thenReturn(uuid);
 
 		// Act
@@ -53,7 +52,7 @@ class ProcessResourceTest {
 			.returnResult()
 			.getResponseBody();
 
-		// Assert and verify
+		// Assert
 		assertThat(response.getProcessId()).isEqualTo(uuid);
 		verify(processServiceMock).startProcess(caseNumber);
 		verifyNoMoreInteractions(processServiceMock);
@@ -62,10 +61,9 @@ class ProcessResourceTest {
 	@Test
 	void updateProcess() {
 
-		// Setup
-		final var uuid = UUID.randomUUID().toString();
+		// Arrange
+		final var uuid = randomUUID().toString();
 
-		// Mock
 		when(processServiceMock.startProcess(any())).thenReturn(uuid);
 
 		// Act
@@ -74,7 +72,7 @@ class ProcessResourceTest {
 			.expectStatus().isAccepted()
 			.expectBody().isEmpty();
 
-		// Assert and verify
+		// Assert
 		verify(processServiceMock).updateProcess(uuid);
 		verifyNoMoreInteractions(processServiceMock);
 	}
