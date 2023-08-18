@@ -35,7 +35,7 @@ class InvestigationDummyTaskWorkerTest {
 	private FailureHandler failureHandlerMock;
 
 	@InjectMocks
-	private InvestigationDummyTaskWorker worker;
+	private UpdatePhaseTaskWorker worker;
 
 	@Test
 	void execute() {

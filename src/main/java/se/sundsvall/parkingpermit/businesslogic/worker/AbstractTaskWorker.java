@@ -5,6 +5,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 
+import generated.se.sundsvall.camunda.VariableValueDto;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
 import org.camunda.bpm.client.task.ExternalTaskService;

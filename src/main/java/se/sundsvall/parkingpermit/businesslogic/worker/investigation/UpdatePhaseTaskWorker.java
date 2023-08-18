@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 @Component
-@ExternalTaskSubscription("InvestigationDummyTask")
-public class InvestigationDummyTaskWorker extends AbstractTaskWorker {
+@ExternalTaskSubscription("InvestigationUpdatePhaseTask")
+public class UpdatePhaseTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			logInfo("Execute Worker for InvestigationDummyTask");
+			logInfo("Execute Worker for UpdatePhaseTaskWorker");
+
+			// TODO: Update case in caseData with new phase
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
