@@ -1,8 +1,7 @@
 package se.sundsvall.parkingpermit;
 
-import org.camunda.bpm.engine.variable.type.ValueType;
-
 import generated.se.sundsvall.camunda.VariableValueDto;
+import org.camunda.bpm.engine.variable.type.ValueType;
 
 public class Constants {
 
@@ -16,6 +15,8 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
+	public static final String CAMUNDA_VARIABLE_FINAL_DECISION = "finalDecision";
+	public static final String CAMUNDA_VARIABLE_PHASE = "phase";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 

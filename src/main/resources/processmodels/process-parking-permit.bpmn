@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
   <bpmn:process id="process-parking-permit" name="PROCESS Parking permit" isExecutable="true">
     <bpmn:documentation>This is a template process schema</bpmn:documentation>
     <bpmn:startEvent id="start_process" name="Start process">
@@ -52,6 +52,7 @@
     <bpmn:sequenceFlow id="Flow_1vtsopg" sourceRef="call_activity_decision" targetRef="call_activity_handling" />
     <bpmn:sequenceFlow id="Flow_0uzrwpk" sourceRef="subprocess_automatic_denial" targetRef="gateway_closing_is_citizen" />
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
+      <bpmn:extensionElements />
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
       <bpmn:outgoing>Flow_0uzrwpk</bpmn:outgoing>
       <bpmn:startEvent id="start_automatic_denial_phase" name="Start automatic denial phase">
@@ -67,6 +68,9 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_0t23uk5" sourceRef="external_task_add_message" targetRef="end_automatic_denial_phase" />
       <bpmn:serviceTask id="external_task_update_errand_phase" name="Update phase on errand" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Beslut&#34;)}" event="start" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_094lgnf</bpmn:incoming>
         <bpmn:outgoing>Flow_1ge4pse</bpmn:outgoing>
       </bpmn:serviceTask>
