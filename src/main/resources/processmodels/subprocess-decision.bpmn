@@ -1,18 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_14mzvle" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
-  <bpmn:process id="subprocess_decision" name="SUBPROCESS Decision" isExecutable="true">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_14mzvle" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="subprocess_decision" name="SUBPROCESS Decision" isExecutable="true" camunda:historyTimeToLive="1000">
+    <bpmn:extensionElements />
     <bpmn:startEvent id="start_decision_phase" name="Start decision phase">
-      <bpmn:outgoing>Flow_1gdbuz4</bpmn:outgoing>
+      <bpmn:extensionElements />
+      <bpmn:outgoing>update_phase</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:endEvent id="end_decision_phase" name="End decision phase">
-      <bpmn:incoming>Flow_0hdbuz6</bpmn:incoming>
+      <bpmn:incoming>final_decision</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="external_task_decsion_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="DecisionDummyTask">
-      <bpmn:incoming>Flow_1gdbuz4</bpmn:incoming>
-      <bpmn:outgoing>Flow_0hdbuz6</bpmn:outgoing>
+    <bpmn:sequenceFlow id="update_phase" sourceRef="start_decision_phase" targetRef="external_task_update_phase_task" />
+    <bpmn:sequenceFlow id="check_decision" sourceRef="external_task_check_decision_task" targetRef="gateway_is_decision_final" />
+    <bpmn:exclusiveGateway id="gateway_is_decision_final" name="Gateway is decision final" default="no_final_decision">
+      <bpmn:extensionElements />
+      <bpmn:incoming>check_decision</bpmn:incoming>
+      <bpmn:outgoing>final_decision</bpmn:outgoing>
+      <bpmn:outgoing>no_final_decision</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="final_decision" name="Yes" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateCatchEvent id="is_case_update_available" name="Is caseUpdateAvailiable">
+      <bpmn:extensionElements />
+      <bpmn:incoming>no_final_decision</bpmn:incoming>
+      <bpmn:outgoing>update_available</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0jekbll" camunda:variableName="updateAvailable">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable== true}</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="external_task_check_decision_task" name="Check if decision is made" camunda:type="external" camunda:topic="CheckDecisionTask">
+      <bpmn:extensionElements />
+      <bpmn:incoming>update_available</bpmn:incoming>
+      <bpmn:incoming>Flow_0srbw56</bpmn:incoming>
+      <bpmn:outgoing>check_decision</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1gdbuz4" sourceRef="start_decision_phase" targetRef="external_task_decsion_dummy_task" />
-    <bpmn:sequenceFlow id="Flow_0hdbuz6" sourceRef="external_task_decsion_dummy_task" targetRef="end_decision_phase" />
+    <bpmn:sequenceFlow id="update_available" sourceRef="is_case_update_available" targetRef="external_task_check_decision_task" />
+    <bpmn:sequenceFlow id="no_final_decision" name="No" sourceRef="gateway_is_decision_final" targetRef="is_case_update_available" />
+    <bpmn:sequenceFlow id="Flow_0srbw56" sourceRef="external_task_update_phase_task" targetRef="external_task_check_decision_task" />
+    <bpmn:serviceTask id="external_task_update_phase_task" name="Update phase on errand" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Beslut&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>update_phase</bpmn:incoming>
+      <bpmn:outgoing>Flow_0srbw56</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subprocess_decision">
@@ -23,24 +54,64 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1lwu8c8_di" bpmnElement="end_decision_phase">
-        <dc:Bounds x="424" y="99" width="36" height="36" />
+        <dc:Bounds x="1302" y="99" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="412" y="142" width="63" height="27" />
+          <dc:Bounds x="1290" y="142" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1n55fd6_di" bpmnElement="external_task_decsion_dummy_task">
-        <dc:Bounds x="262" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0ywwh6g_di" bpmnElement="Flow_1gdbuz4">
-        <di:waypoint x="208" y="117" />
-        <di:waypoint x="262" y="117" />
+      <bpmndi:BPMNShape id="Gateway_0fif7j7_di" bpmnElement="gateway_is_decision_final" isMarkerVisible="true">
+        <dc:Bounds x="945" y="92" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="156" y="142" width="67" height="27" />
+          <dc:Bounds x="942" y="62" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k0jozw_di" bpmnElement="is_case_update_available">
+        <dc:Bounds x="782" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="757" y="190" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tspsag_di" bpmnElement="external_task_check_decision_task">
+        <dc:Bounds x="580" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zdutrg_di" bpmnElement="external_task_update_phase_task">
+        <dc:Bounds x="320" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ywwh6g_di" bpmnElement="update_phase">
+        <di:waypoint x="208" y="117" />
+        <di:waypoint x="320" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="361" y="99" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hdbuz6_di" bpmnElement="Flow_0hdbuz6">
-        <di:waypoint x="362" y="117" />
-        <di:waypoint x="424" y="117" />
+      <bpmndi:BPMNEdge id="Flow_0qpu02h_di" bpmnElement="check_decision">
+        <di:waypoint x="680" y="117" />
+        <di:waypoint x="945" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o8x0i9_di" bpmnElement="final_decision">
+        <di:waypoint x="995" y="117" />
+        <di:waypoint x="1302" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1140" y="99" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05i18zd_di" bpmnElement="update_available">
+        <di:waypoint x="782" y="260" />
+        <di:waypoint x="630" y="260" />
+        <di:waypoint x="630" y="157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oiywwc_di" bpmnElement="no_final_decision">
+        <di:waypoint x="970" y="142" />
+        <di:waypoint x="970" y="260" />
+        <di:waypoint x="818" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="978" y="198" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0srbw56_di" bpmnElement="Flow_0srbw56">
+        <di:waypoint x="420" y="117" />
+        <di:waypoint x="580" y="117" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
