@@ -7,11 +7,9 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 
 @Component
 @ExternalTaskSubscription("CheckDecisionTask")
@@ -21,9 +19,11 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for CheckDecisionTask");
+			clearUpdateAvailable(externalTask);
+
 			final var errand = getErrand(externalTask);
 
-			final var variables = new HashMap<String, Object>(Map.of(CAMUNDA_VARIABLE_UPDATE_AVAILABLE, false));
+			final var variables = new HashMap<String, Object>();
 
 			errand.getDecisions().stream()
 				.filter(decision -> FINAL.equals(decision.getDecisionType()))
