@@ -47,8 +47,11 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!sanityCheckPassed}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1qpchwe" sourceRef="event_wait_for_update" targetRef="external_task_investigation_sanity_check" />
-    <bpmn:serviceTask id="external_task_investigation_update_phase" name="Update phase" camunda:type="external" camunda:topic="InvestigationUpdatePhaseTask">
+    <bpmn:serviceTask id="external_task_investigation_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
       <bpmn:documentation>Set phase to investigation</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Utreda&#34;)}" event="start" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0vhktxr</bpmn:incoming>
       <bpmn:outgoing>Flow_1aruz2s</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -76,6 +79,10 @@
         <dc:Bounds x="650" y="77" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10b2e1a_di" bpmnElement="external_task_investigation_construct_decision">
+        <dc:Bounds x="790" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1dskknz_di" bpmnElement="gateway_investigation_sanity_check" isMarkerVisible="true">
         <dc:Bounds x="545" y="92" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -90,10 +97,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0en976b_di" bpmnElement="external_task_investigation_update_phase">
         <dc:Bounds x="260" y="77" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_10b2e1a_di" bpmnElement="external_task_investigation_construct_decision">
-        <dc:Bounds x="790" y="77" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0vhktxr_di" bpmnElement="Flow_0vhktxr">

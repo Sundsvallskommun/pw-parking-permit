@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import org.springframework.http.MediaType;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
@@ -52,7 +53,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/123")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse()
+			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -60,6 +61,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
+
+		// Verify wiremock stubs
+		verifyStubsAndResetWiremock();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
