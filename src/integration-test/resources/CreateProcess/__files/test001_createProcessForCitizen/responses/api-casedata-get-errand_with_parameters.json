@@ -10,7 +10,7 @@
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",
 	"diaryNumber": "",
-	"phase": "Beslut",
+	"phase": "{{parameters.phaseParameter}}",
 	"statuses": [],
 	"municipalityId": "2281",
 	"processId": "896a44d8-724b-11ed-a840-0242ac110002",

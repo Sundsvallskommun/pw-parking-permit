@@ -23,7 +23,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 
 			ofNullable(phase).ifPresentOrElse(
 				phaseValue -> {
-					logInfo("Phase is set to {}", phaseValue);
+					logInfo("Setting phase to {}", phaseValue);
 					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue.toString()));
 				},
 				() -> logInfo("Phase is not set"));

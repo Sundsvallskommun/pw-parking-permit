@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import org.springframework.http.MediaType;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
@@ -52,7 +53,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/123")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse()
+			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -61,40 +62,56 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
+		// Verify wiremock stubs
+		verifyStubsAndResetWiremock();
+
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.doesNotHaveDuplicates()
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
+				//Actualization
 				tuple("Actualization", "call_activity_actualization"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("End actualization phase", "end_actualization_phase"),
+				//GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
+				//Investigation
 				tuple("Investigation", "call_activity_investigation"),
 				tuple("Start investigation phase", "start_investigation_phase"),
-				tuple("Dummy Task", "external_task_investigation_dummy_task"),
+				tuple("Update phase", "external_task_investigation_update_phase"),
+				tuple("Sanity checks", "external_task_investigation_sanity_check"),
+				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
+				tuple("Execute rules", "external_task_investigation_execute_rules"),
+				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("End investigation phase", "end_investigation_phase"),
+				//Decision
 				tuple("Decision", "call_activity_decision"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_update_phase_task"),
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
+				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("Dummy Task", "external_task_handling_dummy_task"),
 				tuple("End handling phase", "end_handling_phase"),
+				//Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Dummy Task", "external_task_execution_dummy_task"),
 				tuple("End execution phase", "end_execution_phase"),
+				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Dummy Task", "external_task_follow_up_dummy_task"),
 				tuple("End follow up phase", "end_follow_up_phase"),
+				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
+
 				tuple("End process", "end_process"));
 	}
 
