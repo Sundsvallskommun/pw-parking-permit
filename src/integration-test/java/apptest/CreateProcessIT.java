@@ -29,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class CreateProcessIT extends AbstractCamundaAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
+	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
 
 	@BeforeEach
 	void setup() {
@@ -39,7 +40,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getDeployments(null, "%.bpmn", null).size(), equalTo(7));
+			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
 
 	@Test
@@ -69,14 +70,15 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
 				//Actualization
-				tuple("Actualization", "call_activity_actualization"),
+				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("End actualization phase", "end_actualization_phase"),
 				//GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
 				//Investigation
-				tuple("Investigation", "call_activity_investigation"),
+				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
@@ -85,10 +87,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("End investigation phase", "end_investigation_phase"),
 				//Decision
-				tuple("Decision", "call_activity_decision"),
+				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
-				tuple("Update phase?", "check_update_phase"),
-				tuple("Update phase on errand", "external_task_update_phase_task"),
+				tuple("Update phase on errand", "external_task_decision_update_phase"),
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
@@ -140,7 +141,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
 				//Actualization
-				tuple("Actualization", "call_activity_actualization"),
+				tuple("Actualization", "actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -199,14 +201,15 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
 				//Actualization
-				tuple("Actualization", "call_activity_actualization"),
+				tuple("Actualization", "actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("End actualization phase", "end_actualization_phase"),
 				//GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
 				//Investigation
-				tuple("Investigation", "call_activity_investigation"),
+				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
@@ -215,21 +218,16 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("End investigation phase", "end_investigation_phase"),
 				//Decision
-				tuple("Decision", "call_activity_decision"),
+				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
-				tuple("Update phase?", "check_update_phase"),
-				tuple("Update phase on errand", "external_task_update_phase_task"),
+				tuple("Update phase on errand", "external_task_decision_update_phase"),
 				tuple("Check if decision is made", "external_task_check_decision_task"),
-				tuple("End decision phase", "end_decision_phase"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("Is caseUpdateAvailiable", "is_case_update_available"),
-				//Decision not final
-				tuple("Decision", "call_activity_decision"),
-				tuple("Start decision phase", "start_decision_phase"),
-				tuple("Update phase?", "check_update_phase"),
+				//Decision not final,
 				tuple("Check if decision is made", "external_task_check_decision_task"),
-				tuple("End decision phase", "end_decision_phase"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
+				tuple("End decision phase", "end_decision_phase"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),

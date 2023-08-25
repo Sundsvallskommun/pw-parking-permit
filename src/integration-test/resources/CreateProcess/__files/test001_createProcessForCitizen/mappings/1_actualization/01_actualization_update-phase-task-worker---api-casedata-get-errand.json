@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-citizen",
 	"requiredScenarioState": "Started",
-	"newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
+	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/123",
 		"method": "GET",
@@ -19,7 +19,7 @@
 		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": null
+			"phaseParameter": "Aktualisering"
 		}
 	}
 }
