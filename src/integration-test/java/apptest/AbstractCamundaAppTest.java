@@ -1,12 +1,6 @@
 package apptest;
 
-import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
-import static java.util.stream.Stream.concat;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -15,10 +9,15 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
+import static java.util.stream.Stream.concat;
 
 /**
  * Test class using testcontainer to execute the process.
