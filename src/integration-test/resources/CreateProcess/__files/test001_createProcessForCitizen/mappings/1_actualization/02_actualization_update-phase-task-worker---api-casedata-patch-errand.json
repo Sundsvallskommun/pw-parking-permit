@@ -1,0 +1,29 @@
+{
+	"scenarioName": "create-process-for-citizen",
+	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
+	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/errands/123",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Aktualisering",
+					"extraParameters": {}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

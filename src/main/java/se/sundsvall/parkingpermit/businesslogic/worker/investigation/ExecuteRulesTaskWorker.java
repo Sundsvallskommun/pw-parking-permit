@@ -4,17 +4,17 @@ import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
-
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 @Component
-@ExternalTaskSubscription("InvestigationDummyTask")
-public class InvestigationDummyTaskWorker extends AbstractTaskWorker {
+@ExternalTaskSubscription("InvestigationExecuteRulesTask")
+public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			logInfo("Execute Worker for InvestigationDummyTask");
-
+			logInfo("Execute Worker for ExecuteRulesTaskWorker");
+			//TODO:
+			// Run rules and save output
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
 			logException(externalTask, exception);

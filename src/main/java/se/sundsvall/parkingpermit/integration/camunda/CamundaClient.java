@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
+import generated.se.sundsvall.camunda.EventSubscriptionDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,4 +84,7 @@ public interface CamundaClient {
 
 	@GetMapping(path = "history/activity-instance", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	List<HistoricActivityInstanceDto> getHistoricActivities(@RequestParam("processInstanceId") String processInstanceId);
+
+	@GetMapping(path = "event-subscription", produces = APPLICATION_JSON_VALUE)
+	List<EventSubscriptionDto> getEventSubscriptions();
 }

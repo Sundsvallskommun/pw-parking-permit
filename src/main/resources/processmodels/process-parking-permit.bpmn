@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
   <bpmn:process id="process-parking-permit" name="PROCESS Parking permit" isExecutable="true">
-    <bpmn:documentation>This is a template process schema</bpmn:documentation>
     <bpmn:startEvent id="start_process" name="Start process">
       <bpmn:documentation>The start of the process execution</bpmn:documentation>
       <bpmn:outgoing>Flow_1bt8y6y</bpmn:outgoing>
@@ -10,48 +9,19 @@
       <bpmn:documentation>The end of the process execution</bpmn:documentation>
       <bpmn:incoming>Flow_1vfil4i</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="call_activity_actualization" />
+    <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="actualization_phase" />
     <bpmn:exclusiveGateway id="gateway_is_citizen" name="Gateway isCitizen" default="applicant_resident_of_municipality">
-      <bpmn:incoming>Flow_0uwt2gd</bpmn:incoming>
+      <bpmn:incoming>Flow_1quthlt</bpmn:incoming>
       <bpmn:outgoing>applicant_resident_of_municipality</bpmn:outgoing>
       <bpmn:outgoing>applicant_not_resident_of_municipality</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="applicant_resident_of_municipality" sourceRef="gateway_is_citizen" targetRef="call_activity_investigation" />
+    <bpmn:sequenceFlow id="applicant_resident_of_municipality" sourceRef="gateway_is_citizen" targetRef="investigation_phase" />
     <bpmn:sequenceFlow id="applicant_not_resident_of_municipality" name="Applicant not resident of municipality" sourceRef="gateway_is_citizen" targetRef="subprocess_automatic_denial">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${applicantNotResidentOfMunicipality}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:callActivity id="call_activity_actualization" name="Actualization" calledElement="subprocess_actualization">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1bt8y6y</bpmn:incoming>
-      <bpmn:outgoing>Flow_0uwt2gd</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_0uwt2gd" sourceRef="call_activity_actualization" targetRef="gateway_is_citizen" />
-    <bpmn:callActivity id="call_activity_investigation" name="Investigation" calledElement="subprocess_investigation">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>applicant_resident_of_municipality</bpmn:incoming>
-      <bpmn:outgoing>Flow_1siybff</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:callActivity id="call_activity_decision" name="Decision" calledElement="subprocess_decision">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1siybff</bpmn:incoming>
-      <bpmn:outgoing>Flow_1vtsopg</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_1siybff" sourceRef="call_activity_investigation" targetRef="call_activity_decision" />
-    <bpmn:sequenceFlow id="Flow_1vtsopg" sourceRef="call_activity_decision" targetRef="call_activity_handling" />
     <bpmn:sequenceFlow id="Flow_0uzrwpk" sourceRef="subprocess_automatic_denial" targetRef="gateway_closing_is_citizen" />
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
+      <bpmn:extensionElements />
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
       <bpmn:outgoing>Flow_0uzrwpk</bpmn:outgoing>
       <bpmn:startEvent id="start_automatic_denial_phase" name="Start automatic denial phase">
@@ -67,6 +37,9 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_0t23uk5" sourceRef="external_task_add_message" targetRef="end_automatic_denial_phase" />
       <bpmn:serviceTask id="external_task_update_errand_phase" name="Update phase on errand" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Beslut&#34;)}" event="start" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_094lgnf</bpmn:incoming>
         <bpmn:outgoing>Flow_1ge4pse</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -93,36 +66,186 @@
       <bpmn:outgoing>Flow_1vfil4i</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1vfil4i" sourceRef="gateway_closing_is_citizen" targetRef="end_process" />
-    <bpmn:callActivity id="call_activity_handling" name="Handling" calledElement="subprocess_handling">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1vtsopg</bpmn:incoming>
-      <bpmn:outgoing>Flow_0e4b9tj</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:callActivity id="call_activity_execution" name="Execution" calledElement="subprocess_execution">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0e4b9tj</bpmn:incoming>
-      <bpmn:outgoing>Flow_1uj478g</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:callActivity id="call_activity_follow_up" name="Follow up" calledElement="subprocess_follow_up">
-      <bpmn:extensionElements>
-        <camunda:in businessKey="#{execution.processBusinessKey}" />
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1uj478g</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_0e4b9tj" sourceRef="call_activity_handling" targetRef="call_activity_execution" />
     <bpmn:sequenceFlow id="Flow_1uj478g" sourceRef="call_activity_execution" targetRef="call_activity_follow_up" />
     <bpmn:sequenceFlow id="Flow_0ycmz1a" sourceRef="call_activity_follow_up" targetRef="gateway_closing_is_citizen" />
+    <bpmn:subProcess id="decision_phase" name="Decision">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1dbjt5c</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n80r7i</bpmn:outgoing>
+      <bpmn:startEvent id="start_decision_phase" name="Start decision phase">
+        <bpmn:outgoing>update_phase</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="end_decision_phase" name="End decision phase">
+        <bpmn:incoming>final_decision</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:exclusiveGateway id="gateway_is_decision_final" name="Gateway is decision final" default="no_final_decision">
+        <bpmn:incoming>check_decision</bpmn:incoming>
+        <bpmn:outgoing>final_decision</bpmn:outgoing>
+        <bpmn:outgoing>no_final_decision</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:intermediateCatchEvent id="is_case_update_available" name="Is caseUpdateAvailiable">
+        <bpmn:incoming>no_final_decision</bpmn:incoming>
+        <bpmn:outgoing>update_available</bpmn:outgoing>
+        <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0j59mvo" camunda:variableName="updateAvailable">
+          <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable}</bpmn:condition>
+        </bpmn:conditionalEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:serviceTask id="external_task_check_decision_task" name="Check if decision is made" camunda:type="external" camunda:topic="CheckDecisionTask">
+        <bpmn:incoming>update_available</bpmn:incoming>
+        <bpmn:incoming>Flow_0srbw56</bpmn:incoming>
+        <bpmn:outgoing>check_decision</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="external_task_decision_update_phase" name="Update phase on errand" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Beslut&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>update_phase</bpmn:incoming>
+        <bpmn:outgoing>Flow_0srbw56</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="update_phase" sourceRef="start_decision_phase" targetRef="external_task_decision_update_phase" />
+      <bpmn:sequenceFlow id="final_decision" name="Yes" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="check_decision" sourceRef="external_task_check_decision_task" targetRef="gateway_is_decision_final" />
+      <bpmn:sequenceFlow id="no_final_decision" name="No" sourceRef="gateway_is_decision_final" targetRef="is_case_update_available" />
+      <bpmn:sequenceFlow id="update_available" sourceRef="is_case_update_available" targetRef="external_task_check_decision_task" />
+      <bpmn:sequenceFlow id="Flow_0srbw56" sourceRef="external_task_decision_update_phase" targetRef="external_task_check_decision_task" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1n80r7i" sourceRef="decision_phase" targetRef="call_activity_handling" />
+    <bpmn:subProcess id="actualization_phase" name="Actualization">
+      <bpmn:incoming>Flow_1bt8y6y</bpmn:incoming>
+      <bpmn:outgoing>Flow_1quthlt</bpmn:outgoing>
+      <bpmn:startEvent id="start_actualization_phase" name="Start actualization phase">
+        <bpmn:outgoing>Flow_0uze4jm</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_verify_resident_of_municipality_task" name="Verify resident of municipality" camunda:type="external" camunda:topic="VerifyResidentOfMunicipalityTask">
+        <bpmn:incoming>Flow_18uxvh5</bpmn:incoming>
+        <bpmn:outgoing>Flow_0xlufuw</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="end_actualization_phase" name="End actualization phase">
+        <bpmn:incoming>Flow_0xlufuw</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0uze4jm" sourceRef="start_actualization_phase" targetRef="external_task_actualization_update_phase" />
+      <bpmn:sequenceFlow id="Flow_0xlufuw" sourceRef="external_task_verify_resident_of_municipality_task" targetRef="end_actualization_phase" />
+      <bpmn:serviceTask id="external_task_actualization_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:documentation>Set phase to investigation</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Aktualisering&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0uze4jm</bpmn:incoming>
+        <bpmn:outgoing>Flow_18uxvh5</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_18uxvh5" sourceRef="external_task_actualization_update_phase" targetRef="external_task_verify_resident_of_municipality_task" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1quthlt" sourceRef="actualization_phase" targetRef="gateway_is_citizen" />
+    <bpmn:sequenceFlow id="Flow_1dbjt5c" sourceRef="investigation_phase" targetRef="decision_phase" />
+    <bpmn:subProcess id="investigation_phase" name="Investigation">
+      <bpmn:incoming>applicant_resident_of_municipality</bpmn:incoming>
+      <bpmn:outgoing>Flow_1dbjt5c</bpmn:outgoing>
+      <bpmn:startEvent id="start_investigation_phase" name="Start investigation phase">
+        <bpmn:outgoing>Flow_0vhktxr</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_investigation_sanity_check" name="Sanity checks" camunda:type="external" camunda:topic="InvestigationSanityCheckTask">
+        <bpmn:documentation>Validate that all parameters are present to be able to execute rules</bpmn:documentation>
+        <bpmn:incoming>Flow_1qpchwe</bpmn:incoming>
+        <bpmn:incoming>Flow_1aruz2s</bpmn:incoming>
+        <bpmn:outgoing>Flow_0s0xo3o</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="end_investigation_phase" name="End investigation phase">
+        <bpmn:incoming>Flow_1szkacl</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:serviceTask id="external_task_investigation_execute_rules" name="Execute rules" camunda:type="external" camunda:topic="InvestigationExecuteRulesTask">
+        <bpmn:documentation>Run all applicable rules for case to generate recommended decision.</bpmn:documentation>
+        <bpmn:incoming>Flow_0oc7a24</bpmn:incoming>
+        <bpmn:outgoing>Flow_1nil6o2</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="external_task_investigation_construct_decision" name="Construct recommended decision and update case" camunda:type="external" camunda:topic="InvestigationConstructDecisionTask">
+        <bpmn:documentation>Construct descision and update case.</bpmn:documentation>
+        <bpmn:incoming>Flow_1nil6o2</bpmn:incoming>
+        <bpmn:outgoing>Flow_1szkacl</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:exclusiveGateway id="gateway_investigation_sanity_check" name="Sanity check passed">
+        <bpmn:incoming>Flow_0s0xo3o</bpmn:incoming>
+        <bpmn:outgoing>Flow_0oc7a24</bpmn:outgoing>
+        <bpmn:outgoing>Flow_00o1jr5</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:intermediateCatchEvent id="event_wait_for_update" name="Wait for update">
+        <bpmn:incoming>Flow_00o1jr5</bpmn:incoming>
+        <bpmn:outgoing>Flow_1qpchwe</bpmn:outgoing>
+        <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1jhxewl">
+          <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable}</bpmn:condition>
+        </bpmn:conditionalEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:serviceTask id="external_task_investigation_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:documentation>Set phase to investigation</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Utreda&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0vhktxr</bpmn:incoming>
+        <bpmn:outgoing>Flow_1aruz2s</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0vhktxr" sourceRef="start_investigation_phase" targetRef="external_task_investigation_update_phase" />
+      <bpmn:sequenceFlow id="Flow_1qpchwe" sourceRef="event_wait_for_update" targetRef="external_task_investigation_sanity_check" />
+      <bpmn:sequenceFlow id="Flow_1aruz2s" sourceRef="external_task_investigation_update_phase" targetRef="external_task_investigation_sanity_check" />
+      <bpmn:sequenceFlow id="Flow_0s0xo3o" sourceRef="external_task_investigation_sanity_check" targetRef="gateway_investigation_sanity_check" />
+      <bpmn:sequenceFlow id="Flow_1szkacl" sourceRef="external_task_investigation_construct_decision" targetRef="end_investigation_phase" />
+      <bpmn:sequenceFlow id="Flow_0oc7a24" name="Yes" sourceRef="gateway_investigation_sanity_check" targetRef="external_task_investigation_execute_rules">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${sanityCheckPassed}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_1nil6o2" sourceRef="external_task_investigation_execute_rules" targetRef="external_task_investigation_construct_decision" />
+      <bpmn:sequenceFlow id="Flow_00o1jr5" name="No" sourceRef="gateway_investigation_sanity_check" targetRef="event_wait_for_update">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!sanityCheckPassed}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_0e4b9tj" sourceRef="call_activity_handling" targetRef="call_activity_execution" />
+    <bpmn:subProcess id="call_activity_handling" name="Handling">
+      <bpmn:incoming>Flow_1n80r7i</bpmn:incoming>
+      <bpmn:outgoing>Flow_0e4b9tj</bpmn:outgoing>
+      <bpmn:endEvent id="end_handling_phase" name="End handling phase">
+        <bpmn:incoming>Flow_1p0hi2b</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:startEvent id="start_handling_phase" name="Start handling phase">
+        <bpmn:outgoing>Flow_1bo2uh1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_handling_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="HandlingDummyTask">
+        <bpmn:incoming>Flow_1bo2uh1</bpmn:incoming>
+        <bpmn:outgoing>Flow_1p0hi2b</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1p0hi2b" sourceRef="external_task_handling_dummy_task" targetRef="end_handling_phase" />
+      <bpmn:sequenceFlow id="Flow_1bo2uh1" sourceRef="start_handling_phase" targetRef="external_task_handling_dummy_task" />
+    </bpmn:subProcess>
+    <bpmn:subProcess id="call_activity_execution" name="Execution">
+      <bpmn:incoming>Flow_0e4b9tj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1uj478g</bpmn:outgoing>
+      <bpmn:startEvent id="start_execution_phase" name="Start execution phase">
+        <bpmn:outgoing>Flow_09weu60</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_execution_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="ExecutionDummyTask">
+        <bpmn:incoming>Flow_09weu60</bpmn:incoming>
+        <bpmn:outgoing>Flow_06m4q1i</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="end_execution_phase" name="End execution phase">
+        <bpmn:incoming>Flow_06m4q1i</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_09weu60" sourceRef="start_execution_phase" targetRef="external_task_execution_dummy_task" />
+      <bpmn:sequenceFlow id="Flow_06m4q1i" sourceRef="external_task_execution_dummy_task" targetRef="end_execution_phase" />
+    </bpmn:subProcess>
+    <bpmn:subProcess id="call_activity_follow_up" name="Follow up">
+      <bpmn:incoming>Flow_1uj478g</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
+      <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
+        <bpmn:incoming>Flow_1js339c</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:startEvent id="start_follow_up_phase" name="Start follow up phase">
+        <bpmn:outgoing>Flow_1kmw5et</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_follow_up_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="FollowUpDummyTask">
+        <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
+        <bpmn:outgoing>Flow_1js339c</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1js339c" sourceRef="external_task_follow_up_dummy_task" targetRef="end_follow_up_phase" />
+      <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="external_task_follow_up_dummy_task" />
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process-parking-permit">
@@ -132,51 +255,46 @@
           <dc:Bounds x="157" y="88" width="66" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="end_process">
-        <dc:Bounds x="1202" y="112" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1190" y="155" width="62" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
         <dc:Bounds x="375" y="105" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="359" y="75" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0veym3o_di" bpmnElement="call_activity_actualization">
-        <dc:Bounds x="240" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Gateway_0cclxwc_di" bpmnElement="gateway_closing_is_citizen" isMarkerVisible="true">
+        <dc:Bounds x="1345" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1330" y="75" width="81" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1f4j75h_di" bpmnElement="call_activity_investigation">
-        <dc:Bounds x="460" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0wcep7x_di" bpmnElement="call_activity_decision">
-        <dc:Bounds x="590" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="end_process">
+        <dc:Bounds x="1472" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1460" y="155" width="62" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0u04fml_di" bpmnElement="subprocess_automatic_denial">
         <dc:Bounds x="460" y="270" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0cclxwc_di" bpmnElement="gateway_closing_is_citizen" isMarkerVisible="true">
-        <dc:Bounds x="1115" y="105" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1100" y="75" width="81" height="27" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Activity_0gxf5af_di" bpmnElement="actualization_phase">
+        <dc:Bounds x="240" y="90" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1uqvjnm" bpmnElement="call_activity_handling">
-        <dc:Bounds x="720" y="90" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_12wwzep_di" bpmnElement="investigation_phase">
+        <dc:Bounds x="490" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16z14pk_di" bpmnElement="decision_phase">
+        <dc:Bounds x="650" y="90" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1rdrl6u" bpmnElement="call_activity_execution">
-        <dc:Bounds x="850" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Activity_10gf95y_di" bpmnElement="call_activity_handling">
+        <dc:Bounds x="820" y="90" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1jw5xo9" bpmnElement="call_activity_follow_up">
-        <dc:Bounds x="980" y="90" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Activity_0q7yr2w_di" bpmnElement="call_activity_execution">
+        <dc:Bounds x="990" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0om9fak_di" bpmnElement="call_activity_follow_up">
+        <dc:Bounds x="1170" y="90" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1bt8y6y_di" bpmnElement="Flow_1bt8y6y">
         <di:waypoint x="208" y="130" />
@@ -184,7 +302,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1lnpzf2_di" bpmnElement="applicant_resident_of_municipality">
         <di:waypoint x="425" y="130" />
-        <di:waypoint x="460" y="130" />
+        <di:waypoint x="490" y="130" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0g9o4ey_di" bpmnElement="applicant_not_resident_of_municipality">
         <di:waypoint x="400" y="155" />
@@ -194,38 +312,38 @@
           <dc:Bounds x="408" y="214" width="64" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0uwt2gd_di" bpmnElement="Flow_0uwt2gd">
+      <bpmndi:BPMNEdge id="Flow_0uzrwpk_di" bpmnElement="Flow_0uzrwpk">
+        <di:waypoint x="560" y="310" />
+        <di:waypoint x="1370" y="310" />
+        <di:waypoint x="1370" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vfil4i_di" bpmnElement="Flow_1vfil4i">
+        <di:waypoint x="1395" y="130" />
+        <di:waypoint x="1472" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e4b9tj_di" bpmnElement="Flow_0e4b9tj">
+        <di:waypoint x="920" y="130" />
+        <di:waypoint x="990" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1uj478g_di" bpmnElement="Flow_1uj478g">
+        <di:waypoint x="1090" y="130" />
+        <di:waypoint x="1170" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ycmz1a_di" bpmnElement="Flow_0ycmz1a">
+        <di:waypoint x="1270" y="130" />
+        <di:waypoint x="1345" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n80r7i_di" bpmnElement="Flow_1n80r7i">
+        <di:waypoint x="750" y="130" />
+        <di:waypoint x="820" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1quthlt_di" bpmnElement="Flow_1quthlt">
         <di:waypoint x="340" y="130" />
         <di:waypoint x="375" y="130" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1siybff_di" bpmnElement="Flow_1siybff">
-        <di:waypoint x="560" y="130" />
+      <bpmndi:BPMNEdge id="Flow_1dbjt5c_di" bpmnElement="Flow_1dbjt5c">
         <di:waypoint x="590" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1vtsopg_di" bpmnElement="Flow_1vtsopg">
-        <di:waypoint x="690" y="130" />
-        <di:waypoint x="720" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0uzrwpk_di" bpmnElement="Flow_0uzrwpk">
-        <di:waypoint x="560" y="310" />
-        <di:waypoint x="1140" y="310" />
-        <di:waypoint x="1140" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1vfil4i_di" bpmnElement="Flow_1vfil4i">
-        <di:waypoint x="1165" y="130" />
-        <di:waypoint x="1202" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0e4b9tj_di" bpmnElement="Flow_0e4b9tj">
-        <di:waypoint x="820" y="130" />
-        <di:waypoint x="850" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1uj478g_di" bpmnElement="Flow_1uj478g">
-        <di:waypoint x="950" y="130" />
-        <di:waypoint x="980" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ycmz1a_di" bpmnElement="Flow_0ycmz1a">
-        <di:waypoint x="1080" y="130" />
-        <di:waypoint x="1115" y="130" />
+        <di:waypoint x="650" y="130" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -283,6 +401,280 @@
       <bpmndi:BPMNEdge id="Flow_0t23uk5_di" bpmnElement="Flow_0t23uk5">
         <di:waypoint x="990" y="120" />
         <di:waypoint x="1052" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0lsu6ln">
+    <bpmndi:BPMNPlane id="BPMNPlane_1c9gmzv" bpmnElement="decision_phase">
+      <bpmndi:BPMNShape id="Event_17p8i8h_di" bpmnElement="start_decision_phase">
+        <dc:Bounds x="182" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="167" y="195" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zdutrg_di" bpmnElement="external_task_decision_update_phase">
+        <dc:Bounds x="280" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tspsag_di" bpmnElement="external_task_check_decision_task">
+        <dc:Bounds x="450" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_19jrglz" bpmnElement="gateway_is_decision_final" isMarkerVisible="true">
+        <dc:Bounds x="645" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="642" y="115" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lwu8c8_di" bpmnElement="end_decision_phase">
+        <dc:Bounds x="782" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="770" y="195" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0otizl3" bpmnElement="is_case_update_available">
+        <dc:Bounds x="564" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="539" y="240" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ywwh6g_di" bpmnElement="update_phase">
+        <di:waypoint x="218" y="170" />
+        <di:waypoint x="280" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="361" y="99" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o8x0i9_di" bpmnElement="final_decision">
+        <di:waypoint x="695" y="170" />
+        <di:waypoint x="782" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="152" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qpu02h_di" bpmnElement="check_decision">
+        <di:waypoint x="550" y="170" />
+        <di:waypoint x="645" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oiywwc_di" bpmnElement="no_final_decision">
+        <di:waypoint x="670" y="195" />
+        <di:waypoint x="670" y="310" />
+        <di:waypoint x="600" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="249" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05i18zd_di" bpmnElement="update_available">
+        <di:waypoint x="564" y="310" />
+        <di:waypoint x="500" y="310" />
+        <di:waypoint x="500" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0srbw56_di" bpmnElement="Flow_0srbw56">
+        <di:waypoint x="380" y="170" />
+        <di:waypoint x="450" y="170" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_03kxrhh">
+    <bpmndi:BPMNPlane id="BPMNPlane_07t7g25" bpmnElement="actualization_phase">
+      <bpmndi:BPMNShape id="Activity_1u7xeov_di" bpmnElement="external_task_verify_resident_of_municipality_task">
+        <dc:Bounds x="462" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0feob4b_di" bpmnElement="end_actualization_phase">
+        <dc:Bounds x="644" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="145" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1geen8e_di" bpmnElement="start_actualization_phase">
+        <dc:Bounds x="172" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="161" y="145" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0ycchbc" bpmnElement="external_task_actualization_update_phase">
+        <dc:Bounds x="290" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_18uxvh5_di" bpmnElement="Flow_18uxvh5">
+        <di:waypoint x="390" y="120" />
+        <di:waypoint x="462" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xlufuw_di" bpmnElement="Flow_0xlufuw">
+        <di:waypoint x="562" y="120" />
+        <di:waypoint x="644" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uze4jm_di" bpmnElement="Flow_0uze4jm">
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="290" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1qh8u63">
+    <bpmndi:BPMNPlane id="BPMNPlane_0t7ceew" bpmnElement="investigation_phase">
+      <bpmndi:BPMNShape id="Event_0kbmzjk_di" bpmnElement="start_investigation_phase">
+        <dc:Bounds x="172" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="159" y="165" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0em2j85_di" bpmnElement="external_task_investigation_sanity_check">
+        <dc:Bounds x="400" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rauact_di" bpmnElement="end_investigation_phase">
+        <dc:Bounds x="932" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908" y="85" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1962k00_di" bpmnElement="external_task_investigation_execute_rules">
+        <dc:Bounds x="650" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10b2e1a_di" bpmnElement="external_task_investigation_construct_decision">
+        <dc:Bounds x="790" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1dskknz_di" bpmnElement="gateway_investigation_sanity_check" isMarkerVisible="true">
+        <dc:Bounds x="545" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="538" y="79" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_16ei3sm_di" bpmnElement="event_wait_for_update">
+        <dc:Bounds x="482" y="215" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="463" y="258" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0en976b_di" bpmnElement="external_task_investigation_update_phase">
+        <dc:Bounds x="260" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0vhktxr_di" bpmnElement="Flow_0vhktxr">
+        <di:waypoint x="208" y="140" />
+        <di:waypoint x="260" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qpchwe_di" bpmnElement="Flow_1qpchwe">
+        <di:waypoint x="482" y="233" />
+        <di:waypoint x="450" y="233" />
+        <di:waypoint x="450" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1aruz2s_di" bpmnElement="Flow_1aruz2s">
+        <di:waypoint x="360" y="140" />
+        <di:waypoint x="400" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s0xo3o_di" bpmnElement="Flow_0s0xo3o">
+        <di:waypoint x="500" y="140" />
+        <di:waypoint x="545" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1szkacl_di" bpmnElement="Flow_1szkacl">
+        <di:waypoint x="890" y="140" />
+        <di:waypoint x="932" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0oc7a24_di" bpmnElement="Flow_0oc7a24">
+        <di:waypoint x="595" y="140" />
+        <di:waypoint x="650" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="607" y="122" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nil6o2_di" bpmnElement="Flow_1nil6o2">
+        <di:waypoint x="750" y="140" />
+        <di:waypoint x="790" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00o1jr5_di" bpmnElement="Flow_00o1jr5">
+        <di:waypoint x="570" y="165" />
+        <di:waypoint x="570" y="233" />
+        <di:waypoint x="518" y="233" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="578" y="186" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1flw9df">
+    <bpmndi:BPMNPlane id="BPMNPlane_0g4bl0e" bpmnElement="call_activity_handling">
+      <bpmndi:BPMNShape id="BPMNShape_11qtrzp" bpmnElement="end_handling_phase">
+        <dc:Bounds x="462" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="448" y="145" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_08i6cgb" bpmnElement="start_handling_phase">
+        <dc:Bounds x="170" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="157" y="145" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0zilarw" bpmnElement="external_task_handling_dummy_task">
+        <dc:Bounds x="280" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_0d5u5no" bpmnElement="Flow_1p0hi2b">
+        <di:waypoint x="380" y="120" />
+        <di:waypoint x="462" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1jh2exb" bpmnElement="Flow_1bo2uh1">
+        <di:waypoint x="206" y="120" />
+        <di:waypoint x="280" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0qrupve">
+    <bpmndi:BPMNPlane id="BPMNPlane_1mjfjro" bpmnElement="call_activity_execution">
+      <bpmndi:BPMNShape id="BPMNShape_1u8ifen" bpmnElement="start_execution_phase">
+        <dc:Bounds x="170" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="154" y="145" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0sbnjod" bpmnElement="external_task_execution_dummy_task">
+        <dc:Bounds x="280" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0e6gbas" bpmnElement="end_execution_phase">
+        <dc:Bounds x="462" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="445" y="145" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_1s9cx8u" bpmnElement="Flow_09weu60">
+        <di:waypoint x="206" y="120" />
+        <di:waypoint x="280" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0n8fdws" bpmnElement="Flow_06m4q1i">
+        <di:waypoint x="380" y="120" />
+        <di:waypoint x="462" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_15fzdds">
+    <bpmndi:BPMNPlane id="BPMNPlane_03h4jfu" bpmnElement="call_activity_follow_up">
+      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
+        <dc:Bounds x="962" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="948" y="245" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1m050le" bpmnElement="start_follow_up_phase">
+        <dc:Bounds x="670" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="656" y="245" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0tzqtpb" bpmnElement="external_task_follow_up_dummy_task">
+        <dc:Bounds x="780" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_0jkl981" bpmnElement="Flow_1js339c">
+        <di:waypoint x="880" y="220" />
+        <di:waypoint x="962" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0wc93yf" bpmnElement="Flow_1kmw5et">
+        <di:waypoint x="706" y="220" />
+        <di:waypoint x="780" y="220" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
