@@ -19,7 +19,9 @@
 		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": null
+			"phaseParameter": "Aktualisering",
+			"phaseActionParameter": "UNKNOWN",
+			"phaseStatusParameter": "ONGOING"
 		}
 	}
 }

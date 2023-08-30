@@ -17,6 +17,8 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
 	public static final String CAMUNDA_VARIABLE_FINAL_DECISION = "finalDecision";
 	public static final String CAMUNDA_VARIABLE_PHASE = "phase";
+	public static final String CAMUNDA_VARIABLE_PHASE_STATUS = "phaseStatus";
+	public static final String CAMUNDA_VARIABLE_PHASE_ACTION = "phaseAction";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
@@ -30,4 +32,13 @@ public class Constants {
 	public static final String CASEDATA_STATUS_COMPLETION_RECEIVED = "Komplettering inkommen";
 	public static final String CASEDATA_STATUS_CASE_PROCESSED = "Under utredning";
 	public static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
+	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
+	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
+	public static final String PHASE_ACTION_COMPLETE = "COMPLETE";
+	public static final String PHASE_ACTION_CANCEL = "CANCEL";
+	public static final String PHASE_ACTION_UNKNOWN = "UNKNOWN";
+	public static final String PHASE_STATUS_COMPLETED = "COMPLETED";
+	public static final String PHASE_STATUS_ONGOING = "ONGOING";
+	public static final String PHASE_STATUS_WAITING = "WAITING";
+	public static final String PHASE_STATUS_CANCELED = "CANCELED";
 }

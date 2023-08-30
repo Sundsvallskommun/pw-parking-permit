@@ -68,6 +68,8 @@
 		"consent.contact.doctor": "false",
 		"application.reason": "",
 		"disability.canBeAloneWhileParking.note": "",
-		"disability.duration": "P6M"
+		"disability.duration": "P6M",
+		"process.phaseStatus": "{{parameters.phaseStatusParameter}}",
+		"process.phaseAction": "{{parameters.phaseActionParameter}}"
 	}
 }

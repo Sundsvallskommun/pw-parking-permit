@@ -74,6 +74,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
 				//GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
@@ -145,7 +148,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
-				tuple("End actualization phase", "end_actualization_phase"),
+				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("End when not citizen of municipality", "end_actualization_not_citizen"),
 				//Denial
 				tuple("Start automatic denial phase", "start_automatic_denial_phase"),
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
@@ -202,9 +206,12 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Start process", "start_process"),
 				//Actualization
 				tuple("Actualization", "actualization_phase"),
-				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
 				//GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
@@ -223,7 +230,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
-				tuple("Is caseUpdateAvailiable", "is_case_update_available"),
+				tuple("Is caseUpdateAvailable", "is_case_update_available"),
 				//Decision not final,
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
