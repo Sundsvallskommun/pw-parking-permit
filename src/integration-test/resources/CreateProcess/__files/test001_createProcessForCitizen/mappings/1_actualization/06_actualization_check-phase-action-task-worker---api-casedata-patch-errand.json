@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-citizen",
-	"requiredScenarioState": "investigation_update-phase-task-worker---api-casedata-get-errand",
-	"newScenarioState": "investigation_update-phase-task-worker---api-casedata-patch-errand",
+	"requiredScenarioState": "actualization_check-phase-action_task-worker---api-casedata-get-errand",
+	"newScenarioState": "actualization_check-phase-action_task-worker---api-casedata-patch-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/123",
 		"method": "PATCH",
@@ -14,10 +14,10 @@
 			{
 				"equalToJson": {
 					"externalCaseId": "2971",
-					"phase": "Utreda",
+					"phase": "Aktualisering",
 					"extraParameters": {
-						"process.phaseStatus" : "ONGOING",
-						"process.phaseAction" : "UNKNOWN"
+						"process.phaseStatus" : "COMPLETED",
+						"process.phaseAction" : "COMPLETE"
 					}
 				}
 			}

@@ -1,21 +1,5 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import generated.se.sundsvall.casedata.AttachmentDTO;
 import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
@@ -29,6 +13,23 @@ import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataMapperTest {
@@ -158,19 +159,25 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithNullAsParameters() {
-		final var bean = CaseDataMapper.toPatchErrand(null, null);
+		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null);
+
+		final var expectedExtraParameters = new HashMap<String, String>();
+		expectedExtraParameters.put("process.phaseStatus", null);
+		expectedExtraParameters.put("process.phaseAction", null);
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
 			.extracting(PatchErrandDTO::getExtraParameters)
-			.isEqualTo(emptyMap());
+			.isEqualTo(expectedExtraParameters);
 	}
 
 	@Test
 	void toPatchErrand() {
 		final var externalCaseId = "externalCaseId";
 		final var phase = "phase";
+		final var phaseStatus = "phaseStatus";
+		final var phaseAction = "phaseAction";
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
 
 		assertThat(bean).isNotNull()
 			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
@@ -181,7 +188,9 @@ class CaseDataMapperTest {
 			.containsExactly(
 				externalCaseId,
 				phase,
-				emptyMap());
+				Map.of(
+					"process.phaseStatus", phaseStatus,
+					"process.phaseAction", phaseAction));
 	}
 
 	@Test

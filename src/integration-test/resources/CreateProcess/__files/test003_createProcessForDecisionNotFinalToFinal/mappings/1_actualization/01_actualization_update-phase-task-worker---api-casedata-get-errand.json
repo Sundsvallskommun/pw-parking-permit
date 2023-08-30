@@ -20,7 +20,9 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Aktualisering",
-			"decisionParameter": "PROPOSED"
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "",
+			"phaseStatusParameter": ""
 		}
 	}
 }
