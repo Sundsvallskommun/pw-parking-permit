@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-citizen",
-	"requiredScenarioState": "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
+	"scenarioName": "create-process-for-decision-not-final",
+	"requiredScenarioState": "investigation_update-phase-task-worker---api-casedata-patch-errand",
 	"newScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/123",
+		"urlPath": "/api-casedata/errands/789",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -16,12 +16,11 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Utreda",
-			"phaseActionParameter": "ONGOING",
-			"phaseStatusParameter": "UNKNOWN"
+			"decisionParameter": "PROPOSED"
 		}
 	}
 }
