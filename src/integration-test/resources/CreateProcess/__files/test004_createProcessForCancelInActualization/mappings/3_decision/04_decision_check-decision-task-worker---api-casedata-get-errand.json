@@ -1,5 +1,5 @@
 {
-	"scenarioName": "create-process-for-decision-not-final",
+	"scenarioName": "create-process-for-cancel-in-actualization",
 	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/789",
