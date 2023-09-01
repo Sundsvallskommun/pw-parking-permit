@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-citizen",
-	"requiredScenarioState": "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
-	"newScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "investigation_update-phase-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/123",
 		"method": "GET",
@@ -20,8 +20,8 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Utreda",
-			"phaseActionParameter": "ONGOING",
-			"phaseStatusParameter": "UNKNOWN"
+			"phaseActionParameter": "COMPLETE",
+			"phaseStatusParameter": "ONGOING"
 		}
 	}
 }

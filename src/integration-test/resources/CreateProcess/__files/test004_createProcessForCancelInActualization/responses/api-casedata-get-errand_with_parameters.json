@@ -1,0 +1,83 @@
+{
+	"id": 789,
+	"version": 2,
+	"created": "2022-12-02T15:13:45.363499+01:00",
+	"updated": "2022-12-02T15:17:01.5636+01:00",
+	"errandNumber": "PRH-2022-000001",
+	"externalCaseId": "2971",
+	"caseType": "PARKING_PERMIT",
+	"priority": "MEDIUM",
+	"description": "",
+	"caseTitleAddition": "Nytt parkeringstillstånd",
+	"diaryNumber": "",
+	"phase": "{{parameters.phaseParameter}}",
+	"statuses": [],
+	"municipalityId": "2281",
+	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
+	"stakeholders": [
+		{
+			"id": 1,
+			"version": 0,
+			"created": "2022-12-02T15:13:45.371645+01:00",
+			"updated": "2022-12-02T15:13:45.371676+01:00",
+			"type": "PERSON",
+			"firstName": "John",
+			"lastName": "Doe",
+			"personId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+			"roles": [
+				"APPLICANT"
+			],
+			"addresses": [
+				{
+					"street": "STORGATAN 1",
+					"postalCode": "850 00",
+					"city": "SUNDSVALL"
+				}
+			],
+			"contactInformation": [
+				{
+					"contactType": "PHONE",
+					"value": "070-1234567"
+				},
+				{
+					"contactType": "EMAIL",
+					"value": "john.doe@example.com"
+				}
+			],
+			"extraParameters": {}
+		}
+	],
+	"facilities": [],
+	"attachments": [],
+	"decisions": [
+		{
+			"id": 1,
+			"decisionType": "{{parameters.decisionParameter}}",
+			"decisionOutcome": "APPROVAL",
+			"description": "Beskrivning"
+		}
+	],
+	"notes": [],
+	"messageIds": [],
+	"createdByClient": "WSO2_CaseManagementUI",
+	"createdBy": "UNKNOWN",
+	"updatedBy": "UNKNOWN",
+	"extraParameters": {
+		"disability.walkingAbility": "true",
+		"application.applicant.testimonial": "true",
+		"consent.view.transportationServiceDetails": "false",
+		"disability.aid": "Inget",
+		"disability.canBeAloneWhileParking": "true",
+		"application.role": "SELF",
+		"application.applicant.capacity": "DRIVER",
+		"application.applicant.signingAbility": "false",
+		"disability.walkingDistance.max": "",
+		"disability.walkingDistance.beforeRest": "",
+		"consent.contact.doctor": "false",
+		"application.reason": "",
+		"disability.canBeAloneWhileParking.note": "",
+		"disability.duration": "P6M",
+		"process.phaseStatus": "{{parameters.phaseStatusParameter}}",
+		"process.phaseAction": "{{parameters.phaseActionParameter}}"
+	}
+}
