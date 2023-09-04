@@ -1,5 +1,5 @@
 {
-	"scenarioName": "create-process-for-decision-not-final",
+	"scenarioName": "create-process-for-cancel-in-actualization",
 	"requiredScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
 	"newScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
 	"request": {

@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-cancel-in-actualization",
+	"scenarioName": "create-process-for-actualization-not-complete",
 	"requiredScenarioState": "Started",
 	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/789",
+		"urlPath": "/api-casedata/errands/1011",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -16,7 +16,7 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test004_createProcessForCancelInActualization/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test005_createProcessForActualizaitionNotComplete/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Aktualisering",
