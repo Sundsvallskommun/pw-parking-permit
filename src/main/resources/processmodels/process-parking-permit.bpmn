@@ -209,7 +209,7 @@
         <bpmn:incoming>Flow_1nil6o2</bpmn:incoming>
         <bpmn:outgoing>Flow_1it1t2z</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:exclusiveGateway id="gateway_investigation_sanity_check" name="Sanity check passed">
+      <bpmn:exclusiveGateway id="gateway_investigation_sanity_check" name="Sanity check passed" default="Flow_00o1jr5">
         <bpmn:incoming>Flow_0s0xo3o</bpmn:incoming>
         <bpmn:outgoing>Flow_0oc7a24</bpmn:outgoing>
         <bpmn:outgoing>Flow_00o1jr5</bpmn:outgoing>
@@ -237,9 +237,7 @@
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${sanityCheckPassed}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_1nil6o2" sourceRef="external_task_investigation_execute_rules" targetRef="external_task_investigation_construct_decision" />
-      <bpmn:sequenceFlow id="Flow_00o1jr5" name="No" sourceRef="gateway_investigation_sanity_check" targetRef="event_wait_for_update">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!sanityCheckPassed}</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_00o1jr5" name="No" sourceRef="gateway_investigation_sanity_check" targetRef="event_wait_for_update" />
       <bpmn:sequenceFlow id="Flow_1it1t2z" sourceRef="external_task_investigation_construct_decision" targetRef="external_task_investigation_check_phase_action_task" />
       <bpmn:intermediateCatchEvent id="Event_1wgju4j" name="Wait for complete action">
         <bpmn:incoming>Flow_1h4e2t4</bpmn:incoming>
