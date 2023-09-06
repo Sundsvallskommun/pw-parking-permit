@@ -16,6 +16,7 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
 	public static final String CAMUNDA_VARIABLE_FINAL_DECISION = "finalDecision";
+	public static final String CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE = "ruleEngineResponse";
 	public static final String CAMUNDA_VARIABLE_PHASE = "phase";
 	public static final String CAMUNDA_VARIABLE_PHASE_STATUS = "phaseStatus";
 	public static final String CAMUNDA_VARIABLE_PHASE_ACTION = "phaseAction";
@@ -34,6 +35,14 @@ public class Constants {
 	public static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
 	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
+	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY = "application.applicant.capacity";
+	public static final String CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "application.lostPermit.policeReportNumber";
+	public static final String CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES = "application.renewal.changedCircumstances";
+	public static final String CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING = "disability.canBeAloneWhileParking";
+	public static final String CASEDATA_KEY_DISABILITY_DURATION = "disability.duration";
+	public static final String CASEDATA_KEY_DISABILITY_WALKING_ABILITY = "disability.walkingAbility";
+	public static final String CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX = "disability.walkingDistance.max";
+	public static final String BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID = "stakeholders.applicant.personid";
 	public static final String PHASE_ACTION_COMPLETE = "COMPLETE";
 	public static final String PHASE_ACTION_CANCEL = "CANCEL";
 	public static final String PHASE_ACTION_UNKNOWN = "UNKNOWN";

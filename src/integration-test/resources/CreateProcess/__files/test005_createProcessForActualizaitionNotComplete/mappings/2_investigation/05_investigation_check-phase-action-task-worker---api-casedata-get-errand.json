@@ -1,6 +1,6 @@
 {
 	"scenarioName": "create-process-for-actualization-not-complete",
-	"requiredScenarioState": "investigation_update-phase-task-worker---api-casedata-patch-errand",
+	"requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
 	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/1011",

@@ -27,26 +27,31 @@ integration:
 
 config:
   common:
-    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    token-uri: http://localhost:${wiremock.server.port}/api-gateway/token
     client-id: the-client-id
     client-secret: the-client-secret
   casedata:
-    base-url: http://localhost:${wiremock.server.port:}/api-casedata
+    base-url: http://localhost:${wiremock.server.port}/api-casedata
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   templating:
-    base-url: http://localhost:${wiremock.server.port:}/api-templating
+    base-url: http://localhost:${wiremock.server.port}/api-templating
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   messaging:
-    base-url: http://localhost:${wiremock.server.port:}/api-messaging
+    base-url: http://localhost:${wiremock.server.port}/api-messaging
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   citizen:
-    base-url: http://localhost:${wiremock.server.port:}/api-citizen
+    base-url: http://localhost:${wiremock.server.port}/api-citizen
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  businessrules:
+    base-url: http://localhost:${wiremock.server.port}/api-business-rules
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
