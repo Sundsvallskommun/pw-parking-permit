@@ -219,6 +219,31 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>business-rules-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/business-rules.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.businessrules</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -229,7 +254,8 @@
 						<exclude>**/se/sundsvall/parkingpermit/Application*</exclude>
 						<exclude>**/generated/se/sundsvall/**</exclude>
 						<!-- TODO: Remove when tests is implemented -->
-						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/**</exclude>
+						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/ConstructDecisionTaskWorker*</exclude>
+						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/SanityCheckTaskWorker*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

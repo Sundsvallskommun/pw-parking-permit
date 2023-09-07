@@ -1,0 +1,50 @@
+{
+	"scenarioName": "create-process-for-actualization-not-complete",
+	"requiredScenarioState": "investigation_execute-rules-task-worker---api-casedata-get-errand",
+	"newScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
+	"request": {
+		"urlPath": "/api-business-rules/engine",
+		"method": "POST",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+			"equalToJson": {
+				"context": "PARKING_PERMIT",
+				"facts": [
+					{
+						"key": "type",
+						"value": "PARKING_PERMIT"
+					},
+					{
+						"key": "stakeholders.applicant.personid",
+						"value": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6"
+					},
+					{
+						"key": "application.applicant.capacity",
+						"value": "DRIVER"
+					},
+					{
+						"key": "disability.duration",
+						"value": "P6M"
+					},
+					{
+						"key": "disability.walkingAbility",
+						"value": "false"
+					}
+				]
+			}
+		}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test005_createProcessForActualizaitionNotComplete/responses/api-business-rules-engine.json"
+	}
+}
