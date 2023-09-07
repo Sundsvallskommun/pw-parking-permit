@@ -7,6 +7,7 @@ import generated.se.sundsvall.casedata.StakeholderDTO;
 import org.zalando.problem.Problem;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.LOST_PARKING_PERMIT;
@@ -16,6 +17,7 @@ import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.parkingpermit.Constants.BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
@@ -128,9 +130,13 @@ public class BusinessRulesMapper {
 	private static List<Fact> toFacts(List<String> keys, ErrandDTO errandDTO) {
 		return keys.stream()
 				.map(key -> toFact(key, getExtraParameterValue(errandDTO, key)))
+				.filter(Objects::nonNull)
 				.toList();
 	}
 	private static Fact toFact(String key, String value) {
+		if (isEmpty(value)) {
+			return null;
+		}
 		return new Fact().key(key).value(value);
 	}
 

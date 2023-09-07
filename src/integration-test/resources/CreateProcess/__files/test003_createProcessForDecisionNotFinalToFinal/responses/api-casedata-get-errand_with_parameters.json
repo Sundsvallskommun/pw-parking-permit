@@ -63,7 +63,7 @@
 	"createdBy": "UNKNOWN",
 	"updatedBy": "UNKNOWN",
 	"extraParameters": {
-		"disability.walkingAbility": "true",
+		"disability.walkingAbility": "false",
 		"application.applicant.testimonial": "true",
 		"consent.view.transportationServiceDetails": "false",
 		"disability.aid": "Inget",

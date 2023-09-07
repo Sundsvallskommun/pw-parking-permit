@@ -33,11 +33,7 @@
 					},
 					{
 						"key": "disability.walkingAbility",
-						"value": "true"
-					},
-					{
-						"key": "disability.walkingDistance.max",
-						"value": ""
+						"value": "false"
 					}
 				]
 			}

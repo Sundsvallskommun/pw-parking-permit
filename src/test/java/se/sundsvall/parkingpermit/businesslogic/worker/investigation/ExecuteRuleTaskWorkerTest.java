@@ -30,20 +30,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_ABILITY;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER;
 @ExtendWith(MockitoExtension.class)
 class ExecuteRuleTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String KEY_RULE_ENGINE_RESPONSE = "ruleEngineResponse";
+
+	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
+	private static final String VARIABLE_REQUEST_ID = "requestId";
+	private static final String KEY_APPLICATION_APPLICANT_CAPACITY = "applicationApplicantCapacity";
+	private static final String KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES = "applicationRenewalChangedCircumstances";
+	private static final String KEY_DISABILITY_DURATION = "disabilityDuration";
+	private static final String KEY_DISABILITY_WALKING_ABILITY = "disabilityWalkingAbility";
+	private static final String KEY_DISABILITY_WALKING_DISTANCE_MAX = "disabilityWalkingDistanceMax";
+	private static final String KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "lostPermitPoliceReportNumber";
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -70,18 +71,18 @@ class ExecuteRuleTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse();
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT);
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
 		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
-			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
-			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
-			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
+			KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
+			KEY_DISABILITY_DURATION, "disabilityDuration",
+			KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
+			KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
 
 		when(businessRulesClientMock.runRuleEngine(any())).thenReturn(ruleEngineResponse);
 
@@ -96,7 +97,7 @@ class ExecuteRuleTaskWorkerTest {
 		verify(stakeholderMock).getPersonId();
 		verify(stakeholderMock).getRoles();
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(KEY_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -105,19 +106,19 @@ class ExecuteRuleTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse();
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
 		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT_RENEWAL);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
-			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
-			CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES, "changedCircumstances",
-			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
-			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"
+			KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
+			KEY_DISABILITY_DURATION, "disabilityDuration",
+			KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES, "changedCircumstances",
+			KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
+			KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"
 		));
 		when(businessRulesClientMock.runRuleEngine(any())).thenReturn(ruleEngineResponse);
 
@@ -132,7 +133,7 @@ class ExecuteRuleTaskWorkerTest {
 		verify(stakeholderMock).getPersonId();
 		verify(stakeholderMock).getRoles();
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(KEY_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -141,15 +142,15 @@ class ExecuteRuleTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse();
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
 		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		when(errandMock.getCaseType()).thenReturn(LOST_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"
+			KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"
 		));
 		when(businessRulesClientMock.runRuleEngine(any())).thenReturn(ruleEngineResponse);
 
@@ -164,7 +165,7 @@ class ExecuteRuleTaskWorkerTest {
 		verify(stakeholderMock).getPersonId();
 		verify(stakeholderMock).getRoles();
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(KEY_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -175,15 +176,15 @@ class ExecuteRuleTaskWorkerTest {
 		final var ruleEngineResponse = new RuleEngineResponse();
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
 		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		when(errandMock.getCaseType()).thenReturn(LOST_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"
+			KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"
 		));
 		when(businessRulesClientMock.runRuleEngine(any())).thenReturn(ruleEngineResponse);
 
@@ -201,6 +202,6 @@ class ExecuteRuleTaskWorkerTest {
 		verify(stakeholderMock).getRoles();
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(KEY_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
 	}
 }
