@@ -6,7 +6,6 @@ import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 import java.util.List;
@@ -18,10 +17,10 @@ import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PER
 import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT_RENEWAL;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SANITY_CHECK_PASSED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RECEIVED;
 
 @Component
@@ -50,23 +49,28 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 
 	private boolean executeSanityChecks(ErrandDTO errand) {
 		return hasErrandValidStatus(errand) &&
-			hasErrandManager(errand) &&
-			hasErrandValidCaseType(errand);
+			hasErrandAdministrator(errand) &&
+			hasErrandValidCaseType(errand) &&
+			hasErrandStakeholderApplicant(errand);
 	}
 
-	private boolean hasErrandManager(ErrandDTO errand) {
-		final var hasManager = errand.getStakeholders().stream()
-			.filter(stakeholder -> PERSON.equals(stakeholder.getType()))
-			.anyMatch(stakeholder -> stakeholder.getRoles().stream().anyMatch(ADMINISTRATOR::equals)); //TODO Check if this is correct
-		if (!hasManager) {
+	private boolean hasErrandAdministrator(ErrandDTO errand) {
+		final var hasAdministrator = ofNullable(errand.getStakeholders()).orElse(emptyList()).stream()
+			.map(StakeholderDTO::getRoles)
+			.anyMatch(rolesEnums -> rolesEnums.contains(ADMINISTRATOR));
+		if (!hasAdministrator) {
 			logInfo("Errand with id {} miss an administrator", errand.getId());
 		}
-		return hasManager;
+		return hasAdministrator;
 	}
 
 	private boolean hasErrandValidStatus(ErrandDTO errand) {
-		final var hasValidStatus = errand.getStatuses().stream().allMatch(status -> status.getStatusType().equals(Constants.CASEDATA_STATUS_CASE_RECEIVED)
-			|| status.getStatusType().equals(CASEDATA_STATUS_COMPLETION_RECEIVED));
+		if (errand.getStatuses() == null || errand.getStatuses().isEmpty()) {
+			logInfo("Errand with id {} has no status", errand.getId());
+			return false;
+		}
+		final var hasValidStatus = errand.getStatuses().stream()
+			.allMatch(status -> status.getStatusType().equals(CASEDATA_STATUS_CASE_RECEIVED) || status.getStatusType().equals(CASEDATA_STATUS_COMPLETION_RECEIVED));
 
 		if (!hasValidStatus) {
 			logInfo("Errand with id {} has not a valid status for this stage", errand.getId());
@@ -76,6 +80,11 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean hasErrandValidCaseType(ErrandDTO errand) {
+		if (errand.getCaseType() == null) {
+			logInfo("Errand with id {} has no case type", errand.getId());
+			return false;
+
+		}
 		final var hasValidCaseType = VALID_CASE_TYPES.contains(errand.getCaseType());
 
 		if (!hasValidCaseType) {
