@@ -339,7 +339,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		// Wait for process to finish
 		await()
 			.ignoreExceptions()
-			.atMost(1000, SECONDS)
+			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify stubs and reset wiremock
@@ -407,5 +407,4 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 				tuple("End process", "end_process"));
 	}
-
 }

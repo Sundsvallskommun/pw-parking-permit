@@ -11,7 +11,13 @@
 	"caseTitleAddition": "Nytt parkeringstillstånd",
 	"diaryNumber": "",
 	"phase": "{{parameters.phaseParameter}}",
-	"statuses": [],
+	"statuses": [
+		{
+			"statusType": "{{parameters.statusTypeParameter}}",
+			"description": "Ärende har kommit in från e-tjänsten.",
+			"dateTime": "2023-09-08T08:31:29.181Z"
+		}
+	],
 	"municipalityId": "2281",
 	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
 	"stakeholders": [
@@ -26,6 +32,37 @@
 			"personId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
 			"roles": [
 				"APPLICANT"
+			],
+			"addresses": [
+				{
+					"street": "STORGATAN 1",
+					"postalCode": "850 00",
+					"city": "SUNDSVALL"
+				}
+			],
+			"contactInformation": [
+				{
+					"contactType": "PHONE",
+					"value": "070-1234567"
+				},
+				{
+					"contactType": "EMAIL",
+					"value": "john.doe@example.com"
+				}
+			],
+			"extraParameters": {}
+		},
+		{
+			"id": 1,
+			"version": 0,
+			"created": "2022-12-02T15:13:45.371645+01:00",
+			"updated": "2022-12-02T15:13:45.371676+01:00",
+			"type": "PERSON",
+			"firstName": "Kalle",
+			"lastName": "Anka",
+			"personId": "6b8928bb-9800-4d52-a9fa-20d88c812345",
+			"roles": [
+				"ADMINISTRATOR"
 			],
 			"addresses": [
 				{
