@@ -8,7 +8,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Map;
 
 import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum;
@@ -19,6 +19,7 @@ import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTR
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SANITY_CHECK_PASSED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RECEIVED;
@@ -27,7 +28,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RE
 @ExternalTaskSubscription("InvestigationSanityCheckTask")
 public class SanityCheckTaskWorker extends AbstractTaskWorker {
 
-	private static final List<CaseTypeEnum> VALID_CASE_TYPES = List.of(PARKING_PERMIT, PARKING_PERMIT_RENEWAL, LOST_PARKING_PERMIT);
+	private static final EnumSet<CaseTypeEnum> VALID_CASE_TYPES = EnumSet.of(PARKING_PERMIT, PARKING_PERMIT_RENEWAL, LOST_PARKING_PERMIT);
 
 	@Override
 	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -65,7 +66,7 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean hasErrandValidStatus(ErrandDTO errand) {
-		if (errand.getStatuses() == null || errand.getStatuses().isEmpty()) {
+		if (isEmpty(errand.getStatuses())) {
 			logInfo("Errand with id {} has no status", errand.getId());
 			return false;
 		}
