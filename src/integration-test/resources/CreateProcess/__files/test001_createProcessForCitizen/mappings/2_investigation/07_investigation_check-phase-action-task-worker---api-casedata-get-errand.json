@@ -1,6 +1,6 @@
 {
 	"scenarioName": "create-process-for-citizen",
-	"requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
+	"requiredScenarioState": "investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision",
 	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/123",

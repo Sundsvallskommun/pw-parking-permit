@@ -253,9 +253,6 @@
 					<excludes>
 						<exclude>**/se/sundsvall/parkingpermit/Application*</exclude>
 						<exclude>**/generated/se/sundsvall/**</exclude>
-						<!-- TODO: Remove when tests is implemented -->
-						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/ConstructDecisionTaskWorker*</exclude>
-						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/SanityCheckTaskWorker*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
