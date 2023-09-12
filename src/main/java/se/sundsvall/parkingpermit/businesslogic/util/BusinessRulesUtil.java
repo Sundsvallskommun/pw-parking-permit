@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.util;
 
+import com.google.re2j.Pattern;
 import generated.se.sundsvall.businessrules.Result;
 import generated.se.sundsvall.businessrules.ResultDetail;
 import generated.se.sundsvall.casedata.DecisionDTO;
@@ -65,7 +66,7 @@ public class BusinessRulesUtil {
 	private static String transformToString(List<String> strings) {
 		String concatenated = String.join(", ", ofNullable(strings).orElse(emptyList()));
 
-		return capitalize(concatenated.replaceAll(REGEXP_LAST_COMMA, "$1 och $3"));
+		return capitalize(Pattern.compile(REGEXP_LAST_COMMA).matcher(concatenated).replaceAll("$1 och $3"));
 	}
 
 	private static boolean isApproved(Result resultFromRuleEngine) {
