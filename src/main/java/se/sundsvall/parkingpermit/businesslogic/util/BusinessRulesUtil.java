@@ -69,7 +69,7 @@ public class BusinessRulesUtil {
 	}
 
 	private static boolean isApproved(Result resultFromRuleEngine) {
-		return resultFromRuleEngine.getValue().equals(PASS);
+		return PASS.equals(resultFromRuleEngine.getValue());
 	}
 
 	private static List<ResultDetail> toDetails(Result resultFromRuleEngine) {
