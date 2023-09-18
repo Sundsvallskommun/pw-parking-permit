@@ -22,7 +22,7 @@
 		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
 		<camunda-engine.version>7.19.0</camunda-engine.version>
 		<testcontainers.version>1.19.0</testcontainers.version>
-		<openapi-generator-maven-plugin.version>7.0.0</openapi-generator-maven-plugin.version>
+		<openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
 		<apache-commons-text.version>1.10.0</apache-commons-text.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
