@@ -1,11 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-
+import generated.se.sundsvall.casedata.ErrandDTO;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -15,15 +10,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.CitizenAssetsService;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 @ExtendWith(MockitoExtension.class)
-class ExecutionDummyTaskWorkerTest {
+class CreateAssetTaskWorkerTest {
+
+	private static final String REQUEST_ID = "RequestId";
+	private static final long ERRAND_ID = 123L;
+
+	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
+	private static final String VARIABLE_REQUEST_ID = "requestId";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private CaseDataClient caseDataClientMock;
+
+	@Mock
+	private CitizenAssetsService citizenAssetsServiceMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -35,17 +46,23 @@ class ExecutionDummyTaskWorkerTest {
 	private FailureHandler failureHandlerMock;
 
 	@InjectMocks
-	private ExecutionDummyTaskWorker worker;
+	private CreateAssetTaskWorker worker;
 
 	@Test
 	void execute() {
+		//Arrange
+		final var errand = new ErrandDTO();
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errand);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
+		verify(citizenAssetsServiceMock).createCitizenAsset(errand);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(failureHandlerMock);
 	}
 
 	@Test
@@ -65,6 +82,5 @@ class ExecutionDummyTaskWorkerTest {
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
-		verifyNoInteractions(camundaClientMock);
 	}
 }

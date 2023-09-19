@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-decision-not-final",
-	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
-	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "execution_check-if-card-exists-task-worker---api-casedata-get-errand",
+	"newScenarioState": "execution_create-asset-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/789",
 		"method": "GET",
@@ -20,6 +20,8 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
+			"phaseActionParameter": "",
+			"phaseStatusParameter": "",
 			"decisionParameter": "FINAL"
 		}
 	}

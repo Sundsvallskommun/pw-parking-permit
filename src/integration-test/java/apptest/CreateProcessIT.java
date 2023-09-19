@@ -110,7 +110,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
-				tuple("Dummy Task", "external_task_execution_dummy_task"),
+				tuple("Update phase", "external_task_execution_update_phase"),
+				tuple("Order card", "external_task_execution_dummy_task"),
+				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
+				tuple("Is card manufactured", "gateway_card_exists"),
+				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
@@ -255,7 +259,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
-				tuple("Dummy Task", "external_task_execution_dummy_task"),
+				tuple("Update phase", "external_task_execution_update_phase"),
+				tuple("Order card", "external_task_execution_dummy_task"),
+				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
+				tuple("Is card manufactured", "gateway_card_exists"),
+				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
@@ -395,7 +403,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
-				tuple("Dummy Task", "external_task_execution_dummy_task"),
+				tuple("Update phase", "external_task_execution_update_phase"),
+				tuple("Order card", "external_task_execution_dummy_task"),
+				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
+				tuple("Is card manufactured", "gateway_card_exists"),
+				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),

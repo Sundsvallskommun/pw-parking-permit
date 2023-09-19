@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-decision-not-final",
-	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
-	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "execution_update-phase-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "execution_order-card-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/789",
 		"method": "GET",
@@ -19,7 +19,9 @@
 		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Beslut",
+			"phaseParameter": "Verkställa",
+			"phaseStatusParameter": "ONGOING",
+			"phaseActionParameter": "UNKNOWN",
 			"decisionParameter": "FINAL"
 		}
 	}

@@ -114,6 +114,7 @@
 		"application.reason": "",
 		"disability.canBeAloneWhileParking.note": "",
 		"disability.duration": "P6M",
+		"artefact.permit.number": "12345",
 		"process.phaseStatus": "{{parameters.phaseStatusParameter}}",
 		"process.phaseAction": "{{parameters.phaseActionParameter}}"
 	}
