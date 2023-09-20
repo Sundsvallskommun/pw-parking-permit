@@ -13,6 +13,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
 import static se.sundsvall.parkingpermit.service.mapper.RpaMapper.toQueuesAddQueueItemParameters;
 
 @Service
@@ -24,10 +25,10 @@ public class RpaService {
 	private static final String DUPLICATE_MESSAGE = "Queue item already exists: {}";
 
 	@Autowired
-	RpaClient rpaClient;
+	private RpaClient rpaClient;
 
 	@Autowired
-	RpaProperties rpaProperties;
+	private RpaProperties rpaProperties;
 
 	public void addQueueItems(List<String> queueNames, Long caseId) {
 		ofNullable(queueNames).orElse(emptyList())
@@ -35,7 +36,7 @@ public class RpaService {
 				try {
 					rpaClient.addQueueItem(rpaProperties.folderId(), toQueuesAddQueueItemParameters(queueName, caseId));
 				} catch (ThrowableProblem e) {
-					if (e.getStatus() != null && Status.CONFLICT.equals(e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
+					if (nullSafeEquals(Status.CONFLICT,e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
 						// Queue item already exists
 						LOGGER.warn(DUPLICATE_MESSAGE, e.getDetail());
 						return;

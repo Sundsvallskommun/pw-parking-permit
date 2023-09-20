@@ -24,6 +24,8 @@ camunda:
 integration:
   camunda:
     url: http://replaced_by_test:8080
+  rpa:
+    folderId: 50
 
 config:
   common:

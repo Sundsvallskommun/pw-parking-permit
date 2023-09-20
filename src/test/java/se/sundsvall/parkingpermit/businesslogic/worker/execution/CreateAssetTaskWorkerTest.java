@@ -14,8 +14,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.CitizenAssetsService;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -71,16 +71,19 @@ class CreateAssetTaskWorkerTest {
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
 		// Mock
-		doThrow(thrownException).when(externalTaskServiceMock).complete(any());
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		doThrow(thrownException).when(caseDataClientMock).getErrandById(ERRAND_ID);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
+		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
+		verifyNoInteractions(citizenAssetsServiceMock);
 	}
 }

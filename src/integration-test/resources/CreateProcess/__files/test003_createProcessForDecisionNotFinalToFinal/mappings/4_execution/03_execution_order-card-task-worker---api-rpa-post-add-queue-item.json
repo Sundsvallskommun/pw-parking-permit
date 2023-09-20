@@ -16,6 +16,6 @@
 			"Content-Type": "application/json"
 		},
 		"status": 201,
-		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/order-card---api-rpa-add-queue-item.json"
+		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/order-card-task-worker---api-rpa-add-queue-item.json"
 	}
 }

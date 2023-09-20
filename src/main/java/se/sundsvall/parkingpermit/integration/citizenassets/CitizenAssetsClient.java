@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.integration.citizenassets.configuration.CitizenAssetsConfiguration.CLIENT_ID;
 
-@CircuitBreaker(name = "citizenassets")
+@CircuitBreaker(name = CLIENT_ID)
 @FeignClient(name = CLIENT_ID, url = "${integration.citizenassets.url}", configuration = CitizenAssetsConfiguration.class)
 public interface CitizenAssetsClient {
 

@@ -1,5 +1,5 @@
 {
-	"@odata.context": "https://robot.sundsvall.se/odata/$metadata#QueueItems/$entity",
+	"@odata.context": "https://rpa-mock/odata/$metadata#QueueItems/$entity",
 	"QueueDefinitionId": 626,
 	"OutputData": null,
 	"AnalyticsData": null,

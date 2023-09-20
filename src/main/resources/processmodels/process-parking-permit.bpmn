@@ -291,7 +291,7 @@
       <bpmn:startEvent id="start_execution_phase" name="Start execution phase">
         <bpmn:outgoing>Flow_09weu60</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:serviceTask id="external_task_execution_dummy_task" name="Order card" camunda:type="external" camunda:topic="OrderCardTask">
+      <bpmn:serviceTask id="external_task_execution_order_card_task" name="Order card" camunda:type="external" camunda:topic="OrderCardTask">
         <bpmn:incoming>Flow_0cd66hz</bpmn:incoming>
         <bpmn:outgoing>Flow_0g63pvk</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -331,8 +331,8 @@
         <bpmn:incoming>Flow_05uokxb</bpmn:incoming>
         <bpmn:outgoing>Flow_0txyxat</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_0cd66hz" sourceRef="external_task_execution_update_phase" targetRef="external_task_execution_dummy_task" />
-      <bpmn:sequenceFlow id="Flow_0g63pvk" sourceRef="external_task_execution_dummy_task" targetRef="external_task_execution_check_if_card_exists" />
+      <bpmn:sequenceFlow id="Flow_0cd66hz" sourceRef="external_task_execution_update_phase" targetRef="external_task_execution_order_card_task" />
+      <bpmn:sequenceFlow id="Flow_0g63pvk" sourceRef="external_task_execution_order_card_task" targetRef="external_task_execution_check_if_card_exists" />
       <bpmn:sequenceFlow id="Flow_05uokxb" name="Yes&#10;" sourceRef="gateway_card_exists" targetRef="external_task_execution_create_asset">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${cardExists}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
@@ -943,7 +943,7 @@
           <dc:Bounds x="154" y="165" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0sbnjod" bpmnElement="external_task_execution_dummy_task">
+      <bpmndi:BPMNShape id="BPMNShape_0sbnjod" bpmnElement="external_task_execution_order_card_task">
         <dc:Bounds x="500" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
