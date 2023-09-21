@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-decision-not-final",
+	"scenarioName": "create-process-for-citizen",
 	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
-	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
+	"newScenarioState": "execution_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/789",
+		"urlPath": "/api-casedata/errands/123",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -16,11 +16,12 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
-			"decisionParameter": "FINAL"
+			"phaseActionParameter": "",
+			"phaseStatusParameter": ""
 		}
 	}
 }

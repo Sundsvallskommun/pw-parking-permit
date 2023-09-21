@@ -24,6 +24,8 @@ camunda:
 integration:
   camunda:
     url: http://replaced_by_test:8080
+  rpa:
+    folderId: 50
 
 config:
   common:
@@ -52,6 +54,16 @@ config:
     client-secret: ${config.common.client-secret}
   businessrules:
     base-url: http://localhost:${wiremock.server.port}/api-business-rules
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  rpa:
+    base-url: http://localhost:${wiremock.server.port}/api-rpa
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  citizenassets:
+    base-url: http://localhost:${wiremock.server.port}/api-citizen-assets
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}

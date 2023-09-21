@@ -25,6 +25,10 @@ camunda:
 #----------------------------------------
 # Integration settings
 #----------------------------------------
+integration:
+  rpa:
+    folderId: 50
+    identityServerUrl: https://rpa.base.url/identity
 config:
   common:
     token-uri: token.url
@@ -55,6 +59,16 @@ config:
     client-secret: ${config.common.client-secret}
   businessrules:
     base-url: businessrules.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  rpa:
+    base-url: rpa.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  citizenassets:
+    base-url: citizen.base.url
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
