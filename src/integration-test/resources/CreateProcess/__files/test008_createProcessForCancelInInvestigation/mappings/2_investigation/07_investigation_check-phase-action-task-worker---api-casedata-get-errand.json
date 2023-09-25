@@ -1,0 +1,30 @@
+{
+	"scenarioName": "create-process-for-cancel-in-investigation",
+	"requiredScenarioState": "investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision",
+	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/errands/1314",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test008_createProcessForCancelInInvestigation/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": [
+			"response-template"
+		],
+		"transformerParameters": {
+			"phaseParameter": "Utreda",
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "CANCEL",
+			"phaseStatusParameter": "ONGOING"
+		}
+	}
+}
