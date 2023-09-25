@@ -13,7 +13,7 @@
 
 	<properties>
 		<!-- Pipeline properties -->
-		<docker.image.name>ms-parking-permit</docker.image.name>
+		<docker.image.name>ms-pw-parking-permit</docker.image.name>
 		<exposed.app.port>8080</exposed.app.port>
 		<published.container.port.sandbox>8791</published.container.port.sandbox>
 		<published.container.port.test>8790</published.container.port.test>

@@ -1,0 +1,31 @@
+{
+	"scenarioName": "create-process-for-card-not-exists-to-exists",
+	"requiredScenarioState": "execution_order-card-task-worker---api-rpa-post-queue-item",
+	"newScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
+	"request": {
+		"urlPath": "/api-casedata/errands/1415/statuses",
+		"method": "PUT",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": [
+					{
+						"statusType": "Beslut verkställt",
+						"description": "Beslut verkställt",
+						"dateTime": "${json-unit.any-string}"
+					}
+				]
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

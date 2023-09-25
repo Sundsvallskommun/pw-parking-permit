@@ -273,17 +273,12 @@
       <bpmn:incoming>Flow_0848exc</bpmn:incoming>
       <bpmn:outgoing>Flow_13ofnma</bpmn:outgoing>
       <bpmn:endEvent id="end_handling_phase" name="End handling phase">
-        <bpmn:incoming>Flow_1p0hi2b</bpmn:incoming>
+        <bpmn:incoming>Flow_1bo2uh1</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="start_handling_phase" name="Start handling phase">
         <bpmn:outgoing>Flow_1bo2uh1</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:serviceTask id="external_task_handling_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="HandlingDummyTask">
-        <bpmn:incoming>Flow_1bo2uh1</bpmn:incoming>
-        <bpmn:outgoing>Flow_1p0hi2b</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_1p0hi2b" sourceRef="external_task_handling_dummy_task" targetRef="end_handling_phase" />
-      <bpmn:sequenceFlow id="Flow_1bo2uh1" sourceRef="start_handling_phase" targetRef="external_task_handling_dummy_task" />
+      <bpmn:sequenceFlow id="Flow_1bo2uh1" sourceRef="start_handling_phase" targetRef="end_handling_phase" />
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_execution" name="Execution">
       <bpmn:incoming>Flow_13ofnma</bpmn:incoming>
@@ -307,7 +302,7 @@
         <bpmn:incoming>Flow_09weu60</bpmn:incoming>
         <bpmn:outgoing>Flow_0cd66hz</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:intermediateCatchEvent id="Event_0i6e3so" name="Wait for existing card">
+      <bpmn:intermediateCatchEvent id="execution_card_check_is_update_available" name="Wait for existing card">
         <bpmn:incoming>Flow_18p96l5</bpmn:incoming>
         <bpmn:outgoing>Flow_0u55xut</bpmn:outgoing>
         <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1c3lg4s" camunda:variableName="updateAvailable">
@@ -324,8 +319,8 @@
         <bpmn:outgoing>Flow_18p96l5</bpmn:outgoing>
         <bpmn:outgoing>Flow_05uokxb</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_18p96l5" name="No" sourceRef="gateway_card_exists" targetRef="Event_0i6e3so" />
-      <bpmn:sequenceFlow id="Flow_0u55xut" sourceRef="Event_0i6e3so" targetRef="external_task_execution_check_if_card_exists" />
+      <bpmn:sequenceFlow id="Flow_18p96l5" name="No" sourceRef="gateway_card_exists" targetRef="execution_card_check_is_update_available" />
+      <bpmn:sequenceFlow id="Flow_0u55xut" sourceRef="execution_card_check_is_update_available" targetRef="external_task_execution_check_if_card_exists" />
       <bpmn:sequenceFlow id="Flow_1vffazr" sourceRef="external_task_execution_check_if_card_exists" targetRef="gateway_card_exists" />
       <bpmn:serviceTask id="external_task_execution_create_asset" name="Create Asset" camunda:type="external" camunda:topic="CreateAssetTask">
         <bpmn:incoming>Flow_05uokxb</bpmn:incoming>
@@ -342,17 +337,12 @@
       <bpmn:incoming>Flow_1uj478g</bpmn:incoming>
       <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
       <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
-        <bpmn:incoming>Flow_1js339c</bpmn:incoming>
+        <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="start_follow_up_phase" name="Start follow up phase">
         <bpmn:outgoing>Flow_1kmw5et</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:serviceTask id="external_task_follow_up_dummy_task" name="Dummy Task" camunda:type="external" camunda:topic="FollowUpDummyTask">
-        <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
-        <bpmn:outgoing>Flow_1js339c</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_1js339c" sourceRef="external_task_follow_up_dummy_task" targetRef="end_follow_up_phase" />
-      <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="external_task_follow_up_dummy_task" />
+      <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="end_follow_up_phase" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway_investigation_canceled" name="Is canceled in investigation" default="Flow_0f8p51c">
       <bpmn:incoming>Flow_0ru4901</bpmn:incoming>
@@ -918,17 +908,9 @@
           <dc:Bounds x="157" y="145" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0zilarw" bpmnElement="external_task_handling_dummy_task">
-        <dc:Bounds x="280" y="80" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_0d5u5no" bpmnElement="Flow_1p0hi2b">
-        <di:waypoint x="380" y="120" />
-        <di:waypoint x="462" y="120" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1jh2exb" bpmnElement="Flow_1bo2uh1">
         <di:waypoint x="206" y="120" />
-        <di:waypoint x="280" y="120" />
+        <di:waypoint x="462" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -954,7 +936,7 @@
         <dc:Bounds x="310" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0sp9kq5" bpmnElement="Event_0i6e3so">
+      <bpmndi:BPMNShape id="BPMNShape_0sp9kq5" bpmnElement="execution_card_check_is_update_available">
         <dc:Bounds x="802" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="784" y="278" width="77" height="27" />
@@ -1030,17 +1012,9 @@
           <dc:Bounds x="656" y="245" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0tzqtpb" bpmnElement="external_task_follow_up_dummy_task">
-        <dc:Bounds x="780" y="180" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_0jkl981" bpmnElement="Flow_1js339c">
-        <di:waypoint x="880" y="220" />
-        <di:waypoint x="962" y="220" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_0wc93yf" bpmnElement="Flow_1kmw5et">
         <di:waypoint x="706" y="220" />
-        <di:waypoint x="780" y="220" />
+        <di:waypoint x="962" y="220" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
