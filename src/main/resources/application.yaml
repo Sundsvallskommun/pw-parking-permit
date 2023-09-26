@@ -134,6 +134,8 @@ integration:
   rpa:
     connectTimeout: 10
     readTimeout: 20
+    folderId: ${config.rpa.folder-id}
+    identityServerUrl: ${config.rpa.identity-server-url}
     url: ${config.rpa.base-url}
   citizenassets:
     url: ${config.citizenassets.base-url}

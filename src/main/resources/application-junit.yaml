@@ -6,8 +6,6 @@
 #----------------------------------------
 camunda:
   bpm:
-    client:
-      base-url: base-url
     deployment:
       autoDeployEnabled: false
       processes:
@@ -25,16 +23,11 @@ camunda:
 #----------------------------------------
 # Integration settings
 #----------------------------------------
-integration:
-  rpa:
-    folderId: 50
-    identityServerUrl: https://rpa.base.url/identity
 config:
   common:
     token-uri: token.url
     client-id: client.id
     client-secret: client.secret
-
   camunda:
     base-url: camunda.base.url
   casedata:
@@ -67,6 +60,8 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+    folder-id: 50
+    identity-server-url: https://rpa.base.url/identity
   citizenassets:
     base-url: citizen.base.url
     token-uri: ${config.common.token-uri}

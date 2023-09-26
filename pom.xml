@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
-	<version>0.1</version>
+	<version>1.0</version>
 	<name>pw-parking-permit</name>
 
 	<properties>
