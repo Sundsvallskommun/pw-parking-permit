@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
+import generated.se.sundsvall.casedata.ErrandDTO;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -9,7 +10,11 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import java.util.HashMap;
 
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
+import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 @Component
 @ExternalTaskSubscription("CheckDecisionTask")
@@ -35,11 +40,21 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 					logInfo("Decision is not made yet.");
 				});
+			if (isCancel(errand)) {
+				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
+			}
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
+	}
+
+	private boolean isCancel(ErrandDTO errand) {
+		return ofNullable(errand.getExtraParameters())
+			.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
+			.filter(phaseAction -> phaseAction.equals(PHASE_ACTION_CANCEL))
+			.isPresent();
 	}
 }

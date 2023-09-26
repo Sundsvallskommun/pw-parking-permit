@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
@@ -36,6 +37,7 @@ class CheckDecisionTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String PROCESS_INSTANCE_ID = "processInstanceId";
+	private static final String KEY_PHASE_ACTION = "process.phaseAction";
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -57,7 +59,7 @@ class CheckDecisionTaskWorkerTest {
 	private CheckDecisionTaskWorker worker;
 
 	@Test
-	void executeWhenDecisionIsFinal() {
+	void executeWhenDecisionIsFinalAndNoCancel() {
 
 		// Arrange
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -65,6 +67,7 @@ class CheckDecisionTaskWorkerTest {
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createNonFinalDecision(), createFinalDecision()));
+		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -77,20 +80,22 @@ class CheckDecisionTaskWorkerTest {
 	}
 
 	@Test
-	void executeWhenDecisionIsNonFinal() {
+	void executeWhenDecisionIsNonFinalAndCancel() {
 
 		// Arrange
+		final var phaseActionCancel = "CANCEL";
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createNonFinalDecision()));
+		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, phaseActionCancel));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false));
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_PHASE_ACTION, phaseActionCancel));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
