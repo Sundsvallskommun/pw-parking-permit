@@ -1,33 +1,13 @@
 spring:
   application:
     name: pw-parking-permit-it
-#----------------------------------------
-# Open API
-#----------------------------------------
-openapi:
-  name: ${spring.application.name}
-  title: ${spring.application.name}
-  version: '@project.version@'
 
-#----------------------------------------
-# Camunda
-#----------------------------------------
-
-camunda:
-  bpm:
-    client:
-      base-url: http://replaced_by_test:8080
-  
 #----------------------------------------
 # Integration settings
 #----------------------------------------
-integration:
-  camunda:
-    url: http://replaced_by_test:8080
-  rpa:
-    folderId: 50
-
 config:
+  camunda:
+    base-url: http://localhost:${wiremock.server.port}/api-camunda/engine-rest
   common:
     token-uri: http://localhost:${wiremock.server.port}/api-gateway/token
     client-id: the-client-id
@@ -62,6 +42,7 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+    folder-id: 50
   citizenassets:
     base-url: http://localhost:${wiremock.server.port}/api-citizen-assets
     token-uri: ${config.common.token-uri}
