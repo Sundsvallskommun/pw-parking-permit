@@ -1,12 +1,5 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-import static java.util.Optional.ofNullable;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-
 import generated.se.sundsvall.casedata.AttachmentDTO;
 import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
@@ -24,14 +17,25 @@ import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.casedata.StatusDTO;
 import generated.se.sundsvall.templating.RenderResponse;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+
 public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
-	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase) {
+	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction) {
 		return new PatchErrandDTO()
 			.externalCaseId(externalCaseId)
-			.phase(phase);
+			.phase(phase)
+			.putExtraParametersItem(CASEDATA_KEY_PHASE_STATUS, phaseStatus)
+			.putExtraParametersItem(CASEDATA_KEY_PHASE_ACTION, phaseAction);
 	}
 
 	public static StakeholderDTO toStakeholder(RolesEnum role, TypeEnum type, String firstName, String lastName) {

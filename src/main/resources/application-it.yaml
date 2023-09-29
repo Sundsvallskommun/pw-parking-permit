@@ -1,52 +1,50 @@
 spring:
   application:
     name: pw-parking-permit-it
-#----------------------------------------
-# Open API
-#----------------------------------------
-openapi:
-  name: ${spring.application.name}
-  title: ${spring.application.name}
-  version: '@project.version@'
 
-#----------------------------------------
-# Camunda
-#----------------------------------------
-
-camunda:
-  bpm:
-    client:
-      base-url: http://replaced_by_test:8080
-  
 #----------------------------------------
 # Integration settings
 #----------------------------------------
-integration:
-  camunda:
-    url: http://replaced_by_test:8080
-
 config:
+  camunda:
+    base-url: http://localhost:${wiremock.server.port}/api-camunda/engine-rest
   common:
-    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    token-uri: http://localhost:${wiremock.server.port}/api-gateway/token
     client-id: the-client-id
     client-secret: the-client-secret
   casedata:
-    base-url: http://localhost:${wiremock.server.port:}/api-casedata
+    base-url: http://localhost:${wiremock.server.port}/api-casedata
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   templating:
-    base-url: http://localhost:${wiremock.server.port:}/api-templating
+    base-url: http://localhost:${wiremock.server.port}/api-templating
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   messaging:
-    base-url: http://localhost:${wiremock.server.port:}/api-messaging
+    base-url: http://localhost:${wiremock.server.port}/api-messaging
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   citizen:
-    base-url: http://localhost:${wiremock.server.port:}/api-citizen
+    base-url: http://localhost:${wiremock.server.port}/api-citizen
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  businessrules:
+    base-url: http://localhost:${wiremock.server.port}/api-business-rules
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  rpa:
+    base-url: http://localhost:${wiremock.server.port}/api-rpa
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+    folder-id: 50
+  citizenassets:
+    base-url: http://localhost:${wiremock.server.port}/api-citizen-assets
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}

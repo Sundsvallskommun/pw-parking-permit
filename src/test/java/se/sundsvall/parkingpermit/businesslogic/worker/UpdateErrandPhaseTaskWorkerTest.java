@@ -19,6 +19,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,8 +30,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateErrandPhaseTaskWorkerTest {
@@ -71,6 +75,10 @@ class UpdateErrandPhaseTaskWorkerTest {
 	void execute() {
 		// Setup
 		final var externalCaseId = "externalCaseId";
+		// Sets phase action to unknown in UpdateErrandPhaseTaskWorker because it is the beginning of the phase
+		final var variables = new HashMap<String, Object>();
+		variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_UNKNOWN);
+
 
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -88,7 +96,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_PHASE);
 		verify(caseDataClientMock).getErrandById(ERRAND_ID);
 		verify(caseDataClientMock).patchErrand(eq(ERRAND_ID), patchErrandCaptor.capture());
-		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);

@@ -19,8 +19,10 @@
 		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": null,
-			"decisionParameter": "PROPOSED"
+			"phaseParameter": "Aktualisering",
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "UNKNOWN",
+			"phaseStatusParameter": "ONGOING"
 		}
 	}
 }

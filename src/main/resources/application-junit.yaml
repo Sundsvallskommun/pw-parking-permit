@@ -6,8 +6,6 @@
 #----------------------------------------
 camunda:
   bpm:
-    client:
-      base-url: base-url
     deployment:
       autoDeployEnabled: false
       processes:
@@ -30,7 +28,6 @@ config:
     token-uri: token.url
     client-id: client.id
     client-secret: client.secret
-
   camunda:
     base-url: camunda.base.url
   casedata:
@@ -49,6 +46,23 @@ config:
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
   citizen:
+    base-url: citizen.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  businessrules:
+    base-url: businessrules.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+  rpa:
+    base-url: rpa.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+    folder-id: 50
+    identity-server-url: https://rpa.base.url/identity
+  citizenassets:
     base-url: citizen.base.url
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}

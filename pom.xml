@@ -8,12 +8,12 @@
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
-	<version>0.1</version>
+	<version>1.0</version>
 	<name>pw-parking-permit</name>
 
 	<properties>
 		<!-- Pipeline properties -->
-		<docker.image.name>ms-parking-permit</docker.image.name>
+		<docker.image.name>ms-pw-parking-permit</docker.image.name>
 		<exposed.app.port>8080</exposed.app.port>
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
@@ -21,10 +21,11 @@
 		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
 		<camunda-engine.version>7.19.0</camunda-engine.version>
 		<testcontainers.version>1.19.0</testcontainers.version>
-		<openapi-generator-maven-plugin.version>7.0.0</openapi-generator-maven-plugin.version>
+		<openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
 		<apache-commons-text.version>1.10.0</apache-commons-text.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
+		<spring-boot-admin.version>3.1.7</spring-boot-admin.version>
 	</properties>
 
 	<dependencies>
@@ -42,6 +43,11 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-starter-client</artifactId>
+			<version>${spring-boot-admin.version}</version>
+		</dependency>
 
 		<!--Camunda dependencies-->
 		<dependency>
@@ -55,6 +61,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>${apache-commons-text.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.re2j</groupId>
+			<artifactId>re2j</artifactId>
+			<version>1.7</version>
 		</dependency>
 
 		<!-- Test -->
@@ -73,12 +84,6 @@
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
 			<version>${camunda-engine.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>mariadb</artifactId>
-			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -218,6 +223,80 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>business-rules-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/business-rules.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.businessrules</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>rpa-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/rpa.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
+							<configOptions>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<apiPackage>generated</apiPackage>
+								<modelPackage>generated.se.sundsvall.rpa</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>citizenassets-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/api-citizenassets.yaml</inputSpec>
+							<output>${generated-sources-path}</output>
+							<generatorName>jaxrs-spec</generatorName>
+							<generateApis>false</generateApis>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
+								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<modelPackage>generated.se.sundsvall.citizenassets</modelPackage>
+								<openApiNullable>false</openApiNullable>
+								<generatePom>false</generatePom>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -227,8 +306,6 @@
 					<excludes>
 						<exclude>**/se/sundsvall/parkingpermit/Application*</exclude>
 						<exclude>**/generated/se/sundsvall/**</exclude>
-						<!-- TODO: Remove when tests is implemented -->
-						<exclude>**/se/sundsvall/parkingpermit/businesslogic/worker/investigation/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

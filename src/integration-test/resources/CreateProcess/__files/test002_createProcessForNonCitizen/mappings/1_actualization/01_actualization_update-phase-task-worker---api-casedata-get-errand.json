@@ -19,7 +19,9 @@
 		"bodyFileName": "test002_createProcessForNonCitizen/responses/update-phase-task-worker---api-casedata-get-errand.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Aktualisering"
+			"phaseParameter": "Aktualisering",
+			"phaseActionParameter": "",
+			"phaseStatusParameter": ""
 		}
 	}
 }

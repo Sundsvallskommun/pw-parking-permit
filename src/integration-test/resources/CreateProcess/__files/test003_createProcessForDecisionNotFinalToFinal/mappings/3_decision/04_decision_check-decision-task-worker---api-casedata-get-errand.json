@@ -1,6 +1,7 @@
 {
 	"scenarioName": "create-process-for-decision-not-final",
 	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
+	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/789",
 		"method": "GET",

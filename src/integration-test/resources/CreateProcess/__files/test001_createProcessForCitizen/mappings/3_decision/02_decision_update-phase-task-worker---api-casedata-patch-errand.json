@@ -15,7 +15,10 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Beslut",
-					"extraParameters": {}
+					"extraParameters": {
+						"process.phaseStatus" : "ONGOING",
+						"process.phaseAction" : "UNKNOWN"
+					}
 				}
 			}
 		]

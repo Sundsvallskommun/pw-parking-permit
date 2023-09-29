@@ -1,0 +1,402 @@
+openapi: 3.0.1
+info:
+  title: api-citizenassets
+  contact: {}
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  version: "1.3"
+paths:
+  /assets/{id}:
+    put:
+      tags:
+      - Assets
+      operationId: updateAsset
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetUpdateRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "204":
+          description: No content - Successful operation
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      tags:
+      - Assets
+      operationId: deleteAsset
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "204":
+          description: No content - Successful operation
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /assets:
+    get:
+      tags:
+      - Assets
+      operationId: getAssets
+      parameters:
+      - name: partyId
+        in: query
+        description: PartyId
+        required: true
+        schema:
+          type: string
+          description: PartyId
+          example: 123e4567-e89b-12d3-a456-426614174000
+        example: 123e4567-e89b-12d3-a456-426614174000
+      - name: assetId
+        in: query
+        description: Asset id
+        required: false
+        schema:
+          type: string
+          description: Asset id
+          example: PRH-123456789
+        example: PRH-123456789
+      - name: type
+        in: query
+        description: Asset type
+        required: false
+        schema:
+          type: string
+          description: Asset type
+          example: PERMIT
+        example: PERMIT
+      - name: issued
+        in: query
+        description: Issued date
+        required: false
+        schema:
+          type: string
+          description: Issued date
+          example: 2021-01-01
+        example: 2021-01-01
+      - name: validTo
+        in: query
+        description: Valid to date
+        required: false
+        schema:
+          type: string
+          description: Valid to date
+          example: 2021-12-31
+        example: 2021-12-31
+      - name: status
+        in: query
+        description: Asset status
+        required: false
+        schema:
+          type: string
+          description: Asset status
+          example: ACTIVE
+        example: ACTIVE
+      - name: statusReason
+        in: query
+        description: Status reason
+        required: false
+        schema:
+          type: string
+          description: Status reason
+          example: Status reason
+        example: Status reason
+      - name: description
+        in: query
+        description: Asset description
+        required: false
+        schema:
+          type: string
+          description: Asset description
+          example: Asset description
+        example: Asset description
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+    post:
+      tags:
+      - Assets
+      operationId: createAsset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetCreateRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "201":
+          description: Created - Successful operation
+          headers:
+            Location:
+              description: Location of the created resource.
+              style: simple
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api-docs:
+    get:
+      tags:
+      - API
+      summary: OpenAPI
+      operationId: getApiDocs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/yaml:
+              schema:
+                type: string
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+      x-wso2-mutual-ssl: Optional
+components:
+  schemas:
+    AssetUpdateRequest:
+      type: object
+      properties:
+        caseReferenceIds:
+          type: array
+          description: Case reference ids
+          example:
+          - 123e4567-e89b-12d3-a456-426614174000
+          items:
+            type: string
+            description: Case reference ids
+            example: "[\"123e4567-e89b-12d3-a456-426614174000\"]"
+        validTo:
+          type: string
+          description: Valid to date
+          format: date
+          example: 2021-12-31
+        status:
+          $ref: '#/components/schemas/Status'
+        statusReason:
+          type: string
+          description: Status reason
+          example: Status reason
+        additionalParameters:
+          type: object
+          additionalProperties:
+            type: string
+            description: Additional parameters
+            example: "{\"foo\":\"bar\"}"
+          description: Additional parameters
+          example:
+            foo: bar
+    Status:
+      type: string
+      description: Status model
+      example: ACTIVE
+      enum:
+      - ACTIVE
+      - EXPIRED
+      - BLOCKED
+    Problem:
+      type: object
+      properties:
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusType'
+    StatusType:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+        reasonPhrase:
+          type: string
+    AssetCreateRequest:
+      required:
+      - partyId
+      type: object
+      properties:
+        partyId:
+          type: string
+          description: PartyId
+          example: 123e4567-e89b-12d3-a456-426614174000
+        assetId:
+          type: string
+          description: Asset id
+          example: PRH-123456789
+        caseReferenceIds:
+          type: array
+          description: Case reference ids
+          example:
+          - 123e4567-e89b-12d3-a456-426614174000
+          items:
+            type: string
+            description: Case reference ids
+            example: "[\"123e4567-e89b-12d3-a456-426614174000\"]"
+        type:
+          type: string
+          description: Asset type
+          example: PERMIT
+        issued:
+          type: string
+          description: Issued date
+          format: date
+          example: 2021-01-01
+        validTo:
+          type: string
+          description: Valid to date
+          format: date
+          example: 2021-12-31
+        status:
+          $ref: '#/components/schemas/Status'
+        statusReason:
+          type: string
+          description: Status reason
+          example: Status reason
+        description:
+          type: string
+          description: Asset description
+          example: Asset description
+        additionalParameters:
+          type: object
+          additionalProperties:
+            type: string
+            description: Additional parameters
+            example: "{\"foo\":\"bar\"}"
+          description: Additional parameters
+          example:
+            foo: bar
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique id of asset
+          example: 1c8f38a6-b492-4037-b7dc-de5bc6c629f0
+        assetId:
+          type: string
+          description: External asset id
+          example: PRH-123456789
+        partyId:
+          type: string
+          description: PartyId
+          example: 123e4567-e89b-12d3-a456-426614174000
+        caseReferenceIds:
+          type: array
+          description: Case reference ids
+          example:
+          - 945576d3-6e92-4118-ba33-53582d338ad3
+          items:
+            type: string
+            description: Case reference ids
+            example: "[\"945576d3-6e92-4118-ba33-53582d338ad3\"]"
+        type:
+          type: string
+          description: Asset type
+          example: PERMIT
+        issued:
+          type: string
+          description: Issued date
+          format: date
+          example: 2021-01-01
+        validTo:
+          type: string
+          description: Valid to date
+          format: date
+          example: 2021-12-31
+        status:
+          $ref: '#/components/schemas/Status'
+        statusReason:
+          type: string
+          description: Status reason
+          example: Status reason
+        description:
+          type: string
+          description: Asset description
+          example: Asset description
+        additionalParameters:
+          type: object
+          additionalProperties:
+            type: string
+            description: Additional parameters
+            example: "{\"foo\":\"bar\"}"
+          description: Additional parameters
+          example:
+            foo: bar
+  securitySchemes: {}
