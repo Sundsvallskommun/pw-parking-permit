@@ -33,10 +33,11 @@ public class Constants {
 
 	public static final String CASEDATA_STATUS_CASE_RECEIVED = "Ärende inkommit";
 	public static final String CASEDATA_STATUS_AWAITING_COMPLETION = "Väntar på komplettering";
-	public static final String CASEDATA_STATUS_CASE_DECIDED = "Beslutad";
 	public static final String CASEDATA_STATUS_COMPLETION_RECEIVED = "Komplettering inkommen";
-	public static final String CASEDATA_STATUS_CASE_PROCESSED = "Under utredning";
+	public static final String CASEDATA_STATUS_CASE_PROCESS = "Under utredning";
+	public static final String CASEDATA_STATUS_CASE_DECIDE = "Under beslut";
 	public static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
+	public static final String CASEDATA_STATUS_CASE_DECIDED = "Beslutad";
 
 	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
