@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-actualization-not-complete",
 	"requiredScenarioState": "investigation_update-phase-task-worker---api-casedata-patch-errand",
-	"newScenarioState": "investigation_sanity-checks-task-worker---api-casedata-get-errand",
+	"newScenarioState": "investigation_update-status-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/1011",
 		"method": "GET",
@@ -22,8 +22,8 @@
 			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Utreda",
 			"decisionParameter": "PROPOSED",
-			"phaseStatusParameter": "ONGOING",
-			"phaseActionParameter": "UNKNOWN"
+			"phaseActionParameter": "UNKNOWN",
+			"phaseStatusParameter": "ONGOING"
 		}
 	}
 }
