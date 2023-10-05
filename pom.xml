@@ -23,9 +23,9 @@
 		<testcontainers.version>1.19.0</testcontainers.version>
 		<openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
 		<apache-commons-text.version>1.10.0</apache-commons-text.version>
+		<re2j.version>1.7</re2j.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
-		<spring-boot-admin.version>3.1.7</spring-boot-admin.version>
 	</properties>
 
 	<dependencies>
@@ -42,11 +42,6 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>de.codecentric</groupId>
-			<artifactId>spring-boot-admin-starter-client</artifactId>
-			<version>${spring-boot-admin.version}</version>
 		</dependency>
 
 		<!--Camunda dependencies-->
@@ -65,7 +60,7 @@
 		<dependency>
 			<groupId>com.google.re2j</groupId>
 			<artifactId>re2j</artifactId>
-			<version>1.7</version>
+			<version>${re2j.version}</version>
 		</dependency>
 
 		<!-- Test -->

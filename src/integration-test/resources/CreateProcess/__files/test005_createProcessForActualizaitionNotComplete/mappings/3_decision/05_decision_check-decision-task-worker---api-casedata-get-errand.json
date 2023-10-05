@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-phase-action-incomplete-to-complete",
-	"requiredScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
+	"scenarioName": "create-process-for-actualization-not-complete",
+	"requiredScenarioState": "decision_update-status-task-worker---api-casedata-put-status",
 	"newScenarioState": "check-decision-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1213",
+		"urlPath": "/api-casedata/errands/1011",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -16,7 +16,7 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test007_createProcessForPhaseActionNotComplete/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test005_createProcessForActualizaitionNotComplete/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
