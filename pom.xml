@@ -18,7 +18,7 @@
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
 		<!-- Service properties -->
-		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
+		<camunda-external-task-client.version>7.20.0</camunda-external-task-client.version>
 		<camunda-engine.version>7.19.0</camunda-engine.version>
 		<testcontainers.version>1.19.0</testcontainers.version>
 		<openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
