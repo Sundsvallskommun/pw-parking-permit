@@ -1,7 +1,15 @@
+#========================================
+# Integration test specific settings
+#========================================
+#----------------------------------------
+# Spring settings
+#----------------------------------------
 spring:
   application:
     name: pw-parking-permit-it
-
+  main:
+    banner-mode: "off"
+    
 #----------------------------------------
 # Integration settings
 #----------------------------------------
@@ -43,8 +51,8 @@ config:
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
     folder-id: 50
-  citizenassets:
-    base-url: http://localhost:${wiremock.server.port}/api-citizen-assets
+  partyassets:
+    base-url: http://localhost:${wiremock.server.port}/api-party-assets
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
