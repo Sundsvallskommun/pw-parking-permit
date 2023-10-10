@@ -1,23 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.citizenassets.AssetCreateRequest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.integration.citizenassets.CitizenAssetsClient;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
@@ -25,8 +7,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
+
 @ExtendWith(MockitoExtension.class)
-class CitizenAssetsServiceTest {
+class PartyAssetsServiceTest {
 
 	final static String ERRAND_ID = "123";
 	final static String PERMIT_NUMBER = "1234567890";
@@ -34,13 +35,13 @@ class CitizenAssetsServiceTest {
 	final static String EXPIRATION_DATE = "2023-12-31";
 
 	@Mock
-	private CitizenAssetsClient citizenAssetsClientMock;
+	private PartyAssetsClient partyAssetsClientMock;
 
 	@Captor
 	private ArgumentCaptor<AssetCreateRequest> assetCreateRequestArgumentCaptor;
 
 	@InjectMocks
-	private CitizenAssetsService citizenAssetsService;
+	private PartyAssetsService partyAssetsService;
 
 	@Test
 	void createAsset() {
@@ -49,10 +50,10 @@ class CitizenAssetsServiceTest {
 		final var errand = createErrand();
 
 		// Act
-		citizenAssetsService.createCitizenAsset(errand);
+		partyAssetsService.createAsset(errand);
 
 		// Assert
-		verify(citizenAssetsClientMock).createAsset(assetCreateRequestArgumentCaptor.capture());
+		verify(partyAssetsClientMock).createAsset(assetCreateRequestArgumentCaptor.capture());
 		final var assetCreateRequest = assetCreateRequestArgumentCaptor.getValue();
 		assertThat(assetCreateRequest).isNotNull();
 		assertThat(assetCreateRequest.getAssetId()).isEqualTo(PERMIT_NUMBER);

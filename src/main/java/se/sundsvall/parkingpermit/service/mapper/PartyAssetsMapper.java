@@ -1,16 +1,5 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.citizenassets.AssetCreateRequest;
-import generated.se.sundsvall.citizenassets.Status;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.util.ErrandUtil;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.Optional;
-
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
@@ -19,12 +8,25 @@ import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_RENEWAL_EXPERATION_DATE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CITIZEN_ASSET_DESCRIPTION;
-import static se.sundsvall.parkingpermit.Constants.CITIZEN_ASSET_TYPE;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
 
-public class CitizenAssetsMapper {
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Optional;
 
-	private CitizenAssetsMapper() {
+import org.zalando.problem.Problem;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+import se.sundsvall.parkingpermit.Constants;
+import se.sundsvall.parkingpermit.util.ErrandUtil;
+
+public class PartyAssetsMapper {
+
+	private PartyAssetsMapper() {
 	}
 
 	public static AssetCreateRequest toAssetCreateRequest(ErrandDTO errandDTO) {
@@ -32,14 +34,15 @@ public class CitizenAssetsMapper {
 			return null;
 		}
 		return new AssetCreateRequest()
-			.partyId(ErrandUtil.getStakeholder(errandDTO, APPLICANT).getPersonId())
-			.assetId(getArtefactPermitNumber(errandDTO))
 			.addCaseReferenceIdsItem(Long.toString(errandDTO.getId()))
-			.type(CITIZEN_ASSET_TYPE)
+			.assetId(getArtefactPermitNumber(errandDTO))
+			.description(PARTY_ASSET_DESCRIPTION)
 			.issued(toLocalDate(errandDTO.getUpdated()))
-			.validTo(toValidTo(errandDTO))
+			.origin(PARTY_ASSET_ORIGIN)
+			.partyId(ErrandUtil.getStakeholder(errandDTO, APPLICANT).getPersonId())
 			.status(toStatus(getArtefactPermitStatus(errandDTO)))
-			.description(CITIZEN_ASSET_DESCRIPTION);
+			.type(PARTY_ASSET_TYPE)
+			.validTo(toValidTo(errandDTO));
 	}
 
 	private static String getArtefactPermitNumber(ErrandDTO errandDTO) {
@@ -74,8 +77,8 @@ public class CitizenAssetsMapper {
 
 		return switch (caseDataStatus) {
 			case Constants.CASEDATA_PARKING_PERMIT_STATUS_ACTIVE -> Status.ACTIVE;
-			case Constants.CASEDATA_PARKING_PERMIT_STATUS_EXPIRED -> Status.EXPIRED;
 			case Constants.CASEDATA_PARKING_PERMIT_STATUS_BLOCKED -> Status.BLOCKED;
+			case Constants.CASEDATA_PARKING_PERMIT_STATUS_EXPIRED -> Status.EXPIRED;
 			default -> throw Problem.valueOf(CONFLICT, "Unexpected value: " + caseDataStatus);
 		};
 	}

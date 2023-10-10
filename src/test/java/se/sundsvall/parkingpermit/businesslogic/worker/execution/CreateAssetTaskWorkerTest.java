@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.CitizenAssetsService;
+import se.sundsvall.parkingpermit.service.PartyAssetsService;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -34,7 +34,7 @@ class CreateAssetTaskWorkerTest {
 	private CaseDataClient caseDataClientMock;
 
 	@Mock
-	private CitizenAssetsService citizenAssetsServiceMock;
+	private PartyAssetsService partyAssetsServiceMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -59,7 +59,7 @@ class CreateAssetTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(citizenAssetsServiceMock).createCitizenAsset(errand);
+		verify(partyAssetsServiceMock).createAsset(errand);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(failureHandlerMock);
@@ -84,6 +84,6 @@ class CreateAssetTaskWorkerTest {
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
-		verifyNoInteractions(citizenAssetsServiceMock);
+		verifyNoInteractions(partyAssetsServiceMock);
 	}
 }

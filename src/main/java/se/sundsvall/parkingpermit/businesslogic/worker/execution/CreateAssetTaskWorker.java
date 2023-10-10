@@ -6,14 +6,14 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.service.CitizenAssetsService;
+import se.sundsvall.parkingpermit.service.PartyAssetsService;
 
 @Component
 @ExternalTaskSubscription("CreateAssetTask")
 public class CreateAssetTaskWorker extends AbstractTaskWorker {
 
 	@Autowired
-	private CitizenAssetsService citizenAssetsService;
+	private PartyAssetsService partyAssetsService;
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -21,7 +21,7 @@ public class CreateAssetTaskWorker extends AbstractTaskWorker {
 			logInfo("Execute Worker for CreateAssetTask");
 			final var errand = getErrand(externalTask);
 
-			citizenAssetsService.createCitizenAsset(errand);
+			partyAssetsService.createAsset(errand);
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {

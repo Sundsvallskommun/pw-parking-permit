@@ -1,7 +1,8 @@
 package se.sundsvall.parkingpermit;
 
-import generated.se.sundsvall.camunda.VariableValueDto;
 import org.camunda.bpm.engine.variable.type.ValueType;
+
+import generated.se.sundsvall.camunda.VariableValueDto;
 
 public class Constants {
 
@@ -9,8 +10,11 @@ public class Constants {
 
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema
 	public static final String TENANTID_TEMPLATE = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
-	public static final String CITIZEN_ASSET_TYPE = "PARKINGPERMIT";
-	public static final String CITIZEN_ASSET_DESCRIPTION = "Parkeringstillstånd";
+
+	public static final String PARTY_ASSET_ORIGIN = "CASEDATA"; // TOOO: Ask Jakob what value to use
+	public static final String PARTY_ASSET_TYPE = "PARKINGPERMIT";
+	public static final String PARTY_ASSET_DESCRIPTION = "Parkeringstillstånd";
+
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";

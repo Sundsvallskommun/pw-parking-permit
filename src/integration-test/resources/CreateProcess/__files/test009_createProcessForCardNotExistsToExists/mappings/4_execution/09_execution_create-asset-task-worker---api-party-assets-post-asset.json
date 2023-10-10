@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-actualization-not-complete",
+	"scenarioName": "create-process-for-card-not-exists-to-exists",
 	"requiredScenarioState": "execution_create-asset-task-worker---api-casedata-get-errand",
-	"newScenarioState": "execution_create-asset-task-worker---api-citizen-assets-post-asset",
+	"newScenarioState": "execution_create-asset-task-worker---api-party-assets-post-asset",
 	"request": {
-		"urlPath": "/api-citizen-assets/assets",
+		"urlPath": "/api-party-assets/assets",
 		"method": "POST",
 		"headers": {
 			"Authorization": {
@@ -14,10 +14,11 @@
 			{
 				"equalToJson": {
 					"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-					"assetId": "12345",
+					"assetId": "141545",
 					"caseReferenceIds": [
-						"1011"
+						"1415"
 					],
+					"origin" : "CASEDATA",
 					"type": "PARKINGPERMIT",
 					"issued": "2022-12-02",
 					"description": "Parkeringstillstånd",
