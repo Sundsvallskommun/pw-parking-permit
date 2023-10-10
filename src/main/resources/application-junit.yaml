@@ -2,7 +2,14 @@
 # Unit test specific settings
 #========================================
 #----------------------------------------
-# Camunda
+# Spring settings
+#----------------------------------------
+spring:
+  main:
+    banner-mode: "off"
+    
+#----------------------------------------
+# Camunda settings
 #----------------------------------------
 camunda:
   bpm:
@@ -62,8 +69,8 @@ config:
     client-secret: ${config.common.client-secret}
     folder-id: 50
     identity-server-url: https://rpa.base.url/identity
-  citizenassets:
-    base-url: citizen.base.url
+  partyassets:
+    base-url: partyassets.base.url
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}

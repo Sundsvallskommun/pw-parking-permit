@@ -1,26 +1,29 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.citizenassets.AssetCreateRequest;
-import generated.se.sundsvall.citizenassets.Status;
-import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_RENEWAL_EXPERATION_DATE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
 
-class CitizenAssetsMapperTest {
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.zalando.problem.ThrowableProblem;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+
+class PartyAssetsMapperTest {
 	final static String ERRAND_ID = "123";
 	final static String PERMIT_NUMBER = "1234567890";
 	final static OffsetDateTime UPDATED = OffsetDateTime.now();
@@ -29,51 +32,65 @@ class CitizenAssetsMapperTest {
 
 	@Test
 	void toAssetCreateRequestWithNullErrand() {
-		assertThat(CitizenAssetsMapper.toAssetCreateRequest(null)).isNull();
+		assertThat(PartyAssetsMapper.toAssetCreateRequest(null)).isNull();
 	}
 
 	@Test
 	void toAssetCreateRequest() {
+		final var errand = PartyAssetsMapper.toAssetCreateRequest(createErrand().stakeholders(createStakeholders()).extraParameters(createExtraParameters()));
 
-		assertThat(CitizenAssetsMapper.toAssetCreateRequest(createErrand().stakeholders(createStakeholders()).extraParameters(createExtraParameters())))
-			.isNotNull().extracting(AssetCreateRequest::getAssetId,
-				AssetCreateRequest::getPartyId,
-				AssetCreateRequest::getType,
+		assertThat(errand).isNotNull()
+			.extracting(
+				AssetCreateRequest::getAdditionalParameters,
+				AssetCreateRequest::getAssetId,
+				AssetCreateRequest::getCaseReferenceIds,
 				AssetCreateRequest::getDescription,
-				AssetCreateRequest::getStatus,
 				AssetCreateRequest::getIssued,
-				AssetCreateRequest::getValidTo,
-				AssetCreateRequest::getCaseReferenceIds)
-			.containsExactly(PERMIT_NUMBER,
-				"456",
-				"PARKINGPERMIT",
+				AssetCreateRequest::getOrigin,
+				AssetCreateRequest::getPartyId,
+				AssetCreateRequest::getStatus,
+				AssetCreateRequest::getType,
+				AssetCreateRequest::getValidTo)
+			.containsExactly(
+				emptyMap(),
+				PERMIT_NUMBER,
+				List.of(ERRAND_ID),
 				"Parkeringstillstånd",
-				Status.EXPIRED,
 				UPDATED.toLocalDate(),
-				java.time.LocalDate.parse(EXPIRATION_DATE),
-				List.of(ERRAND_ID));
+				"CASEDATA",
+				"456",
+				Status.EXPIRED,
+				"PARKINGPERMIT",
+				LocalDate.parse(EXPIRATION_DATE));
 	}
 
 	@Test
-	void toAssetCreateRequestNoExtraparameters() {
+	void toAssetCreateRequestNoExtraParameters() {
+		final var errand = createErrand().stakeholders(createStakeholders());
 
-		assertThat(CitizenAssetsMapper.toAssetCreateRequest(createErrand().stakeholders(createStakeholders())))
-			.isNotNull().extracting(AssetCreateRequest::getAssetId,
-				AssetCreateRequest::getPartyId,
-				AssetCreateRequest::getType,
+		assertThat(PartyAssetsMapper.toAssetCreateRequest(errand)).isNotNull()
+			.extracting(
+				AssetCreateRequest::getAdditionalParameters,
+				AssetCreateRequest::getAssetId,
+				AssetCreateRequest::getCaseReferenceIds,
 				AssetCreateRequest::getDescription,
-				AssetCreateRequest::getStatus,
 				AssetCreateRequest::getIssued,
-				AssetCreateRequest::getValidTo,
-				AssetCreateRequest::getCaseReferenceIds)
-			.containsExactly(null,
-				"456",
-				"PARKINGPERMIT",
+				AssetCreateRequest::getOrigin,
+				AssetCreateRequest::getPartyId,
+				AssetCreateRequest::getStatus,
+				AssetCreateRequest::getType,
+				AssetCreateRequest::getValidTo)
+			.containsExactly(
+				emptyMap(),
+				null,
+				List.of(ERRAND_ID),
 				"Parkeringstillstånd",
-				null,
 				UPDATED.toLocalDate(),
+				"CASEDATA",
+				"456",
 				null,
-				List.of(ERRAND_ID));
+				"PARKINGPERMIT",
+				null);
 	}
 
 	@Test
@@ -81,7 +98,7 @@ class CitizenAssetsMapperTest {
 		// Arrange
 		final var errand = createErrand().extraParameters(createExtraParameters());
 
-		final var exception = assertThrows(ThrowableProblem.class, () -> CitizenAssetsMapper.toAssetCreateRequest(errand));
+		final var exception = assertThrows(ThrowableProblem.class, () -> PartyAssetsMapper.toAssetCreateRequest(errand));
 
 		assertThat(exception).hasMessage("Not Found: Errand is missing stakeholder with role 'APPLICANT'");
 	}
@@ -90,7 +107,7 @@ class CitizenAssetsMapperTest {
 	void toAssetCreateRequestBadStatusFromCaseData() {
 		// Arrange
 		final var errand = createErrand().stakeholders(createStakeholders()).extraParameters(Map.of(CASEDATA_KEY_ARTEFACT_PERMIT_STATUS, "BadStatus"));
-		final var exception = assertThrows(ThrowableProblem.class, () -> CitizenAssetsMapper.toAssetCreateRequest(errand));
+		final var exception = assertThrows(ThrowableProblem.class, () -> PartyAssetsMapper.toAssetCreateRequest(errand));
 
 		assertThat(exception).hasMessage("Conflict: Unexpected value: BadStatus");
 	}

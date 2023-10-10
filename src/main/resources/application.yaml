@@ -17,8 +17,8 @@ spring:
             token-uri: ${config.businessrules.token-uri}
           rpa:
             token-uri: ${config.rpa.token-uri}
-          citizenassets:
-            token-uri: ${config.citizenassets.token-uri}
+          partyassets:
+            token-uri: ${config.partyassets.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -42,20 +42,20 @@ spring:
             client-secret: ${config.citizen.client-secret}
           businessrules:
             authorization-grant-type: client_credentials
-            provider: citizen
-            client-id: ${config.citizen.client-id}
-            client-secret: ${config.citizen.client-secret}
+            provider: businessrules
+            client-id: ${config.businessrules.client-id}
+            client-secret: ${config.businessrules.client-secret}
           rpa:
             authorization-grant-type: client_credentials
             provider: rpa
             scope: OR.Queues, OR.Queues.Read, OR.Queues.Write
             client-id: ${config.rpa.client-id}
             client-secret: ${config.rpa.client-secret}
-          citizenassets:
+          partyassets:
             authorization-grant-type: client_credentials
-            provider: citizenassets
-            client-id: ${config.citizenassets.client-id}
-            client-secret: ${config.citizenassets.client-secret}
+            provider: partyassets
+            client-id: ${config.partyassets.client-id}
+            client-secret: ${config.partyassets.client-secret}
 
 #----------------------------------------
 # Common
@@ -137,8 +137,8 @@ integration:
     folderId: ${config.rpa.folder-id}
     identityServerUrl: ${config.rpa.identity-server-url}
     url: ${config.rpa.base-url}
-  citizenassets:
-    url: ${config.citizenassets.base-url}
+  partyassets:
+    url: ${config.partyassets.base-url}
     connectTimeout: 5
     readTimeout: 20
 
@@ -160,7 +160,7 @@ resilience4j.circuitbreaker:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     rpa:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-    citizenassets:
+    partyassets:
         ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       
 #----------------------------------------

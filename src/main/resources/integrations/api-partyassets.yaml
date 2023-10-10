@@ -1,11 +1,11 @@
 openapi: 3.0.1
 info:
-  title: api-citizenassets
+  title: api-partyassets
   contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "1.3"
+  version: "1.0"
 paths:
   /assets/{id}:
     put:
@@ -25,22 +25,24 @@ paths:
               $ref: '#/components/schemas/AssetUpdateRequest'
         required: true
       responses:
+        "204":
+          description: No content - Successful operation
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        "204":
-          description: No content - Successful operation
+                oneOf:
+                - $ref: '#/components/schemas/Problem'
+                - $ref: '#/components/schemas/ConstraintViolationProblem'
         "404":
           description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -56,12 +58,6 @@ paths:
         schema:
           type: string
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "204":
           description: No content - Successful operation
         "500":
@@ -70,21 +66,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Problem'
+                - $ref: '#/components/schemas/ConstraintViolationProblem'
   /assets:
     get:
       tags:
       - Assets
       operationId: getAssets
       parameters:
-      - name: partyId
-        in: query
-        description: PartyId
-        required: true
-        schema:
-          type: string
-          description: PartyId
-          example: 123e4567-e89b-12d3-a456-426614174000
-        example: 123e4567-e89b-12d3-a456-426614174000
       - name: assetId
         in: query
         description: Asset id
@@ -94,6 +89,24 @@ paths:
           description: Asset id
           example: PRH-123456789
         example: PRH-123456789
+      - name: origin
+        in: query
+        description: Source of origin for the asset
+        required: false
+        schema:
+          type: string
+          description: Source of origin for the asset
+          example: CASEDATA
+        example: CASEDATA
+      - name: partyId
+        in: query
+        description: PartyId
+        required: true
+        schema:
+          type: string
+          description: PartyId
+          example: 123e4567-e89b-12d3-a456-426614174000
+        example: 123e4567-e89b-12d3-a456-426614174000
       - name: type
         in: query
         description: Asset type
@@ -149,22 +162,29 @@ paths:
           example: Asset description
         example: Asset description
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Problem'
+                - $ref: '#/components/schemas/ConstraintViolationProblem'
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+            application/problem+json:
               schema:
                 type: array
                 items:
@@ -180,18 +200,20 @@ paths:
               $ref: '#/components/schemas/AssetCreateRequest'
         required: true
       responses:
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Problem'
+                - $ref: '#/components/schemas/ConstraintViolationProblem'
         "201":
           description: Created - Successful operation
           headers:
@@ -199,6 +221,9 @@ paths:
               description: Location of the created resource.
               style: simple
           content:
+            application/problem+json:
+              schema:
+                type: string
             '*/*':
               schema:
                 type: string
@@ -287,19 +312,194 @@ components:
           format: int32
         reasonPhrase:
           type: string
-    AssetCreateRequest:
-      required:
-      - partyId
+    ConstraintViolationProblem:
       type: object
       properties:
-        partyId:
+        cause:
+          $ref: '#/components/schemas/ThrowableProblem'
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        type:
           type: string
-          description: PartyId
-          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uri
+        status:
+          $ref: '#/components/schemas/StatusType'
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        title:
+          type: string
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        detail:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    ThrowableProblem:
+      type: object
+      properties:
+        cause:
+          $ref: '#/components/schemas/ThrowableProblem'
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusType'
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    AssetCreateRequest:
+      required:
+      - assetId
+      - issued
+      - partyId
+      - status
+      - type
+      type: object
+      properties:
         assetId:
           type: string
           description: Asset id
           example: PRH-123456789
+        origin:
+          type: string
+          description: Source of origin for the asset
+          example: CASEDATA
+        partyId:
+          type: string
+          description: PartyId
+          example: 123e4567-e89b-12d3-a456-426614174000
         caseReferenceIds:
           type: array
           description: Case reference ids
@@ -353,6 +553,10 @@ components:
           type: string
           description: External asset id
           example: PRH-123456789
+        origin:
+          type: string
+          description: Source of origin for the asset
+          example: CASEDATA
         partyId:
           type: string
           description: PartyId
