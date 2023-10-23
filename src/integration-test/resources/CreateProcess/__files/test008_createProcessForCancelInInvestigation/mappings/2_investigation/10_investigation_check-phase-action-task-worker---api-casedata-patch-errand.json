@@ -14,7 +14,7 @@
 			{
 				"equalToJson": {
 					"externalCaseId": "2971",
-					"phase": "Utreda",
+					"phase": "Utredning",
 					"extraParameters": {
 						"process.phaseStatus": "CANCELED",
 						"process.phaseAction": "CANCEL"

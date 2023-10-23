@@ -19,7 +19,7 @@
 		"bodyFileName": "test005_createProcessForActualizaitionNotComplete/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Utreda",
+			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED"
 		}
 	}

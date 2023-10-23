@@ -19,7 +19,7 @@
 		"bodyFileName": "test006_createProcessForSanityChecksFailToPass/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Utreda",
+			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",
 			"phaseActionParameter": "UNKNOWN"
