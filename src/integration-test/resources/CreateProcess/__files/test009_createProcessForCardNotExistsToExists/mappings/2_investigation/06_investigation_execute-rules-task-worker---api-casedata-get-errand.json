@@ -19,7 +19,7 @@
 		"bodyFileName": "test009_createProcessForCardNotExistsToExists/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Utreda",
+			"phaseParameter": "Utredning",
 			"phaseStatusParameter": "ONGOING",
 			"phaseActionParameter": "UNKNOWN"
 		}

@@ -229,7 +229,7 @@
       <bpmn:serviceTask id="external_task_investigation_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:documentation>Set phase to investigation</bpmn:documentation>
         <bpmn:extensionElements>
-          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Utreda&#34;)}" event="start" />
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Utredning&#34;)}" event="start" />
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0vhktxr</bpmn:incoming>
         <bpmn:outgoing>Flow_1aruz2s</bpmn:outgoing>
@@ -593,10 +593,6 @@
           <dc:Bounds x="167" y="195" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0zdutrg_di" bpmnElement="external_task_decision_update_phase">
-        <dc:Bounds x="280" y="130" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1lwu8c8_di" bpmnElement="end_decision_phase">
         <dc:Bounds x="1012" y="152" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -617,6 +613,10 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1tspsag_di" bpmnElement="external_task_check_decision_task">
         <dc:Bounds x="630" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zdutrg_di" bpmnElement="external_task_decision_update_phase">
+        <dc:Bounds x="280" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1b1izhz" bpmnElement="external_task_decision_update_errand_status">
         <dc:Bounds x="450" y="130" width="100" height="80" />

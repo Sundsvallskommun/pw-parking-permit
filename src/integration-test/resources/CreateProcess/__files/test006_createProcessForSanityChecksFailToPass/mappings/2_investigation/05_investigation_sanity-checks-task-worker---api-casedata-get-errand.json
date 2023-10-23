@@ -20,7 +20,7 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"statusTypeParameter": "Fel status för sanity check",
-			"phaseParameter": "Utreda",
+			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",
 			"phaseActionParameter": "UNKNOWN"
