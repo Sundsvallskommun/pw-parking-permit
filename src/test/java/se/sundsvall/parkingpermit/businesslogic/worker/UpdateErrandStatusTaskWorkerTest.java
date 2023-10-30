@@ -82,7 +82,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(errandMock.getPhase()).thenReturn("Utreda");
+		when(errandMock.getPhase()).thenReturn("Utredning");
 		when(errandMock.getStatuses()).thenReturn(new ArrayList<>());
 
 		// Act

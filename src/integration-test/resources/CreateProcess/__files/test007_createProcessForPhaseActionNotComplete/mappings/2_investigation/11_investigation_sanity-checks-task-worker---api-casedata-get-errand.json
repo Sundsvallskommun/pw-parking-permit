@@ -20,7 +20,7 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"statusTypeParameter": "Ärende inkommit",
-			"phaseParameter": "Utreda",
+			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",
 			"phaseActionParameter": "COMPLETE"
