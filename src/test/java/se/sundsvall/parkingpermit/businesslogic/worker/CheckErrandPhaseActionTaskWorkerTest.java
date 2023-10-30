@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
@@ -117,6 +118,37 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
 			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
 			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+	}
+
+	@Test
+	void executeWhenPhaseActionIsUnknownAndStatusIsWaiting() {
+		// Setup
+		final var processInstanceId = "processInstanceId";
+		final var extraParameters = new HashMap<String, String>();
+		extraParameters.put(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN);
+		extraParameters.put(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+
+		final var variables = new HashMap<String, Object>();
+		variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_UNKNOWN);
+
+		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getProcessInstanceId()).thenReturn(processInstanceId);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify and assert
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(camundaClientMock).setProcessInstanceVariable(processInstanceId, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
+		verifyNoMoreInteractions(caseDataClientMock);
+		verifyNoInteractions(failureHandlerMock);
 	}
 
 	@ParameterizedTest
