@@ -1,15 +1,18 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import generated.se.sundsvall.casedata.ErrandDTO;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -45,7 +48,9 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 				}
 				default -> {
 					logInfo("Phase action is unknown. Setting phase status to {}", PHASE_STATUS_WAITING);
-					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, phaseAction));
+					if (isPhaseStatusNotWaiting(errand)) {
+						caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, phaseAction));
+					}
 				}
 			}
 
@@ -57,5 +62,11 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
+	}
+
+	private boolean isPhaseStatusNotWaiting(ErrandDTO errand) {
+		return ! PHASE_STATUS_WAITING.equals(Optional.ofNullable(errand.getExtraParameters())
+			.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_STATUS))
+			.orElse(null));
 	}
 }
