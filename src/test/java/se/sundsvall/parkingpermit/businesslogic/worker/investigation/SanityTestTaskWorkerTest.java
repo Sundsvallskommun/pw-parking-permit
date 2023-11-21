@@ -47,6 +47,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_AWAITING_COMPLETION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RECEIVED;
 
@@ -144,7 +145,7 @@ class SanityTestTaskWorkerTest {
 			// Sanity check passes
 			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_CASE_RECEIVED)), true),
 			//Sanity check passes
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), true),
+			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED), new StatusDTO().statusType(CASEDATA_STATUS_CASE_PROCESS)), true),
 			//Sanity check fails when no administrator
 			Arguments.of(List.of(APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), false),
 			//Sanity check fails when no applicant

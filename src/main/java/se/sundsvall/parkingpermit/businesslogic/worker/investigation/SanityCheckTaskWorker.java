@@ -71,7 +71,7 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 			return false;
 		}
 		final var hasValidStatus = errand.getStatuses().stream()
-			.allMatch(status -> status.getStatusType().equals(CASEDATA_STATUS_CASE_RECEIVED) || status.getStatusType().equals(CASEDATA_STATUS_COMPLETION_RECEIVED));
+			.anyMatch(status -> status.getStatusType().equals(CASEDATA_STATUS_CASE_RECEIVED) || status.getStatusType().equals(CASEDATA_STATUS_COMPLETION_RECEIVED));
 
 		if (!hasValidStatus) {
 			logInfo("Errand with id {} has not a valid status for this stage", errand.getId());
