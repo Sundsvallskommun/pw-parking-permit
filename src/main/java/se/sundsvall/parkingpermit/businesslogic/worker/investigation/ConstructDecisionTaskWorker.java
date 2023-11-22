@@ -10,7 +10,6 @@ import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
-import static generated.se.sundsvall.businessrules.ResultValue.VALIDATION_ERROR;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -53,10 +52,6 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 		if (isEmpty(ruleEngineResponse.getResults())) {
 			throw Problem.valueOf(BAD_REQUEST, "No results found in rule engine response");
-		}
-
-		if (ruleEngineResponse.getResults().stream().anyMatch(result -> VALIDATION_ERROR.equals(result.getValue()))) {
-			throw Problem.valueOf(BAD_REQUEST, "Validation error found in rule engine response");
 		}
 	}
 }
