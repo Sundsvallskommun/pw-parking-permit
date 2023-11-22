@@ -1,0 +1,18 @@
+{
+	"name": "api-gateway-retrieve-token",
+	"request": {
+		"urlPath": "/api-gateway/token",
+		"method": "POST",
+		"basicAuthCredentials": {
+			"username": "the-client-id",
+			"password": "the-client-secret"
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "common/responses/api-gateway-retrieve-token.json"
+	}
+}
