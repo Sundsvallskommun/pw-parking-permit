@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
+import generated.se.sundsvall.casedata.DecisionDTO;
 import generated.se.sundsvall.casedata.ErrandDTO;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -9,9 +10,11 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
 import java.util.HashMap;
 
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPROVED;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
@@ -35,6 +38,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 				.findFirst()
 				.ifPresentOrElse(decision -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
+					variables.put(CAMUNDA_VARIABLE_IS_APPROVED, isApproved(decision.getDecisionOutcome()));
 					logInfo("Decision is made.");
 				}, () -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
@@ -56,5 +60,9 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 			.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
 			.filter(phaseAction -> phaseAction.equals(PHASE_ACTION_CANCEL))
 			.isPresent();
+	}
+
+	private boolean isApproved(DecisionDTO.DecisionOutcomeEnum decisionOutcome) {
+		return APPROVAL.equals(decisionOutcome);
 	}
 }

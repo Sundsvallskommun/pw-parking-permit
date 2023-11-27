@@ -20,6 +20,7 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
 	public static final String CAMUNDA_VARIABLE_FINAL_DECISION = "finalDecision";
+	public static final String CAMUNDA_VARIABLE_IS_APPROVED = "isApproved";
 	public static final String CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE = "ruleEngineResponse";
 	public static final String CAMUNDA_VARIABLE_SANITY_CHECK_PASSED = "sanityCheckPassed";
 	public static final String CAMUNDA_VARIABLE_PHASE = "phase";

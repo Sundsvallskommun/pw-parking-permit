@@ -67,6 +67,7 @@
       <bpmn:incoming>Flow_0dmonfx</bpmn:incoming>
       <bpmn:incoming>Flow_0evqnur</bpmn:incoming>
       <bpmn:incoming>Flow_1ks4wqv</bpmn:incoming>
+      <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
       <bpmn:outgoing>Flow_1vfil4i</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1vfil4i" sourceRef="gateway_closing_is_citizen" targetRef="end_process" />
@@ -361,13 +362,16 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0ru4901" sourceRef="investigation_phase" targetRef="gateway_investigation_canceled" />
     <bpmn:sequenceFlow id="Flow_0f8p51c" sourceRef="gateway_investigation_canceled" targetRef="decision_phase" />
-    <bpmn:exclusiveGateway id="gateway_decision_canceled" name="Is canceled in decision" default="Flow_0848exc">
+    <bpmn:exclusiveGateway id="gateway_decision_canceled" name="Is canceled in decision or not approved" default="Flow_1fmqs5z">
       <bpmn:incoming>Flow_0pxgkeh</bpmn:incoming>
       <bpmn:outgoing>Flow_0848exc</bpmn:outgoing>
       <bpmn:outgoing>Flow_0dmonfx</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1fmqs5z</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0pxgkeh" sourceRef="decision_phase" targetRef="gateway_decision_canceled" />
-    <bpmn:sequenceFlow id="Flow_0848exc" sourceRef="gateway_decision_canceled" targetRef="call_activity_handling" />
+    <bpmn:sequenceFlow id="Flow_0848exc" sourceRef="gateway_decision_canceled" targetRef="call_activity_handling">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isApproved &amp;&amp; phaseAction != 'CANCEL'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_13ofnma" sourceRef="call_activity_handling" targetRef="call_activity_execution" />
     <bpmn:sequenceFlow id="Flow_0dmonfx" name="Is canceled" sourceRef="gateway_decision_canceled" targetRef="gateway_closing_is_citizen">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
@@ -378,6 +382,7 @@
     <bpmn:sequenceFlow id="Flow_1ks4wqv" name="Is canceled" sourceRef="gateway_is_citizen" targetRef="gateway_closing_is_citizen">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1fmqs5z" name="Is not approved" sourceRef="gateway_decision_canceled" targetRef="gateway_closing_is_citizen" />
   </bpmn:process>
   <bpmn:signal id="Signal_12tih0s" name="Signal_12tih0s" />
   <bpmn:message id="Message_0l2uuvr" name="cancelMessage" />
@@ -439,7 +444,7 @@
       <bpmndi:BPMNShape id="Gateway_0y0fji0_di" bpmnElement="gateway_decision_canceled" isMarkerVisible="true">
         <dc:Bounds x="815" y="255" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="808" y="312" width="68" height="27" />
+          <dc:Bounds x="807" y="212" width="73" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1bt8y6y_di" bpmnElement="Flow_1bt8y6y">
@@ -524,6 +529,15 @@
         <di:waypoint x="1430" y="255" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="412" y="163" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fmqs5z_di" bpmnElement="Flow_1fmqs5z">
+        <di:waypoint x="840" y="305" />
+        <di:waypoint x="840" y="460" />
+        <di:waypoint x="1430" y="460" />
+        <di:waypoint x="1430" y="305" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="852" y="384" width="76" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
