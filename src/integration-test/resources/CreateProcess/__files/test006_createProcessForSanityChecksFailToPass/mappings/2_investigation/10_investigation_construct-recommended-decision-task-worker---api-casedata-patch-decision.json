@@ -1,9 +1,9 @@
 {
-	"scenarioName": "create-process-for-phase-action-incomplete-to-complete",
-	"requiredScenarioState": "02_investigation_execute-rules-task-worker---api-businessrules-engine",
-	"newScenarioState": "02_investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision",
+	"scenarioName": "create-process-for-sanity-check-fail-to-pass",
+	"requiredScenarioState": "construct-recommended-decision-task-worker---api-casedata-get-errand",
+	"newScenarioState": "investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision",
 	"request": {
-		"urlPath": "/api-casedata/errands/1213/decisions",
+		"urlPath": "/api-casedata/errands/1112/decisions",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -13,6 +13,7 @@
 		"bodyPatterns": [
 			{
 				"equalToJson": {
+					"version" : 2,
 					"created" : "${json-unit.any-string}",
 					"decisionType" : "RECOMMENDED",
 					"decisionOutcome" : "APPROVAL",

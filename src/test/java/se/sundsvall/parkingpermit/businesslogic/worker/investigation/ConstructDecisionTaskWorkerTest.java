@@ -5,6 +5,7 @@ import generated.se.sundsvall.businessrules.ResultDetail;
 import generated.se.sundsvall.businessrules.ResultValue;
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -25,6 +26,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
@@ -38,7 +40,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 
 @ExtendWith(MockitoExtension.class)
 class ConstructDecisionTaskWorkerTest {
@@ -57,6 +61,8 @@ class ConstructDecisionTaskWorkerTest {
 	@Mock
 	private ExternalTaskService externalTaskServiceMock;
 	@Mock
+	private ErrandDTO errandMock;
+	@Mock
 	private FailureHandler failureHandlerMock;
 
 	@Captor
@@ -68,6 +74,14 @@ class ConstructDecisionTaskWorkerTest {
 	@InjectMocks
 	private ConstructDecisionTaskWorker worker;
 
+	private static Stream<Arguments> constructDecisionTypeArguments() {
+		return Stream.of(
+			// Sanity check passes
+			Arguments.of("PASS", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
+			//Sanity check passes
+			Arguments.of("FAIL", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
+	}
+
 	@ParameterizedTest
 	@MethodSource("constructDecisionTypeArguments")
 	void execute(String resultValue, DecisionDTO expectedDecision) {
@@ -77,6 +91,9 @@ class ConstructDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO().decisionOutcome(REJECTION).decisionType(RECOMMENDED).version(0),
+			new DecisionDTO().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -89,8 +106,33 @@ class ConstructDecisionTaskWorkerTest {
 		assertThat(decisionArgumentCaptor.getValue().getDecisionType()).isEqualTo(RECOMMENDED);
 		assertThat(decisionArgumentCaptor.getValue().getDecisionOutcome()).isEqualTo(expectedDecision.getDecisionOutcome());
 		assertThat(decisionArgumentCaptor.getValue().getDescription()).isEqualTo(expectedDecision.getDescription());
+		assertThat(decisionArgumentCaptor.getValue().getVersion()).isEqualTo(2);
 
 		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoInteractions(failureHandlerMock);
+	}
+
+	@Test
+	void executeWhenLatestDecisionIsEqual() {
+
+		// Arrange
+		final var ruleEngineResponse = createRuleEngineResponse(FAIL.name());
+		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO()
+			.decisionOutcome(REJECTION)
+			.decisionType(RECOMMENDED)
+			.description("Rekommenderat beslut är avslag. Description1, description2 och description3.").version(0)));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify
+		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verifyNoMoreInteractions(caseDataClientMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -100,7 +142,10 @@ class ConstructDecisionTaskWorkerTest {
 		// Arrange
 		final var ruleEngineResponse = createRuleEngineResponse("NOT_APPLICABLE");
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -108,7 +153,8 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Conflict: No applicable result found in rule engine response");
-		verifyNoInteractions(caseDataClientMock);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
 	@Test
@@ -118,6 +164,9 @@ class ConstructDecisionTaskWorkerTest {
 		final var ruleEngineResponse = new RuleEngineResponse().results(emptyList());
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -125,7 +174,9 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No results found in rule engine response");
-		verifyNoInteractions(caseDataClientMock);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verifyNoMoreInteractions(caseDataClientMock);
+
 	}
 
 	@Test
@@ -134,6 +185,9 @@ class ConstructDecisionTaskWorkerTest {
 		// Arrange
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(null);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -141,7 +195,8 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No rule engine response found");
-		verifyNoInteractions(caseDataClientMock);
+		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
 	@Test
@@ -154,6 +209,8 @@ class ConstructDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		doThrow(thrownException).when(externalTaskServiceMock).complete(externalTaskMock);
 
@@ -163,14 +220,6 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
-	}
-
-	private static Stream<Arguments> constructDecisionTypeArguments() {
-		return Stream.of(
-			// Sanity check passes
-			Arguments.of("PASS", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
-			//Sanity check passes
-			Arguments.of("FAIL", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
 	}
 
 	private RuleEngineResponse createRuleEngineResponse(String resultValue) {
