@@ -74,6 +74,14 @@ class ConstructDecisionTaskWorkerTest {
 	@InjectMocks
 	private ConstructDecisionTaskWorker worker;
 
+	private static Stream<Arguments> constructDecisionTypeArguments() {
+		return Stream.of(
+			// Sanity check passes
+			Arguments.of("PASS", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
+			//Sanity check passes
+			Arguments.of("FAIL", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
+	}
+
 	@ParameterizedTest
 	@MethodSource("constructDecisionTypeArguments")
 	void execute(String resultValue, DecisionDTO expectedDecision) {
@@ -85,8 +93,7 @@ class ConstructDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO().decisionOutcome(REJECTION).decisionType(RECOMMENDED).version(0),
-															new DecisionDTO().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
-
+			new DecisionDTO().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -115,10 +122,9 @@ class ConstructDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO()
-																.decisionOutcome(REJECTION)
-																.decisionType(RECOMMENDED)
-																.description("Rekommenderat beslut är avslag. Description1, description2 och description3.").version(0)));
-
+			.decisionOutcome(REJECTION)
+			.decisionType(RECOMMENDED)
+			.description("Rekommenderat beslut är avslag. Description1, description2 och description3.").version(0)));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -214,14 +220,6 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
-	}
-
-	private static Stream<Arguments> constructDecisionTypeArguments() {
-		return Stream.of(
-			// Sanity check passes
-			Arguments.of("PASS", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
-			//Sanity check passes
-			Arguments.of("FAIL", new DecisionDTO().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
 	}
 
 	private RuleEngineResponse createRuleEngineResponse(String resultValue) {
