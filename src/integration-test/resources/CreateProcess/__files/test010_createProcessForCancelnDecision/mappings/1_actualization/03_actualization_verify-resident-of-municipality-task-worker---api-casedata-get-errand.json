@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-cancel-in-decision",
-	"requiredScenarioState": "verify-resident-of-municipality-task-worker---api-citizen-getcitizen",
-	"newScenarioState": "actualization_check-phase-action_task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/1516",
 		"method": "GET",
@@ -16,11 +16,11 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test010_createProcessForCancelDecision/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test010_createProcessForCancelnDecision/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Aktualisering",
-			"phaseActionParameter": "COMPLETE",
+			"phaseActionParameter": "UNKNOWN",
 			"phaseStatusParameter": "ONGOING"
 		}
 	}

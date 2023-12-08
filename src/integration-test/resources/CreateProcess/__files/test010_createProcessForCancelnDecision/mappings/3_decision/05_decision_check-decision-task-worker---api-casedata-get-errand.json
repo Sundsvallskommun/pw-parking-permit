@@ -16,10 +16,11 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test010_createProcessForCancelDecision/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test010_createProcessForCancelnDecision/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
+			"statusTypeParameter": "Beslutad",
 			"phaseActionParameter": "CANCEL",
 			"phaseStatusParameter": "UNKNOWN"
 		}

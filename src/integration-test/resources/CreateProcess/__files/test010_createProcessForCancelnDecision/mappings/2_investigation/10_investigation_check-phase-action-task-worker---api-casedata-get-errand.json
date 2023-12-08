@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-cancel-in-decision",
-	"requiredScenarioState": "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
-	"newScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision",
+	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/1516",
 		"method": "GET",
@@ -16,12 +16,12 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test010_createProcessForCancelDecision/responses/api-casedata-get-errand_with_parameters.json",
+		"bodyFileName": "test010_createProcessForCancelnDecision/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Utredning",
-			"phaseActionParameter": "ONGOING",
-			"phaseStatusParameter": "UNKNOWN"
+			"phaseActionParameter": "COMPLETE",
+			"phaseStatusParameter": "ONGOING"
 		}
 	}
 }

@@ -11,13 +11,20 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import java.util.HashMap;
 
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPROVED;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 
 @Component
 @ExternalTaskSubscription("CheckDecisionTask")
@@ -33,19 +40,28 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
 			final var variables = new HashMap<String, Object>();
 
-			errand.getDecisions().stream()
-				.filter(decision -> FINAL.equals(decision.getDecisionType()))
+			errand.getStatuses().stream()
+				.filter(status -> CASEDATA_STATUS_CASE_DECIDED.equals(status.getStatusType()) || CASEDATA_STATUS_DECISION_EXECUTED.equals(status.getStatusType()))
 				.findFirst()
-				.ifPresentOrElse(decision -> {
+				.ifPresentOrElse(status -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
-					variables.put(CAMUNDA_VARIABLE_IS_APPROVED, isApproved(decision.getDecisionOutcome()));
 					logInfo("Decision is made.");
 				}, () -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
+					variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
+					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
 					logInfo("Decision is not made yet.");
 				});
+
+			errand.getDecisions().stream()
+				.filter(decision -> isApproved(decision.getDecisionOutcome()))
+				.findFirst()
+				.ifPresentOrElse(decision -> variables.put(CAMUNDA_VARIABLE_IS_APPROVED, true),
+					() -> variables.put(CAMUNDA_VARIABLE_IS_APPROVED, false));
+
 			if (isCancel(errand)) {
 				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
+				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 			}
 
 			externalTaskService.complete(externalTask, variables);

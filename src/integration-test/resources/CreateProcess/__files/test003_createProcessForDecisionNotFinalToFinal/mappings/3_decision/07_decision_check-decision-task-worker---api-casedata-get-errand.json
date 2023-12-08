@@ -1,6 +1,6 @@
 {
 	"scenarioName": "create-process-for-decision-not-final",
-	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
+	"requiredScenarioState": "check-decision-task-worker---api-casedata-patch-errand",
 	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
 	"request": {
 		"urlPath": "/api-casedata/errands/789",
@@ -20,7 +20,8 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
-			"decisionParameter": "FINAL"
+			"decisionParameter": "FINAL",
+			"statusTypeParameter": "Beslutad"
 		}
 	}
 }
