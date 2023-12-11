@@ -26,6 +26,7 @@ import java.util.Map;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -92,7 +93,7 @@ class CheckDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
-		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
+		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
@@ -124,7 +125,7 @@ class CheckDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
-		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(REJECTION)));
+		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
 
 		// Act
@@ -170,6 +171,64 @@ class CheckDecisionTaskWorkerTest {
 	}
 
 	@Test
+	void executeWhenDecisionIsNotFinal() {
+
+		// Arrange;
+		final var status = new StatusDTO();
+		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
+		when(errandMock.getStatuses()).thenReturn(List.of(status));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING,
+			CAMUNDA_VARIABLE_IS_APPROVED, true));
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(caseDataClientMock).patchErrand(anyLong(), patchErrandCaptor.capture());
+		verifyNoInteractions(failureHandlerMock);
+
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+	}
+
+	@Test
+	void executeWhenDecisionsIsNull() {
+
+		// Arrange;
+		final var status = new StatusDTO();
+		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
+		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(null);
+		when(errandMock.getStatuses()).thenReturn(List.of(status));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING,
+			CAMUNDA_VARIABLE_IS_APPROVED, false));
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(caseDataClientMock).patchErrand(anyLong(), patchErrandCaptor.capture());
+		verifyNoInteractions(failureHandlerMock);
+
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+	}
+
+	@Test
 	void executeThrowsException() {
 
 		// Arrange
@@ -196,11 +255,20 @@ class CheckDecisionTaskWorkerTest {
 		verifyNoMoreInteractions(camundaClientMock);
 	}
 
-	private DecisionDTO createDecision(DecisionOutcomeEnum decisionOutcome) {
+	private DecisionDTO createFinalDecision(DecisionOutcomeEnum decisionOutcome) {
 		final var decision = new DecisionDTO();
 		decision.setId(1L);
 		decision.setDecisionType(FINAL);
 		decision.setDecisionOutcome(decisionOutcome);
 		return decision;
 	}
+
+	private DecisionDTO createDecision(DecisionOutcomeEnum decisionOutcome) {
+		final var decision = new DecisionDTO();
+		decision.setId(1L);
+		decision.setDecisionType(RECOMMENDED);
+		decision.setDecisionOutcome(decisionOutcome);
+		return decision;
+	}
+
 }
