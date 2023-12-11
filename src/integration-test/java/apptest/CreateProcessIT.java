@@ -787,7 +787,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test010_createProcessForCancelDecision() throws JsonProcessingException, ClassNotFoundException {
+	void test010_createProcessForCancelnDecision() throws JsonProcessingException, ClassNotFoundException {
 
 		// Start process
 		final var startResponse = setupCall()

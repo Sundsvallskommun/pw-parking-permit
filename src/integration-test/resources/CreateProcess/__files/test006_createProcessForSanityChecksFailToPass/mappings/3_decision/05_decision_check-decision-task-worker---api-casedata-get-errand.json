@@ -20,6 +20,7 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
+			"statusTypeParameter": "Beslutad",
 			"decisionParameter": "FINAL"
 		}
 	}

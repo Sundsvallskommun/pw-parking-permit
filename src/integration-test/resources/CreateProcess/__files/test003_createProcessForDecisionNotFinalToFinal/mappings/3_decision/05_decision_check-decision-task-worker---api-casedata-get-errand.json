@@ -20,7 +20,8 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
-			"decisionParameter": "PROPOSED"
+			"decisionParameter": "PROPOSED",
+			"statusTypeParameter": "Ärende inkommit"
 		}
 	}
 }

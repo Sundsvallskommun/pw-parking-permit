@@ -19,7 +19,8 @@
 		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"phaseParameter": "Beslut"
+			"phaseParameter": "Beslut",
+			"statusTypeParameter": "Beslutad"
 		}
 	}
 }

@@ -16,6 +16,6 @@
 			"Content-Type": "application/json"
 		},
 		"status": 200,
-		"bodyFileName": "test010_createProcessForCancelDecision/responses/verify-resident-of-municipality-task-worker---api-citizen-getcitizen.json"
+		"bodyFileName": "test010_createProcessForCancelnDecision/responses/verify-resident-of-municipality-task-worker---api-citizen-getcitizen.json"
 	}
 }
