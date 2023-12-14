@@ -5,7 +5,7 @@
 	"updated": "2022-12-02T15:17:01.5636+01:00",
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
-	"caseType": "PARKING_PERMIT",
+	"caseType": "{{parameters.caseTypeParameter}}",
 	"priority": "MEDIUM",
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",
@@ -13,7 +13,7 @@
 	"phase": "{{parameters.phaseParameter}}",
 	"statuses": [
 		{
-			"statusType": "{{parameters.statusTypeParameter}}",
+			"statusType": "Ärende inkommit",
 			"description": "Ärende har kommit in från e-tjänsten.",
 			"dateTime": "2023-09-08T08:31:29.181Z"
 		}

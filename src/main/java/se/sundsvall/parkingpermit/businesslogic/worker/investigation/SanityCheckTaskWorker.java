@@ -19,10 +19,7 @@ import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTR
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SANITY_CHECK_PASSED;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RECEIVED;
 
 @Component
 @ExternalTaskSubscription("InvestigationSanityCheckTask")
@@ -49,8 +46,7 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean executeSanityChecks(ErrandDTO errand) {
-		return hasErrandValidStatus(errand) &&
-			hasErrandAdministrator(errand) &&
+		return hasErrandAdministrator(errand) &&
 			hasErrandValidCaseType(errand) &&
 			hasErrandStakeholderApplicant(errand);
 	}
@@ -63,21 +59,6 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 			logInfo("Errand with id {} miss an administrator", errand.getId());
 		}
 		return hasAdministrator;
-	}
-
-	private boolean hasErrandValidStatus(ErrandDTO errand) {
-		if (isEmpty(errand.getStatuses())) {
-			logInfo("Errand with id {} has no status", errand.getId());
-			return false;
-		}
-		final var hasValidStatus = errand.getStatuses().stream()
-			.anyMatch(status -> status.getStatusType().equals(CASEDATA_STATUS_CASE_RECEIVED) || status.getStatusType().equals(CASEDATA_STATUS_COMPLETION_RECEIVED));
-
-		if (!hasValidStatus) {
-			logInfo("Errand with id {} has not a valid status for this stage", errand.getId());
-		}
-		return hasValidStatus;
-
 	}
 
 	private boolean hasErrandValidCaseType(ErrandDTO errand) {
