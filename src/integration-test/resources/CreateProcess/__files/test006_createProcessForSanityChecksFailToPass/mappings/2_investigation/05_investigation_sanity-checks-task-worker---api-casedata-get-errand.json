@@ -20,6 +20,7 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"caseTypeParameter": "ANMALAN_ATTEFALL",
+			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",

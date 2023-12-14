@@ -2,7 +2,6 @@ package apptest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -421,7 +420,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("End process", "end_process"));
 	}
 
-	@Ignore
+	@Test
 	void test006_createProcessForSanityChecksFailToPass() throws JsonProcessingException, ClassNotFoundException {
 
 		// Start process
@@ -449,7 +448,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		// Wait for process to finish
 		await()
 			.ignoreExceptions()
-			.atMost(1000, SECONDS)
+			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify stubs and reset wiremock

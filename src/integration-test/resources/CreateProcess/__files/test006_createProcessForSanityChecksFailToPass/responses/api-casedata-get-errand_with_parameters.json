@@ -13,7 +13,7 @@
 	"phase": "{{parameters.phaseParameter}}",
 	"statuses": [
 		{
-			"statusType": "Ärende inkommit",
+			"statusType": "{{parameters.statusTypeParameter}}",
 			"description": "Ärende har kommit in från e-tjänsten.",
 			"dateTime": "2023-09-08T08:31:29.181Z"
 		}

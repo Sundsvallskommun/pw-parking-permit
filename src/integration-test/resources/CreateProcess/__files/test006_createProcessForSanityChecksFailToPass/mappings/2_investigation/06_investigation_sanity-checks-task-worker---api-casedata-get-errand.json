@@ -20,6 +20,7 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"caseTypeParameter": "PARKING_PERMIT",
+			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",

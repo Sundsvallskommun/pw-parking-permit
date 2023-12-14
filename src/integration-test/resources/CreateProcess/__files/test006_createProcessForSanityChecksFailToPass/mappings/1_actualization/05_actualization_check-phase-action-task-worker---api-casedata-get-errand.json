@@ -22,6 +22,7 @@
 		],
 		"transformerParameters": {
 			"caseTypeParameter": "PARKING_PERMIT",
+			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Aktualisering",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "COMPLETE",
