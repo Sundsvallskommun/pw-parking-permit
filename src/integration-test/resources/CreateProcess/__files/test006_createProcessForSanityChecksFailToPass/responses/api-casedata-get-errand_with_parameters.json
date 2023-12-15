@@ -5,7 +5,7 @@
 	"updated": "2022-12-02T15:17:01.5636+01:00",
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
-	"caseType": "PARKING_PERMIT",
+	"caseType": "{{parameters.caseTypeParameter}}",
 	"priority": "MEDIUM",
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",

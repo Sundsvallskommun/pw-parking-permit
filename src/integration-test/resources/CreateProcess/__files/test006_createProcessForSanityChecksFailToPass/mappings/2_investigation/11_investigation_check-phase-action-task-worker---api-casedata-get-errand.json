@@ -21,7 +21,9 @@
 			"response-template"
 		],
 		"transformerParameters": {
-			"phaseParameter": "Aktualisering",
+			"caseTypeParameter": "PARKING_PERMIT",
+			"phaseParameter": "Utredning",
+			"statusTypeParameter": "Beslutad",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "COMPLETE",
 			"phaseStatusParameter": "ONGOING"

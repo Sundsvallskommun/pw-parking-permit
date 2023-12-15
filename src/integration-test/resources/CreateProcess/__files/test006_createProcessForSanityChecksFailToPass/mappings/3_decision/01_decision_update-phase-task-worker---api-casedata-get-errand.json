@@ -19,7 +19,9 @@
 		"bodyFileName": "test006_createProcessForSanityChecksFailToPass/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
+			"caseTypeParameter": "PARKING_PERMIT",
 			"phaseParameter": "Utredning",
+			"statusTypeParameter": "Ärende inkommit",
 			"decisionParameter": "PROPOSED"
 		}
 	}

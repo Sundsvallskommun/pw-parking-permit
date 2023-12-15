@@ -19,7 +19,8 @@
 		"bodyFileName": "test006_createProcessForSanityChecksFailToPass/responses/api-casedata-get-errand_with_parameters.json",
 		"transformers": ["response-template"],
 		"transformerParameters": {
-			"statusTypeParameter": "Fel status för sanity check",
+			"caseTypeParameter": "ANMALAN_ATTEFALL",
+			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",
