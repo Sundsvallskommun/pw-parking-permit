@@ -1,0 +1,28 @@
+{
+	"scenarioName": "create-process-for-cancel-in-decision",
+	"requiredScenarioState": "decision_update-status-task-worker---api-casedata-put-status",
+	"newScenarioState": "check-decision-task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/errands/1516",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test010_createProcessForCancelnDecision/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": ["response-template"],
+		"transformerParameters": {
+			"phaseParameter": "Beslut",
+			"statusTypeParameter": "Beslutad",
+			"phaseActionParameter": "CANCEL",
+			"phaseStatusParameter": "UNKNOWN"
+		}
+	}
+}

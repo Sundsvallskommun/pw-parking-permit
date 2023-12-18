@@ -103,7 +103,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -252,7 +252,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -396,7 +396,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -497,7 +497,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -603,7 +603,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -758,7 +758,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
@@ -787,7 +787,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test010_createProcessForCancelDecision() throws JsonProcessingException, ClassNotFoundException {
+	void test010_createProcessForCancelnDecision() throws JsonProcessingException, ClassNotFoundException {
 
 		// Start process
 		final var startResponse = setupCall()
@@ -845,7 +845,178 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
-				tuple("Is canceled in decision", "gateway_decision_canceled"),
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
+				//GW isCitizen
+				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
+
+				tuple("End process", "end_process"));
+	}
+
+	@Test
+	void test011_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/process/start/1617")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to be waiting for update of errand
+		await()
+			.ignoreExceptions()
+			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("investigation_phase_action_is_update_available")).count(), equalTo(1L));
+
+		// Update process
+		setupCall()
+			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.withExpectedResponseBodyIsNull()
+			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+
+		// Wait for process to finish
+		await()
+			.ignoreExceptions()
+			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
+
+		// Verify stubs and reset wiremock
+		verifyStubsAndResetWiremock();
+
+		// Verify process pathway.
+		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
+			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+			.containsExactlyInAnyOrder(
+				tuple("Start process", "start_process"),
+				//Actualization
+				tuple("Actualization", "actualization_phase"),
+				tuple("Start actualization phase", "start_actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
+				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
+				tuple("End actualization phase", "end_actualization_phase"),
+				//GW isCitizen
+				tuple("Gateway isCitizen", "gateway_is_citizen"),
+				//Investigation
+				tuple("Investigation", "investigation_phase"),
+				tuple("Start investigation phase", "start_investigation_phase"),
+				tuple("Update phase", "external_task_investigation_update_phase"),
+				tuple("Update errand status", "external_task_investigation_update_errand_status"),
+				tuple("Sanity checks", "external_task_investigation_sanity_check"),
+				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
+				tuple("Execute rules", "external_task_investigation_execute_rules"),
+				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
+				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
+				//Phase action not complete
+				tuple("Wait for update", "investigation_phase_action_is_update_available"),
+				tuple("Sanity checks", "external_task_investigation_sanity_check"),
+				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
+				tuple("Execute rules", "external_task_investigation_execute_rules"),
+				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
+				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
+				tuple("End investigation phase", "end_investigation_phase"),
+				//GW isCanceled
+				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
+				//Decision
+				tuple("Decision", "decision_phase"),
+				tuple("Start decision phase", "start_decision_phase"),
+				tuple("Update phase on errand", "external_task_decision_update_phase"),
+				tuple("Update errand status", "external_task_decision_update_errand_status"),
+				tuple("Check if decision is made", "external_task_check_decision_task"),
+				tuple("Gateway is decision final", "gateway_is_decision_final"),
+				tuple("End decision phase", "end_decision_phase"),
+				//GW isCanceled
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
+				//Handling
+				tuple("Handling", "call_activity_handling"),
+				tuple("Start handling phase", "start_handling_phase"),
+				tuple("End handling phase", "end_handling_phase"),
+				//Execution
+				tuple("Execution", "call_activity_execution"),
+				tuple("Start execution phase", "start_execution_phase"),
+				tuple("Update phase", "external_task_execution_update_phase"),
+				tuple("Order card", "external_task_execution_order_card_task"),
+				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
+				tuple("Is card manufactured", "gateway_card_exists"),
+				tuple("Create Asset", "external_task_execution_create_asset"),
+				tuple("End execution phase", "end_execution_phase"),
+				//Follow up
+				tuple("Follow up", "call_activity_follow_up"),
+				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("End follow up phase", "end_follow_up_phase"),
+				//GW isCitizen
+				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
+
+				tuple("End process", "end_process"));
+	}
+
+	@Test
+	void test012_createProcessForDecisionRejected() throws JsonProcessingException, ClassNotFoundException {
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/process/start/1718")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to finish
+		await()
+			.ignoreExceptions()
+			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
+
+		// Verify stubs and reset wiremock
+		verifyStubsAndResetWiremock();
+
+		// Verify process pathway.
+		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
+			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+			.containsExactlyInAnyOrder(
+				tuple("Start process", "start_process"),
+				//Actualization
+				tuple("Actualization", "actualization_phase"),
+				tuple("Start actualization phase", "start_actualization_phase"),
+				tuple("Update phase", "external_task_actualization_update_phase"),
+				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
+				tuple("End actualization phase", "end_actualization_phase"),
+				//GW isCitizen
+				tuple("Gateway isCitizen", "gateway_is_citizen"),
+				//Investigation
+				tuple("Investigation", "investigation_phase"),
+				tuple("Start investigation phase", "start_investigation_phase"),
+				tuple("Update phase", "external_task_investigation_update_phase"),
+				tuple("Update errand status", "external_task_investigation_update_errand_status"),
+				tuple("Sanity checks", "external_task_investigation_sanity_check"),
+				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
+				tuple("Execute rules", "external_task_investigation_execute_rules"),
+				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
+				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
+				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
+				tuple("End investigation phase", "end_investigation_phase"),
+				//GW isCanceled
+				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
+				//Decision
+				tuple("Decision", "decision_phase"),
+				tuple("Start decision phase", "start_decision_phase"),
+				tuple("Update phase on errand", "external_task_decision_update_phase"),
+				tuple("Update errand status", "external_task_decision_update_errand_status"),
+				tuple("Check if decision is made", "external_task_check_decision_task"),
+				tuple("Gateway is decision final", "gateway_is_decision_final"),
+				tuple("End decision phase", "end_decision_phase"),
+				//GW isCanceled
+				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 

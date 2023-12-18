@@ -5,7 +5,6 @@ import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.casedata.StatusDTO;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -34,7 +33,6 @@ import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PER
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -46,9 +44,6 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_AWAITING_COMPLETION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_COMPLETION_RECEIVED;
 
 @ExtendWith(MockitoExtension.class)
 class SanityTestTaskWorkerTest {
@@ -90,7 +85,7 @@ class SanityTestTaskWorkerTest {
 
 	@ParameterizedTest
 	@MethodSource("sanityChecksTypeArguments")
-	void execute(List<RolesEnum> roles, CaseTypeEnum caseType, List<StatusDTO> statuses, boolean expectedSanityCheckPassed) {
+	void execute(List<RolesEnum> roles, CaseTypeEnum caseType, boolean expectedSanityCheckPassed) {
 		// Setup
 		final var processInstanceId = "processInstanceId";
 
@@ -100,7 +95,6 @@ class SanityTestTaskWorkerTest {
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(processInstanceId);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(errandMock.getStatuses()).thenReturn(statuses);
 		lenient().when(errandMock.getCaseType()).thenReturn(caseType);
 		lenient().when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		lenient().when(stakeholderMock.getRoles()).thenReturn(roles);
@@ -142,20 +136,14 @@ class SanityTestTaskWorkerTest {
 	private static Stream<Arguments> sanityChecksTypeArguments() {
 		return Stream.of(
 			// Sanity check passes
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_CASE_RECEIVED)), true),
-			//Sanity check passes
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), true),
+			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, true),
 			//Sanity check fails when no administrator
-			Arguments.of(List.of(APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), false),
+			Arguments.of(List.of(APPLICANT), PARKING_PERMIT, false),
 			//Sanity check fails when no applicant
-			Arguments.of(List.of(ADMINISTRATOR), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), false),
-			//Sanity check fails when no status
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, emptyList(), false),
-			//Sanity check fails when wrong status
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, List.of(new StatusDTO().statusType(CASEDATA_STATUS_AWAITING_COMPLETION)), false),
+			Arguments.of(List.of(ADMINISTRATOR), PARKING_PERMIT, false),
 			//Sanity check fails when wrong case type
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), ANMALAN_INSTALLATION_VARMEPUMP, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), false),
+			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), ANMALAN_INSTALLATION_VARMEPUMP, false),
 			//Sanity check fails when no case type
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), null, List.of(new StatusDTO().statusType(CASEDATA_STATUS_COMPLETION_RECEIVED)), false));
+			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), null, false));
 	}
 }

@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.DecisionDTO;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -9,8 +10,11 @@ import org.zalando.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
-import static generated.se.sundsvall.businessrules.ResultValue.VALIDATION_ERROR;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -27,6 +31,11 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for ConstructDecisionTaskWorker");
 
+			final var errand = getErrand(externalTask);
+
+			final var latestDecision = errand.getDecisions().stream()
+				.max(Comparator.comparingInt(DecisionDTO::getVersion)).orElse(null);
+
 			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
 
 			validateResponse(ruleEngineResponse);
@@ -37,7 +46,9 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 				.map(BusinessRulesUtil::constructDecision)
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
-			caseDataClient.patchNewDecision(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), decisionDTO);
+			if (isDecisionsNotEqual(latestDecision, decisionDTO)) {
+				caseDataClient.patchNewDecision(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() +1).orElse(0)));
+			}
 
 			externalTaskService.complete(externalTask);
 		} catch (Exception exception) {
@@ -54,9 +65,14 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		if (isEmpty(ruleEngineResponse.getResults())) {
 			throw Problem.valueOf(BAD_REQUEST, "No results found in rule engine response");
 		}
+	}
 
-		if (ruleEngineResponse.getResults().stream().anyMatch(result -> VALIDATION_ERROR.equals(result.getValue()))) {
-			throw Problem.valueOf(BAD_REQUEST, "Validation error found in rule engine response");
+	private boolean isDecisionsNotEqual(DecisionDTO latestDecision, DecisionDTO decisionDTO) {
+		if (isNull(latestDecision)) {
+			return true;
 		}
+		return ! (Objects.equals(latestDecision.getDecisionType(), decisionDTO.getDecisionType())
+			&& Objects.equals(latestDecision.getDecisionOutcome(), decisionDTO.getDecisionOutcome())
+			&& Objects.equals(latestDecision.getDescription(), decisionDTO.getDescription()));
 	}
 }

@@ -5,7 +5,7 @@
 	"updated": "2022-12-02T15:17:01.5636+01:00",
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
-	"caseType": "PARKING_PERMIT",
+	"caseType": "{{parameters.caseTypeParameter}}",
 	"priority": "MEDIUM",
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",
@@ -89,9 +89,17 @@
 	"decisions": [
 		{
 			"id": 1,
+			"decisionType": "RECOMMENDED",
+			"decisionOutcome": "APPROVAL",
+			"description": "Beskrivning",
+			"version": 0
+		},
+		{
+			"id": 2,
 			"decisionType": "{{parameters.decisionParameter}}",
 			"decisionOutcome": "APPROVAL",
-			"description": "Beskrivning"
+			"description": "Beskrivning",
+			"version": 1
 		}
 	],
 	"notes": [],

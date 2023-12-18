@@ -1,0 +1,27 @@
+{
+	"scenarioName": "create-process-for-decision-not-final",
+	"requiredScenarioState": "check-decision-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "02_check-decision-task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/errands/789",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test003_createProcessForDecisionNotFinalToFinal/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": ["response-template"],
+		"transformerParameters": {
+			"phaseParameter": "Beslut",
+			"decisionParameter": "FINAL",
+			"statusTypeParameter": "Beslutad"
+		}
+	}
+}
