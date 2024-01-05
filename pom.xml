@@ -130,7 +130,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.citizen</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -155,7 +154,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.casedata</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -179,7 +177,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.messaging</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -204,7 +201,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.templating</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -229,7 +225,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.businessrules</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -254,7 +249,6 @@
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.rpa</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -276,14 +270,13 @@
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<useSpringBoot3>true</useSpringBoot3>
-								<useBeanValidation>false</useBeanValidation>
-								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
 								<modelPackage>generated.se.sundsvall.partyassets</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
 							</configOptions>
 						</configuration>
