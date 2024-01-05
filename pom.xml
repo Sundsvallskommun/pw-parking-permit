@@ -43,14 +43,12 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
 		<!--Camunda dependencies-->
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
 			<version>${camunda-external-task-client.version}</version>
 		</dependency>
-
 		<!--Other dependencies-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -62,7 +60,6 @@
 			<artifactId>re2j</artifactId>
 			<version>${re2j.version}</version>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
@@ -88,7 +85,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -104,7 +100,7 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/camunda-openapi.json</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
@@ -128,7 +124,7 @@
 							<inputSpec>src/main/resources/integrations/citizen.yaml
 							</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
@@ -153,7 +149,7 @@
 							<inputSpec>src/main/resources/integrations/case-data.yaml
 							</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
@@ -177,7 +173,7 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/messaging.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
@@ -201,7 +197,7 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/templating.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<skipValidateSpec>true</skipValidateSpec>
@@ -226,7 +222,7 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/integrations/business-rules.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
@@ -251,7 +247,7 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/integrations/rpa.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
@@ -276,7 +272,7 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/api-partyassets.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
