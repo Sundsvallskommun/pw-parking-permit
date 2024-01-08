@@ -39,7 +39,7 @@ public class MessagingMapper {
 		return new WebMessageAttachment()
 			.base64Data(renderResponse.getOutput())
 			.fileName(textProvider.getDenialTexts().filename())
-			.mimeType(APPLICATION_PDF.value());
+			.mimeType(APPLICATION_PDF.getValue());
 	}
 
 	public LetterRequest toLetterRequest(RenderResponse renderResponse, String partyId) {

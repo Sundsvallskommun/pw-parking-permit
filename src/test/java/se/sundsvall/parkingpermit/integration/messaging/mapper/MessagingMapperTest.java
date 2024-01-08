@@ -78,7 +78,7 @@ class MessagingMapperTest {
 			.containsExactly(tuple(
 				OUTPUT,
 				FILENAME,
-				APPLICATION_PDF.value()));
+				APPLICATION_PDF.getValue()));
 
 		verify(denialTextPropertiesMock).filename();
 		verify(denialTextPropertiesMock).message();

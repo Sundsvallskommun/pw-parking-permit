@@ -43,14 +43,12 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
 		<!--Camunda dependencies-->
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
 			<version>${camunda-external-task-client.version}</version>
 		</dependency>
-
 		<!--Other dependencies-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -62,7 +60,6 @@
 			<artifactId>re2j</artifactId>
 			<version>${re2j.version}</version>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
@@ -88,7 +85,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -104,7 +100,7 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/camunda-openapi.json</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
@@ -128,13 +124,12 @@
 							<inputSpec>src/main/resources/integrations/citizen.yaml
 							</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.citizen</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -153,13 +148,12 @@
 							<inputSpec>src/main/resources/integrations/case-data.yaml
 							</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.casedata</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -177,13 +171,12 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/messaging.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.messaging</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -201,14 +194,13 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/templating.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<skipValidateSpec>true</skipValidateSpec>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.templating</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -226,14 +218,13 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/integrations/business-rules.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.businessrules</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -251,14 +242,13 @@
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/integrations/rpa.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<additionalProperties>useSwaggerAnnotations=false</additionalProperties>
 							<configOptions>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
-								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.rpa</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
@@ -276,18 +266,17 @@
 						<configuration>
 							<inputSpec>src/main/resources/integrations/api-partyassets.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
-							<generatorName>jaxrs-spec</generatorName>
+							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
-								<useSpringBoot3>true</useSpringBoot3>
-								<useBeanValidation>false</useBeanValidation>
-								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<sourceFolder>${generated-sources-java-path}</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
 								<modelPackage>generated.se.sundsvall.partyassets</modelPackage>
 								<openApiNullable>false</openApiNullable>
 								<generatePom>false</generatePom>
+								<useBeanValidation>false</useBeanValidation>
+								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
 							</configOptions>
 						</configuration>
