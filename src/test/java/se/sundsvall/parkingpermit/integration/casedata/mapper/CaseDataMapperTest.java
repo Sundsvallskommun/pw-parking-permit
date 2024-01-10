@@ -1,5 +1,23 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import generated.se.sundsvall.casedata.AttachmentDTO;
 import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
@@ -13,23 +31,6 @@ import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataMapperTest {
@@ -242,7 +243,7 @@ class CaseDataMapperTest {
 
 		final var bean = CaseDataMapper.toAttachment(category, name, extension, mimeType, renderedContent);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("category", "name", "extension", "mimeType", "_file", "extraParameters")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("category", "name", "extension", "mimeType", "file", "extraParameters")
 			.extracting(
 				AttachmentDTO::getCategory,
 				AttachmentDTO::getName,
