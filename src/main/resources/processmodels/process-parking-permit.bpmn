@@ -20,7 +20,7 @@
     <bpmn:sequenceFlow id="applicant_not_resident_of_municipality" name="Applicant not resident of municipality" sourceRef="gateway_is_citizen" targetRef="subprocess_automatic_denial">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${applicantNotResidentOfMunicipality}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0uzrwpk" sourceRef="subprocess_automatic_denial" targetRef="gateway_closing_is_citizen" />
+    <bpmn:sequenceFlow id="Flow_0uzrwpk" sourceRef="subprocess_automatic_denial" targetRef="call_activity_follow_up" />
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
       <bpmn:extensionElements />
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
@@ -63,15 +63,12 @@
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway_closing_is_citizen" name="Gateway closing isCitizen">
       <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
-      <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
       <bpmn:incoming>Flow_0dmonfx</bpmn:incoming>
       <bpmn:incoming>Flow_0evqnur</bpmn:incoming>
       <bpmn:incoming>Flow_1ks4wqv</bpmn:incoming>
-      <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
       <bpmn:outgoing>Flow_1vfil4i</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1vfil4i" sourceRef="gateway_closing_is_citizen" targetRef="end_process" />
-    <bpmn:sequenceFlow id="Flow_1uj478g" sourceRef="call_activity_execution" targetRef="call_activity_follow_up" />
     <bpmn:sequenceFlow id="Flow_0ycmz1a" sourceRef="call_activity_follow_up" targetRef="gateway_closing_is_citizen" />
     <bpmn:subProcess id="decision_phase" name="Decision">
       <bpmn:extensionElements />
@@ -293,7 +290,7 @@
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_execution" name="Execution">
       <bpmn:incoming>Flow_13ofnma</bpmn:incoming>
-      <bpmn:outgoing>Flow_1uj478g</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0xpanp5</bpmn:outgoing>
       <bpmn:startEvent id="start_execution_phase" name="Start execution phase">
         <bpmn:outgoing>Flow_09weu60</bpmn:outgoing>
       </bpmn:startEvent>
@@ -345,15 +342,31 @@
       <bpmn:sequenceFlow id="Flow_0txyxat" sourceRef="external_task_execution_create_asset" targetRef="end_execution_phase" />
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_follow_up" name="Follow up">
-      <bpmn:incoming>Flow_1uj478g</bpmn:incoming>
+      <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
+      <bpmn:incoming>Flow_0xpanp5</bpmn:incoming>
+      <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
       <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
       <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
-        <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
+        <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="start_follow_up_phase" name="Start follow up phase">
         <bpmn:outgoing>Flow_1kmw5et</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="end_follow_up_phase" />
+      <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="external_task_follow_up_update_phase" />
+      <bpmn:serviceTask id="external_task_follow_up_clean_up_notes" name="Clean up notes" camunda:type="external" camunda:topic="CleanUpNotesTask">
+        <bpmn:incoming>Flow_0m6v59o</bpmn:incoming>
+        <bpmn:outgoing>Flow_18tyux3</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_18tyux3" sourceRef="external_task_follow_up_clean_up_notes" targetRef="end_follow_up_phase" />
+      <bpmn:serviceTask id="external_task_follow_up_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:documentation>Set phase to execution</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Uppföljning&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
+        <bpmn:outgoing>Flow_0m6v59o</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0m6v59o" sourceRef="external_task_follow_up_update_phase" targetRef="external_task_follow_up_clean_up_notes" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway_investigation_canceled" name="Is canceled in investigation" default="Flow_0f8p51c">
       <bpmn:incoming>Flow_0ru4901</bpmn:incoming>
@@ -382,7 +395,8 @@
     <bpmn:sequenceFlow id="Flow_1ks4wqv" name="Is canceled" sourceRef="gateway_is_citizen" targetRef="gateway_closing_is_citizen">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1fmqs5z" name="Is not approved" sourceRef="gateway_decision_canceled" targetRef="gateway_closing_is_citizen" />
+    <bpmn:sequenceFlow id="Flow_1fmqs5z" name="Is not approved" sourceRef="gateway_decision_canceled" targetRef="call_activity_follow_up" />
+    <bpmn:sequenceFlow id="Flow_0xpanp5" sourceRef="call_activity_execution" targetRef="call_activity_follow_up" />
   </bpmn:process>
   <bpmn:signal id="Signal_12tih0s" name="Signal_12tih0s" />
   <bpmn:message id="Message_0l2uuvr" name="cancelMessage" />
@@ -465,16 +479,12 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0uzrwpk_di" bpmnElement="Flow_0uzrwpk">
         <di:waypoint x="780" y="460" />
-        <di:waypoint x="1430" y="460" />
-        <di:waypoint x="1430" y="305" />
+        <di:waypoint x="1310" y="460" />
+        <di:waypoint x="1310" y="320" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1vfil4i_di" bpmnElement="Flow_1vfil4i">
         <di:waypoint x="1455" y="280" />
         <di:waypoint x="1512" y="280" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1uj478g_di" bpmnElement="Flow_1uj478g">
-        <di:waypoint x="1180" y="280" />
-        <di:waypoint x="1260" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ycmz1a_di" bpmnElement="Flow_0ycmz1a">
         <di:waypoint x="1360" y="280" />
@@ -534,11 +544,15 @@
       <bpmndi:BPMNEdge id="Flow_1fmqs5z_di" bpmnElement="Flow_1fmqs5z">
         <di:waypoint x="840" y="305" />
         <di:waypoint x="840" y="460" />
-        <di:waypoint x="1430" y="460" />
-        <di:waypoint x="1430" y="305" />
+        <di:waypoint x="1310" y="460" />
+        <di:waypoint x="1310" y="320" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="852" y="384" width="76" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xpanp5_di" bpmnElement="Flow_0xpanp5">
+        <di:waypoint x="1180" y="280" />
+        <di:waypoint x="1260" y="280" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1039,20 +1053,36 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_15fzdds">
     <bpmndi:BPMNPlane id="BPMNPlane_03h4jfu" bpmnElement="call_activity_follow_up">
       <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
-        <dc:Bounds x="962" y="202" width="36" height="36" />
+        <dc:Bounds x="652" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="948" y="245" width="67" height="27" />
+          <dc:Bounds x="638" y="145" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1m050le" bpmnElement="start_follow_up_phase">
-        <dc:Bounds x="670" y="202" width="36" height="36" />
+        <dc:Bounds x="172" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="656" y="245" width="71" height="27" />
+          <dc:Bounds x="158" y="145" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1s8xom9" bpmnElement="external_task_follow_up_clean_up_notes">
+        <dc:Bounds x="470" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1ntf23t" bpmnElement="external_task_follow_up_update_phase">
+        <dc:Bounds x="290" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_0wc93yf" bpmnElement="Flow_1kmw5et">
-        <di:waypoint x="706" y="220" />
-        <di:waypoint x="962" y="220" />
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="290" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18tyux3_di" bpmnElement="Flow_18tyux3">
+        <di:waypoint x="570" y="120" />
+        <di:waypoint x="652" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m6v59o_di" bpmnElement="Flow_0m6v59o">
+        <di:waypoint x="390" y="120" />
+        <di:waypoint x="470" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -1,0 +1,17 @@
+[
+	{
+		"id": 128,
+		"version": 1,
+		"created": "2024-01-30T11:56:41.538647+01:00",
+		"updated": "2024-01-30T11:56:41.591402+01:00",
+		"title": "Intern anteckning",
+		"text": "Intern anteckning.",
+		"createdBy": "UNKNOWN",
+		"updatedBy": "UNKNOWN",
+		"extraParameters": {
+			"additionalProp3": "string",
+			"additionalProp2": "string",
+			"additionalProp1": "string"
+		}
+	}
+]

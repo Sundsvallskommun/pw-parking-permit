@@ -34,6 +34,7 @@ public class Constants {
 	public static final String CASEDATA_PHASE_INVESTIGATION = "Utredning";
 	public static final String CASEDATA_PHASE_DECISION = "Beslut";
 	public static final String CASEDATA_PHASE_EXECUTION = "Verkställa";
+	public static final String CASEDATA_PHASE_FOLLOW_UP = "Uppföljning";
 
 	public static final String CASEDATA_STATUS_CASE_RECEIVED = "Ärende inkommit";
 	public static final String CASEDATA_STATUS_AWAITING_COMPLETION = "Väntar på komplettering";

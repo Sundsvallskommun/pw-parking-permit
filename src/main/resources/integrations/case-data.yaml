@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: 'https://opensource.org/licenses/MIT'
-  version: '2.0'
+  version: '2.4'
 servers:
   - url: /
 tags:
@@ -316,6 +316,8 @@ paths:
               description: Location of the created resource.
               style: simple
               explode: false
+              schema:
+                type: string
         '400':
           description: Bad request
           content:
@@ -686,9 +688,10 @@ paths:
           description: Created - Successful operation
           headers:
             Location:
-              description: Location of the created resource.
               style: simple
               explode: false
+              schema:
+                type: string
         '400':
           description: Bad request
           content:
@@ -750,10 +753,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/Problem'
   '/notes/{noteId}':
+    delete:
+      tags:
+        - Notes
+      description: Delete a note by note id
+      operationId: deleteNoteById
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No content - Successful operation
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
     patch:
       tags:
         - Notes
-      description: Update note.
+      description: Update note
       operationId: patchNoteOnErrand
       parameters:
         - name: noteId
@@ -910,6 +952,8 @@ paths:
               description: Location of the created resource.
               style: simple
               explode: false
+              schema:
+                type: string
         '400':
           description: Bad request
           content:
@@ -1007,6 +1051,8 @@ paths:
               description: Location of the created resource.
               style: simple
               explode: false
+              schema:
+                type: string
         '400':
           description: Bad request
           content:
@@ -1229,7 +1275,7 @@ paths:
     get:
       tags:
         - Notes
-      description: Get Note by ID.
+      description: Get note by id
       operationId: getNoteById
       parameters:
         - name: id
@@ -1314,6 +1360,62 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+  '/notes/errand/{errandId}':
+    get:
+      tags:
+        - Notes
+      description: 'Get notes for a specific errand, possible to filter by note type'
+      operationId: getNotesByErrandId
+      parameters:
+        - name: errandId
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+        - name: noteType
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/NoteType'
+      responses:
+        '200':
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteDTO'
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteDTO'
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Problem'
+                  - $ref: '#/components/schemas/ConstraintViolationProblem'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   '/messages/{errandNumber}':
     get:
       tags:
@@ -1374,7 +1476,7 @@ paths:
             type: string
       responses:
         '200':
-          description: OK - Successful operation
+          description: OK - Successful Operation
           content:
             application/json:
               schema:
@@ -1383,7 +1485,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MessageAttachmentDTO'
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -1391,7 +1493,7 @@ paths:
                   - $ref: '#/components/schemas/Problem'
                   - $ref: '#/components/schemas/ConstraintViolationProblem'
         '500':
-          description: Internal Server error
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -1418,7 +1520,7 @@ paths:
         '200':
           description: Successful Operation
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -1856,13 +1958,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-wso2-application-security:
-        security-types:
-          - oauth2
-        optional: false
   '/errands/{id}/decisions/{decisionId}':
     delete:
       tags:
@@ -2113,12 +2208,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: '#/components/schemas/StatusType'
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: '#/components/schemas/StatusType'
     StatusType:
       type: object
       properties:
@@ -2248,12 +2343,12 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: '#/components/schemas/StatusType'
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: '#/components/schemas/StatusType'
         suppressed:
           type: array
           items:
@@ -2709,6 +2804,37 @@ components:
           maxLength: 255
           minLength: 0
           type: string
+    Classification:
+      type: string
+      description: Message classification
+      enum:
+        - INFORMATION
+        - COMPLETION_REQUEST
+        - OBTAIN_OPINION
+        - INTERNAL_COMMUNICATION
+        - OTHER
+    EmailHeaderDTO:
+      type: object
+      properties:
+        header:
+          $ref: '#/components/schemas/Header'
+        values:
+          type: array
+          description: The value of the email header
+          example: '[<this-is-a-test@domain.com>]'
+          items:
+            type: string
+            description: The value of the email header
+            example: '[<this-is-a-test@domain.com>]'
+      description: List of email headers on the message
+    Header:
+      type: string
+      description: An email header
+      example: MESSAGE_ID
+      enum:
+        - IN_REPLY_TO
+        - REFERENCES
+        - MESSAGE_ID
     MessageAttachment:
       required:
         - content
@@ -2799,11 +2925,18 @@ components:
           type: string
           description: The user ID of the user that sent the message
           example: '12'
+        classification:
+          $ref: '#/components/schemas/Classification'
         attachmentRequests:
           type: array
           description: List of attachmentRequests on the message
           items:
             $ref: '#/components/schemas/MessageAttachment'
+        emailHeaders:
+          type: array
+          description: List of email headers on the message
+          items:
+            $ref: '#/components/schemas/EmailHeaderDTO'
     ErrandDTO:
       required:
         - caseType
@@ -3095,10 +3228,19 @@ components:
           description: AD-account for the user who last modified the note.
           readOnly: true
           example: user
+        noteType:
+          $ref: '#/components/schemas/NoteType'
         extraParameters:
           type: object
           additionalProperties:
             type: string
+    NoteType:
+      type: string
+      description: The type of note
+      example: INTERNAL
+      enum:
+        - INTERNAL
+        - PUBLIC
     PatchErrandDTO:
       type: object
       properties:
@@ -3426,11 +3568,18 @@ components:
           type: boolean
           description: Signal if the message has been viewed or not
           example: true
+        classification:
+          $ref: '#/components/schemas/Classification'
         attachments:
           type: array
           description: List of attachments on the message
           items:
             $ref: '#/components/schemas/AttachmentResponse'
+        emailHeaders:
+          type: array
+          description: List of email headers on the message
+          items:
+            $ref: '#/components/schemas/EmailHeaderDTO'
     MessageAttachmentDTO:
       required:
         - attachmentID
@@ -3464,12 +3613,12 @@ components:
     PageErrandDTO:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         size:
           type: integer
           format: int32
@@ -3482,13 +3631,13 @@ components:
           format: int32
         sort:
           $ref: '#/components/schemas/SortObject'
-        first:
-          type: boolean
         numberOfElements:
           type: integer
           format: int32
         pageable:
           $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
         last:
           type: boolean
         empty:
@@ -3501,16 +3650,16 @@ components:
           format: int64
         sort:
           $ref: '#/components/schemas/SortObject'
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
     SortObject:
       type: object
       properties:
