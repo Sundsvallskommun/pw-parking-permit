@@ -120,6 +120,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -171,6 +173,12 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("End automatic denial phase", "end_automatic_denial_phase"),
 				tuple("Automatic denial", "subprocess_automatic_denial"),
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
+				//Follow up
+				tuple("Follow up", "call_activity_follow_up"),
+				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
+				tuple("End follow up phase", "end_follow_up_phase"),
 
 				tuple("End process", "end_process"));
 	}
@@ -269,6 +277,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -413,6 +423,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -514,6 +526,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -620,6 +634,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -779,6 +795,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -950,6 +968,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				//Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
@@ -1017,6 +1037,12 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("End decision phase", "end_decision_phase"),
 				//GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
+				//Follow up
+				tuple("Follow up", "call_activity_follow_up"),
+				tuple("Start follow up phase", "start_follow_up_phase"),
+				tuple("Update phase", "external_task_follow_up_update_phase"),
+				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
+				tuple("End follow up phase", "end_follow_up_phase"),
 				//GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 

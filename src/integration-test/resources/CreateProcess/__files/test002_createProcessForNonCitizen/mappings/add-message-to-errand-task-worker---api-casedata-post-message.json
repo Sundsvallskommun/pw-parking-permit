@@ -1,7 +1,7 @@
 {
 	"scenarioName": "create-process-for-non-citizen",
 	"requiredScenarioState": "add-message-to-errand-task-worker---api-templating-render-pdf",
-	"newScenarioState": "Scenario completed",
+	"newScenarioState": "add-message-to-errand-task-worker---api-post-message",
 	"request": {
 		"urlPath": "/api-casedata/messages",
 		"method": "POST",

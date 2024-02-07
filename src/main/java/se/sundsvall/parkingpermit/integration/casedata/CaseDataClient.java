@@ -1,10 +1,14 @@
 package se.sundsvall.parkingpermit.integration.casedata;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
-
-import java.util.List;
-
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.MessageRequest;
+import generated.se.sundsvall.casedata.NoteDTO;
+import generated.se.sundsvall.casedata.PageErrandDTO;
+import generated.se.sundsvall.casedata.PatchDecisionDTO;
+import generated.se.sundsvall.casedata.PatchErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.StatusDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,16 +19,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.MessageRequest;
-import generated.se.sundsvall.casedata.PageErrandDTO;
-import generated.se.sundsvall.casedata.PatchDecisionDTO;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StatusDTO;
 import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
+
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.casedata.url}", configuration = CaseDataConfiguration.class)
 public interface CaseDataClient {
@@ -109,4 +109,22 @@ public interface CaseDataClient {
 	 */
 	@PostMapping(path = "/messages", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addMessage(@RequestBody MessageRequest messageRequest);
+
+	/**
+	 * Gets notes by errand id.
+	 *
+	 * @param errandId of errand containing notes to get
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@GetMapping(path = "/notes/errand/{errandId}", produces = APPLICATION_JSON_VALUE)
+	List<NoteDTO> getNotesByErrandId(@PathVariable(name = "errandId") Long errandId, @RequestParam(name = "noteType", required = false) String noteType);
+
+	/**
+	 * Delete note by note id.
+	 *
+	 * @param noteId of note to delete
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@DeleteMapping(path = "/notes/{noteId}", produces = APPLICATION_JSON_VALUE)
+	ResponseEntity<Void> deleteNoteById(@PathVariable(name = "noteId") Long noteId);
 }
