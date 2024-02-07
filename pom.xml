@@ -17,9 +17,7 @@
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
 		<!-- Service properties -->
-		<camunda-external-task-client.version>7.20.0</camunda-external-task-client.version>
-		<camunda-engine.version>7.20.0</camunda-engine.version>
-		<openapi-generator-maven-plugin.version>7.2.0</openapi-generator-maven-plugin.version>
+		<camunda.version>7.20.0</camunda.version>
 		<apache-commons-text.version>1.11.0</apache-commons-text.version>
 		<re2j.version>1.7</re2j.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
@@ -46,7 +44,7 @@
    		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
-			<version>${camunda-external-task-client.version}</version>
+			<version>${camunda.version}</version>
 		</dependency>
 		<!--Other dependencies-->
 		<dependency>
@@ -68,13 +66,13 @@
 		<dependency>
 			<groupId>org.camunda.bpm</groupId>
 			<artifactId>camunda-engine</artifactId>
-			<version>${camunda-engine.version}</version>
+			<version>${camunda.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
-			<version>${camunda-engine.version}</version>
+			<version>${camunda.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -88,7 +86,6 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>${openapi-generator-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>camunda-api</id>
