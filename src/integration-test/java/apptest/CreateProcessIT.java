@@ -1,15 +1,5 @@
 package apptest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-
 import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -23,7 +13,18 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.time.Duration;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @WireMockAppTestSuite(files = "classpath:/CreateProcess/", classes = Application.class)
 class CreateProcessIT extends AbstractCamundaAppTest {
@@ -51,7 +52,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/123")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -61,7 +62,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
-		verifyStubsAndResetWiremock();
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -137,7 +138,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/456")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -146,8 +147,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -191,7 +192,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/789")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -206,7 +207,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -214,8 +215,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -294,7 +295,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/789")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -303,8 +304,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -337,7 +338,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1011")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -352,7 +353,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -360,8 +361,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -440,7 +441,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1112")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -455,7 +456,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -463,8 +464,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -543,7 +544,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1213")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -558,7 +559,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -566,8 +567,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -651,7 +652,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1314")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -660,8 +661,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -709,7 +710,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1415")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -724,7 +725,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -732,8 +733,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -812,7 +813,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1516")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -821,8 +822,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -878,7 +879,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1617")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
@@ -893,7 +894,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false);
+			.sendRequest();
 
 		// Wait for process to finish
 		await()
@@ -901,8 +902,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
@@ -985,7 +986,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.withServicePath("/process/start/1718")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse(APPLICATION_JSON, false)
+			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
@@ -994,8 +995,8 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
-		// Verify stubs and reset wiremock
-		verifyStubsAndResetWiremock();
+		// Verify wiremock stubs
+		verifyAllStubs();
 
 		// Verify process pathway.
 		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))

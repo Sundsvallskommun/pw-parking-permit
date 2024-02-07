@@ -79,8 +79,10 @@ logging:
   level:
     root: INFO
 logbook:
-  exclusionfilters:
-    json-path: '{"$..attachments[*].file" : "[base64]"}'
+  body-filters:
+    json-path:
+      - key: '$..attachments[*].file'
+        value: '[base64]'
 
 #----------------------------------------
 # Camunda
