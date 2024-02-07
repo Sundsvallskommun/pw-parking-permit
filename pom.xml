@@ -44,7 +44,6 @@
 		</dependency>
 		<!--Camunda dependencies-->
 
-<!-- https://mvnrepository.com/artifact/org.camunda.bpm.springboot/camunda-bpm-spring-boot-starter-webapp -->
    		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
@@ -112,7 +111,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -137,7 +136,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -162,7 +161,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -186,7 +185,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -211,7 +210,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -236,7 +235,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -261,7 +260,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -285,7 +284,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
