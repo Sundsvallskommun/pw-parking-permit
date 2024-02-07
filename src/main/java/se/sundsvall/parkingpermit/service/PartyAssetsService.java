@@ -1,18 +1,20 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
+import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
 
 @Service
 public class PartyAssetsService {
 
-	@Autowired
-	private PartyAssetsClient partyAssetsClient;
+	private final PartyAssetsClient partyAssetsClient;
+
+	public PartyAssetsService(PartyAssetsClient partyAssetsClient) {
+		this.partyAssetsClient = partyAssetsClient;
+	}
 
 	public void createAsset(ErrandDTO errand) {
 

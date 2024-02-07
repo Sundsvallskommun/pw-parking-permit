@@ -1,6 +1,12 @@
 package apptest;
 
-import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
+import static java.util.stream.Stream.concat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -9,27 +15,22 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
-import static java.util.stream.Stream.concat;
 
 /**
  * Test class using testcontainer to execute the process.
  * There are a lot of resources that can be added to CamundaClient
  * to make good assertions. This test class contains a few examples.
  *
- * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.19/
+ * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.20/
  */
 @Testcontainers
 abstract class AbstractCamundaAppTest extends AbstractAppTest {
 
-	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.19.0";
+	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.20.0";
 
 	@Autowired
 	protected CamundaClient camundaClient;

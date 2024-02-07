@@ -20,7 +20,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
@@ -28,6 +27,9 @@ import org.zalando.problem.Status;
 
 import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
@@ -38,11 +40,15 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private static final String PROCESS_ENGINE_FIRST_NAME = "Process";
 	private static final String PROCESS_ENGINE_LAST_NAME = "Engine";
 
-	@Autowired
-	private MessagingService messagingService;
+	private final MessagingService messagingService;
 
-	@Autowired
-	private TextProvider textProvider;
+	private final TextProvider textProvider;
+
+	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.messagingService = messagingService;
+		this.textProvider = textProvider;
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

@@ -15,13 +15,15 @@ import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.citizen.CitizenAddress;
 import generated.se.sundsvall.citizen.CitizenExtended;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
 @Component
@@ -33,8 +35,12 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	@Value("${common.application.municipality-id}")
 	private String requiredMunicipalityId;
 
-	@Autowired
-	private CitizenClient citizenClient;
+	private final CitizenClient citizenClient;
+
+	VerifyResidentOfMunicipalityTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, CitizenClient citizenClient) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.citizenClient = citizenClient;
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

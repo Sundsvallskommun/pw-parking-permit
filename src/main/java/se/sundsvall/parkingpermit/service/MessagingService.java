@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -27,14 +26,17 @@ import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 @Service
 public class MessagingService {
 
-	@Autowired
-	private MessagingClient messagingClient;
+	private final MessagingClient messagingClient;
 
-	@Autowired
-	private TemplatingClient templatingClient;
+	private final TemplatingClient templatingClient;
 
-	@Autowired
-	private MessagingMapper messagingMapper;
+	private final MessagingMapper messagingMapper;
+
+	MessagingService(MessagingClient messagingClient, TemplatingClient templatingClient, MessagingMapper messagingMapper) {
+		this.messagingClient = messagingClient;
+		this.templatingClient = templatingClient;
+		this.messagingMapper = messagingMapper;
+	}
 
 	public RenderResponse renderPdf(ErrandDTO errand) {
 		return templatingClient.renderPdf(toRenderRequestWhenNotMemberOfMunicipality(errand));

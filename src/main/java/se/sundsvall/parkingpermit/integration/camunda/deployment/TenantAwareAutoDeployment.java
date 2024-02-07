@@ -16,7 +16,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -34,14 +33,17 @@ public class TenantAwareAutoDeployment {
 	private static final String FILETYPE_FORM = "form";
 	private static final Resource[] NO_RESOURCES = {};
 
-	@Autowired
-	private CamundaClient camundaClient;
+	private final CamundaClient camundaClient;
 
-	@Autowired
-	private DeploymentProperties deployments;
+	private final DeploymentProperties deployments;
 
-	@Autowired
-	private ResourcePatternResolver patternResolver;
+	private final ResourcePatternResolver patternResolver;
+
+	TenantAwareAutoDeployment(CamundaClient camundaClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
+		this.camundaClient = camundaClient;
+		this.deployments = deployments;
+		this.patternResolver = patternResolver;
+	}
 
 	@Value("${spring.application.name:spring-app}")
 	private String applicationName;

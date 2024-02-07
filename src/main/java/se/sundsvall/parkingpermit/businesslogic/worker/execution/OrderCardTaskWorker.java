@@ -1,21 +1,24 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.service.RpaService;
-
-import java.util.List;
-
 import static java.util.Objects.isNull;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
+
+import java.util.List;
+
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.RpaService;
 
 @Component
 @ExternalTaskSubscription("OrderCardTask")
@@ -27,9 +30,12 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 	private static final String QUEUE_REPLACEMENT_CARD = "NyttKortBefintligPerson";
 	private static final String QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD = "StöldspärraSamtSkapaNyttKort";
 
-	@Autowired
-	private RpaService rpaService;
+	private final RpaService rpaService;
 
+	OrderCardTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, RpaService rpaService) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.rpaService = rpaService;
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

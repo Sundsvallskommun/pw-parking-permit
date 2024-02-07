@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>1.38</version>
+		<version>4.3.0</version>
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
@@ -14,14 +14,10 @@
 	<properties>
 		<!-- Pipeline properties -->
 		<docker.image.name>ms-pw-parking-permit</docker.image.name>
-		<exposed.app.port>8080</exposed.app.port>
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
 		<!-- Service properties -->
-		<camunda-external-task-client.version>7.19.0</camunda-external-task-client.version>
-		<camunda-engine.version>7.19.0</camunda-engine.version>
-		<testcontainers.version>1.19.4</testcontainers.version>
-		<openapi-generator-maven-plugin.version>7.2.0</openapi-generator-maven-plugin.version>
+		<camunda.version>7.20.0</camunda.version>
 		<apache-commons-text.version>1.11.0</apache-commons-text.version>
 		<re2j.version>1.7</re2j.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
@@ -44,10 +40,11 @@
 			<optional>true</optional>
 		</dependency>
 		<!--Camunda dependencies-->
-		<dependency>
+
+   		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
-			<version>${camunda-external-task-client.version}</version>
+			<version>${camunda.version}</version>
 		</dependency>
 		<!--Other dependencies-->
 		<dependency>
@@ -69,19 +66,18 @@
 		<dependency>
 			<groupId>org.camunda.bpm</groupId>
 			<artifactId>camunda-engine</artifactId>
-			<version>${camunda-engine.version}</version>
+			<version>${camunda.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
-			<version>${camunda-engine.version}</version>
+			<version>${camunda.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -90,7 +86,6 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>${openapi-generator-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>camunda-api</id>
@@ -112,6 +107,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -136,6 +132,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -160,6 +157,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -183,6 +181,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -207,6 +206,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -231,6 +231,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -255,6 +256,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -278,6 +280,7 @@
 								<useBeanValidation>false</useBeanValidation>
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>

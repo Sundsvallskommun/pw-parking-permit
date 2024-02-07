@@ -4,11 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
 
-import javax.validation.constraints.Positive;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 import se.sundsvall.parkingpermit.service.ProcessService;
@@ -36,8 +34,11 @@ public class ProcessResource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessResource.class);
 
-	@Autowired
-	private ProcessService service;
+	private final ProcessService service;
+
+	public ProcessResource(ProcessService service) {
+		this.service = service;
+	}
 
 	@PostMapping(path = "start/{caseNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(description = "Start a new process instance for the provided caseNumber")

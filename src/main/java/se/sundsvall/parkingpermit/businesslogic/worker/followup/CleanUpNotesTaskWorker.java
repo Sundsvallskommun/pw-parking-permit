@@ -1,20 +1,28 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.followup;
 
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-
-import java.util.Optional;
-
 import static generated.se.sundsvall.casedata.NoteType.INTERNAL;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 
+import java.util.Optional;
+
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
 @Component
 @ExternalTaskSubscription("CleanUpNotesTask")
 public class CleanUpNotesTaskWorker extends AbstractTaskWorker {
+
+	CleanUpNotesTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+		super(camundaClient, caseDataClient, failureHandler);
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

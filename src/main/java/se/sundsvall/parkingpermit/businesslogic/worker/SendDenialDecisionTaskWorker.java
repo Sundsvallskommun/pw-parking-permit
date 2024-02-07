@@ -7,17 +7,23 @@ import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 @Component
 @ExternalTaskSubscription("SendDenialDecisionTask")
 public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 
-	@Autowired
-	private MessagingService messagingService;
+	private final MessagingService messagingService;
+
+	SendDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.messagingService = messagingService;
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

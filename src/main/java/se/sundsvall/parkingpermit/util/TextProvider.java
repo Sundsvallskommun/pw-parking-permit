@@ -1,19 +1,21 @@
 package se.sundsvall.parkingpermit.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TextProvider {
 
-	@Autowired
-	private ApprovalTextProperties approvalTexts;
+	private final ApprovalTextProperties approvalTexts;
 
-	@Autowired
-	private DenialTextProperties denialTexts;
+	private final DenialTextProperties denialTexts;
 
-	@Autowired
-	private CommonTextProperties commonTexts;
+	private final CommonTextProperties commonTexts;
+
+	TextProvider(ApprovalTextProperties approvalTexts, DenialTextProperties denialTexts, CommonTextProperties commonTexts) {
+		this.approvalTexts = approvalTexts;
+		this.denialTexts = denialTexts;
+		this.commonTexts = commonTexts;
+	}
 
 	public ApprovalTextProperties getApprovalTexts() {
 		return approvalTexts;

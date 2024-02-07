@@ -1,19 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -22,9 +8,31 @@ import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.DecisionDTO;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")
 public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
+
+	ConstructDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+		super(camundaClient, caseDataClient, failureHandler);
+	}
 
 	@Override
 	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {

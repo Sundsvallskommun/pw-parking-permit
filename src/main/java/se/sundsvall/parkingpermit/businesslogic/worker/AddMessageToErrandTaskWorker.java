@@ -10,11 +10,13 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
@@ -22,11 +24,15 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @ExternalTaskSubscription("AddMessageToErrandTask")
 public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 
-	@Autowired
-	private MessagingService messagingService;
+	private final MessagingService messagingService;
 
-	@Autowired
-	private TextProvider textProvider;
+	private final TextProvider textProvider;
+
+	AddMessageToErrandTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.messagingService = messagingService;
+		this.textProvider = textProvider;
+	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
