@@ -12,7 +12,6 @@ import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMappe
 import java.util.Map;
 
 import org.camunda.bpm.engine.variable.type.ValueType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.sundsvall.dept44.requestid.RequestId;
@@ -21,11 +20,14 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 @Service
 public class ProcessService {
 
-	@Autowired
-	private CamundaClient client;
+	private final CamundaClient camundaClient;
+
+	ProcessService(CamundaClient camundaClient) {
+		this.camundaClient = camundaClient;
+	}
 
 	public String startProcess(Long caseNumber) {
-		return client.startProcessWithTenant(PROCESS_KEY, TENANTID_TEMPLATE, toStartProcessInstanceDto(caseNumber)).getId();
+		return camundaClient.startProcessWithTenant(PROCESS_KEY, TENANTID_TEMPLATE, toStartProcessInstanceDto(caseNumber)).getId();
 	}
 
 	public void updateProcess(String processInstanceId) {
@@ -33,6 +35,6 @@ public class ProcessService {
 			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, TRUE,
 			CAMUNDA_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get()));
 
-		client.setProcessInstanceVariables(processInstanceId, toPatchVariablesDto(variablesToUpdate));
+		camundaClient.setProcessInstanceVariables(processInstanceId, toPatchVariablesDto(variablesToUpdate));
 	}
 }

@@ -6,7 +6,6 @@ import static org.springframework.http.ResponseEntity.accepted;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +34,11 @@ public class ProcessResource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessResource.class);
 
-	@Autowired
-	private ProcessService service;
+	private final ProcessService service;
+
+	public ProcessResource(ProcessService service) {
+		this.service = service;
+	}
 
 	@PostMapping(path = "start/{caseNumber}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Operation(description = "Start a new process instance for the provided caseNumber")

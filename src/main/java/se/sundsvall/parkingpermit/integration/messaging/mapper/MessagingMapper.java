@@ -8,7 +8,6 @@ import static java.nio.charset.Charset.defaultCharset;
 import java.util.Base64;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import generated.se.sundsvall.messaging.LetterAttachment;
@@ -25,8 +24,11 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @Service
 public class MessagingMapper {
 
-	@Autowired
-	private TextProvider textProvider;
+	private final TextProvider textProvider;
+
+	MessagingMapper(TextProvider textProvider) {
+		this.textProvider = textProvider;
+	}
 
 	public WebMessageRequest toWebMessageRequest(RenderResponse renderResponse, String partyId) {
 		return new WebMessageRequest()

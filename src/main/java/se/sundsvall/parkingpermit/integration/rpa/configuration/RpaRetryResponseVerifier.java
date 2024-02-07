@@ -1,14 +1,14 @@
 package se.sundsvall.parkingpermit.integration.rpa.configuration;
 
-import feign.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import se.sundsvall.dept44.configuration.feign.decoder.RetryResponseVerifier;
-
 import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpHeaders.WWW_AUTHENTICATE;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+
+import org.springframework.stereotype.Component;
+
+import feign.Response;
+import se.sundsvall.dept44.configuration.feign.decoder.RetryResponseVerifier;
 
 @Component
 public class RpaRetryResponseVerifier implements RetryResponseVerifier {
@@ -16,8 +16,11 @@ public class RpaRetryResponseVerifier implements RetryResponseVerifier {
 
 	private static final String RPA_WWW_AUTH_HEADER = "Bearer realm=\"%s\"";
 
-	@Autowired
-	private RpaProperties rpaProperties;
+	private final RpaProperties rpaProperties;
+
+	RpaRetryResponseVerifier(RpaProperties rpaProperties) {
+		this.rpaProperties = rpaProperties;
+	}
 
 	@Override
 	public boolean shouldReturnRetryableException(Response response) {

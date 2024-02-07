@@ -1,24 +1,31 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
+import static se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper.toRuleEngineRequest;
 
 import java.util.HashMap;
 
-import static se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper.toRuleEngineRequest;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+
+import se.sundsvall.parkingpermit.Constants;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @Component
 @ExternalTaskSubscription("InvestigationExecuteRulesTask")
 public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 
-	@Autowired
-	private BusinessRulesClient businessRulesClient;
+	private final BusinessRulesClient businessRulesClient;
+
+	ExecuteRulesTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, BusinessRulesClient businessRulesClient) {
+		super(camundaClient, caseDataClient, failureHandler);
+		this.businessRulesClient = businessRulesClient;
+	}
 
 	@Override
 	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
