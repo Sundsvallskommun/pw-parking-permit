@@ -91,6 +91,10 @@ camunda:
   bpm:
     client:
       base-url: ${config.camunda.base-url}
+      backoff:
+        initTime: 500
+        factor: 2
+        maxTime: 15000
     deployment:
       processes:
         - name: Parking permit process
