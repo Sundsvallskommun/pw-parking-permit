@@ -12,9 +12,6 @@
 		}
 	},
 	"response": {
-		"headers": {
-			"Content-Type": "*/*"
-		},
-		"status": 200
+		"status": 204
 	}
 }

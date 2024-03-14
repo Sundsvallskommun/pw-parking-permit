@@ -125,6 +125,6 @@ public interface CaseDataClient {
 	 * @param noteId of note to delete
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@DeleteMapping(path = "/notes/{noteId}", produces = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path = "/notes/{noteId}")
 	ResponseEntity<Void> deleteNoteById(@PathVariable(name = "noteId") Long noteId);
 }
