@@ -1,5 +1,16 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.List;
+import java.util.Optional;
+
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
@@ -7,19 +18,6 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @Component
 @ExternalTaskSubscription("UpdateErrandStatusTask")
@@ -36,18 +34,13 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 			logInfo("Executing update of status for errand with id {}", errand.getId());
 
 			final var phase = errand.getPhase();
-			final var statuses = Optional.ofNullable(errand.getStatuses()).orElse(new ArrayList<>());
 
 			switch (phase) {
-				case CASEDATA_PHASE_INVESTIGATION -> {
-					statuses.add(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds"));
-					caseDataClient.putStatus(errand.getId(), statuses);
-				}
+				case CASEDATA_PHASE_INVESTIGATION -> caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
 				case CASEDATA_PHASE_DECISION -> {
 					if (isCitizen(externalTask)) {
 						// Errand is in decision sub process
-						statuses.add(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas"));
-						caseDataClient.putStatus(errand.getId(), statuses);
+						caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
 					} else {
 						// Errand is in automatic denial sub process
 						caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));

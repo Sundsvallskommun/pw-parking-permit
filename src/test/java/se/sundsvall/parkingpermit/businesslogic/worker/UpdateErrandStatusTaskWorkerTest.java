@@ -19,7 +19,6 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.OffsetDateTime.now;
@@ -83,7 +82,6 @@ class UpdateErrandStatusTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getPhase()).thenReturn("Utredning");
-		when(errandMock.getStatuses()).thenReturn(new ArrayList<>());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -110,7 +108,6 @@ class UpdateErrandStatusTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getPhase()).thenReturn("Beslut");
-		when(errandMock.getStatuses()).thenReturn(new ArrayList<>());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -137,7 +134,6 @@ class UpdateErrandStatusTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getPhase()).thenReturn("Beslut");
-		when(errandMock.getStatuses()).thenReturn(new ArrayList<>());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
