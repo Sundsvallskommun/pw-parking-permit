@@ -30,7 +30,7 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 @Testcontainers
 abstract class AbstractCamundaAppTest extends AbstractAppTest {
 
-	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.17.0";
+	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.17.0"; // Corresponds to the actual version used.
 
 	@Autowired
 	protected CamundaClient camundaClient;
