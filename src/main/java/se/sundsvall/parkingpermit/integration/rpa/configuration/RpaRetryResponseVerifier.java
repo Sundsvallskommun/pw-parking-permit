@@ -2,8 +2,8 @@ package se.sundsvall.parkingpermit.integration.rpa.configuration;
 
 import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
-import static org.apache.http.HttpHeaders.WWW_AUTHENTICATE;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ public class RpaRetryResponseVerifier implements RetryResponseVerifier {
 	public boolean shouldReturnRetryableException(Response response) {
 		final var rpaAuthHeader = String.format(RPA_WWW_AUTH_HEADER, rpaProperties.identityServerUrl());
 
-		return response.status() == SC_UNAUTHORIZED &&
+		return (response.status() == UNAUTHORIZED.value()) &&
 			ofNullable(response.headers().get(WWW_AUTHENTICATE)).orElse(emptySet()).stream()
 				.anyMatch(rpaAuthHeader::equals);
 	}
