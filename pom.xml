@@ -17,7 +17,7 @@
 		<published.container.port.test>8790</published.container.port.test>
 		<published.container.port.production>8790</published.container.port.production>
 		<!-- Service properties -->
-		<camunda.version>7.20.0</camunda.version>
+		<camunda.version>7.21.0</camunda.version>
 		<apache-commons-text.version>1.11.0</apache-commons-text.version>
 		<re2j.version>1.7</re2j.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>

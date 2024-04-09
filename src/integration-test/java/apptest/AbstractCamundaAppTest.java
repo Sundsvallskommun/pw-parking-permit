@@ -25,12 +25,12 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
  * There are a lot of resources that can be added to CamundaClient
  * to make good assertions. This test class contains a few examples.
  *
- * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.20/
+ * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.17/
  */
 @Testcontainers
 abstract class AbstractCamundaAppTest extends AbstractAppTest {
 
-	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.20.0";
+	private static final String CAMUNDA_IMAGE_NAME = "camunda/camunda-bpm-platform:run-7.17.0"; // Corresponds to the actual version used.
 
 	@Autowired
 	protected CamundaClient camundaClient;
@@ -54,7 +54,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 	}
 
 	protected List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
-		return getRoute(processInstanceId, new ArrayList<HistoricActivityInstanceDto>());
+		return getRoute(processInstanceId, new ArrayList<>());
 	}
 
 	private List<HistoricActivityInstanceDto> getRoute(String processInstanceId, List<HistoricActivityInstanceDto> route) {
