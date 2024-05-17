@@ -54,7 +54,6 @@ public class Constants {
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_ABILITY = "disability.walkingAbility";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER = "artefact.permit.number";
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX = "disability.walkingDistance.max";
-	public static final String CASEDATA_KEY_APPLICATION_RENEWAL_EXPERATION_DATE = "application.renewal.expirationDate";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_STATUS = "artefact.permit.status";
 
 	public static final String BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID = "stakeholders.applicant.personid";

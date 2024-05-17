@@ -1,33 +1,31 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+import org.junit.jupiter.api.Test;
+import org.zalando.problem.ThrowableProblem;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_RENEWAL_EXPERATION_DATE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.partyassets.AssetCreateRequest;
-import generated.se.sundsvall.partyassets.Status;
 
 class PartyAssetsMapperTest {
 	final static String ERRAND_ID = "123";
 	final static String PERMIT_NUMBER = "1234567890";
-	final static OffsetDateTime UPDATED = OffsetDateTime.now();
-	final static String EXPIRATION_DATE = "2023-12-31";
+	final static OffsetDateTime VALID_FROM = OffsetDateTime.now();
+	final static OffsetDateTime VALID_TO = VALID_FROM.plusDays(30);
 	final static String PERMIT_STATUS = "Utgånget";
 
 	@Test
@@ -56,17 +54,19 @@ class PartyAssetsMapperTest {
 				PERMIT_NUMBER,
 				List.of(ERRAND_ID),
 				"Parkeringstillstånd",
-				UPDATED.toLocalDate(),
+				VALID_FROM.toLocalDate(),
 				"CASEDATA",
 				"456",
 				Status.EXPIRED,
 				"PARKINGPERMIT",
-				LocalDate.parse(EXPIRATION_DATE));
+				VALID_TO.toLocalDate());
 	}
 
 	@Test
 	void toAssetCreateRequestNoExtraParameters() {
-		final var errand = createErrand().stakeholders(createStakeholders());
+		final var errand = createErrand().stakeholders(createStakeholders())
+			.decisions(List.of(new DecisionDTO().decisionType(DecisionDTO.DecisionTypeEnum.PROPOSED),
+				new DecisionDTO().decisionType(DecisionDTO.DecisionTypeEnum.FINAL).validFrom(VALID_FROM).validTo(VALID_TO)));
 
 		assertThat(PartyAssetsMapper.toAssetCreateRequest(errand)).isNotNull()
 			.extracting(
@@ -85,12 +85,12 @@ class PartyAssetsMapperTest {
 				null,
 				List.of(ERRAND_ID),
 				"Parkeringstillstånd",
-				UPDATED.toLocalDate(),
+				VALID_FROM.toLocalDate(),
 				"CASEDATA",
 				"456",
 				null,
 				"PARKINGPERMIT",
-				null);
+				VALID_TO.toLocalDate());
 	}
 
 	@Test
@@ -115,7 +115,7 @@ class PartyAssetsMapperTest {
 	private ErrandDTO createErrand() {
 		final var errand = new ErrandDTO();
 		errand.setId(Long.valueOf(ERRAND_ID));
-		errand.setUpdated(UPDATED);
+		errand.setDecisions(createDecisions());
 		return errand;
 	}
 
@@ -134,10 +134,14 @@ class PartyAssetsMapperTest {
 		);
 	}
 
+	private List<DecisionDTO> createDecisions() {
+		return List.of(new DecisionDTO().decisionType(DecisionDTO.DecisionTypeEnum.PROPOSED),
+			new DecisionDTO().decisionType(DecisionDTO.DecisionTypeEnum.FINAL).validFrom(VALID_FROM).validTo(VALID_TO));
+	}
+
 	private Map<String, String> createExtraParameters() {
 		return Map.of(
 			CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER, PERMIT_NUMBER,
-			CASEDATA_KEY_APPLICATION_RENEWAL_EXPERATION_DATE, EXPIRATION_DATE,
 			CASEDATA_KEY_ARTEFACT_PERMIT_STATUS, PERMIT_STATUS
 		);
 	}

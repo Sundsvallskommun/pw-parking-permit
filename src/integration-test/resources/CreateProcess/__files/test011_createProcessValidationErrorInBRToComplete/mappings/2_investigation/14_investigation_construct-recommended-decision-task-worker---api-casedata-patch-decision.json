@@ -18,6 +18,8 @@
 					"decisionType": "RECOMMENDED",
 					"decisionOutcome": "APPROVAL",
 					"description": "Rekommenderat beslut är bevilja. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd.",
+					"law" : [ ],
+					"attachments" : [ ],
 					"extraParameters": {}
 				}
 			}

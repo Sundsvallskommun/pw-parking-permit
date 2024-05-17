@@ -14,6 +14,7 @@
 			{
 				"equalToJson": {
 					"identifier": "sbk.prh.decision.all.rejection.municipality",
+					"metadata" : [ ],
 					"parameters": {
 						"addressFirstname": "Fozzy",
 						"caseNumber": "PRH-2022-000001",

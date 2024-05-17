@@ -18,6 +18,8 @@
 					"decisionType" : "RECOMMENDED",
 					"decisionOutcome" : "REJECTION",
 					"description" : "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande).",
+					"law" : [ ],
+					"attachments" : [ ],
 					"extraParameters" : { }
 				}
 			}
