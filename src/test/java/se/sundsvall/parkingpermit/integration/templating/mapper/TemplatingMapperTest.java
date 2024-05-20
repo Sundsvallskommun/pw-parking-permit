@@ -1,25 +1,24 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
+import generated.se.sundsvall.casedata.AddressDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
+import generated.se.sundsvall.templating.RenderRequest;
+import org.junit.jupiter.api.Test;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
 import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-
-import generated.se.sundsvall.casedata.AddressDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.templating.RenderRequest;
 
 class TemplatingMapperTest {
 	private static final String ERRAND_NUMBER = "errandNumber";
@@ -39,7 +38,7 @@ class TemplatingMapperTest {
 	@Test
 	void testToRenderRequestWithIdentifierWithAllAttributes() {
 		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(createErrand(true)))
-			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters")
+			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
 			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)
@@ -60,7 +59,7 @@ class TemplatingMapperTest {
 		errand.getStakeholders().forEach(stakeholder -> stakeholder.setFirstName(null));
 
 		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(errand))
-			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters")
+			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
 			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)
@@ -80,7 +79,7 @@ class TemplatingMapperTest {
 		errand.getStakeholders().forEach(stakeholder -> stakeholder.setAddresses(null));
 
 		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(errand))
-			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters")
+			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
 			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)

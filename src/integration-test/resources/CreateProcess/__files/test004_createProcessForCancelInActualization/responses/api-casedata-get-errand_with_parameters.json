@@ -54,7 +54,9 @@
 			"id": 1,
 			"decisionType": "{{parameters.decisionParameter}}",
 			"decisionOutcome": "APPROVAL",
-			"description": "Beskrivning"
+			"description": "Beskrivning",
+			"validFrom": "2024-05-17T08:31:29.181Z",
+			"validTo": "2025-05-17T08:31:29.181Z"
 		}
 	],
 	"notes": [],

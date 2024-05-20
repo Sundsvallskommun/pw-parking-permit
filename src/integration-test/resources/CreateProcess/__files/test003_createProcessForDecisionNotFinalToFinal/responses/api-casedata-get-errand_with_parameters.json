@@ -99,7 +99,9 @@
 			"decisionType": "{{parameters.decisionParameter}}",
 			"decisionOutcome": "APPROVAL",
 			"description": "Beskrivning",
-			"version": 1
+			"version": 1,
+			"validFrom": "2024-05-17T08:31:29.181Z",
+			"validTo": "2025-05-17T08:31:29.181Z"
 		}
 	],
 	"notes": [],

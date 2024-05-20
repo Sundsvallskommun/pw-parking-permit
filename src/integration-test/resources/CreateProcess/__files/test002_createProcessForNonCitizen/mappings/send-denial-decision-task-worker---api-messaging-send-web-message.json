@@ -14,7 +14,8 @@
 			{
 				"equalToJson": {
 					"party": {
-						"partyId": "d7af5f83-166a-468b-ab86-da8ca30ea97c"
+						"partyId": "d7af5f83-166a-468b-ab86-da8ca30ea97c",
+						"externalReferences" : [ ]
 					},
 					"message": "Ärendet avskrivs",
 					"attachments": [

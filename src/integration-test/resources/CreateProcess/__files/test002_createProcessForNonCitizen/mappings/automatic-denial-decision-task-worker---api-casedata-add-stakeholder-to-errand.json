@@ -19,6 +19,8 @@
 					"roles": [
 						"ADMINISTRATOR"
 					],
+					"addresses" : [ ],
+					"contactInformation" : [ ],
 					"extraParameters": {}
 				}
 			}

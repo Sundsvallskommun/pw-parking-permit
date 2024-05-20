@@ -1,23 +1,5 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import generated.se.sundsvall.casedata.AttachmentDTO;
 import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
@@ -31,13 +13,26 @@ import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataMapperTest {
-	public static final String STATUS_CASE_PROCESSED = "Under utredning";
-
-	@Mock
-	private DecisionDTO decisionMock;
 
 	@Test
 	void toDecisionBasedOnNullValues() {
@@ -80,7 +75,7 @@ class CaseDataMapperTest {
 	void toMessageRequestWithNullAsParameters() {
 		final var bean = CaseDataMapper.toMessageRequest(null, null, null, null, null, null, null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent");
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent","attachmentRequests", "emailHeaders");
 		assertThat(OffsetDateTime.parse(bean.getSent())).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
 
@@ -264,7 +259,7 @@ class CaseDataMapperTest {
 	void toStakeholderWithNullParameters() {
 		final var bean = CaseDataMapper.toStakeholder(null, null, null, null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "roles")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "roles", "addresses", "contactInformation")
 			.extracting(
 				StakeholderDTO::getExtraParameters,
 				StakeholderDTO::getRoles)
@@ -282,7 +277,7 @@ class CaseDataMapperTest {
 
 		final var bean = CaseDataMapper.toStakeholder(role, type, firstName, lastName);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("roles", "type", "firstName", "lastName", "extraParameters")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("roles", "type", "firstName", "lastName", "extraParameters", "addresses", "contactInformation")
 			.extracting(
 				StakeholderDTO::getExtraParameters,
 				StakeholderDTO::getFirstName,
