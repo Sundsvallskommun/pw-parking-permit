@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>5.0.0</version>
+		<version>5.0.1</version>
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
@@ -12,10 +12,6 @@
 	<name>pw-parking-permit</name>
 
 	<properties>
-		<!-- Pipeline properties -->
-		<docker.image.name>ms-pw-parking-permit</docker.image.name>
-		<published.container.port.test>8790</published.container.port.test>
-		<published.container.port.production>8790</published.container.port.production>
 		<!-- Service properties -->
 		<camunda.version>7.21.0</camunda.version>
 		<apache-commons-text.version>1.12.0</apache-commons-text.version>
