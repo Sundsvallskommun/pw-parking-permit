@@ -15,7 +15,6 @@ import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
@@ -155,11 +154,12 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithNullAsParameters() {
-		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null);
+		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null);
 
 		final var expectedExtraParameters = new HashMap<String, String>();
 		expectedExtraParameters.put("process.phaseStatus", null);
 		expectedExtraParameters.put("process.phaseAction", null);
+		expectedExtraParameters.put("process.displayPhase", null);
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
 			.extracting(PatchErrandDTO::getExtraParameters)
@@ -172,8 +172,9 @@ class CaseDataMapperTest {
 		final var phase = "phase";
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
+		final var displayPhase = "displayPhase";
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase);
 
 		assertThat(bean).isNotNull()
 			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
@@ -185,6 +186,7 @@ class CaseDataMapperTest {
 				externalCaseId,
 				phase,
 				Map.of(
+					"process.displayPhase", displayPhase,
 					"process.phaseStatus", phaseStatus,
 					"process.phaseAction", phaseAction));
 	}

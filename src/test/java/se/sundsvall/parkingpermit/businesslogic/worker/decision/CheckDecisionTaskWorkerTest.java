@@ -43,8 +43,10 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
@@ -165,8 +167,9 @@ class CheckDecisionTaskWorkerTest {
 		verify(caseDataClientMock).patchErrand(anyLong(), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
 			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
 			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
 	}
 
@@ -194,8 +197,9 @@ class CheckDecisionTaskWorkerTest {
 		verify(caseDataClientMock).patchErrand(anyLong(), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
 			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
 			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
 	}
 
@@ -223,8 +227,9 @@ class CheckDecisionTaskWorkerTest {
 		verify(caseDataClientMock).patchErrand(anyLong(), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
 			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
 			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
 	}
 

@@ -21,7 +21,8 @@
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
 			"decisionParameter": "PROPOSED",
-			"statusTypeParameter": "Ärende inkommit"
+			"statusTypeParameter": "Ärende inkommit",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

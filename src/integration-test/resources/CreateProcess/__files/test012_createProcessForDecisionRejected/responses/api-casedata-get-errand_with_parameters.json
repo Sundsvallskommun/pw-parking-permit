@@ -117,6 +117,7 @@
 		"disability.duration": "P6M",
 		"artefact.permit.number": "{{parameters.permitNumberParameter}}",
 		"process.phaseStatus": "{{parameters.phaseStatusParameter}}",
-		"process.phaseAction": "{{parameters.phaseActionParameter}}"
+		"process.phaseAction": "{{parameters.phaseActionParameter}}",
+		"process.displayPhase": "{{parameters.displayPhaseParameter}}"
 	}
 }

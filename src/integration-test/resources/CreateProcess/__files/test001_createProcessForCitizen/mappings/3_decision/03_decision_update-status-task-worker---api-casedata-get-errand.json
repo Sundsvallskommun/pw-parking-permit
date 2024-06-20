@@ -22,7 +22,8 @@
 			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "UNKNOWN",
-			"phaseStatusParameter": "ONGOING"
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

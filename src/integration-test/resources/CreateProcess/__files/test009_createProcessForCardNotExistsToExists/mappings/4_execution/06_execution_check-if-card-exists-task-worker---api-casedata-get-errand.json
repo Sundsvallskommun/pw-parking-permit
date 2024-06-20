@@ -22,7 +22,8 @@
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "",
 			"phaseStatusParameter": "",
-			"permitNumberParameter": ""
+			"permitNumberParameter": "",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

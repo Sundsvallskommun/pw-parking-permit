@@ -20,7 +20,8 @@
 		"transformers": ["response-template"],
 		"transformerParameters": {
 			"phaseParameter": "Utredning",
-			"decisionParameter": "PROPOSED"
+			"decisionParameter": "PROPOSED",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -36,9 +37,10 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 
 			ofNullable(phase).ifPresentOrElse(
 				phaseValue -> {
+					final var displayPhase = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE)).orElse(phaseValue).toString();
 					logInfo("Setting phase to {}", phaseValue);
 					// Set phase action to unknown to errand in the beginning of the phase
-					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue.toString(), PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN));
+					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue.toString(), PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN,displayPhase));
 				},
 				() -> logInfo("Phase is not set"));
 

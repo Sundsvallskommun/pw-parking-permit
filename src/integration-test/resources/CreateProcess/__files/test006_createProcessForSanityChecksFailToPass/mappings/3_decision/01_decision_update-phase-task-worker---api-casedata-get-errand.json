@@ -22,7 +22,8 @@
 			"caseTypeParameter": "PARKING_PERMIT",
 			"phaseParameter": "Utredning",
 			"statusTypeParameter": "Ärende inkommit",
-			"decisionParameter": "PROPOSED"
+			"decisionParameter": "PROPOSED",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

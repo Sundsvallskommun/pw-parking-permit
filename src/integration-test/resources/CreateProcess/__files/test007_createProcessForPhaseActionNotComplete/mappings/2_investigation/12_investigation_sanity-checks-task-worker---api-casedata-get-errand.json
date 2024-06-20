@@ -23,7 +23,8 @@
 			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseStatusParameter": "ONGOING",
-			"phaseActionParameter": "COMPLETE"
+			"phaseActionParameter": "COMPLETE",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

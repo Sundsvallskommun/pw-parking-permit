@@ -17,7 +17,8 @@
 					"phase": "Aktualisering",
 					"extraParameters": {
 						"process.phaseStatus": "CANCELED",
-						"process.phaseAction": "CANCEL"
+						"process.phaseAction": "CANCEL",
+						"process.displayPhase": "Aktualisering"
 					}
 				}
 			}

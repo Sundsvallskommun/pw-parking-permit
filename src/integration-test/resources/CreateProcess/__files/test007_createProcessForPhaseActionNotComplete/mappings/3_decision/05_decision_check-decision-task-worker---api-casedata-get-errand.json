@@ -21,7 +21,8 @@
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
 			"statusTypeParameter": "Beslutad",
-			"decisionParameter": "FINAL"
+			"decisionParameter": "FINAL",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

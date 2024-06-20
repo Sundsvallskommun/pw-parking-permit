@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 
@@ -30,11 +31,12 @@ public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
-	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction) {
+	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction, String displayPhase) {
 		return new PatchErrandDTO()
 			.externalCaseId(externalCaseId)
 			.phase(phase)
 			.putExtraParametersItem(CASEDATA_KEY_PHASE_STATUS, phaseStatus)
+			.putExtraParametersItem(CASEDATA_KEY_DISPLAY_PHASE, displayPhase)
 			.putExtraParametersItem(CASEDATA_KEY_PHASE_ACTION, phaseAction);
 	}
 

@@ -22,7 +22,8 @@
 			"phaseParameter": "Aktualisering",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "",
-			"phaseStatusParameter": ""
+			"phaseStatusParameter": "",
+			"displayPhaseParameter": "Aktualisering"
 		}
 	}
 }

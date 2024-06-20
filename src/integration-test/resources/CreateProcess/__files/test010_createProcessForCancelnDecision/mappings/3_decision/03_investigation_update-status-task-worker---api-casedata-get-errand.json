@@ -23,7 +23,8 @@
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "UNKNOWN",
 			"phaseStatusParameter": "ONGOING",
-			"decisionParameter": "PROPOSED"
+			"decisionParameter": "PROPOSED",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

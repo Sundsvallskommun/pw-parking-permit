@@ -26,6 +26,7 @@ public class Constants {
 	public static final String CAMUNDA_VARIABLE_PHASE = "phase";
 	public static final String CAMUNDA_VARIABLE_PHASE_STATUS = "phaseStatus";
 	public static final String CAMUNDA_VARIABLE_PHASE_ACTION = "phaseAction";
+	public static final String CAMUNDA_VARIABLE_DISPLAY_PHASE = "displayPhase";
 	public static final String CAMUNDA_VARIABLE_CARD_EXISTS = "cardExists";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
@@ -46,6 +47,7 @@ public class Constants {
 
 	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
+	public static final String CASEDATA_KEY_DISPLAY_PHASE = "process.displayPhase";
 	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY = "application.applicant.capacity";
 	public static final String CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "application.lostPermit.policeReportNumber";
 	public static final String CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES = "application.renewal.changedCircumstances";

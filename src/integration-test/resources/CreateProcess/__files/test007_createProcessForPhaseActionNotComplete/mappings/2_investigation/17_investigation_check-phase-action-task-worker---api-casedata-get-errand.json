@@ -24,7 +24,8 @@
 			"phaseParameter": "Utredning",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "COMPLETE",
-			"phaseStatusParameter": "ONGOING"
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }
