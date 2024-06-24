@@ -22,7 +22,8 @@
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "",
 			"phaseStatusParameter": "",
-			"decisionParameter": "FINAL"
+			"decisionParameter": "FINAL",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

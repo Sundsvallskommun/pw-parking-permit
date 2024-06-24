@@ -38,8 +38,10 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -89,6 +91,7 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		final var processInstanceId = "processInstanceId";
 		final var extraParameters = new HashMap<String, String>();
 		extraParameters.put(CASEDATA_KEY_PHASE_ACTION, null);
+		extraParameters.put(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION);
 
 		final var variables = new HashMap<String, Object>();
 		variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_UNKNOWN);
@@ -115,8 +118,9 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		verifyNoInteractions(failureHandlerMock);
 
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2)
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
 			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
+			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
 			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
 	}
 
@@ -126,6 +130,7 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		final var processInstanceId = "processInstanceId";
 		final var extraParameters = new HashMap<String, String>();
 		extraParameters.put(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN);
+		extraParameters.put(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION);
 		extraParameters.put(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
 
 		final var variables = new HashMap<String, Object>();
@@ -159,6 +164,7 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		final var processInstanceId = "processInstanceId";
 		final var extraParameters = new HashMap<String, String>();
 		extraParameters.put(CASEDATA_KEY_PHASE_ACTION, phaseAction);
+		extraParameters.put(CASEDATA_KEY_DISPLAY_PHASE, expectedExtraParameters.get(CASEDATA_KEY_DISPLAY_PHASE));
 
 		final var variables = new HashMap<String, Object>();
 		variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, phaseAction);
@@ -185,7 +191,7 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		verifyNoInteractions(failureHandlerMock);
 
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(2).isEqualTo(expectedExtraParameters);
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3).isEqualTo(expectedExtraParameters);
 	}
 
 	@Test
@@ -212,8 +218,8 @@ class CheckErrandPhaseActionTaskWorkerTest {
 
 	private static Stream<Arguments> checkErrandPhaseActionTypeArguments() {
 		return Stream.of(
-			Arguments.of("phaseAction", Map.of(CASEDATA_KEY_PHASE_ACTION, "phaseAction", CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING)),
-			Arguments.of(PHASE_ACTION_CANCEL, Map.of(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_CANCEL, CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_CANCELED)),
-			Arguments.of(PHASE_ACTION_CANCEL, Map.of(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_CANCEL, CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_CANCELED)));
+			Arguments.of("phaseAction", Map.of(CASEDATA_KEY_PHASE_ACTION, "phaseAction", CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING, CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)),
+			Arguments.of(PHASE_ACTION_CANCEL, Map.of(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_CANCEL, CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_CANCELED,CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)),
+			Arguments.of(PHASE_ACTION_CANCEL, Map.of(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_CANCEL, CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_CANCELED,CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)));
 	}
 }

@@ -17,7 +17,8 @@
 					"phase": "Aktualisering",
 					"extraParameters": {
 						"process.phaseStatus" : "ONGOING",
-						"process.phaseAction" : "UNKNOWN"
+						"process.phaseAction" : "UNKNOWN",
+						"process.displayPhase": "Aktualisering"
 					}
 				}
 			}

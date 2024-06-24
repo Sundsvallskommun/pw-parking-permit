@@ -17,7 +17,8 @@
 					"phase": "Utredning",
 					"extraParameters": {
 						"process.phaseStatus": "COMPLETED",
-						"process.phaseAction": "COMPLETE"
+						"process.phaseAction": "COMPLETE",
+						"process.displayPhase": "Utredning"
 					}
 				}
 			}

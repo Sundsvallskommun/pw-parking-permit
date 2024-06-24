@@ -22,7 +22,8 @@
 			"phaseParameter": "Verkställa",
 			"phaseStatusParameter": "ONGOING",
 			"phaseActionParameter": "UNKNOWN",
-			"decisionParameter": "FINAL"
+			"decisionParameter": "FINAL",
+			"displayPhaseParameter": "Verkställa"
 		}
 	}
 }

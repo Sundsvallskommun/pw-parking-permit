@@ -70,6 +70,7 @@
 		"disability.canBeAloneWhileParking.note": "",
 		"disability.duration": "P6M",
 		"process.phaseStatus": "{{parameters.phaseStatusParameter}}",
-		"process.phaseAction": "{{parameters.phaseActionParameter}}"
+		"process.phaseAction": "{{parameters.phaseActionParameter}}",
+		"process.displayPhase": "{{parameters.displayPhaseParameter}}"
 	}
 }

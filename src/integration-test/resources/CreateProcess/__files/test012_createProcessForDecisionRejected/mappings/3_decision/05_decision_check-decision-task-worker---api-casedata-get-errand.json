@@ -22,7 +22,8 @@
 			"phaseParameter": "Beslut",
 			"statusTypeParameter": "Beslutad",
 			"phaseActionParameter": "UNKNOWN",
-			"phaseStatusParameter": "UNKNOWN"
+			"phaseStatusParameter": "UNKNOWN",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

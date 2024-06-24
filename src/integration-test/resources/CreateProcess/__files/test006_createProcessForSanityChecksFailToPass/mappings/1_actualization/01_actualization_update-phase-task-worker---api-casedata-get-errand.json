@@ -24,7 +24,8 @@
 			"decisionParameter": "PROPOSED",
 			"statusTypeParameter": "Ärende inkommit",
 			"phaseActionParameter": "",
-			"phaseStatusParameter": ""
+			"phaseStatusParameter": "",
+			"displayPhaseParameter": "Aktualisering"
 		}
 	}
 }

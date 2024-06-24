@@ -22,7 +22,8 @@
 			"caseTypeParameter": "PARKING_PERMIT",
 			"phaseParameter": "Beslut",
 			"statusTypeParameter": "Beslutad",
-			"decisionParameter": "FINAL"
+			"decisionParameter": "FINAL",
+			"displayPhaseParameter": "Beslut"
 		}
 	}
 }

@@ -24,7 +24,8 @@
 			"statusTypeParameter": "Ärende inkommit",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "UNKNOWN",
-			"phaseStatusParameter": "ONGOING"
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

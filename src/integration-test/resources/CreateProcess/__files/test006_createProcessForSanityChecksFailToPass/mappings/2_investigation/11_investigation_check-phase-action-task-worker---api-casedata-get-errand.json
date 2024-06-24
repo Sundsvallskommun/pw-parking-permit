@@ -26,7 +26,8 @@
 			"statusTypeParameter": "Beslutad",
 			"decisionParameter": "PROPOSED",
 			"phaseActionParameter": "COMPLETE",
-			"phaseStatusParameter": "ONGOING"
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

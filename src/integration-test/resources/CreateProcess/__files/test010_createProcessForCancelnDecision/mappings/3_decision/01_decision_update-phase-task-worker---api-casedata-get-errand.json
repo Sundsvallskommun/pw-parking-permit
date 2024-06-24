@@ -21,7 +21,8 @@
 		"transformerParameters": {
 			"phaseParameter": "Utredning",
 			"phaseActionParameter": "ONGOING",
-			"phaseStatusParameter": "UNKNOWN"
+			"phaseStatusParameter": "UNKNOWN",
+			"displayPhaseParameter": "Utredning"
 		}
 	}
 }

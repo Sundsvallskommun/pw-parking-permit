@@ -8,6 +8,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ class CamundaMapperTest {
 
 	@Test
 	void toStartProcessInstanceDto() {
+		RandomStringUtils.randomAlphabetic(10);
 		final var caseNumber = RandomUtils.nextLong();
 
 		if (isEmpty(RequestId.get())) {

@@ -21,7 +21,8 @@
 		"transformerParameters": {
 			"phaseParameter": "Aktualisering",
 			"phaseActionParameter": "COMPLETE",
-			"phaseStatusParameter": "COMPLETED"
+			"phaseStatusParameter": "COMPLETED",
+			"displayPhaseParameter": "Aktualisering"
 		}
 	}
 }
