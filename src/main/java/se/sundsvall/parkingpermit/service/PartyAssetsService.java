@@ -17,7 +17,6 @@ public class PartyAssetsService {
 	}
 
 	public void createAsset(ErrandDTO errand) {
-
 		partyAssetsClient.createAsset(toAssetCreateRequest(errand));
 	}
 }

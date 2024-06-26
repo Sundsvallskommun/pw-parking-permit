@@ -37,7 +37,6 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 @ExternalTaskSubscription("CheckDecisionTask")
 public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
-
 	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
 		super(camundaClient, caseDataClient, failureHandler);
 	}
@@ -62,13 +61,13 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 					} else {
 						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 						variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-						caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN,CASEDATA_PHASE_DECISION));
+						caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
 						logInfo("Decision is not made yet.");
 					}
 				}, () -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 					variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN,CASEDATA_PHASE_DECISION));
+					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
 					logInfo("Decision is not made yet.");
 				});
 
@@ -84,7 +83,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 			}
 
 			externalTaskService.complete(externalTask, variables);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
@@ -93,7 +92,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 	private boolean isCancel(ErrandDTO errand) {
 		return ofNullable(errand.getExtraParameters())
 			.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
-			.filter(phaseAction -> phaseAction.equals(PHASE_ACTION_CANCEL))
+			.filter(phaseAction -> PHASE_ACTION_CANCEL.equals(phaseAction))
 			.isPresent();
 	}
 

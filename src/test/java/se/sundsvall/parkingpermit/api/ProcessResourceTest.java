@@ -38,13 +38,14 @@ class ProcessResourceTest {
 	void startProcess() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var caseNumber = 123L;
 		final var uuid = randomUUID().toString();
 
-		when(processServiceMock.startProcess(any())).thenReturn(uuid);
+		when(processServiceMock.startProcess(any(), any())).thenReturn(uuid);
 
 		// Act
-		final var response = webTestClient.post().uri("/process/start/" + caseNumber)
+		final var response = webTestClient.post().uri(municipalityId + "/process/start/" + caseNumber)
 			.exchange()
 			.expectStatus().isAccepted()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -54,7 +55,7 @@ class ProcessResourceTest {
 
 		// Assert
 		assertThat(response.getProcessId()).isEqualTo(uuid);
-		verify(processServiceMock).startProcess(caseNumber);
+		verify(processServiceMock).startProcess(municipalityId, caseNumber);
 		verifyNoMoreInteractions(processServiceMock);
 	}
 
@@ -62,18 +63,19 @@ class ProcessResourceTest {
 	void updateProcess() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var uuid = randomUUID().toString();
 
-		when(processServiceMock.startProcess(any())).thenReturn(uuid);
+		when(processServiceMock.startProcess(any(), any())).thenReturn(uuid);
 
 		// Act
-		webTestClient.post().uri("/process/update/" + uuid)
+		webTestClient.post().uri(municipalityId + "/process/update/" + uuid)
 			.exchange()
 			.expectStatus().isAccepted()
 			.expectBody().isEmpty();
 
 		// Assert
-		verify(processServiceMock).updateProcess(uuid);
+		verify(processServiceMock).updateProcess(municipalityId, uuid);
 		verifyNoMoreInteractions(processServiceMock);
 	}
 }

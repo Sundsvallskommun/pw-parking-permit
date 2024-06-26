@@ -38,8 +38,8 @@ public class RpaService {
 			.forEach(queueName -> {
 				try {
 					rpaClient.addQueueItem(rpaProperties.folderId(), toQueuesAddQueueItemParameters(queueName, caseId));
-				} catch (ThrowableProblem e) {
-					if (nullSafeEquals(Status.CONFLICT,e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
+				} catch (final ThrowableProblem e) {
+					if (nullSafeEquals(Status.CONFLICT, e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
 						// Queue item already exists
 						LOGGER.warn(DUPLICATE_MESSAGE, e.getDetail());
 						return;

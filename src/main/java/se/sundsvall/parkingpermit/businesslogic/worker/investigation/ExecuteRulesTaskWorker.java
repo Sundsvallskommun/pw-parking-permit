@@ -38,7 +38,7 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 			variables.put(Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse);
 
 			externalTaskService.complete(externalTask, variables);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

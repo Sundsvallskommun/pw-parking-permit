@@ -49,7 +49,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/123")
+			.withServicePath("/2281/process/start/123")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -70,7 +70,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.doesNotHaveDuplicates()
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -79,9 +79,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -93,9 +93,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -103,13 +103,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -118,13 +118,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -135,7 +135,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/456")
+			.withServicePath("/2281/process/start/456")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -156,14 +156,14 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.doesNotHaveDuplicates()
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
 				tuple("End when not citizen of municipality", "end_actualization_not_citizen"),
-				//Denial
+				// Denial
 				tuple("Start automatic denial phase", "start_automatic_denial_phase"),
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
 				tuple("Update phase on errand", "external_task_update_errand_phase"),
@@ -174,7 +174,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("End automatic denial phase", "end_automatic_denial_phase"),
 				tuple("Automatic denial", "subprocess_automatic_denial"),
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
@@ -189,7 +189,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/789")
+			.withServicePath("/2281/process/start/789")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -199,11 +199,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("decision_is_case_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "decision_is_case_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -223,7 +223,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -232,9 +232,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -246,9 +246,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -256,17 +256,17 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("Is caseUpdateAvailable", "decision_is_case_update_available"),
-				//Decision not final,
+				// Decision not final,
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -275,13 +275,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -292,7 +292,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/789")
+			.withServicePath("/2281/process/start/789")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -312,7 +312,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -321,10 +321,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End when canceled", "end_actualization_canceled"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
 
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -335,7 +335,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1011")
+			.withServicePath("/2281/process/start/1011")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -345,11 +345,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("actualization_is_case_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "actualization_is_case_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -369,7 +369,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -377,14 +377,14 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
-				//Actualization not complete
+				// Actualization not complete
 				tuple("Wait for complete action", "actualization_is_case_update_available"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -396,9 +396,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -406,13 +406,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -421,13 +421,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -438,7 +438,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1112")
+			.withServicePath("/2281/process/start/1112")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -448,11 +448,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("investigation_sanity_check_is_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_sanity_check_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -472,7 +472,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -481,16 +481,16 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
 				tuple("Update errand status", "external_task_investigation_update_errand_status"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
 				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
-				//Sanity check failed
+				// Sanity check failed
 				tuple("Wait for update", "investigation_sanity_check_is_update_available"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
 				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
@@ -499,9 +499,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -509,13 +509,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -524,13 +524,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -541,7 +541,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1213")
+			.withServicePath("/2281/process/start/1213")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -551,11 +551,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("investigation_phase_action_is_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_phase_action_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -575,7 +575,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -584,9 +584,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -597,7 +597,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
-				//Phase action not complete
+				// Phase action not complete
 				tuple("Wait for update", "investigation_phase_action_is_update_available"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
 				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
@@ -605,11 +605,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
-				//Phase action complete
+				// Phase action complete
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -617,13 +617,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -632,13 +632,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -649,7 +649,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1314")
+			.withServicePath("/2281/process/start/1314")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -669,7 +669,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -678,9 +678,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -691,12 +691,12 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
-				//Phase action canceled
+				// Phase action canceled
 				tuple("End when canceled", "end_investigation_canceled"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
 
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -707,7 +707,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1415")
+			.withServicePath("/2281/process/start/1415")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -717,11 +717,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("execution_card_check_is_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "execution_card_check_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -741,7 +741,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -750,9 +750,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -764,9 +764,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -774,32 +774,32 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
 				tuple("Order card", "external_task_execution_order_card_task"),
 				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
-				//Card does not exist
+				// Card does not exist
 				tuple("Wait for existing card", "execution_card_check_is_update_available"),
 				tuple("Check if card exists", "external_task_execution_check_if_card_exists"),
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -810,7 +810,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1516")
+			.withServicePath("/2281/process/start/1516")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -830,7 +830,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -839,9 +839,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -853,9 +853,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -863,9 +863,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -876,7 +876,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1617")
+			.withServicePath("/2281/process/start/1617")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -886,11 +886,11 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
-			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> eventSubscription.getActivityId().equals("investigation_phase_action_is_update_available")).count(), equalTo(1L));
+			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_phase_action_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
 		setupCall()
-			.withServicePath("/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -910,7 +910,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -919,9 +919,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -932,7 +932,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"),
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
-				//Phase action not complete
+				// Phase action not complete
 				tuple("Wait for update", "investigation_phase_action_is_update_available"),
 				tuple("Sanity checks", "external_task_investigation_sanity_check"),
 				tuple("Sanity check passed", "gateway_investigation_sanity_check"),
@@ -941,9 +941,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -951,13 +951,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Handling
+				// Handling
 				tuple("Handling", "call_activity_handling"),
 				tuple("Start handling phase", "start_handling_phase"),
 				tuple("End handling phase", "end_handling_phase"),
-				//Execution
+				// Execution
 				tuple("Execution", "call_activity_execution"),
 				tuple("Start execution phase", "start_execution_phase"),
 				tuple("Update phase", "external_task_execution_update_phase"),
@@ -966,13 +966,13 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Is card manufactured", "gateway_card_exists"),
 				tuple("Create Asset", "external_task_execution_create_asset"),
 				tuple("End execution phase", "end_execution_phase"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
@@ -983,7 +983,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/process/start/1718")
+			.withServicePath("/2281/process/start/1718")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -1003,7 +1003,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 			.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
 			.containsExactlyInAnyOrder(
 				tuple("Start process", "start_process"),
-				//Actualization
+				// Actualization
 				tuple("Actualization", "actualization_phase"),
 				tuple("Start actualization phase", "start_actualization_phase"),
 				tuple("Update phase", "external_task_actualization_update_phase"),
@@ -1012,9 +1012,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway isCitizen", "gateway_is_citizen"),
-				//Investigation
+				// Investigation
 				tuple("Investigation", "investigation_phase"),
 				tuple("Start investigation phase", "start_investigation_phase"),
 				tuple("Update phase", "external_task_investigation_update_phase"),
@@ -1026,9 +1026,9 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check phase action", "external_task_investigation_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"),
 				tuple("End investigation phase", "end_investigation_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in investigation", "gateway_investigation_canceled"),
-				//Decision
+				// Decision
 				tuple("Decision", "decision_phase"),
 				tuple("Start decision phase", "start_decision_phase"),
 				tuple("Update phase on errand", "external_task_decision_update_phase"),
@@ -1036,15 +1036,15 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Check if decision is made", "external_task_check_decision_task"),
 				tuple("Gateway is decision final", "gateway_is_decision_final"),
 				tuple("End decision phase", "end_decision_phase"),
-				//GW isCanceled
+				// GW isCanceled
 				tuple("Is canceled in decision or not approved", "gateway_decision_canceled"),
-				//Follow up
+				// Follow up
 				tuple("Follow up", "call_activity_follow_up"),
 				tuple("Start follow up phase", "start_follow_up_phase"),
 				tuple("Update phase", "external_task_follow_up_update_phase"),
 				tuple("Clean up notes", "external_task_follow_up_clean_up_notes"),
 				tuple("End follow up phase", "end_follow_up_phase"),
-				//GW isCitizen
+				// GW isCitizen
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));

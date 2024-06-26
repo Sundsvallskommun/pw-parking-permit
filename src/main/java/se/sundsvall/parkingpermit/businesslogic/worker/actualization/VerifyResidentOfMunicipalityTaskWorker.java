@@ -6,6 +6,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.citizen.CitizenAddress;
@@ -32,9 +32,6 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
 	static final String MAIN_ADDRESS_TYPE = "POPULATION_REGISTRATION_ADDRESS";
 
-	@Value("${common.application.municipality-id}")
-	private String requiredMunicipalityId;
-
 	private final CitizenClient citizenClient;
 
 	VerifyResidentOfMunicipalityTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, CitizenClient citizenClient) {
@@ -48,6 +45,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
 			final var variables = new HashMap<String, Object>(Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
+			final var contextMunicipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final var errand = getErrand(externalTask);
 
 			getOptionalStakeholder(errand, PERSON, APPLICANT).ifPresent(applicant -> {
@@ -57,9 +55,9 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 				getMunicipalityId(personId).ifPresent(applicantMunicipalityId -> {
 
 					// If applicant belongs to another municipality, set corresponding variable to indicate this.
-					if (!applicantMunicipalityId.equals(requiredMunicipalityId)) {
+					if (!applicantMunicipalityId.equals(contextMunicipalityId)) {
 						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
-							personId, requiredMunicipalityId, applicantMunicipalityId);
+							personId, contextMunicipalityId, applicantMunicipalityId);
 
 						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 					}

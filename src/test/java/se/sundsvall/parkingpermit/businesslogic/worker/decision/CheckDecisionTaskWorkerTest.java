@@ -1,28 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
-import generated.se.sundsvall.casedata.StatusDTO;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.Map;
-
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
@@ -55,6 +32,30 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
+import java.util.List;
+import java.util.Map;
+
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.PatchErrandDTO;
+import generated.se.sundsvall.casedata.StatusDTO;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
 @ExtendWith(MockitoExtension.class)
 class CheckDecisionTaskWorkerTest {
 
@@ -68,8 +69,10 @@ class CheckDecisionTaskWorkerTest {
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
+
 	@Mock
 	private ErrandDTO errandMock;
+
 	@Mock
 	private ExternalTask externalTaskMock;
 
@@ -254,7 +257,7 @@ class CheckDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_IS_APPROVED, false, CAMUNDA_VARIABLE_PHASE_STATUS	, PHASE_STATUS_WAITING));
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_IS_APPROVED, false, CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoMoreInteractions(camundaClientMock);

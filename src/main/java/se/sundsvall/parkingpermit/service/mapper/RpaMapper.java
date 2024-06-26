@@ -1,11 +1,11 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
+import static java.util.Optional.ofNullable;
+
 import generated.se.sundsvall.rpa.QueueItemDataDto;
 import generated.se.sundsvall.rpa.QueuesAddQueueItemParameters;
 
-import static java.util.Optional.ofNullable;
-
-public class RpaMapper {
+public final class RpaMapper {
 
 	private RpaMapper() {}
 

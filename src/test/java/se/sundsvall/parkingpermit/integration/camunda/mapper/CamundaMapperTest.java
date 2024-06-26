@@ -4,12 +4,12 @@ import static java.util.Map.entry;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.util.Map;
+import java.util.Random;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
 
@@ -20,17 +20,24 @@ class CamundaMapperTest {
 
 	@Test
 	void toStartProcessInstanceDto() {
-		RandomStringUtils.randomAlphabetic(10);
-		final var caseNumber = RandomUtils.nextLong();
+
+		// Arrange
+		final var municipalityId = "2281";
+		final var caseNumber = new Random().nextLong();
 
 		if (isEmpty(RequestId.get())) {
 			RequestId.init();
 		}
 
-		final var dto = CamundaMapper.toStartProcessInstanceDto(caseNumber);
+		// Act
+		final var dto = CamundaMapper.toStartProcessInstanceDto(municipalityId, caseNumber);
 
+		// Assert
 		assertThat(dto.getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
 		assertThat(dto.getVariables().entrySet()).containsExactlyInAnyOrder(
+			entry(CAMUNDA_VARIABLE_MUNICIPALITY_ID, new VariableValueDto()
+				.type(ValueType.STRING.getName())
+				.value(municipalityId)),
 			entry(CAMUNDA_VARIABLE_CASE_NUMBER, new VariableValueDto()
 				.type(ValueType.LONG.getName())
 				.value(caseNumber)),
