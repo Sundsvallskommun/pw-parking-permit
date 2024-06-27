@@ -18,7 +18,8 @@ public interface PartyAssetsClient {
 	/**
 	 * Create asset for party.
 	 *
-	 * @param assetCreateRequest request containing asset information
+	 * @param municipalityId     the municipalityId.
+	 * @param assetCreateRequest request containing asset information.
 	 */
 	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> createAsset(@PathVariable("municipalityId") String municipalityId, AssetCreateRequest assetCreateRequest);
