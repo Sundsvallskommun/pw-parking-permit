@@ -40,7 +40,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 					final var displayPhase = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE)).orElse(phaseValue).toString();
 					logInfo("Setting phase to {}", phaseValue);
 					// Set phase action to unknown to errand in the beginning of the phase
-					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue.toString(), PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN,displayPhase));
+					caseDataClient.patchErrand(errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue.toString(), PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, displayPhase));
 				},
 				() -> logInfo("Phase is not set"));
 

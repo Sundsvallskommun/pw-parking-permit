@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component;
 public class TextProvider {
 
 	private final ApprovalTextProperties approvalTexts;
-
 	private final DenialTextProperties denialTexts;
-
 	private final CommonTextProperties commonTexts;
 
 	TextProvider(ApprovalTextProperties approvalTexts, DenialTextProperties denialTexts, CommonTextProperties commonTexts) {

@@ -40,16 +40,16 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			ErrandDTO errand = getErrand(externalTask);
+			final var errand = getErrand(externalTask);
 			rpaService.addQueueItems(getQueueNames(errand), errand.getId());
 			caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED)));
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
-    }
+	}
 
 	private List<String> getQueueNames(ErrandDTO errand) {
 		if (isNull(errand.getCaseType())) {
@@ -60,7 +60,6 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 			case PARKING_PERMIT -> List.of(QUEUE_NEW_CARD);
 			case PARKING_PERMIT_RENEWAL -> List.of(QUEUE_REPLACEMENT_CARD);
 			case LOST_PARKING_PERMIT -> List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD);
-
 			default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, String.format(UNSUPPORTED_CASE_TYPE, errand.getCaseType().name()));
 		};
 	}

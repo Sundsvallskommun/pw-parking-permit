@@ -35,6 +35,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 	@Autowired
 	protected CamundaClient camundaClient;
 
+	@SuppressWarnings("resource")
 	@Container
 	private static final GenericContainer<?> CAMUNDA = new GenericContainer<>(CAMUNDA_IMAGE_NAME)
 		.waitingFor(Wait.forHttp("/"))

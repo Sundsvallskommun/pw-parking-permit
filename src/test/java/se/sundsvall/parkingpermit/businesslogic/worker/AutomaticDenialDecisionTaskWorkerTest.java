@@ -23,8 +23,8 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Random;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -109,7 +109,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var lawSfs = "lawSfs";
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
-		final var stakeholderId = RandomUtils.nextLong();
+		final var stakeholderId = new Random().nextLong();
 		final var stakeholderDTO = new StakeholderDTO().id(stakeholderId);
 		final var output = "output";
 
@@ -192,7 +192,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var lawSfs = "lawSfs";
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
-		final var stakeholderId = RandomUtils.nextLong();
+		final var stakeholderId = new Random().nextLong();
 		final var processEngineStakeholder = createStakeholder(stakeholderId, ADMINISTRATOR, "Process", "Engine");
 		final var output = "output";
 

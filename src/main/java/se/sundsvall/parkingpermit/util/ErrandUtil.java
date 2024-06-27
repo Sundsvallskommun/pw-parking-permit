@@ -16,7 +16,7 @@ import generated.se.sundsvall.casedata.StakeholderDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 
-public class ErrandUtil {
+public final class ErrandUtil {
 
 	private ErrandUtil() {}
 

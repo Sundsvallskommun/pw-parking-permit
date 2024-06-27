@@ -16,8 +16,7 @@ public class PartyAssetsService {
 		this.partyAssetsClient = partyAssetsClient;
 	}
 
-	public void createAsset(ErrandDTO errand) {
-
-		partyAssetsClient.createAsset(toAssetCreateRequest(errand));
+	public void createAsset(String municipalityId, ErrandDTO errand) {
+		partyAssetsClient.createAsset(municipalityId, toAssetCreateRequest(errand));
 	}
 }

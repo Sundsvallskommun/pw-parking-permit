@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper.toRuleEngineRequest;
 
 import java.util.HashMap;
@@ -32,13 +33,14 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for ExecuteRulesTaskWorker");
 			final var errand = getErrand(externalTask);
-			final var ruleEngineResponse = businessRulesClient.runRuleEngine(toRuleEngineRequest(errand));
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final var ruleEngineResponse = businessRulesClient.runRuleEngine(municipalityId, toRuleEngineRequest(errand));
 
 			final var variables = new HashMap<String, Object>();
 			variables.put(Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse);
 
 			externalTaskService.complete(externalTask, variables);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

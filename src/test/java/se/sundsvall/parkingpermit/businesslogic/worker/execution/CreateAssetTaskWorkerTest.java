@@ -1,6 +1,13 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -10,25 +17,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
-
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 @ExtendWith(MockitoExtension.class)
 class CreateAssetTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
+	private static final String MUNICIPALITY_ID = "2281";
 	private static final long ERRAND_ID = 123L;
 
 	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
 	private static final String VARIABLE_REQUEST_ID = "requestId";
+	private static final String VARIABLE_MUNICIPALITY_ID = "municipalityId";
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -50,8 +54,9 @@ class CreateAssetTaskWorkerTest {
 
 	@Test
 	void execute() {
-		//Arrange
+		// Arrange
 		final var errand = new ErrandDTO();
+		when(externalTaskMock.getVariable(VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errand);
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -59,8 +64,9 @@ class CreateAssetTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(partyAssetsServiceMock).createAsset(errand);
+		verify(partyAssetsServiceMock).createAsset(MUNICIPALITY_ID, errand);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
@@ -80,6 +86,7 @@ class CreateAssetTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock, never()).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();

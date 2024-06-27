@@ -10,7 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import org.apache.commons.lang3.RandomUtils;
+import java.util.Random;
+
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,8 @@ class ProcessServiceTest {
 		// Arrange
 		final var process = "process-parking-permit";
 		final var tenant = "PARKING_PERMIT";
-		final var caseNumber = RandomUtils.nextLong();
+		final var municipalityId = "2281";
+		final var caseNumber = new Random().nextLong();
 		final var uuid = randomUUID().toString();
 		final var logId = randomUUID().toString();
 		final var processInstance = new ProcessInstanceWithVariablesDto().id(uuid);
@@ -61,18 +63,19 @@ class ProcessServiceTest {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
 			// Act
-			assertThat(processService.startProcess(caseNumber)).isEqualTo(uuid);
+			assertThat(processService.startProcess(municipalityId, caseNumber)).isEqualTo(uuid);
 		}
 
 		// Assert
 		verify(camundaClientMock).startProcessWithTenant(eq(process), eq(tenant), startProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
 		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
-		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(2)
-			.containsKeys("caseNumber", "requestId")
-			.extractingByKeys("caseNumber", "requestId")
+		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(3)
+			.containsKeys("municipalityId", "caseNumber", "requestId")
+			.extractingByKeys("municipalityId", "caseNumber", "requestId")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
 			.contains(
+				tuple(ValueType.STRING.getName(), municipalityId),
 				tuple(ValueType.LONG.getName(), caseNumber),
 				tuple(ValueType.STRING.getName(), logId));
 	}
@@ -81,6 +84,7 @@ class ProcessServiceTest {
 	void updateProcess() {
 
 		// Arrange
+		final var municipalityId = "2281";
 		final var uuid = randomUUID().toString();
 		final var logId = randomUUID().toString();
 
@@ -89,16 +93,19 @@ class ProcessServiceTest {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
 			// Act
-			processService.updateProcess(uuid);
+			processService.updateProcess(municipalityId, uuid);
 		}
 
 		// Assert
 		verify(camundaClientMock).setProcessInstanceVariables(eq(uuid), updateProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
-		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(2)
-			.containsKeys("updateAvailable", "requestId")
-			.extractingByKeys("updateAvailable", "requestId")
+		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(3)
+			.containsKeys("municipalityId", "updateAvailable", "requestId")
+			.extractingByKeys("municipalityId", "updateAvailable", "requestId")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
-			.contains(tuple(ValueType.BOOLEAN.getName(), true), tuple(ValueType.STRING.getName(), logId));
+			.contains(
+				tuple(ValueType.STRING.getName(), municipalityId),
+				tuple(ValueType.BOOLEAN.getName(), true),
+				tuple(ValueType.STRING.getName(), logId));
 	}
 }

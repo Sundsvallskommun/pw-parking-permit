@@ -1,18 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.util;
 
-import com.google.re2j.Pattern;
-import generated.se.sundsvall.businessrules.Result;
-import generated.se.sundsvall.businessrules.ResultDetail;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
@@ -24,7 +11,21 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.dept44.util.DateUtils.toOffsetDateTimeWithLocalOffset;
 
-public class BusinessRulesUtil {
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import com.google.re2j.Pattern;
+
+import generated.se.sundsvall.businessrules.Result;
+import generated.se.sundsvall.businessrules.ResultDetail;
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum;
+
+public final class BusinessRulesUtil {
 
 	static final String PREFIX_APPROVAL = "Rekommenderat beslut är bevilja. %s";
 	static final String PREFIX_REJECT = "Rekommenderat beslut är avslag. %s";
@@ -51,7 +52,7 @@ public class BusinessRulesUtil {
 	}
 
 	private static String concatDescriptions(List<ResultDetail> detailsFromRuleEngine) {
-		String transformed = transformToString(ofNullable(detailsFromRuleEngine).orElse(emptyList()).stream()
+		final String transformed = transformToString(ofNullable(detailsFromRuleEngine).orElse(emptyList()).stream()
 			.filter(Objects::nonNull)
 			.map(ResultDetail::getDescription)
 			.toList());
@@ -64,7 +65,7 @@ public class BusinessRulesUtil {
 	}
 
 	private static String transformToString(List<String> strings) {
-		String concatenated = String.join(", ", ofNullable(strings).orElse(emptyList()));
+		final String concatenated = String.join(", ", ofNullable(strings).orElse(emptyList()));
 
 		return capitalize(Pattern.compile(REGEXP_LAST_COMMA).matcher(concatenated).replaceAll("$1 och $3"));
 	}

@@ -3,7 +3,7 @@
 	"requiredScenarioState": "investigation_execute-rules-task-worker---api-casedata-get-errand",
 	"newScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
 	"request": {
-		"urlPath": "/api-business-rules/engine",
+		"urlPath": "/api-business-rules/2281/engine",
 		"method": "POST",
 		"headers": {
 			"Authorization": {

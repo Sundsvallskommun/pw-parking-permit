@@ -1,9 +1,10 @@
 package se.sundsvall.parkingpermit;
 
-import generated.se.sundsvall.camunda.VariableValueDto;
 import org.camunda.bpm.engine.variable.type.ValueType;
 
-public class Constants {
+import generated.se.sundsvall.camunda.VariableValueDto;
+
+public final class Constants {
 
 	private Constants() {}
 
@@ -16,6 +17,7 @@ public class Constants {
 
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
+	public static final String CAMUNDA_VARIABLE_MUNICIPALITY_ID = "municipalityId";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";

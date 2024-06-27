@@ -22,13 +22,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.common.validators.annotation.ValidUuid;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 import se.sundsvall.parkingpermit.service.ProcessService;
 
 @RestController
 @Validated
-@RequestMapping("process")
+@RequestMapping("{municipalityId}/process")
 @Tag(name = "Camunda process endpoints", description = "Endpoints for starting and updating camunda processes")
 public class ProcessResource {
 
@@ -48,10 +49,11 @@ public class ProcessResource {
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<StartProcessResponse> startProcess(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumber") @PathVariable @Positive final Long caseNumber) {
 
-		final var startProcessResponse = new StartProcessResponse(service.startProcess(caseNumber));
-		LOGGER.info("Request for start of process for caseNumber {} has been received, resulting in an instance with id {}", caseNumber, startProcessResponse.getProcessId());
+		final var startProcessResponse = new StartProcessResponse(service.startProcess(municipalityId, caseNumber));
+		LOGGER.info("Request for start of process for municipalityId {} and caseNumber {} has been received, resulting in an instance with id {}", municipalityId, caseNumber, startProcessResponse.getProcessId());
 
 		return accepted().body(startProcessResponse);
 	}
@@ -64,10 +66,11 @@ public class ProcessResource {
 	@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	@ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> updateProcess(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "processInstanceId") @PathVariable @ValidUuid final String processInstanceId) {
 
 		LOGGER.info("Request for update of process instance with id {} has been received", processInstanceId);
-		service.updateProcess(processInstanceId);
+		service.updateProcess(municipalityId, processInstanceId);
 
 		return accepted().build();
 	}
