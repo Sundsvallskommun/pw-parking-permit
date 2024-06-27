@@ -6,6 +6,7 @@ import static se.sundsvall.parkingpermit.integration.partyassets.configuration.P
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import generated.se.sundsvall.partyassets.AssetCreateRequest;
@@ -16,8 +17,9 @@ public interface PartyAssetsClient {
 
 	/**
 	 * Create asset for party.
+	 *
 	 * @param assetCreateRequest request containing asset information
 	 */
-	@PostMapping(path = "/assets", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
-	ResponseEntity<Void> createAsset(AssetCreateRequest assetCreateRequest);
+	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	ResponseEntity<Void> createAsset(@PathVariable("municipalityId") String municipalityId, AssetCreateRequest assetCreateRequest);
 }

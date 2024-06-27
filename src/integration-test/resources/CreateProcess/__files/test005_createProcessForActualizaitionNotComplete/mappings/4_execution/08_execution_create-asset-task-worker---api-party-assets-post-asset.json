@@ -3,7 +3,7 @@
 	"requiredScenarioState": "execution_create-asset-task-worker---api-casedata-get-errand",
 	"newScenarioState": "execution_create-asset-task-worker---api-party-assets-post-asset",
 	"request": {
-		"urlPath": "/api-party-assets/assets",
+		"urlPath": "/api-party-assets/2281/assets",
 		"method": "POST",
 		"headers": {
 			"Authorization": {
