@@ -1,57 +1,84 @@
 openapi: 3.0.1
 info:
-  title: api-business-rules
+  title: business-rules
   contact: {}
   license:
     name: MIT License
-    url: 'https://opensource.org/licenses/MIT'
-  version: '1.0'
+    url: https://opensource.org/licenses/MIT
+  version: "2.0"
+servers:
+- url: https://localhost:8080
+  description: Generated server url
 tags:
-  - name: BusinessRules
-    description: Business rule engine resource
+- name: BusinessRules
+  description: Business rule engine resource
 paths:
-  /engine:
+  /{municipalityId}/engine:
     post:
       tags:
-        - BusinessRules
+      - BusinessRules
       summary: Run rule engine
       operationId: run
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RuleEngineRequest'
+              $ref: "#/components/schemas/RuleEngineRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RuleEngineResponse'
+                $ref: "#/components/schemas/RuleEngineResponse"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/RuleEngineResponse'
-        '400':
+                $ref: "#/components/schemas/RuleEngineResponse"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '500':
-          description: Internal Server error
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /api-docs:
+    get:
+      tags:
+      - API
+      summary: OpenAPI
+      operationId: getApiDocs
+      responses:
+        "200":
+          description: OK
           content:
-            application/problem+json:
+            application/yaml:
               schema:
-                $ref: '#/components/schemas/Problem'
+                type: string
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+      x-wso2-mutual-ssl: Optional
 components:
   schemas:
     Fact:
       required:
-        - key
-        - value
+      - key
+      - value
       type: object
       properties:
         key:
@@ -65,8 +92,8 @@ components:
       description: Fact model
     RuleEngineRequest:
       required:
-        - context
-        - facts
+      - context
+      - facts
       type: object
       properties:
         context:
@@ -77,7 +104,7 @@ components:
           type: array
           description: Alias for the destination
           items:
-            $ref: '#/components/schemas/Fact'
+            $ref: "#/components/schemas/Fact"
       description: RuleEngineRequest model
     Problem:
       type: object
@@ -93,7 +120,7 @@ components:
           additionalProperties:
             type: object
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
@@ -110,7 +137,7 @@ components:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -129,19 +156,19 @@ components:
               lineNumber:
                 type: integer
                 format: int32
-              nativeMethod:
-                type: boolean
               className:
                 type: string
+              nativeMethod:
+                type: boolean
         type:
           type: string
           format: uri
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         violations:
           type: array
           items:
-            $ref: '#/components/schemas/Violation'
+            $ref: "#/components/schemas/Violation"
         title:
           type: string
         message:
@@ -178,10 +205,10 @@ components:
                     lineNumber:
                       type: integer
                       format: int32
-                    nativeMethod:
-                      type: boolean
                     className:
                       type: string
+                    nativeMethod:
+                      type: boolean
               message:
                 type: string
               localizedMessage:
@@ -192,7 +219,7 @@ components:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -211,10 +238,10 @@ components:
               lineNumber:
                 type: integer
                 format: int32
-              nativeMethod:
-                type: boolean
               className:
                 type: string
+              nativeMethod:
+                type: boolean
         message:
           type: string
         instance:
@@ -228,7 +255,7 @@ components:
           additionalProperties:
             type: object
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
@@ -256,10 +283,10 @@ components:
                     lineNumber:
                       type: integer
                       format: int32
-                    nativeMethod:
-                      type: boolean
                     className:
                       type: string
+                    nativeMethod:
+                      type: boolean
               message:
                 type: string
               localizedMessage:
@@ -277,7 +304,7 @@ components:
       type: object
       properties:
         value:
-          $ref: '#/components/schemas/ResultValue'
+          $ref: "#/components/schemas/ResultValue"
         rule:
           type: string
           description: The name of the rule that generated the result
@@ -286,7 +313,7 @@ components:
           type: array
           description: Rule result details
           items:
-            $ref: '#/components/schemas/ResultDetail'
+            $ref: "#/components/schemas/ResultDetail"
       description: Result model
     ResultDetail:
       type: object
@@ -309,10 +336,10 @@ components:
       description: ResultValue model
       example: PASS
       enum:
-        - PASS
-        - FAIL
-        - VALIDATION_ERROR
-        - NOT_APPLICABLE
+      - PASS
+      - FAIL
+      - VALIDATION_ERROR
+      - NOT_APPLICABLE
     RuleEngineResponse:
       type: object
       properties:
@@ -324,5 +351,6 @@ components:
           type: array
           description: The rule engine results
           items:
-            $ref: '#/components/schemas/Result'
+            $ref: "#/components/schemas/Result"
       description: RuleEngineResponse model
+  securitySchemes: {}
