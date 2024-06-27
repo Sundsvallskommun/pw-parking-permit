@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>se.sundsvall.parkingpermit</groupId>
 	<artifactId>pw-parking-permit</artifactId>
-	<version>1.0</version>
+	<version>2.0</version>
 	<name>pw-parking-permit</name>
 
 	<properties>
@@ -36,7 +36,6 @@
 			<optional>true</optional>
 		</dependency>
 		<!--Camunda dependencies-->
-
    		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>

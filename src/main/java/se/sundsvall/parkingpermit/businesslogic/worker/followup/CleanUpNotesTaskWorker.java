@@ -34,7 +34,7 @@ public class CleanUpNotesTaskWorker extends AbstractTaskWorker {
 			Optional.ofNullable(notes).orElse(emptyList()).forEach(internalNote -> caseDataClient.deleteNoteById(internalNote.getId()));
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

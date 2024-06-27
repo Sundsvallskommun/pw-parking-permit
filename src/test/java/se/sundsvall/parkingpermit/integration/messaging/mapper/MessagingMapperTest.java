@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.integration.messaging.mapper;
 import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -115,7 +116,7 @@ class MessagingMapperTest {
 				CONTACTINFO_PHONENUMBER,
 				CONTACTINFO_TEXT,
 				CONTACTINFO_URL);
-		assertThat(request.getParty()).isNotNull().extracting(LetterParty::getPartyIds).asList().containsExactly(PARTY_ID);
+		assertThat(request.getParty()).isNotNull().extracting(LetterParty::getPartyIds).asInstanceOf(LIST).containsExactly(PARTY_ID);
 		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
 		assertThat(request.getAttachments()).hasSize(1)
 			.extracting(

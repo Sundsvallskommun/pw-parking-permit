@@ -47,7 +47,7 @@ public class SanityCheckTaskWorker extends AbstractTaskWorker {
 			final var sanityCheckPassed = executeSanityChecks(errand);
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_SANITY_CHECK_PASSED, sanityCheckPassed));
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

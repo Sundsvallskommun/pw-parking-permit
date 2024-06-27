@@ -1,16 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.Optional;
-
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
@@ -18,6 +7,18 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @Component
 @ExternalTaskSubscription("UpdateErrandStatusTask")
@@ -58,6 +59,6 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 
 	private boolean isCitizen(ExternalTask externalTask) {
 		final var applicantNotResidentOfMuncipality = externalTask.getVariable(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY);
-		return ! Optional.ofNullable(applicantNotResidentOfMuncipality).map(Boolean.class::cast).orElse(true);
+		return !Optional.ofNullable(applicantNotResidentOfMuncipality).map(Boolean.class::cast).orElse(true);
 	}
 }

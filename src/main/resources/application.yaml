@@ -58,13 +58,6 @@ spring:
             client-secret: ${config.partyassets.client-secret}
 
 #----------------------------------------
-# Common
-#----------------------------------------
-common:
-  application:
-    municipality-id: 2281
-
-#----------------------------------------
 # Open API
 #----------------------------------------
 openapi:

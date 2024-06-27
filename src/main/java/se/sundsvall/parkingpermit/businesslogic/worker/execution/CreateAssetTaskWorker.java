@@ -31,7 +31,7 @@ public class CreateAssetTaskWorker extends AbstractTaskWorker {
 			partyAssetsService.createAsset(errand);
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}

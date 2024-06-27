@@ -49,17 +49,17 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			validateResponse(ruleEngineResponse);
 
 			final var decisionDTO = ruleEngineResponse.getResults().stream()
-				.filter(result -> ! NOT_APPLICABLE.equals(result.getValue()))
+				.filter(result -> !NOT_APPLICABLE.equals(result.getValue()))
 				.findFirst()
 				.map(BusinessRulesUtil::constructDecision)
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
 			if (isDecisionsNotEqual(latestDecision, decisionDTO)) {
-				caseDataClient.patchNewDecision(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() +1).orElse(0)));
+				caseDataClient.patchNewDecision(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() + 1).orElse(0)));
 			}
 
 			externalTaskService.complete(externalTask);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
@@ -79,7 +79,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		if (isNull(latestDecision)) {
 			return true;
 		}
-		return ! (Objects.equals(latestDecision.getDecisionType(), decisionDTO.getDecisionType())
+		return !(Objects.equals(latestDecision.getDecisionType(), decisionDTO.getDecisionType())
 			&& Objects.equals(latestDecision.getDecisionOutcome(), decisionDTO.getDecisionOutcome())
 			&& Objects.equals(latestDecision.getDescription(), decisionDTO.getDescription()));
 	}

@@ -1,16 +1,5 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.partyassets.AssetCreateRequest;
-import generated.se.sundsvall.partyassets.Status;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.util.ErrandUtil;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyList;
@@ -24,10 +13,21 @@ import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
 
-public class PartyAssetsMapper {
+import java.time.LocalDate;
+import java.util.Optional;
 
-	private PartyAssetsMapper() {
-	}
+import org.zalando.problem.Problem;
+
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+import se.sundsvall.parkingpermit.Constants;
+import se.sundsvall.parkingpermit.util.ErrandUtil;
+
+public final class PartyAssetsMapper {
+
+	private PartyAssetsMapper() {}
 
 	public static AssetCreateRequest toAssetCreateRequest(ErrandDTO errandDTO) {
 		if (isNull(errandDTO)) {

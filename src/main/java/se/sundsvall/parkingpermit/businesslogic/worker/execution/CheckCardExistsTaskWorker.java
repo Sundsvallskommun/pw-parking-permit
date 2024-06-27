@@ -37,7 +37,7 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 			final var cardExists = isCardCreated(errand);
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_CARD_EXISTS, cardExists));
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
@@ -45,8 +45,8 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 
 	private boolean isCardCreated(ErrandDTO errand) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyMap()).entrySet().stream()
-				.filter(entry -> CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER.equals(entry.getKey()))
-				.map(Map.Entry::getValue)
-				.anyMatch(StringUtils::isNotEmpty);
+			.filter(entry -> CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER.equals(entry.getKey()))
+			.map(Map.Entry::getValue)
+			.anyMatch(StringUtils::isNotEmpty);
 	}
 }
