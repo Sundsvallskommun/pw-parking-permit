@@ -1,7 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
 import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum;
 import generated.se.sundsvall.casedata.StatusDTO;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
@@ -25,9 +24,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.LOST_PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT_RENEWAL;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -40,6 +36,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 
 @ExtendWith(MockitoExtension.class)
 class OrderCardTaskWorkerTest {
@@ -76,7 +75,7 @@ class OrderCardTaskWorkerTest {
 
 	@ParameterizedTest
 	@MethodSource("orderCardTypeArguments")
-	void execute(CaseTypeEnum caseType, List<String> expectedQueueNames) {
+	void execute(String caseType, List<String> expectedQueueNames) {
 		//Arrange
 		final var errand = new ErrandDTO().id(ERRAND_ID).caseType(caseType);
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -101,7 +100,7 @@ class OrderCardTaskWorkerTest {
 	@Test
 	void executeThrowsException() {
 		// Arrange
-		final var errand = new ErrandDTO().id(ERRAND_ID).caseType(PARKING_PERMIT);
+		final var errand = new ErrandDTO().id(ERRAND_ID).caseType(CASE_TYPE_PARKING_PERMIT);
 		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errand);
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -123,8 +122,8 @@ class OrderCardTaskWorkerTest {
 
 	private static Stream<Arguments> orderCardTypeArguments() {
 		return Stream.of(
-			Arguments.of(PARKING_PERMIT, List.of(QUEUE_NEW_CARD)),
-					Arguments.of(PARKING_PERMIT_RENEWAL, List.of(QUEUE_REPLACEMENT_CARD)),
-					Arguments.of(LOST_PARKING_PERMIT, List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD)));
+			Arguments.of(CASE_TYPE_PARKING_PERMIT, List.of(QUEUE_NEW_CARD)),
+					Arguments.of(CASE_TYPE_PARKING_PERMIT_RENEWAL, List.of(QUEUE_REPLACEMENT_CARD)),
+					Arguments.of(CASE_TYPE_LOST_PARKING_PERMIT, List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD)));
 	}
 }

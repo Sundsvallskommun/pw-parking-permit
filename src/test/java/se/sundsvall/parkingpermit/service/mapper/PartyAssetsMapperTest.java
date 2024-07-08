@@ -12,14 +12,14 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 class PartyAssetsMapperTest {
 	final static String ERRAND_ID = "123";
@@ -124,12 +124,12 @@ class PartyAssetsMapperTest {
 			new StakeholderDTO()
 				.id(123L)
 				.type(PERSON)
-				.roles(List.of(ADMINISTRATOR))
+				.roles(List.of(ROLE_ADMINISTRATOR))
 				.personId("123"),
 			new StakeholderDTO()
 				.id(456L)
 				.type(PERSON)
-				.roles(List.of(APPLICANT))
+				.roles(List.of(ROLE_APPLICANT))
 				.personId("456")
 		);
 	}

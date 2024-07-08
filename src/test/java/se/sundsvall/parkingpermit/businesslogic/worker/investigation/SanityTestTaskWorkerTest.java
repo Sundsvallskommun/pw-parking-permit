@@ -2,9 +2,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -28,10 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.ANMALAN_INSTALLATION_VARMEPUMP;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +38,9 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class SanityTestTaskWorkerTest {
@@ -85,7 +82,7 @@ class SanityTestTaskWorkerTest {
 
 	@ParameterizedTest
 	@MethodSource("sanityChecksTypeArguments")
-	void execute(List<RolesEnum> roles, CaseTypeEnum caseType, boolean expectedSanityCheckPassed) {
+	void execute(List<String> roles, String caseType, boolean expectedSanityCheckPassed) {
 		// Setup
 		final var processInstanceId = "processInstanceId";
 
@@ -136,14 +133,14 @@ class SanityTestTaskWorkerTest {
 	private static Stream<Arguments> sanityChecksTypeArguments() {
 		return Stream.of(
 			// Sanity check passes
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), PARKING_PERMIT, true),
+			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), CASE_TYPE_PARKING_PERMIT, true),
 			//Sanity check fails when no administrator
-			Arguments.of(List.of(APPLICANT), PARKING_PERMIT, false),
+			Arguments.of(List.of(ROLE_APPLICANT), CASE_TYPE_PARKING_PERMIT, false),
 			//Sanity check fails when no applicant
-			Arguments.of(List.of(ADMINISTRATOR), PARKING_PERMIT, false),
+			Arguments.of(List.of(ROLE_ADMINISTRATOR), CASE_TYPE_PARKING_PERMIT, false),
 			//Sanity check fails when wrong case type
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), ANMALAN_INSTALLATION_VARMEPUMP, false),
+			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), "ANMALAN_INSTALLATION_VARMEPUMP", false),
 			//Sanity check fails when no case type
-			Arguments.of(List.of(ADMINISTRATOR, APPLICANT), null, false));
+			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), null, false));
 	}
 }

@@ -1,21 +1,8 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.LOST_PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT_RENEWAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Map;
-
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -25,13 +12,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class ExecuteRuleTaskWorkerTest {
@@ -84,10 +83,10 @@ class ExecuteRuleTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
 			KEY_DISABILITY_DURATION, "disabilityDuration",
@@ -121,9 +120,9 @@ class ExecuteRuleTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT_RENEWAL);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			KEY_APPLICATION_APPLICANT_CAPACITY, "applicantCapacity",
 			KEY_DISABILITY_DURATION, "disabilityDuration",
@@ -157,9 +156,9 @@ class ExecuteRuleTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(LOST_PARKING_PERMIT);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_LOST_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"));
 		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);
@@ -191,9 +190,9 @@ class ExecuteRuleTaskWorkerTest {
 		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(LOST_PARKING_PERMIT);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_LOST_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			KEY_LOST_PERMIT_POLICE_REPORT_NUMBER, "policeReportNumber"));
 		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);

@@ -1,8 +1,7 @@
 package se.sundsvall.parkingpermit;
 
-import org.camunda.bpm.engine.variable.type.ValueType;
-
 import generated.se.sundsvall.camunda.VariableValueDto;
+import org.camunda.bpm.engine.variable.type.ValueType;
 
 public final class Constants {
 
@@ -73,4 +72,13 @@ public final class Constants {
 	public static final String CASEDATA_PARKING_PERMIT_STATUS_ACTIVE = "Aktivt";
 	public static final String CASEDATA_PARKING_PERMIT_STATUS_BLOCKED = "Spärrat";
 	public static final String CASEDATA_PARKING_PERMIT_STATUS_EXPIRED = "Utgånget";
+
+	public static final String CATEGORY_BESLUT = "BESLUT";
+
+	public static final String ROLE_APPLICANT = "APPLICANT";
+	public static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
+
+	public static final String CASE_TYPE_PARKING_PERMIT = "PARKING_PERMIT";
+	public static final String CASE_TYPE_PARKING_PERMIT_RENEWAL = "PARKING_PERMIT_RENEWAL";
+	public static final String CASE_TYPE_LOST_PARKING_PERMIT = "LOST_PARKING_PERMIT";
 }

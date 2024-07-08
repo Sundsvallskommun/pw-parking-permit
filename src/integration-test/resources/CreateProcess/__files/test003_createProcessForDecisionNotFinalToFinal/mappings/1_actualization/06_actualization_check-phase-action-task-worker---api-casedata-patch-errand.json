@@ -15,6 +15,7 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Aktualisering",
+					"facilities" : [],
 					"extraParameters": {
 						"process.phaseStatus": "COMPLETED",
 						"process.phaseAction": "COMPLETE",

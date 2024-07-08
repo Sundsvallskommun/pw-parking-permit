@@ -13,10 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.ANMALAN_ATTEFALL;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT_RENEWAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
@@ -28,6 +24,9 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_CAN_B
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_ABILITY;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class BusinessRulesMapperTest {
@@ -42,7 +41,7 @@ class BusinessRulesMapperTest {
 
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 				CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "DRIVER",
 				CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
@@ -51,7 +50,7 @@ class BusinessRulesMapperTest {
 				CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, ""
 		));
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 
 		// Act
@@ -75,7 +74,7 @@ class BusinessRulesMapperTest {
 
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "PASSENGER",
 			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
@@ -83,7 +82,7 @@ class BusinessRulesMapperTest {
 			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
 			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 
 		// Act
@@ -117,10 +116,10 @@ class BusinessRulesMapperTest {
 		//Test that null values are not included
 		extraParameters.put(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, null);
 
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT_RENEWAL);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 
 		// Act
@@ -145,7 +144,7 @@ class BusinessRulesMapperTest {
 
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
-		when(errandMock.getCaseType()).thenReturn(PARKING_PERMIT_RENEWAL);
+		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		when(errandMock.getExtraParameters()).thenReturn(Map.of(
 			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "PASSENGER",
 			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
@@ -154,7 +153,7 @@ class BusinessRulesMapperTest {
 			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
 			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
-		when(stakeholderMock.getRoles()).thenReturn(List.of(APPLICANT));
+		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
 
 		// Act
@@ -178,14 +177,14 @@ class BusinessRulesMapperTest {
 
 	@Test
 	void throwsExceptionWhenCaseTypeIsUnknown() {
-
+		final var unknownCaseType = "UNKNOWN";
 		// Arrange
-		when(errandMock.getCaseType()).thenReturn(ANMALAN_ATTEFALL);
+		when(errandMock.getCaseType()).thenReturn(unknownCaseType);
 
 		// Act and assert
 		assertThatThrownBy(() -> BusinessRulesMapper.toRuleEngineRequest(errandMock))
 			.isInstanceOf(DefaultProblem.class)
-			.hasMessage("Bad Request: Unsupported case type " + ANMALAN_ATTEFALL.name());
+			.hasMessage("Bad Request: Unsupported case type " + unknownCaseType);
 	}
 
 	@Test

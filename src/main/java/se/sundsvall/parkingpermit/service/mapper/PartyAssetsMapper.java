@@ -1,7 +1,17 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+import org.zalando.problem.Problem;
+import se.sundsvall.parkingpermit.Constants;
+import se.sundsvall.parkingpermit.util.ErrandUtil;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
@@ -12,18 +22,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import org.zalando.problem.Problem;
-
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.partyassets.AssetCreateRequest;
-import generated.se.sundsvall.partyassets.Status;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.util.ErrandUtil;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 public final class PartyAssetsMapper {
 
@@ -39,7 +38,7 @@ public final class PartyAssetsMapper {
 			.description(PARTY_ASSET_DESCRIPTION)
 			.issued(toIssued(errandDTO))
 			.origin(PARTY_ASSET_ORIGIN)
-			.partyId(ErrandUtil.getStakeholder(errandDTO, APPLICANT).getPersonId())
+			.partyId(ErrandUtil.getStakeholder(errandDTO, ROLE_APPLICANT).getPersonId())
 			.status(toStatus(getArtefactPermitStatus(errandDTO)))
 			.type(PARTY_ASSET_TYPE)
 			.validTo(toValidTo(errandDTO));

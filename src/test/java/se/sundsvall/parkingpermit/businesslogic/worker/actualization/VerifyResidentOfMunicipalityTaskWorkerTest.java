@@ -1,8 +1,28 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.DOCTOR;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,32 +35,9 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NO
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
 @ExtendWith(MockitoExtension.class)
 class VerifyResidentOfMunicipalityTaskWorkerTest {
@@ -50,6 +47,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	private static final long ERRAND_ID = 123L;
 	private static final String CONTEXT_MUNICIPALITY_ID = "2281";
 	private static final String OTHER_MUNICIPALITY_ID = "1234";
+	private static final String ROLE_DOCTOR = "DOCTOR";
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -85,10 +83,10 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, CONTEXT_MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Dr", "Who"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Lady"),
-			createStakeholder(PERSON_ID.toString(), APPLICANT, "Mr", "Applicant"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Dude")));
+			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Lady"),
+			createStakeholder(PERSON_ID.toString(), ROLE_APPLICANT, "Mr", "Applicant"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Dude")));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -112,10 +110,10 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Dr", "Who"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Lady"),
-			createStakeholder(PERSON_ID.toString(), APPLICANT, "Mr", "Applicant"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Dude")));
+			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Lady"),
+			createStakeholder(PERSON_ID.toString(), ROLE_APPLICANT, "Mr", "Applicant"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Dude")));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -139,10 +137,10 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.empty());
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Dr", "Who"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Lady"),
-			createStakeholder(PERSON_ID.toString(), APPLICANT, "Mr", "Applicant"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Dude")));
+			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Lady"),
+			createStakeholder(PERSON_ID.toString(), ROLE_APPLICANT, "Mr", "Applicant"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Dude")));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -166,10 +164,10 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID).addresses(null)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Dr", "Who"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Lady"),
-			createStakeholder(PERSON_ID.toString(), APPLICANT, "Mr", "Applicant"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Dude")));
+			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Lady"),
+			createStakeholder(PERSON_ID.toString(), ROLE_APPLICANT, "Mr", "Applicant"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Dude")));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -195,10 +193,10 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, CONTEXT_MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Dr", "Who"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Lady"),
-			createStakeholder(PERSON_ID.toString(), APPLICANT, "Mr", "Applicant"),
-			createStakeholder(null, ADMINISTRATOR, "Administrator", "Dude")));
+			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Lady"),
+			createStakeholder(PERSON_ID.toString(), ROLE_APPLICANT, "Mr", "Applicant"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Administrator", "Dude")));
 
 		doThrow(thrownException).when(externalTaskServiceMock).complete(any(), anyMap());
 
@@ -215,7 +213,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock);
 	}
 
-	private StakeholderDTO createStakeholder(String personId, RolesEnum role, String firstName, String lastName) {
+	private StakeholderDTO createStakeholder(String personId, String role, String firstName, String lastName) {
 		return new StakeholderDTO()
 			.personId(personId)
 			.firstName(firstName)

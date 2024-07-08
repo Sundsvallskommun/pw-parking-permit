@@ -1,7 +1,6 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
 import generated.se.sundsvall.casedata.AttachmentDTO;
-import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
 import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.casedata.LawDTO;
@@ -10,7 +9,6 @@ import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
 import generated.se.sundsvall.casedata.PatchErrandDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;
@@ -161,9 +159,10 @@ class CaseDataMapperTest {
 		expectedExtraParameters.put("process.phaseAction", null);
 		expectedExtraParameters.put("process.displayPhase", null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
-			.extracting(PatchErrandDTO::getExtraParameters)
-			.isEqualTo(expectedExtraParameters);
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("facilities", "extraParameters")
+			.extracting(PatchErrandDTO::getFacilities,
+						PatchErrandDTO::getExtraParameters)
+			.containsExactly(emptyList(), expectedExtraParameters);
 	}
 
 	@Test
@@ -177,14 +176,16 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "facilities", "extraParameters")
 			.extracting(
 				PatchErrandDTO::getExternalCaseId,
 				PatchErrandDTO::getPhase,
+				PatchErrandDTO::getFacilities,
 				PatchErrandDTO::getExtraParameters)
 			.containsExactly(
 				externalCaseId,
 				phase,
+				emptyList(),
 				Map.of(
 					"process.displayPhase", displayPhase,
 					"process.phaseStatus", phaseStatus,
@@ -231,7 +232,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toAttachment() {
-		final var category = CategoryEnum.POLICE_REPORT;
+		final var category = "POLICE_REPORT";
 		final var name = "name";
 		final var extension = "extension";
 		final var mimeType = "mimeType";
@@ -272,7 +273,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toStakeholder() {
-		final var role = RolesEnum.OPERATOR;
+		final var role = "OPERATOR";
 		final var type = TypeEnum.ORGANIZATION;
 		final var firstName = "firstName";
 		final var lastName = "lastName";
