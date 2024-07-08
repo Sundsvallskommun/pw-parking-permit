@@ -1,7 +1,27 @@
 package se.sundsvall.parkingpermit.service;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.messaging.LetterRequest;
+import generated.se.sundsvall.messaging.MessageBatchResult;
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.messaging.WebMessageRequest;
+import generated.se.sundsvall.templating.RenderResponse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
+import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
+import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
+
+import java.util.List;
+import java.util.UUID;
+
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,30 +31,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.BAD_GATEWAY;
-
-import java.util.List;
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.messaging.LetterRequest;
-import generated.se.sundsvall.messaging.MessageBatchResult;
-import generated.se.sundsvall.messaging.MessageResult;
-import generated.se.sundsvall.messaging.WebMessageRequest;
-import generated.se.sundsvall.templating.RenderResponse;
-import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
-import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
@@ -61,7 +59,7 @@ class MessagingServiceTest {
 	private ArgumentCaptor<WebMessageRequest> webMessageRequestCaptor;
 
 	@Test
-	void renderPdf() throws Exception {
+	void renderPdf() {
 
 		// Arrange
 		final var errand = createErrand(true);
@@ -76,7 +74,7 @@ class MessagingServiceTest {
 	}
 
 	@Test
-	void sendMessageToNonCitizenWithExternalCaseIdPresentInErrand() throws Exception {
+	void sendMessageToNonCitizenWithExternalCaseIdPresentInErrand() {
 
 		// Arrange
 		final var errand = createErrand(true);
@@ -98,7 +96,7 @@ class MessagingServiceTest {
 	}
 
 	@Test
-	void sendMessageToNonCitizenWithExternalCaseIdAbsent() throws Exception {
+	void sendMessageToNonCitizenWithExternalCaseIdAbsent() {
 
 		// Arrange
 		final var errand = createErrand(false);
@@ -121,7 +119,7 @@ class MessagingServiceTest {
 	}
 
 	@Test
-	void noMessageIdReturnedFromMessagingWebmessageResource() throws Exception {
+	void noMessageIdReturnedFromMessagingWebmessageResource() {
 
 		// Arrangte
 		final var errand = createErrand(true);
@@ -145,7 +143,7 @@ class MessagingServiceTest {
 	}
 
 	@Test
-	void noMessageIdReturnedFromMessagingLetterResource() throws Exception {
+	void noMessageIdReturnedFromMessagingLetterResource() {
 
 		// Arrange
 		final var errand = createErrand(false);
@@ -171,10 +169,10 @@ class MessagingServiceTest {
 	private static ErrandDTO createErrand(boolean withExternalCaseId) {
 		return new ErrandDTO()
 			.externalCaseId(withExternalCaseId ? "1234" : null)
-			.stakeholders(List.of(createStakeholder(APPLICANT), createStakeholder(ADMINISTRATOR)));
+			.stakeholders(List.of(createStakeholder(ROLE_APPLICANT), createStakeholder(ROLE_ADMINISTRATOR)));
 	}
 
-	public static StakeholderDTO createStakeholder(RolesEnum role) {
+	public static StakeholderDTO createStakeholder(String role) {
 		return new StakeholderDTO()
 			.type(PERSON)
 			.personId("d7af5f83-166a-468b-ab86-da8ca30ea97c")

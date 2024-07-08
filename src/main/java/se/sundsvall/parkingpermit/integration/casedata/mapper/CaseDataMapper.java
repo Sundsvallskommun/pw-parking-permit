@@ -1,7 +1,6 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
 import generated.se.sundsvall.casedata.AttachmentDTO;
-import generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum;
 import generated.se.sundsvall.casedata.DecisionDTO;
 import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
 import generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum;
@@ -12,7 +11,6 @@ import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
 import generated.se.sundsvall.casedata.PatchErrandDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
 import generated.se.sundsvall.casedata.StatusDTO;
 import generated.se.sundsvall.templating.RenderResponse;
@@ -40,7 +38,7 @@ public class CaseDataMapper {
 			.putExtraParametersItem(CASEDATA_KEY_PHASE_ACTION, phaseAction);
 	}
 
-	public static StakeholderDTO toStakeholder(RolesEnum role, TypeEnum type, String firstName, String lastName) {
+	public static StakeholderDTO toStakeholder(String role, TypeEnum type, String firstName, String lastName) {
 		final var bean = new StakeholderDTO()
 			.firstName(firstName)
 			.lastName(lastName)
@@ -67,7 +65,7 @@ public class CaseDataMapper {
 			.article(article);
 	}
 
-	public static AttachmentDTO toAttachment(CategoryEnum category, String name, String extension, String mimeType, RenderResponse renderedContent) {
+	public static AttachmentDTO toAttachment(String category, String name, String extension, String mimeType, RenderResponse renderedContent) {
 		final var bean = new AttachmentDTO()
 			.category(category)
 			.name(name)

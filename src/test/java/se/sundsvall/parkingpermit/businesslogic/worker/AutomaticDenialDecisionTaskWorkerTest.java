@@ -1,10 +1,36 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum.BESLUT;
+import generated.se.sundsvall.casedata.AttachmentDTO;
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.LawDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.templating.RenderResponse;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Random;
+
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.DOCTOR;
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -20,43 +46,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Random;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import generated.se.sundsvall.casedata.AttachmentDTO;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.LawDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
-import generated.se.sundsvall.templating.RenderResponse;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
+	private static final String ROLE_DOCTOR = "DOCTOR";
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -151,7 +149,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		assertThat(stakeholderCaptor.getValue().getType()).isEqualTo(PERSON);
 		assertThat(stakeholderCaptor.getValue().getFirstName()).isEqualTo("Process");
 		assertThat(stakeholderCaptor.getValue().getLastName()).isEqualTo("Engine");
-		assertThat(stakeholderCaptor.getValue().getRoles()).containsExactly(ADMINISTRATOR);
+		assertThat(stakeholderCaptor.getValue().getRoles()).containsExactly(ROLE_ADMINISTRATOR);
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);
@@ -176,7 +174,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				AttachmentDTO::getName,
 				AttachmentDTO::getMimeType)
 			.containsExactly(tuple(
-				BESLUT,
+				CATEGORY_BESLUT,
 				"pdf",
 				output,
 				filename,
@@ -193,7 +191,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
 		final var stakeholderId = new Random().nextLong();
-		final var processEngineStakeholder = createStakeholder(stakeholderId, ADMINISTRATOR, "Process", "Engine");
+		final var processEngineStakeholder = createStakeholder(stakeholderId, ROLE_ADMINISTRATOR, "Process", "Engine");
 		final var output = "output";
 
 		// Mock
@@ -202,9 +200,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getStakeholders()).thenReturn(List.of(
-			createStakeholder(null, DOCTOR, "Process", "Engine"),
-			createStakeholder(null, ADMINISTRATOR, "Ssecorp", "Engine"),
-			createStakeholder(null, ADMINISTRATOR, "Process", "Enigne"),
+			createStakeholder(null, ROLE_DOCTOR, "Process", "Engine"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Ssecorp", "Engine"),
+			createStakeholder(null, ROLE_ADMINISTRATOR, "Process", "Enigne"),
 			processEngineStakeholder));
 
 		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse().output(output));
@@ -259,7 +257,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				AttachmentDTO::getName,
 				AttachmentDTO::getMimeType)
 			.containsExactly(tuple(
-				BESLUT,
+				CATEGORY_BESLUT,
 				"pdf",
 				output,
 				filename,
@@ -319,7 +317,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 
 	}
 
-	private StakeholderDTO createStakeholder(Long stakeholderId, RolesEnum role, String firstName, String lastName) {
+	private StakeholderDTO createStakeholder(Long stakeholderId, String role, String firstName, String lastName) {
 		return new StakeholderDTO()
 			.id(stakeholderId)
 			.firstName(firstName)

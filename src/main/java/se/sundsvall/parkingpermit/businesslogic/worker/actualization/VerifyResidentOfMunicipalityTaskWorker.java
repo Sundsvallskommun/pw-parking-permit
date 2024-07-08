@@ -1,30 +1,29 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
 @Component
 @ExternalTaskSubscription("VerifyResidentOfMunicipalityTask")
@@ -48,7 +47,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			final var contextMunicipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final var errand = getErrand(externalTask);
 
-			getOptionalStakeholder(errand, PERSON, APPLICANT).ifPresent(applicant -> {
+			getOptionalStakeholder(errand, PERSON, ROLE_APPLICANT).ifPresent(applicant -> {
 
 				final var personId = applicant.getPersonId();
 

@@ -3,7 +3,6 @@ package se.sundsvall.parkingpermit.integration.templating.mapper;
 import generated.se.sundsvall.casedata.AddressDTO;
 import generated.se.sundsvall.casedata.ErrandDTO;
 import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum;
 import generated.se.sundsvall.templating.RenderRequest;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
@@ -14,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 class TemplatingMapperTest {
 	private static final String ERRAND_NUMBER = "errandNumber";
@@ -107,13 +106,13 @@ class TemplatingMapperTest {
 			.created(CREATED);
 
 		if (withApplicant) {
-			errand.addStakeholdersItem(createStakeholder(APPLICANT, true));
+			errand.addStakeholdersItem(createStakeholder(ROLE_APPLICANT, true));
 		}
 
 		return errand;
 	}
 
-	private static StakeholderDTO createStakeholder(RolesEnum role, boolean withContactAddress) {
+	private static StakeholderDTO createStakeholder(String role, boolean withContactAddress) {
 		final var stakeholder = new StakeholderDTO()
 			.firstName(role + " " + FIRST_NAME)
 			.lastName(role + " " + LAST_NAME)

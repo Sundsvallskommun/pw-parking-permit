@@ -1,24 +1,23 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
-import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.text.WordUtils.capitalizeFully;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getAddress;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.templating.RenderRequest;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.templating.RenderRequest;
+import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.text.WordUtils.capitalizeFully;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getAddress;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 public class TemplatingMapper {
 
@@ -39,7 +38,7 @@ public class TemplatingMapper {
 			return null;
 		}
 
-		final var applicant = getStakeholder(errand, APPLICANT);
+		final var applicant = getStakeholder(errand, ROLE_APPLICANT);
 
 		final var request = new RenderRequest();
 		ofNullable(capitalize(applicant.getFirstName())).ifPresent(value -> request.putParametersItem(ADDRESS_FIRSTNAME, value));

@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.LOST_PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT;
-import static generated.se.sundsvall.casedata.ErrandDTO.CaseTypeEnum.PARKING_PERMIT_RENEWAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.APPLICANT;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
@@ -27,6 +23,10 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURAT
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_ABILITY;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 public class BusinessRulesMapper {
 
@@ -79,17 +79,17 @@ public class BusinessRulesMapper {
 		}
 
 		return switch (errandDTO.getCaseType()) {
-			case PARKING_PERMIT -> toRuleEngineRequestParkingPermit(errandDTO);
-			case PARKING_PERMIT_RENEWAL -> toRuleEngineRequestParkingPermitRenewal(errandDTO);
-			case LOST_PARKING_PERMIT -> toRuleEngineRequestLostParkingPermit(errandDTO);
-			default -> throw Problem.valueOf(BAD_REQUEST, "Unsupported case type " + errandDTO.getCaseType().name());
+			case CASE_TYPE_PARKING_PERMIT -> toRuleEngineRequestParkingPermit(errandDTO);
+			case CASE_TYPE_PARKING_PERMIT_RENEWAL -> toRuleEngineRequestParkingPermitRenewal(errandDTO);
+			case CASE_TYPE_LOST_PARKING_PERMIT -> toRuleEngineRequestLostParkingPermit(errandDTO);
+			default -> throw Problem.valueOf(BAD_REQUEST, "Unsupported case type " + errandDTO.getCaseType());
 		};
 	}
 
 	private static RuleEngineRequest toRuleEngineRequestParkingPermit(ErrandDTO errandDTO) {
 		final var ruleEngineRequest = new RuleEngineRequest();
 		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, PARKING_PERMIT.name()));
+		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT));
 		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errandDTO)));
 
 		if (isDriver(errandDTO)) {
@@ -104,7 +104,7 @@ public class BusinessRulesMapper {
 	private static RuleEngineRequest toRuleEngineRequestParkingPermitRenewal(ErrandDTO errandDTO) {
 		final var ruleEngineRequest = new RuleEngineRequest();
 		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, PARKING_PERMIT_RENEWAL.name()));
+		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT_RENEWAL));
 		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errandDTO)));
 
 		if (isDriver(errandDTO)) {
@@ -119,7 +119,7 @@ public class BusinessRulesMapper {
 	private static RuleEngineRequest toRuleEngineRequestLostParkingPermit(ErrandDTO errandDTO) {
 		final var ruleEngineRequest = new RuleEngineRequest();
 		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, LOST_PARKING_PERMIT.name()));
+		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_LOST_PARKING_PERMIT));
 		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errandDTO)));
 
 		toFacts(KEYS_LOST_PARKING_PERMIT, errandDTO).forEach(ruleEngineRequest::addFactsItem);
@@ -150,7 +150,7 @@ public class BusinessRulesMapper {
 
 	private static String getApplicantPersonId(ErrandDTO errandDTO) {
 		return Optional.ofNullable(errandDTO.getStakeholders()).orElse(emptyList()).stream()
-			.filter(stakeholder -> stakeholder.getRoles().stream().anyMatch(role -> role.equals(APPLICANT)))
+			.filter(stakeholder -> stakeholder.getRoles().stream().anyMatch(role -> role.equals(ROLE_APPLICANT)))
 			.findFirst()
 			.map(StakeholderDTO::getPersonId)
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No applicant found in errand: " + errandDTO.getErrandNumber()));

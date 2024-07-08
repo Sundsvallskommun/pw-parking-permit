@@ -1,21 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.AttachmentDTO.CategoryEnum.BESLUT;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.RolesEnum.ADMINISTRATOR;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
-
-import java.util.Objects;
-
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -24,14 +10,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.util.Objects;
+
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.DISMISSAL;
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -68,7 +67,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts().description())
 				.decidedBy(stakeholder)
 				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
-				.addAttachmentsItem(toAttachment(BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
+				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
 			caseDataClient.patchNewDecision(errand.getId(), decision);
 
@@ -80,7 +79,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	}
 
 	private StakeholderDTO createProcessEngineStakeholder(final ErrandDTO errand) {
-		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(errand.getId(), toStakeholder(ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
+		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(errand.getId(), toStakeholder(ROLE_ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
 		return caseDataClient.getStakeholder(id);
 	}
 
@@ -95,7 +94,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	}
 
 	private static boolean isProcessEngineStakeholder(StakeholderDTO stakeholder) {
-		return stakeholder.getRoles().contains(ADMINISTRATOR) &&
+		return stakeholder.getRoles().contains(ROLE_ADMINISTRATOR) &&
 			PROCESS_ENGINE_FIRST_NAME.equals(stakeholder.getFirstName()) &&
 			PROCESS_ENGINE_LAST_NAME.equals(stakeholder.getLastName());
 	}
