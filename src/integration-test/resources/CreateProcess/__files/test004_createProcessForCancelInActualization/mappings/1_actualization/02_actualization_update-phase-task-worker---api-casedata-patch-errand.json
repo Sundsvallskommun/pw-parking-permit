@@ -1,34 +1,34 @@
 {
-	"scenarioName": "create-process-for-cancel-in-actualization",
-	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
-	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
-	"request": {
-		"urlPath": "/api-casedata/errands/789",
-		"method": "PATCH",
-		"headers": {
-			"Authorization": {
-				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-			}
-		},
-		"bodyPatterns": [
-			{
-				"equalToJson": {
-					"externalCaseId": "2971",
-					"phase": "Aktualisering",
-					"facilities" : [],
-					"extraParameters": {
-						"process.phaseStatus" : "ONGOING",
-						"process.phaseAction" : "UNKNOWN",
-						"process.displayPhase": "Aktualisering"
-					}
-				}
-			}
-		]
-	},
-	"response": {
-		"headers": {
-			"Content-Type": "*/*"
-		},
-		"status": 204
-	}
+  "scenarioName": "create-process-for-cancel-in-actualization",
+  "requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
+  "newScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+  "request": {
+    "urlPath": "/api-casedata/2281/errands/789",
+    "method": "PATCH",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "externalCaseId": "2971",
+          "phase": "Aktualisering",
+          "facilities": [],
+          "extraParameters": {
+            "process.phaseStatus": "ONGOING",
+            "process.phaseAction": "UNKNOWN",
+            "process.displayPhase": "Aktualisering"
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "*/*"
+    },
+    "status": 204
+  }
 }

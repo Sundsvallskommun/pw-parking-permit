@@ -1,20 +1,20 @@
 {
-	"scenarioName": "create-process-for-actualization-not-complete",
-	"requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-notes",
-	"newScenarioState": "follow_up_update-phase-task-worker---api-casedata-delete-note",
-	"request": {
-		"urlPath": "/api-casedata/notes/128",
-		"method": "DELETE",
-		"headers": {
-			"Authorization": {
-				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-			}
-		}
-	},
-	"response": {
-		"headers": {
-			"Content-Type": "*/*"
-		},
-		"status": 200
-	}
+  "scenarioName": "create-process-for-actualization-not-complete",
+  "requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-notes",
+  "newScenarioState": "follow_up_update-phase-task-worker---api-casedata-delete-note",
+  "request": {
+    "urlPath": "/api-casedata/2281/notes/128",
+    "method": "DELETE",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "*/*"
+    },
+    "status": 200
+  }
 }

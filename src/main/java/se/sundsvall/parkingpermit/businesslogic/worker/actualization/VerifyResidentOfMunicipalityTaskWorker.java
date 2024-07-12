@@ -1,29 +1,32 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
+import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
+
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
 
 @Component
 @ExternalTaskSubscription("VerifyResidentOfMunicipalityTask")
@@ -44,8 +47,10 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
 			final var variables = new HashMap<String, Object>(Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
-			final var contextMunicipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-			final var errand = getErrand(externalTask);
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+
+			final var errand = getErrand(municipalityId, caseNumber);
 
 			getOptionalStakeholder(errand, PERSON, ROLE_APPLICANT).ifPresent(applicant -> {
 
@@ -54,9 +59,9 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 				getMunicipalityId(personId).ifPresent(applicantMunicipalityId -> {
 
 					// If applicant belongs to another municipality, set corresponding variable to indicate this.
-					if (!applicantMunicipalityId.equals(contextMunicipalityId)) {
+					if (!applicantMunicipalityId.equals(municipalityId)) {
 						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
-							personId, contextMunicipalityId, applicantMunicipalityId);
+							personId, municipalityId, applicantMunicipalityId);
 
 						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 					}
@@ -73,10 +78,10 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	/**
 	 * Get municipalityId of the persons population registration address (folkbokföringsadress).
 	 *
-	 * @param  personId the personId of the citizen.
-	 * @return          an Optional municipalityId for the person, or an empty Optional if no municipalityId could be
-	 *                  identified (due to missing
-	 *                  citizen, address, etc).
+	 * @param personId the personId of the citizen.
+	 * @return an Optional municipalityId for the person, or an empty Optional if no municipalityId could be
+	 * identified (due to missing
+	 * citizen, address, etc).
 	 */
 	private Optional<String> getMunicipalityId(String personId) {
 		if (isBlank(personId)) {

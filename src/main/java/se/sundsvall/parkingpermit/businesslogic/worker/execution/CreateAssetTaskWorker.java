@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -28,8 +29,10 @@ public class CreateAssetTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for CreateAssetTask");
-			final var errand = getErrand(externalTask);
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+
+			final var errand = getErrand(municipalityId, caseNumber);
 
 			partyAssetsService.createAsset(municipalityId, errand);
 

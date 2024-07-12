@@ -1,6 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
@@ -11,12 +10,13 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import generated.se.sundsvall.camunda.VariableValueDto;
-import generated.se.sundsvall.casedata.ErrandDTO;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import generated.se.sundsvall.camunda.VariableValueDto;
+import generated.se.sundsvall.casedata.ErrandDTO;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
@@ -46,8 +46,8 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), variableName, variableValue);
 	}
 
-	protected ErrandDTO getErrand(ExternalTask externalTask) {
-		return caseDataClient.getErrandById(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER));
+	protected ErrandDTO getErrand(String municipalityId, Long caseNumber) {
+		return caseDataClient.getErrandById(municipalityId, caseNumber);
 	}
 
 	protected void logInfo(String msg, Object... arguments) {

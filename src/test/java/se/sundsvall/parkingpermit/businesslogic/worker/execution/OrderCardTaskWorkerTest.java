@@ -1,7 +1,28 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StatusDTO;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -16,37 +37,20 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.RpaService;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StatusDTO;
 
 @ExtendWith(MockitoExtension.class)
 class OrderCardTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
-	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
-	private static final String VARIABLE_REQUEST_ID = "requestId";
+	private static final String MUNICIPALITY_ID = "2281";
 	private static final String QUEUE_NEW_CARD = "NyttKortNyPerson";
 	private static final String QUEUE_REPLACEMENT_CARD = "NyttKortBefintligPerson";
 	private static final String QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD = "StöldspärraSamtSkapaNyttKort";
@@ -78,22 +82,27 @@ class OrderCardTaskWorkerTest {
 	void execute(String caseType, List<String> expectedQueueNames) {
 		//Arrange
 		final var errand = new ErrandDTO().id(ERRAND_ID).caseType(caseType);
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errand);
-		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errand);
+
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock, times(2)).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(rpaServiceMock).addQueueItems(expectedQueueNames, ERRAND_ID);
-		verify(caseDataClientMock).putStatus(eq(ERRAND_ID), statusesDTOArgumentCaptor.capture());
+		verify(caseDataClientMock).putStatus(eq(MUNICIPALITY_ID), eq(ERRAND_ID), statusesDTOArgumentCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		assertThat(statusesDTOArgumentCaptor.getValue()).hasSize(1)
 			.extracting(StatusDTO::getStatusType, StatusDTO::getDescription)
 			.containsExactly(
 				tuple(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
-		assertThat(statusesDTOArgumentCaptor.getValue().get(0).getDateTime()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
+		assertThat(statusesDTOArgumentCaptor.getValue().getFirst().getDateTime()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -101,9 +110,12 @@ class OrderCardTaskWorkerTest {
 	void executeThrowsException() {
 		// Arrange
 		final var errand = new ErrandDTO().id(ERRAND_ID).caseType(CASE_TYPE_PARKING_PERMIT);
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errand);
-		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errand);
+
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
 		// Mock
@@ -114,6 +126,8 @@ class OrderCardTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
@@ -123,7 +137,7 @@ class OrderCardTaskWorkerTest {
 	private static Stream<Arguments> orderCardTypeArguments() {
 		return Stream.of(
 			Arguments.of(CASE_TYPE_PARKING_PERMIT, List.of(QUEUE_NEW_CARD)),
-					Arguments.of(CASE_TYPE_PARKING_PERMIT_RENEWAL, List.of(QUEUE_REPLACEMENT_CARD)),
-					Arguments.of(CASE_TYPE_LOST_PARKING_PERMIT, List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD)));
+			Arguments.of(CASE_TYPE_PARKING_PERMIT_RENEWAL, List.of(QUEUE_REPLACEMENT_CARD)),
+			Arguments.of(CASE_TYPE_LOST_PARKING_PERMIT, List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD)));
 	}
 }

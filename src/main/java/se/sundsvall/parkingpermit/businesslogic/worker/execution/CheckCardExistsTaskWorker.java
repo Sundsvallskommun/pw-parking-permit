@@ -3,6 +3,8 @@ package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 
 import java.util.Map;
@@ -13,11 +15,12 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
 
 @Component
 @ExternalTaskSubscription("CardExistsTask")
@@ -32,7 +35,10 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for CardExistsTask");
 			clearUpdateAvailable(externalTask);
-			final var errand = getErrand(externalTask);
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+
+			final var errand = getErrand(municipalityId, caseNumber);
 
 			final var cardExists = isCardCreated(errand);
 

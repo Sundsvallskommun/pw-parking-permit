@@ -1,6 +1,8 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 
 import java.util.Map;
 
@@ -28,7 +30,10 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			final var errand = getErrand(externalTask);
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+
+			final var errand = getErrand(municipalityId, caseNumber);
 			logInfo("Executing delivery of decision message to applicant for errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdf(errand);

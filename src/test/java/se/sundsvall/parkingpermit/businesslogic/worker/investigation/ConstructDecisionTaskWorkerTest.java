@@ -1,11 +1,30 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import generated.se.sundsvall.businessrules.Result;
-import generated.se.sundsvall.businessrules.ResultDetail;
-import generated.se.sundsvall.businessrules.ResultValue;
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
+import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
+import static generated.se.sundsvall.businessrules.ResultValue.PASS;
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
+import static java.time.OffsetDateTime.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -20,39 +39,23 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
-import static generated.se.sundsvall.businessrules.ResultValue.PASS;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import generated.se.sundsvall.businessrules.Result;
+import generated.se.sundsvall.businessrules.ResultDetail;
+import generated.se.sundsvall.businessrules.ResultValue;
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.DecisionDTO;
+import generated.se.sundsvall.casedata.ErrandDTO;
 
 @ExtendWith(MockitoExtension.class)
 class ConstructDecisionTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
-	private static final String KEY_RULE_ENGINE_RESPONSE = "ruleEngineResponse";
-
-	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
-	private static final String VARIABLE_REQUEST_ID = "requestId";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -88,10 +91,11 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = createRuleEngineResponse(resultValue);
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
-		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO().decisionOutcome(REJECTION).decisionType(RECOMMENDED).version(0),
 			new DecisionDTO().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
 
@@ -99,7 +103,7 @@ class ConstructDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(caseDataClientMock).patchNewDecision(errandIdArgumentCaptor.capture(), decisionArgumentCaptor.capture());
+		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), errandIdArgumentCaptor.capture(), decisionArgumentCaptor.capture());
 
 		assertThat(errandIdArgumentCaptor.getValue()).isEqualTo(ERRAND_ID);
 		assertThat(decisionArgumentCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
@@ -117,10 +121,11 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = createRuleEngineResponse(FAIL.name());
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
-		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(new DecisionDTO()
 			.decisionOutcome(REJECTION)
 			.decisionType(RECOMMENDED)
@@ -131,7 +136,7 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Verify
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
@@ -141,10 +146,11 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = createRuleEngineResponse("NOT_APPLICABLE");
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
@@ -153,7 +159,7 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Conflict: No applicable result found in rule engine response");
-		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
@@ -162,10 +168,11 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse().results(emptyList());
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
@@ -174,7 +181,7 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No results found in rule engine response");
-		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 
 	}
@@ -183,10 +190,11 @@ class ConstructDecisionTaskWorkerTest {
 	void executeThrowsExceptionWhenNullResponse() {
 
 		// Arrange
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(null);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(null);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		// Act
@@ -195,7 +203,7 @@ class ConstructDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No rule engine response found");
-		verify(caseDataClientMock).getErrandById(ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 	}
 
@@ -206,10 +214,11 @@ class ConstructDecisionTaskWorkerTest {
 		final var ruleEngineResponse = createRuleEngineResponse(PASS.toString());
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
-		when(externalTaskMock.getVariable(VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(KEY_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
-		when(externalTaskMock.getVariable(VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.getErrandById(ERRAND_ID)).thenReturn(errandMock);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(emptyList());
 
 		doThrow(thrownException).when(externalTaskServiceMock).complete(externalTaskMock);
@@ -219,7 +228,7 @@ class ConstructDecisionTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verify(externalTaskMock).getVariable(VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 	}
 
 	private RuleEngineResponse createRuleEngineResponse(String resultValue) {
