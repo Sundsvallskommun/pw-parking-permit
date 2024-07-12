@@ -1,34 +1,34 @@
 {
-  "scenarioName": "create-process-for-citizen",
-  "requiredScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
-  "newScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/123",
-    "method": "PATCH",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    },
-    "bodyPatterns": [
-      {
-        "equalToJson": {
-          "externalCaseId": "2971",
-          "phase": "Beslut",
-          "facilities": [],
-          "extraParameters": {
-            "process.phaseStatus": "ONGOING",
-            "process.phaseAction": "UNKNOWN",
-            "process.displayPhase": "Beslut"
-          }
-        }
-      }
-    ]
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "*/*"
-    },
-    "status": 204
-  }
+	"scenarioName": "create-process-for-citizen",
+	"requiredScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
+	"newScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/123",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Beslut",
+					"facilities": [],
+					"extraParameters": {
+						"process.phaseStatus": "ONGOING",
+						"process.phaseAction": "UNKNOWN",
+						"process.displayPhase": "Beslut"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
 }

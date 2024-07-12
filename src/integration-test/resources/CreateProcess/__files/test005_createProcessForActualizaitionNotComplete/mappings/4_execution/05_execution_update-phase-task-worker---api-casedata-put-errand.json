@@ -1,31 +1,31 @@
 {
-  "scenarioName": "create-process-for-actualization-not-complete",
-  "requiredScenarioState": "execution_order-card-task-worker---api-rpa-post-queue-item",
-  "newScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/1011/statuses",
-    "method": "PUT",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    },
-    "bodyPatterns": [
-      {
-        "equalToJson": [
-          {
-            "statusType": "Beslut verkställt",
-            "description": "Beslut verkställt",
-            "dateTime": "${json-unit.any-string}"
-          }
-        ]
-      }
-    ]
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "*/*"
-    },
-    "status": 204
-  }
+	"scenarioName": "create-process-for-actualization-not-complete",
+	"requiredScenarioState": "execution_order-card-task-worker---api-rpa-post-queue-item",
+	"newScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1011/statuses",
+		"method": "PUT",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": [
+					{
+						"statusType": "Beslut verkställt",
+						"description": "Beslut verkställt",
+						"dateTime": "${json-unit.any-string}"
+					}
+				]
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
 }
