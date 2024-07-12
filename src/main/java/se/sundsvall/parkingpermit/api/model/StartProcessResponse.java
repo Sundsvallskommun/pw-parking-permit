@@ -45,8 +45,7 @@ public class StartProcessResponse {
 
 	@Override
 	public String toString() {
-		final String sb = "StartProcessResponse{" + "processId='" + processId + '\'' +
+		return "StartProcessResponse{" + "processId='" + processId + '\'' +
 			'}';
-		return sb;
 	}
 }
