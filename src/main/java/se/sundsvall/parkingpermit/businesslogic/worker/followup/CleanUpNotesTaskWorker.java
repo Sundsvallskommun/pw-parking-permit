@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker.followup;
 import static generated.se.sundsvall.casedata.NoteType.INTERNAL;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 
 import java.util.Optional;
 
@@ -29,9 +30,12 @@ public class CleanUpNotesTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for CleanUpNotesTask");
 
-			final var notes = caseDataClient.getNotesByErrandId(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), INTERNAL.getValue());
+			Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+			String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 
-			Optional.ofNullable(notes).orElse(emptyList()).forEach(internalNote -> caseDataClient.deleteNoteById(internalNote.getId()));
+			final var notes = caseDataClient.getNotesByErrandId(municipalityId, caseNumber, INTERNAL.getValue());
+
+			Optional.ofNullable(notes).orElse(emptyList()).forEach(internalNote -> caseDataClient.deleteNoteById(municipalityId, internalNote.getId()));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {

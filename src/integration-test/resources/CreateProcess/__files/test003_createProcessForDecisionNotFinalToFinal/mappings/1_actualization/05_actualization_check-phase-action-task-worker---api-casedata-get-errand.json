@@ -3,7 +3,7 @@
 	"requiredScenarioState": "verify-resident-of-municipality-task-worker---api-citizen-getcitizen",
 	"newScenarioState": "actualization_check-phase-action_task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/789",
+		"urlPath": "/api-casedata/2281/errands/789",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

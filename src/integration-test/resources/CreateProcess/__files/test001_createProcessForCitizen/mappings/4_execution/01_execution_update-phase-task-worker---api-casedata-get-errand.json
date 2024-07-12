@@ -3,7 +3,7 @@
 	"requiredScenarioState": "check-decision-task-worker---api-casedata-get-errand",
 	"newScenarioState": "execution_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/123",
+		"urlPath": "/api-casedata/2281/errands/123",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -17,7 +17,9 @@
 		},
 		"status": 200,
 		"bodyFileName": "test001_createProcessForCitizen/responses/api-casedata-get-errand_with_parameters.json",
-		"transformers": ["response-template"],
+		"transformers": [
+			"response-template"
+		],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "",

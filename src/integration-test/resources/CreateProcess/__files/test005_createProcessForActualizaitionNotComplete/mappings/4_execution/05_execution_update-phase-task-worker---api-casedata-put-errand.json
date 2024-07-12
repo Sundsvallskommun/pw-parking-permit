@@ -3,7 +3,7 @@
 	"requiredScenarioState": "execution_order-card-task-worker---api-rpa-post-queue-item",
 	"newScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1011/statuses",
+		"urlPath": "/api-casedata/2281/errands/1011/statuses",
 		"method": "PUT",
 		"headers": {
 			"Authorization": {

@@ -3,7 +3,7 @@
 	"requiredScenarioState": "execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 	"newScenarioState": "02_execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1415",
+		"urlPath": "/api-casedata/2281/errands/1415",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -17,7 +17,9 @@
 		},
 		"status": 200,
 		"bodyFileName": "test009_createProcessForCardNotExistsToExists/responses/api-casedata-get-errand_with_parameters.json",
-		"transformers": ["response-template"],
+		"transformers": [
+			"response-template"
+		],
 		"transformerParameters": {
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "",

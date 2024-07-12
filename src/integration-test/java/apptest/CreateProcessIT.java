@@ -16,15 +16,15 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 
 import java.time.Duration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 
 @WireMockAppTestSuite(files = "classpath:/CreateProcess/", classes = Application.class)
 class CreateProcessIT extends AbstractCamundaAppTest {

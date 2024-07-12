@@ -3,7 +3,7 @@
 	"requiredScenarioState": "update-phase-task-worker---api-casedata-patch-errand",
 	"newScenarioState": "automatic-denial-decision-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/456",
+		"urlPath": "/api-casedata/2281/errands/456",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

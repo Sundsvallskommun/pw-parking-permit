@@ -3,7 +3,7 @@
 	"requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
 	"newScenarioState": "construct-recommended-decision-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1516",
+		"urlPath": "/api-casedata/2281/errands/1516",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -17,7 +17,9 @@
 		},
 		"status": 200,
 		"bodyFileName": "test010_createProcessForCancelnDecision/responses/api-casedata-get-errand_with_parameters.json",
-		"transformers": ["response-template"],
+		"transformers": [
+			"response-template"
+		],
 		"transformerParameters": {
 			"statusTypeParameter": "Ärende inkommit",
 			"phaseParameter": "Utredning",

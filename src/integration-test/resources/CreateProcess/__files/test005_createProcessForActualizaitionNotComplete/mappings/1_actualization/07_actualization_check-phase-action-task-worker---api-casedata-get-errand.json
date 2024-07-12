@@ -3,7 +3,7 @@
 	"requiredScenarioState": "actualization_check-phase-action_task-worker---api-casedata-patch-errand",
 	"newScenarioState": "actualization_check-phase-action_task-worker_2---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1011",
+		"urlPath": "/api-casedata/2281/errands/1011",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

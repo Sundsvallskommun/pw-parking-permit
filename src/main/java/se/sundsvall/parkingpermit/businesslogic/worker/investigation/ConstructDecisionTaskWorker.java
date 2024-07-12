@@ -6,6 +6,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 
 import java.util.Comparator;
@@ -18,13 +19,14 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.DecisionDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.DecisionDTO;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")
@@ -38,8 +40,10 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for ConstructDecisionTaskWorker");
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(externalTask);
+			final var errand = getErrand(municipalityId, caseNumber);
 
 			final var latestDecision = errand.getDecisions().stream()
 				.max(Comparator.comparingInt(DecisionDTO::getVersion)).orElse(null);
@@ -55,7 +59,10 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
 			if (isDecisionsNotEqual(latestDecision, decisionDTO)) {
-				caseDataClient.patchNewDecision(externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER), decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() + 1).orElse(0)));
+				caseDataClient.patchNewDecision(
+					municipalityId,
+					caseNumber,
+					decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() + 1).orElse(0)));
 			}
 
 			externalTaskService.complete(externalTask);

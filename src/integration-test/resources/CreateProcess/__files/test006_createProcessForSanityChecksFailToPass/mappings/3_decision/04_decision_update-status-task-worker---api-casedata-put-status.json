@@ -3,7 +3,7 @@
 	"requiredScenarioState": "decision_update-status-task-worker---api-casedata-get-errand",
 	"newScenarioState": "decision_update-status-task-worker---api-casedata-put-status",
 	"request": {
-		"urlPath": "/api-casedata/errands/1112/statuses",
+		"urlPath": "/api-casedata/2281/errands/1112/statuses",
 		"method": "PUT",
 		"headers": {
 			"Authorization": {

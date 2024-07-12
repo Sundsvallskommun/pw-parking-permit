@@ -3,7 +3,7 @@
 	"requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-notes",
 	"newScenarioState": "follow_up_update-phase-task-worker---api-casedata-delete-note",
 	"request": {
-		"urlPath": "/api-casedata/notes/128",
+		"urlPath": "/api-casedata/2281/notes/128",
 		"method": "DELETE",
 		"headers": {
 			"Authorization": {

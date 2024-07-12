@@ -45,9 +45,7 @@ public class StartProcessResponse {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("StartProcessResponse{");
-		sb.append("processId='").append(processId).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "StartProcessResponse{" + "processId='" + processId + '\'' +
+			'}';
 	}
 }

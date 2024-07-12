@@ -3,7 +3,7 @@
 	"requiredScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
 	"newScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/123",
+		"urlPath": "/api-casedata/2281/errands/123",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -15,10 +15,10 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Beslut",
-					"facilities" : [],
+					"facilities": [],
 					"extraParameters": {
-						"process.phaseStatus" : "ONGOING",
-						"process.phaseAction" : "UNKNOWN",
+						"process.phaseStatus": "ONGOING",
+						"process.phaseAction": "UNKNOWN",
 						"process.displayPhase": "Beslut"
 					}
 				}

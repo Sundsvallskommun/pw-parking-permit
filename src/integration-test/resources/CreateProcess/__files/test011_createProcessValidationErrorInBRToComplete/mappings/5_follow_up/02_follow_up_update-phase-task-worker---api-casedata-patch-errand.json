@@ -3,7 +3,7 @@
 	"requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-errand",
 	"newScenarioState": "follow_up_update-phase-task-worker---api-casedata-patch-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1617",
+		"urlPath": "/api-casedata/2281/errands/1617",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -15,11 +15,11 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Uppföljning",
-					"facilities" : [],
+					"facilities": [],
 					"extraParameters": {
-						"process.phaseStatus" : "ONGOING",
-						"process.phaseAction" : "UNKNOWN",
-						"process.displayPhase" : "Uppföljning"
+						"process.phaseStatus": "ONGOING",
+						"process.phaseAction": "UNKNOWN",
+						"process.displayPhase": "Uppföljning"
 					}
 				}
 			}

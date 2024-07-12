@@ -1,6 +1,8 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
@@ -31,20 +33,24 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			final var errand = getErrand(externalTask);
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+
+			final var errand = getErrand(municipalityId, caseNumber);
 			logInfo("Executing update of status for errand with id {}", errand.getId());
 
 			final var phase = errand.getPhase();
 
 			switch (phase) {
-				case CASEDATA_PHASE_INVESTIGATION -> caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
+				case CASEDATA_PHASE_INVESTIGATION ->
+					caseDataClient.putStatus(municipalityId, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
 				case CASEDATA_PHASE_DECISION -> {
 					if (isCitizen(externalTask)) {
 						// Errand is in decision sub process
-						caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
+						caseDataClient.putStatus(municipalityId, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
 					} else {
 						// Errand is in automatic denial sub process
-						caseDataClient.putStatus(errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
+						caseDataClient.putStatus(municipalityId, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 					}
 				}
 				default -> logInfo("No status update for phase {}", phase);

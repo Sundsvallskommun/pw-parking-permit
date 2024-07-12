@@ -3,7 +3,7 @@
 	"requiredScenarioState": "Started",
 	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/789",
+		"urlPath": "/api-casedata/2281/errands/789",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -17,7 +17,9 @@
 		},
 		"status": 200,
 		"bodyFileName": "test004_createProcessForCancelInActualization/responses/api-casedata-get-errand_with_parameters.json",
-		"transformers": ["response-template"],
+		"transformers": [
+			"response-template"
+		],
 		"transformerParameters": {
 			"phaseParameter": "Aktualisering",
 			"decisionParameter": "PROPOSED",

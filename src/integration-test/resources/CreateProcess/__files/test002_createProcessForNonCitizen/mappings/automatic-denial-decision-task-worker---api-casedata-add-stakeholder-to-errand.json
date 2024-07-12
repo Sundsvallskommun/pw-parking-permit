@@ -3,7 +3,7 @@
 	"requiredScenarioState": "automatic-denial-decision-task-worker---api-casedata-get-errand",
 	"newScenarioState": "automatic-denial-decision-task-worker---api-casedata-add-stakeholder-to-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/456/stakeholders",
+		"urlPath": "/api-casedata/2281/errands/456/stakeholders",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -19,8 +19,8 @@
 					"roles": [
 						"ADMINISTRATOR"
 					],
-					"addresses" : [ ],
-					"contactInformation" : [ ],
+					"addresses": [],
+					"contactInformation": [],
 					"extraParameters": {}
 				}
 			}

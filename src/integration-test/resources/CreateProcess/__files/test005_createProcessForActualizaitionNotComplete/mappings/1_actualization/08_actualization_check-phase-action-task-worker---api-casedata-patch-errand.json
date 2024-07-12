@@ -3,7 +3,7 @@
 	"requiredScenarioState": "actualization_check-phase-action_task-worker_2---api-casedata-get-errand",
 	"newScenarioState": "actualization_check-phase-action_task-worker_2---api-casedata-patch-errand",
 	"request": {
-		"urlPath": "/api-casedata/errands/1011",
+		"urlPath": "/api-casedata/2281/errands/1011",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -15,7 +15,7 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Aktualisering",
-					"facilities" : [],
+					"facilities": [],
 					"extraParameters": {
 						"process.phaseStatus": "COMPLETED",
 						"process.phaseAction": "COMPLETE",
