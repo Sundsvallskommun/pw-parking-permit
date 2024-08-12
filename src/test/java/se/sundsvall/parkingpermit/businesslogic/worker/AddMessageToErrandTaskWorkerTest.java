@@ -109,7 +109,7 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
-		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
+		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse());
 		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
 		when(denialTextPropertiesMock.filename()).thenReturn(filename);
 		when(denialTextPropertiesMock.subject()).thenReturn(subject);
@@ -124,7 +124,7 @@ class AddMessageToErrandTaskWorkerTest {
 		// Verify and assert
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(messagingServiceMock).renderPdf(errandMock);
+		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
 		verify(denialTextPropertiesMock).filename();
 		verify(denialTextPropertiesMock).subject();
 		verify(denialTextPropertiesMock).plainBody();
@@ -151,7 +151,7 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
-		when(messagingServiceMock.renderPdf(errandMock)).thenReturn(new RenderResponse());
+		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse());
 		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
 
 		// Act
@@ -160,7 +160,7 @@ class AddMessageToErrandTaskWorkerTest {
 		// Verify and assert
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(messagingServiceMock).renderPdf(errandMock);
+		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Internal Server Error: Id of sent message could not be retreived from stored process variables");
 		verify(externalTaskMock).getId();

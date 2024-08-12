@@ -1,18 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.messaging.MessageResult;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
-import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -21,6 +8,21 @@ import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
+import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
+import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.templating.RenderResponse;
 
 @Service
 public class MessagingService {
@@ -37,8 +39,8 @@ public class MessagingService {
 		this.messagingMapper = messagingMapper;
 	}
 
-	public RenderResponse renderPdf(ErrandDTO errand) {
-		return templatingClient.renderPdf(toRenderRequestWhenNotMemberOfMunicipality(errand));
+	public RenderResponse renderPdf(String municipalityId, ErrandDTO errand) {
+		return templatingClient.renderPdf(municipalityId, toRenderRequestWhenNotMemberOfMunicipality(errand));
 	}
 
 	public UUID sendMessageToNonCitizen(ErrandDTO errand, RenderResponse pdf) {

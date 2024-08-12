@@ -3,7 +3,7 @@
 	"requiredScenarioState": "add-message-to-errand-task-worker---api-casedata-get-errand",
 	"newScenarioState": "add-message-to-errand-task-worker---api-templating-render-pdf",
 	"request": {
-		"urlPath": "/api-templating/render/pdf",
+		"urlPath": "/api-templating/2281/render/pdf",
 		"method": "POST",
 		"headers": {
 			"Authorization": {

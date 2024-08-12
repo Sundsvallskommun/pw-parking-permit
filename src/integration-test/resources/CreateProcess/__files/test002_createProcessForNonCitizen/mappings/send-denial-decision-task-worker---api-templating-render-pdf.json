@@ -3,7 +3,7 @@
 	"requiredScenarioState": "send-denial-decision-task-worker---api-casedata-get-errand",
 	"newScenarioState": "send-denial-decision-task-worker---api-templating-render-pdf",
 	"request": {
-		"urlPath": "/api-templating/render/pdf",
+		"urlPath": "/api-templating/2281/render/pdf",
 		"method": "POST",
 		"headers": {
 			"Authorization": {
