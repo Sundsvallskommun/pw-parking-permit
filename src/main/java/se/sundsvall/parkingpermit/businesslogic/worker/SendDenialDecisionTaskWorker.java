@@ -36,7 +36,7 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, caseNumber);
 			logInfo("Executing delivery of decision message to applicant for errand with id {}", errand.getId());
 
-			final var pdf = messagingService.renderPdf(errand);
+			final var pdf = messagingService.renderPdf(municipalityId, errand);
 			final var messageId = messagingService.sendMessageToNonCitizen(errand, pdf).toString();
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));

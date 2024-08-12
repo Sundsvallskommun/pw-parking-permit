@@ -1,31 +1,10 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.messaging.LetterRequest;
-import generated.se.sundsvall.messaging.MessageBatchResult;
-import generated.se.sundsvall.messaging.MessageResult;
-import generated.se.sundsvall.messaging.WebMessageRequest;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
-import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
-import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
-
-import java.util.List;
-import java.util.UUID;
-
 import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -34,8 +13,34 @@ import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.ThrowableProblem;
+
+import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
+import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
+import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
+
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.messaging.LetterRequest;
+import generated.se.sundsvall.messaging.MessageBatchResult;
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.messaging.WebMessageRequest;
+import generated.se.sundsvall.templating.RenderResponse;
+
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
+
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
 	private MessagingClient messagingClientMock;
@@ -63,13 +68,13 @@ class MessagingServiceTest {
 
 		// Arrange
 		final var errand = createErrand(true);
-		when(templatingClientMock.renderPdf(any())).thenReturn(renderResponseMock);
+		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(renderResponseMock);
 
 		// Act
-		messagingService.renderPdf(errand);
+		messagingService.renderPdf(MUNICIPALITY_ID, errand);
 
 		// Assert
-		verify(templatingClientMock).renderPdf(any());
+		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());
 		verifyNoInteractions(messagingClientMock, messagingMapperMock);
 	}
 

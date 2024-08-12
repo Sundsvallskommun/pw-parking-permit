@@ -69,7 +69,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.findAny()
 				.orElseGet(() -> createProcessEngineStakeholder(errand, municipalityId));
 
-			final var pdf = messagingService.renderPdf(errand);
+			final var pdf = messagingService.renderPdf(municipalityId, errand);
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts().description())
 				.decidedBy(stakeholder)
 				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
