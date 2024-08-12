@@ -60,8 +60,8 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 			if (isDecisionsNotEqual(latestDecision, decisionDTO)) {
 				caseDataClient.patchNewDecision(
-					externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID),
-					externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER),
+					municipalityId,
+					caseNumber,
 					decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() + 1).orElse(0)));
 			}
 

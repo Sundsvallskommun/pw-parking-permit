@@ -1,39 +1,39 @@
 {
-  "scenarioName": "create-process-for-non-citizen",
-  "requiredScenarioState": "automatic-denial-decision-task-worker---api-casedata-get-errand",
-  "newScenarioState": "automatic-denial-decision-task-worker---api-casedata-add-stakeholder-to-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/456/stakeholders",
-    "method": "PATCH",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    },
-    "bodyPatterns": [
-      {
-        "equalToJson": {
-          "type": "PERSON",
-          "firstName": "Process",
-          "lastName": "Engine",
-          "roles": [
-            "ADMINISTRATOR"
-          ],
-          "addresses": [],
-          "contactInformation": [],
-          "extraParameters": {}
-        }
-      }
-    ]
-  },
-  "response": {
-    "transformers": [
-      "response-template"
-    ],
-    "headers": {
-      "Content-Type": "*/*",
-      "Location": "{{request.baseUrl}}/{{request.path}}/2"
-    },
-    "status": 201
-  }
+	"scenarioName": "create-process-for-non-citizen",
+	"requiredScenarioState": "automatic-denial-decision-task-worker---api-casedata-get-errand",
+	"newScenarioState": "automatic-denial-decision-task-worker---api-casedata-add-stakeholder-to-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/456/stakeholders",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"type": "PERSON",
+					"firstName": "Process",
+					"lastName": "Engine",
+					"roles": [
+						"ADMINISTRATOR"
+					],
+					"addresses": [],
+					"contactInformation": [],
+					"extraParameters": {}
+				}
+			}
+		]
+	},
+	"response": {
+		"transformers": [
+			"response-template"
+		],
+		"headers": {
+			"Content-Type": "*/*",
+			"Location": "{{request.baseUrl}}/{{request.path}}/2"
+		},
+		"status": 201
+	}
 }

@@ -1,32 +1,32 @@
 {
-  "scenarioName": "create-process-for-decision-rejected",
-  "requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
-  "newScenarioState": "construct-recommended-decision-task-worker---api-casedata-get-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/1718",
-    "method": "GET",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    }
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "status": 200,
-    "bodyFileName": "test012_createProcessForDecisionRejected/responses/api-casedata-get-errand_with_parameters.json",
-    "transformers": [
-      "response-template"
-    ],
-    "transformerParameters": {
-      "statusTypeParameter": "Ärende inkommit",
-      "phaseParameter": "Utredning",
-      "decisionParameter": "PROPOSED",
-      "phaseActionParameter": "UNKNOWN",
-      "phaseStatusParameter": "ONGOING",
-      "displayPhaseParameter": "Utredning"
-    }
-  }
+	"scenarioName": "create-process-for-decision-rejected",
+	"requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
+	"newScenarioState": "construct-recommended-decision-task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1718",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test012_createProcessForDecisionRejected/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": [
+			"response-template"
+		],
+		"transformerParameters": {
+			"statusTypeParameter": "Ärende inkommit",
+			"phaseParameter": "Utredning",
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "UNKNOWN",
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Utredning"
+		}
+	}
 }

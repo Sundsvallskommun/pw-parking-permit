@@ -1,34 +1,34 @@
 {
-  "scenarioName": "create-process-for-decision-rejected",
-  "requiredScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
-  "newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/1718",
-    "method": "PATCH",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    },
-    "bodyPatterns": [
-      {
-        "equalToJson": {
-          "externalCaseId": "2971",
-          "phase": "Utredning",
-          "facilities": [],
-          "extraParameters": {
-            "process.phaseStatus": "COMPLETED",
-            "process.phaseAction": "COMPLETE",
-            "process.displayPhase": "Utredning"
-          }
-        }
-      }
-    ]
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "*/*"
-    },
-    "status": 204
-  }
+	"scenarioName": "create-process-for-decision-rejected",
+	"requiredScenarioState": "investigation_check-phase-action_task-worker---api-casedata-get-errand",
+	"newScenarioState": "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1718",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Utredning",
+					"facilities": [],
+					"extraParameters": {
+						"process.phaseStatus": "COMPLETED",
+						"process.phaseAction": "COMPLETE",
+						"process.displayPhase": "Utredning"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
 }

@@ -1,30 +1,30 @@
 {
-  "scenarioName": "create-process-for-cancel-in-investigation",
-  "requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
-  "newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
-  "request": {
-    "urlPath": "/api-casedata/2281/errands/1314",
-    "method": "GET",
-    "headers": {
-      "Authorization": {
-        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
-      }
-    }
-  },
-  "response": {
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "status": 200,
-    "bodyFileName": "test008_createProcessForCancelInInvestigation/responses/api-casedata-get-errand_with_parameters.json",
-    "transformers": [
-      "response-template"
-    ],
-    "transformerParameters": {
-      "phaseParameter": "Aktualisering",
-      "decisionParameter": "PROPOSED",
-      "phaseActionParameter": "UNKNOWN",
-      "phaseStatusParameter": "ONGOING"
-    }
-  }
+	"scenarioName": "create-process-for-cancel-in-investigation",
+	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1314",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test008_createProcessForCancelInInvestigation/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": [
+			"response-template"
+		],
+		"transformerParameters": {
+			"phaseParameter": "Aktualisering",
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "UNKNOWN",
+			"phaseStatusParameter": "ONGOING"
+		}
+	}
 }
