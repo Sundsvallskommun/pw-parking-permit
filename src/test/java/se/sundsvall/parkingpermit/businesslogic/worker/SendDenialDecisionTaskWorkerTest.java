@@ -83,7 +83,7 @@ class SendDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(pdf);
-		when(messagingServiceMock.sendMessageToNonCitizen(errandMock, pdf)).thenReturn(messageUUID);
+		when(messagingServiceMock.sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf)).thenReturn(messageUUID);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -94,7 +94,7 @@ class SendDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
-		verify(messagingServiceMock).sendMessageToNonCitizen(errandMock, pdf);
+		verify(messagingServiceMock).sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageUUID.toString()));
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
@@ -110,7 +110,7 @@ class SendDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(pdf);
-		when(messagingServiceMock.sendMessageToNonCitizen(errandMock, pdf)).thenThrow(Problem.valueOf(BAD_GATEWAY, "No message id received from messaging service"));
+		when(messagingServiceMock.sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf)).thenThrow(Problem.valueOf(BAD_GATEWAY, "No message id received from messaging service"));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -121,7 +121,7 @@ class SendDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
-		verify(messagingServiceMock).sendMessageToNonCitizen(errandMock, pdf);
+		verify(messagingServiceMock).sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verifyNoInteractions(camundaClientMock);

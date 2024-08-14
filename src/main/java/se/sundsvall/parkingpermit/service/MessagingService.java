@@ -43,14 +43,14 @@ public class MessagingService {
 		return templatingClient.renderPdf(municipalityId, toRenderRequestWhenNotMemberOfMunicipality(errand));
 	}
 
-	public UUID sendMessageToNonCitizen(ErrandDTO errand, RenderResponse pdf) {
+	public UUID sendMessageToNonCitizen(String municipalityId, ErrandDTO errand, RenderResponse pdf) {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 
 		if (isNotEmpty(errand.getExternalCaseId())) {
-			final var messageResult = messagingClient.sendWebMessage(messagingMapper.toWebMessageRequest(pdf, partyId));
+			final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequest(pdf, partyId));
 			return extractId(List.of(messageResult));
 		}
-		final var messageResult = messagingClient.sendLetter(messagingMapper.toLetterRequest(pdf, partyId));
+		final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequest(pdf, partyId));
 		return extractId(messageResult.getMessages());
 	}
 

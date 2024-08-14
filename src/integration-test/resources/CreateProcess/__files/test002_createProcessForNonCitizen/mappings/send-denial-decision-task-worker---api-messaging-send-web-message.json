@@ -3,7 +3,7 @@
 	"requiredScenarioState": "send-denial-decision-task-worker---api-templating-render-pdf",
 	"newScenarioState": "send-denial-decision-task-worker---api-messaging-send-web-message",
 	"request": {
-		"urlPath": "/api-messaging/webmessage",
+		"urlPath": "/api-messaging/2281/webmessage",
 		"method": "POST",
 		"headers": {
 			"Authorization": {
