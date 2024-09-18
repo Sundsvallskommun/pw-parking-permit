@@ -192,7 +192,7 @@ class CheckDecisionTaskWorkerTest {
 	@Test
 	void executeWhenDecisionIsNotFinal() {
 
-		// Arrange;
+		// Arrange
 		final var status = new StatusDTO();
 		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -225,7 +225,7 @@ class CheckDecisionTaskWorkerTest {
 	@Test
 	void executeWhenDecisionsIsNull() {
 
-		// Arrange;
+		// Arrange
 		final var status = new StatusDTO();
 		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
