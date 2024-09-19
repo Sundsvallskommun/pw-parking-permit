@@ -85,7 +85,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void autoDeployEnabledWithDefinedProcessAndDefaultPathPatterns() throws Exception {
+	void autoDeployEnabledWithDefinedProcessAndDefaultPathPatterns() throws IOException {
 		final var name = "name";
 
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
@@ -103,7 +103,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void autoDeployEnabledWithDefinedProcessAndDefaultPathPatternsButNoNameSet() throws Exception {
+	void autoDeployEnabledWithDefinedProcessAndDefaultPathPatternsButNoNameSet() {
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 
@@ -114,7 +114,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void autoDeployEnabledWithDefinedProcessAndCustomPathPatterns() throws Exception {
+	void autoDeployEnabledWithDefinedProcessAndCustomPathPatterns() throws IOException {
 		final var name = "name";
 		final var custom_pattern_bpmn = "classpath*:**/custompath/*.custom_bpmn";
 		final var custom_pattern_dmn = "classpath*:**/custompath/*..custom_dmn";
@@ -138,7 +138,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void autoDeployEnabledWithDefinedProcessAndMatchingDeploymentResources() throws Exception {
+	void autoDeployEnabledWithDefinedProcessAndMatchingDeploymentResources() throws IOException {
 		final var name = "name";
 		final var tenant = "tenant";
 		final var deploymentName = name + " (" + tenant + ") - " + PROCESSMODEL_FILE;
@@ -148,7 +148,7 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.tenant()).thenReturn(tenant);
 		when(processArchiveMock.name()).thenReturn(name);
-		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[] { resourceMock });
+		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[]{resourceMock});
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(processFile.getInputStream());
 
@@ -164,7 +164,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void patternResolverThrowsException() throws Exception {
+	void patternResolverThrowsException() throws IOException {
 		final var originException = new IOException("testException");
 
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
@@ -180,7 +180,7 @@ class TenantAwareAutoDeploymentTest {
 	}
 
 	@Test
-	void createDeploymentThrowsException() throws Exception {
+	void createDeploymentThrowsException() throws IOException {
 		final var name = "name";
 		final var originException = new RuntimeException("testException");
 
@@ -188,7 +188,7 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.name()).thenReturn(name);
 		when(deploymentApiMock.deploy(any(), any(), anyBoolean(), anyBoolean(), any(), any(), any())).thenThrow(originException);
-		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[] { resourceMock });
+		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[]{resourceMock});
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(new ClassPathResource(PROCESSMODEL_PATH + PROCESSMODEL_FILE).getInputStream());
 

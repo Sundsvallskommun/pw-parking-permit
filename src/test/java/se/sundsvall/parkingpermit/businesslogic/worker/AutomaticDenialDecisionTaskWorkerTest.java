@@ -153,15 +153,15 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
-		assertThat(stakeholderCaptor.getValue().getType()).isEqualTo(PERSON);
-		assertThat(stakeholderCaptor.getValue().getFirstName()).isEqualTo("Process");
-		assertThat(stakeholderCaptor.getValue().getLastName()).isEqualTo("Engine");
-		assertThat(stakeholderCaptor.getValue().getRoles()).containsExactly(ROLE_ADMINISTRATOR);
+		assertThat(stakeholderCaptor.getValue())
+			.extracting(StakeholderDTO::getType, StakeholderDTO::getFirstName, StakeholderDTO::getLastName, StakeholderDTO::getRoles)
+			.containsExactly(PERSON, "Process", "Engine", List.of(ROLE_ADMINISTRATOR));
+
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
-		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);
-		assertThat(decisionCaptor.getValue().getDescription()).isEqualTo(description);
-		assertThat(decisionCaptor.getValue().getDecidedBy()).isEqualTo(stakeholderDTO);
+		assertThat(decisionCaptor.getValue())
+			.extracting(DecisionDTO::getDecisionType, DecisionDTO::getDecisionOutcome, DecisionDTO::getDescription, DecisionDTO::getDecidedBy)
+			.containsExactly(FINAL, DISMISSAL, description, stakeholderDTO);
+
 		assertThat(decisionCaptor.getValue().getLaw())
 			.extracting(
 				LawDTO::getArticle,

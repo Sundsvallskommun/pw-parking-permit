@@ -17,12 +17,13 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import generated.se.sundsvall.camunda.VariableValueDto;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractTaskWorkerTest {
@@ -34,7 +35,9 @@ class AbstractTaskWorkerTest {
 		}
 
 		@Override
-		public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {}
+		public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+			// Do nothing
+		}
 	}
 
 	@Mock
