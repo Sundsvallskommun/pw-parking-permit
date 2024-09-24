@@ -27,25 +27,21 @@ public class StartProcessResponse {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if ((o == null) || (getClass() != o.getClass())) {
-			return false;
-		}
-		final StartProcessResponse that = (StartProcessResponse) o;
-		return Objects.equals(processId, that.processId);
-	}
-
-	@Override
 	public int hashCode() {
 		return Objects.hash(processId);
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final StartProcessResponse other)) { return false; }
+		return Objects.equals(processId, other.processId);
+	}
+
+	@Override
 	public String toString() {
-		return "StartProcessResponse{" + "processId='" + processId + '\'' +
-			'}';
+		final StringBuilder builder = new StringBuilder();
+		builder.append("StartProcessResponse [processId=").append(processId).append("]");
+		return builder.toString();
 	}
 }

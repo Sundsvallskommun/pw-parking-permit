@@ -18,13 +18,12 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
+import generated.se.sundsvall.casedata.ErrandDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.RpaService;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
 
 @Component
 @ExternalTaskSubscription("OrderCardTask")
@@ -69,8 +68,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 			case CASE_TYPE_PARKING_PERMIT -> List.of(QUEUE_NEW_CARD);
 			case CASE_TYPE_PARKING_PERMIT_RENEWAL -> List.of(QUEUE_REPLACEMENT_CARD);
 			case CASE_TYPE_LOST_PARKING_PERMIT -> List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD);
-			default ->
-				throw Problem.valueOf(INTERNAL_SERVER_ERROR, String.format(UNSUPPORTED_CASE_TYPE, errand.getCaseType()));
+			default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, UNSUPPORTED_CASE_TYPE.formatted(errand.getCaseType()));
 		};
 	}
 }

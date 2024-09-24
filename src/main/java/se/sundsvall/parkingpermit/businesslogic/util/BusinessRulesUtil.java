@@ -4,7 +4,6 @@ import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
 import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -30,17 +29,17 @@ public final class BusinessRulesUtil {
 	static final String PREFIX_APPROVAL = "Rekommenderat beslut är bevilja. %s";
 	static final String PREFIX_REJECT = "Rekommenderat beslut är avslag. %s";
 
-	private BusinessRulesUtil() {}
-
 	private static final String REGEXP_LAST_COMMA = "^(.*)(, )(.*)$";
+
+	private BusinessRulesUtil() {}
 
 	public static DecisionDTO constructDecision(Result resultFromRuleEngine) {
 		if (isApproved(resultFromRuleEngine)) {
 			// Return decision with information from outcome of each control
-			return createDecision(RECOMMENDED, APPROVAL, format(PREFIX_APPROVAL, concatDescriptions(toDetails(resultFromRuleEngine))));
+			return createDecision(RECOMMENDED, APPROVAL, PREFIX_APPROVAL.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
 		}
 		// Return decision with information from outcome of each negative control
-		return createDecision(RECOMMENDED, REJECTION, format(PREFIX_REJECT, concatDescriptions(toDetails(resultFromRuleEngine))));
+		return createDecision(RECOMMENDED, REJECTION, PREFIX_REJECT.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
 	}
 
 	private static DecisionDTO createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description) {

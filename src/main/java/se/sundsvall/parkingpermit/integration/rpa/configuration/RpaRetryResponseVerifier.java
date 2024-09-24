@@ -24,7 +24,7 @@ public class RpaRetryResponseVerifier implements RetryResponseVerifier {
 
 	@Override
 	public boolean shouldReturnRetryableException(Response response) {
-		final var rpaAuthHeader = String.format(RPA_WWW_AUTH_HEADER, rpaProperties.identityServerUrl());
+		final var rpaAuthHeader = RPA_WWW_AUTH_HEADER.formatted(rpaProperties.identityServerUrl());
 
 		return (response.status() == UNAUTHORIZED.value()) &&
 			ofNullable(response.headers().get(WWW_AUTHENTICATE)).orElse(emptySet()).stream()

@@ -27,14 +27,13 @@ import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.StakeholderDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -44,7 +43,6 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private static final String PROCESS_ENGINE_LAST_NAME = "Engine";
 
 	private final MessagingService messagingService;
-
 	private final TextProvider textProvider;
 
 	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
