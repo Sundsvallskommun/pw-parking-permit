@@ -1,8 +1,11 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
@@ -64,5 +67,12 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		RequestId.init(externalTask.getVariable(CAMUNDA_VARIABLE_REQUEST_ID));
 		executeBusinessLogic(externalTask, externalTaskService);
+	}
+
+	protected boolean isCancel(ErrandDTO errand) {
+		return ofNullable(errand.getExtraParameters())
+				.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
+				.filter(PHASE_ACTION_CANCEL::equals)
+				.isPresent();
 	}
 }

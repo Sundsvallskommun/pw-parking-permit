@@ -15,6 +15,7 @@ public final class Constants {
 	public static final String PARTY_ASSET_DESCRIPTION = "Parkeringstillstånd";
 
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
+	public static final String CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR = "assignedToAdministrator";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
 	public static final String CAMUNDA_VARIABLE_MUNICIPALITY_ID = "municipalityId";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";

@@ -94,13 +94,6 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private boolean isCancel(ErrandDTO errand) {
-		return ofNullable(errand.getExtraParameters())
-			.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
-			.filter(PHASE_ACTION_CANCEL::equals)
-			.isPresent();
-	}
-
 	private boolean isApproved(DecisionDTO.DecisionOutcomeEnum decisionOutcome) {
 		return APPROVAL.equals(decisionOutcome);
 	}

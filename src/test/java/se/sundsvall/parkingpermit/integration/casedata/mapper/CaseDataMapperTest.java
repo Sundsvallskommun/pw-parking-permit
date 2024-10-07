@@ -159,10 +159,10 @@ class CaseDataMapperTest {
 		expectedExtraParameters.put("process.phaseAction", null);
 		expectedExtraParameters.put("process.displayPhase", null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("facilities", "extraParameters")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
 			.extracting(PatchErrandDTO::getFacilities,
 						PatchErrandDTO::getExtraParameters)
-			.containsExactly(emptyList(), expectedExtraParameters);
+			.containsExactly(null, expectedExtraParameters);
 	}
 
 	@Test
@@ -176,7 +176,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "facilities", "extraParameters")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
 			.extracting(
 				PatchErrandDTO::getExternalCaseId,
 				PatchErrandDTO::getPhase,
@@ -185,11 +185,35 @@ class CaseDataMapperTest {
 			.containsExactly(
 				externalCaseId,
 				phase,
-				emptyList(),
+				null,
 				Map.of(
 					"process.displayPhase", displayPhase,
 					"process.phaseStatus", phaseStatus,
 					"process.phaseAction", phaseAction));
+	}
+
+	@Test
+	void toPatchErrandWithoutDisplayPhase() {
+		final var externalCaseId = "externalCaseId";
+		final var phase = "phase";
+		final var phaseStatus = "phaseStatus";
+		final var phaseAction = "phaseAction";
+
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
+
+		assertThat(bean).isNotNull()
+				.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+				.extracting(
+						PatchErrandDTO::getExternalCaseId,
+						PatchErrandDTO::getPhase,
+						PatchErrandDTO::getFacilities,
+						PatchErrandDTO::getExtraParameters)
+				.containsExactly(
+						externalCaseId,
+						phase,
+						null,
+						Map.of("process.phaseStatus", phaseStatus,
+								"process.phaseAction", phaseAction));
 	}
 
 	@Test

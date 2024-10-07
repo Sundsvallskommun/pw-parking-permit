@@ -15,7 +15,6 @@
 				"equalToJson": {
 					"externalCaseId": "2971",
 					"phase": "Utredning",
-					"facilities": [],
 					"extraParameters": {
 						"process.phaseStatus": "WAITING",
 						"process.phaseAction": "UNKNOWN",

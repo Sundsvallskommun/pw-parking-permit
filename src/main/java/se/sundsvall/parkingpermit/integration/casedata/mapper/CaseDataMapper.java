@@ -30,12 +30,17 @@ public class CaseDataMapper {
 	private CaseDataMapper() {}
 
 	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction, String displayPhase) {
+		return toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction)
+			.putExtraParametersItem(CASEDATA_KEY_DISPLAY_PHASE, displayPhase);
+	}
+
+	public static PatchErrandDTO toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction) {
 		return new PatchErrandDTO()
-			.externalCaseId(externalCaseId)
-			.phase(phase)
-			.putExtraParametersItem(CASEDATA_KEY_PHASE_STATUS, phaseStatus)
-			.putExtraParametersItem(CASEDATA_KEY_DISPLAY_PHASE, displayPhase)
-			.putExtraParametersItem(CASEDATA_KEY_PHASE_ACTION, phaseAction);
+				.externalCaseId(externalCaseId)
+				.phase(phase)
+				.facilities(null)
+				.putExtraParametersItem(CASEDATA_KEY_PHASE_STATUS, phaseStatus)
+				.putExtraParametersItem(CASEDATA_KEY_PHASE_ACTION, phaseAction);
 	}
 
 	public static StakeholderDTO toStakeholder(String role, TypeEnum type, String firstName, String lastName) {
