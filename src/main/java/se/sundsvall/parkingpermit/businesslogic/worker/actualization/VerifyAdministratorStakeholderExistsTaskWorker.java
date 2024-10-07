@@ -46,9 +46,9 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
             final var errand = getErrand(municipalityId, caseNumber);
 
 
-            final var administratorAssigned = isAdministratorAssigned(errand);
+            final var administratorIsAssigned = isAdministratorAssigned(errand);
             final var variables = new HashMap<String, Object>();
-            variables.put(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, administratorAssigned);
+            variables.put(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, administratorIsAssigned);
 
 
             if (isCancel(errand)) {
@@ -58,7 +58,7 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
                 variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 
-            } else if (!administratorAssigned) {
+            } else if (!administratorIsAssigned) {
                 caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
             }

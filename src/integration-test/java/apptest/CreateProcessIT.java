@@ -59,6 +59,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -145,6 +146,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -199,6 +201,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "decision_is_case_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -213,6 +216,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -302,6 +306,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -345,6 +350,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "actualization_is_case_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -359,6 +365,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -448,6 +455,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_sanity_check_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -462,6 +470,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -551,6 +560,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_phase_action_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -565,6 +575,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -659,6 +670,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -717,6 +729,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "execution_card_check_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -731,6 +744,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -820,6 +834,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -886,6 +901,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "investigation_phase_action_is_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 
 		// Update process
@@ -900,6 +916,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
@@ -993,6 +1010,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+			.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
 			.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
 
 		// Verify wiremock stubs
