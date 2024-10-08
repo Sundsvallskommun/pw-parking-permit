@@ -139,7 +139,7 @@
         <bpmn:documentation>Set phase to investigation</bpmn:documentation>
         <bpmn:extensionElements>
           <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Aktualisering&#34;)}" event="start" />
-          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Aktualisering&#34;)}" event="start" />
+          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Registrerad&#34;)}" event="start" />
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0uze4jm</bpmn:incoming>
         <bpmn:outgoing>Flow_18uxvh5</bpmn:outgoing>
