@@ -77,6 +77,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -233,6 +237,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -323,6 +331,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End when canceled", "end_actualization_canceled"),
@@ -336,7 +348,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test005_createProcessForActualizaitionNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test005_createProcessForActualizationNotComplete() throws JsonProcessingException, ClassNotFoundException {
 
 		// Start process
 		final var startResponse = setupCall()
@@ -382,6 +394,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				// Actualization not complete
@@ -487,6 +503,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -592,6 +612,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -687,6 +711,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -761,6 +789,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -851,6 +883,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -933,6 +969,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -1027,6 +1067,10 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Update phase", "external_task_actualization_update_phase"),
 				tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
 				tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+				tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+				tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+				tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+				tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
 				tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
 				tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"),
 				tuple("End actualization phase", "end_actualization_phase"),
@@ -1066,5 +1110,106 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 				tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
 
 				tuple("End process", "end_process"));
+	}
+
+	@Test
+	void test013_createProcessForCancelInActualizationWhenVerifyingAdministrator() throws JsonProcessingException, ClassNotFoundException {
+		// Start process
+		final var startResponse = setupCall()
+				.withServicePath("/2281/process/start/1920")
+				.withHttpMethod(POST)
+				.withExpectedResponseStatus(ACCEPTED)
+				.sendRequest()
+				.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to finish
+		await()
+				.ignoreExceptions()
+				.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+				.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getHistoricProcessInstance(startResponse.getProcessId()).getState(), equalTo(COMPLETED));
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
+				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+				.containsExactlyInAnyOrder(
+						tuple("Start process", "start_process"),
+						// Actualization
+						tuple("Actualization", "actualization_phase"),
+						tuple("Start actualization phase", "start_actualization_phase"),
+						tuple("Update phase", "external_task_actualization_update_phase"),
+						tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+						tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+						tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+						tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+						tuple("End when canceled", "end_actualization_canceled"),
+						// GW isCitizen
+						tuple("Gateway isCitizen", "gateway_is_citizen"),
+						// GW isCitizen
+						tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"),
+
+						tuple("End process", "end_process"));
+	}
+
+	@Test
+	void test014_createProcessWaitingForStakeholderUpdateInActualization() throws JsonProcessingException, ClassNotFoundException {
+		// Start process
+		final var startResponse = setupCall()
+				.withServicePath("/2281/process/start/2021")
+				.withHttpMethod(POST)
+				.withExpectedResponseStatus(ACCEPTED)
+				.sendRequest()
+				.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to be waiting for update of errand
+		await()
+				.ignoreExceptions()
+				.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+				.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "actualization_wait_for_stakeholder_update".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
+
+		// Update process
+		setupCall()
+				.withServicePath("/2281/process/update/" + startResponse.getProcessId())
+				.withHttpMethod(POST)
+				.withExpectedResponseStatus(ACCEPTED)
+				.withExpectedResponseBodyIsNull()
+				.sendRequest();
+
+		// Wait for process to be waiting for phase action in actualization
+		await()
+				.ignoreExceptions()
+				.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
+				.failFast( "Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> "actualization_is_case_update_available".equals(eventSubscription.getActivityId())).count(), equalTo(1L));
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertThat(getProcessInstanceRoute(startResponse.getProcessId()))
+				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+				.containsExactlyInAnyOrder(
+						tuple("Start process", "start_process"),
+						// Actualization
+						tuple("Start actualization phase", "start_actualization_phase"),
+						tuple("Update phase", "external_task_actualization_update_phase"),
+						tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"),
+						tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"),
+						tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+						tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+						// Stakeholder not assigned
+						tuple("Wait for case update", "actualization_wait_for_stakeholder_update"),
+						tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"),
+						tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"),
+						tuple("Update displayPhase", "external_task_actualization_update_display_phase"),
+						tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"),
+						tuple("Check phase action", "external_task_actualization_check_phase_action_task"),
+						tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"));
+						// Gets stuck in actualization_is_case_update_available (verified by last await) but is not part
+						// of history yet since it has not ended.
 	}
 }

@@ -1,0 +1,31 @@
+{
+	"scenarioName": "create-process-for-cancel-in-actualization",
+	"requiredScenarioState": "actualization_update-errand-status--api-casedata-put-status",
+	"newScenarioState": "actualization_check-phase-action_task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/789",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test004_createProcessForCancelInActualization/responses/api-casedata-get-errand_with_parameters.json",
+		"transformers": [
+			"response-template"
+		],
+		"transformerParameters": {
+			"phaseParameter": "Aktualisering",
+			"decisionParameter": "PROPOSED",
+			"phaseActionParameter": "CANCEL",
+			"phaseStatusParameter": "ONGOING",
+			"displayPhaseParameter": "Granskning"
+		}
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"scenarioName": "create-process-for-actualization-not-complete",
+	"requiredScenarioState": "actualization_check-phase-action_task-worker---api-casedata-get-errand",
+	"newScenarioState": "actualization_check-phase-action_task-worker---api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1011",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Aktualisering",
+					"extraParameters": {
+						"process.phaseStatus": "WAITING",
+						"process.phaseAction": "UNKNOWN",
+						"process.displayPhase": "Granskning"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"scenarioName": "create-process-waiting-for-stakeholder-update",
+	"requiredScenarioState": "actualization_verify-administrator-stakeholder-no-stakeholder--api-casedata-get-errand",
+	"newScenarioState": "actualization_verify-administrator-stakeholder--api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/2021",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Aktualisering",
+					"extraParameters": {
+						"process.phaseStatus": "WAITING",
+						"process.phaseAction": "UNKNOWN"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

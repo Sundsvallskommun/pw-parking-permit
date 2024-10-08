@@ -1,0 +1,32 @@
+{
+  "scenarioName": "create-process-waiting-for-stakeholder-update",
+  "requiredScenarioState": "actualization_update-display-phase--api-casedata-patch-errand",
+  "newScenarioState": "actualization_update-errand-status--api-casedata-get-errand",
+  "request": {
+    "urlPath": "/api-casedata/2281/errands/2021",
+    "method": "GET",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200,
+    "bodyFileName": "test014_createProcessWaitingForStakeholderUpdateInActualization/responses/api-casedata-get-errand_with_parameters.json",
+    "transformers": [
+      "response-template"
+    ],
+    "transformerParameters": {
+      "phaseParameter": "Aktualisering",
+      "phaseActionParameter": "UNKNOWN",
+      "phaseStatusParameter": "ONGOING",
+      "displayPhaseParameter": "Gransking",
+      "decisionParameter": "PROPOSED",
+      "stakeholderRole": "ADMINISTRATOR"
+    }
+  }
+}

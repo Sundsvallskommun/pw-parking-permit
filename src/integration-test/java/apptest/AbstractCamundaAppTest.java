@@ -6,6 +6,7 @@ import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,9 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 			return route;
 		}
 		return camundaClient.getHistoricActivities(processInstanceId).stream()
+			.filter(e -> e.getEndTime() != null)
 			.sorted(comparing(HistoricActivityInstanceDto::getEndTime))
-			.flatMap(activity -> concat(List.of(activity).stream(), getRoute(activity.getCalledProcessInstanceId(), route).stream()))
+			.flatMap(activity -> concat(Stream.of(activity), getRoute(activity.getCalledProcessInstanceId(), route).stream()))
 			.toList();
 	}
 }
