@@ -1,5 +1,5 @@
 {
-	"id": 789,
+	"id": 2021,
 	"version": 2,
 	"created": "2022-12-02T15:13:45.363499+01:00",
 	"updated": "2022-12-02T15:17:01.5636+01:00",
@@ -56,7 +56,7 @@
 			"lastName": "Anka",
 			"personId": "6b8928bb-9800-4d52-a9fa-20d88c812345",
 			"roles": [
-				"ADMINISTRATOR"
+				"{{parameters.stakeholderRole}}"
 			],
 			"addresses": [
 				{

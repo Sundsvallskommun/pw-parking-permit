@@ -1,0 +1,33 @@
+{
+  "scenarioName": "create-process-for-cancel-in-decision",
+  "requiredScenarioState": "actualization_update-display-phase--api-casedata-get-errand",
+  "newScenarioState": "actualization_update-display-phase--api-casedata-patch-errand",
+  "request": {
+    "urlPath": "/api-casedata/2281/errands/1516",
+    "method": "PATCH",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "externalCaseId": "2971",
+          "phase": "Aktualisering",
+          "extraParameters": {
+            "process.phaseStatus": "ONGOING",
+            "process.phaseAction": "UNKNOWN",
+            "process.displayPhase": "Gransking"
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "*/*"
+    },
+    "status": 204
+  }
+}

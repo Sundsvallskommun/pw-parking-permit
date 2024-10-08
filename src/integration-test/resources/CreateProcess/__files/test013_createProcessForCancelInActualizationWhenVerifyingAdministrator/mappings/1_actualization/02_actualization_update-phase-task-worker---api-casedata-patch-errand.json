@@ -1,0 +1,33 @@
+{
+	"scenarioName": "create-process-for-cancel-in-actualization-without-administrator",
+	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-get-errand",
+	"newScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/1920",
+		"method": "PATCH",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"externalCaseId": "2971",
+					"phase": "Aktualisering",
+					"extraParameters": {
+						"process.phaseStatus": "ONGOING",
+						"process.phaseAction": "UNKNOWN",
+						"process.displayPhase": "Aktualisering"
+					}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 204
+	}
+}

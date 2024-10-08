@@ -14,6 +14,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NO
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_ACTUALIZATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
@@ -25,6 +26,9 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -162,6 +166,41 @@ class UpdateErrandStatusTaskWorkerTest {
 		assertThat(statusCaptor.getValue().getFirst().getDateTime()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(statusCaptor.getValue().getFirst().getDescription()).isEqualTo("Ärendet avvisas");
 		assertThat(statusCaptor.getValue().getFirst().getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
+	}
+
+	@ParameterizedTest
+	@NullSource
+	@ValueSource(strings = {"testStatusDescription"})
+	void executeWhenPhaseActualization(String statusDescription) {
+
+		final String status = "testStatus";
+
+		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable("status")).thenReturn(status);
+		when(externalTaskMock.getVariable("statusDescription")).thenReturn(statusDescription);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getPhase()).thenReturn(CASEDATA_PHASE_ACTUALIZATION);
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify and assert
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).putStatus(eq(MUNICIPALITY_ID), eq(ERRAND_ID), statusCaptor.capture());
+		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+
+		assertThat(statusCaptor.getValue().size()).isOne();
+		assertThat(statusCaptor.getValue().getFirst().getDateTime()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(statusCaptor.getValue().getFirst().getDescription()).isEqualTo(statusDescription == null ? status : statusDescription);
+		assertThat(statusCaptor.getValue().getFirst().getStatusType()).isEqualTo(status);
 	}
 
 

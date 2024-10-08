@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_ACTUALIZATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
@@ -52,6 +53,11 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 						// Errand is in automatic denial sub process
 						caseDataClient.putStatus(municipalityId, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 					}
+				}
+				case CASEDATA_PHASE_ACTUALIZATION -> {
+					final var status = externalTask.getVariable("status").toString();
+					final var statusDescription = Optional.ofNullable(externalTask.getVariable("statusDescription")).map(Object::toString).orElse(status);
+					caseDataClient.putStatus(municipalityId, errand.getId(), List.of(toStatus(status, statusDescription)));
 				}
 				default -> logInfo("No status update for phase {}", phase);
 			}
