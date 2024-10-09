@@ -218,7 +218,7 @@
       <bpmn:serviceTask id="external_task_actualization_update_display_phase" name="Update displayPhase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:extensionElements>
           <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Aktualisering&#34;)}" event="start" />
-          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Gransking&#34;)}" event="start" />
+          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Granskning&#34;)}" event="start" />
         </bpmn:extensionElements>
         <bpmn:incoming>actualization_stakholder_is_assigend</bpmn:incoming>
         <bpmn:outgoing>Flow_0uir48n</bpmn:outgoing>
