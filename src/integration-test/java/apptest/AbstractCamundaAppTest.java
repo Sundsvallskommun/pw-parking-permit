@@ -1,13 +1,19 @@
 package apptest;
 
+import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Stream.concat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -69,5 +75,20 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 			.sorted(comparing(HistoricActivityInstanceDto::getEndTime))
 			.flatMap(activity -> concat(Stream.of(activity), getRoute(activity.getCalledProcessInstanceId(), route).stream()))
 			.toList();
+	}
+
+	protected void awaitProcessCompleted(String processId, long timeoutInSeconds) {
+		await()
+				.ignoreExceptions()
+				.atMost(timeoutInSeconds, SECONDS)
+				.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getHistoricProcessInstance(processId).getState(), equalTo(COMPLETED));
+	}
+
+	protected void assertProcessPathway(String processId, ArrayList<Tuple> list) {
+		assertThat(getProcessInstanceRoute(processId))
+				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+				.doesNotHaveDuplicates()
+				.containsExactlyInAnyOrderElementsOf(list);
 	}
 }

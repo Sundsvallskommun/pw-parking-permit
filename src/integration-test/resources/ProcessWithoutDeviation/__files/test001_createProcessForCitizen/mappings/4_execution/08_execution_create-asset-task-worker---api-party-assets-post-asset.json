@@ -1,0 +1,37 @@
+{
+	"scenarioName": "create-process-for-citizen",
+	"requiredScenarioState": "execution_create-asset-task-worker---api-casedata-get-errand",
+	"newScenarioState": "execution_create-asset-task-worker---api-party-assets-post-asset",
+	"request": {
+		"urlPath": "/api-party-assets/2281/assets",
+		"method": "POST",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+					"assetId": "12345",
+					"caseReferenceIds": [
+						"123"
+					],
+					"origin": "CASEDATA",
+					"type": "PARKINGPERMIT",
+					"issued": "2024-05-17",
+					"validTo": "2025-05-17",
+					"description": "Parkeringstillstånd",
+					"additionalParameters": {}
+				}
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "*/*"
+		},
+		"status": 201
+	}
+}
