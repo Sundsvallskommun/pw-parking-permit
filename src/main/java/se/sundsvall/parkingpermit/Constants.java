@@ -30,6 +30,7 @@ public final class Constants {
 	public static final String CAMUNDA_VARIABLE_PHASE_ACTION = "phaseAction";
 	public static final String CAMUNDA_VARIABLE_DISPLAY_PHASE = "displayPhase";
 	public static final String CAMUNDA_VARIABLE_CARD_EXISTS = "cardExists";
+	public static final String CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE = "timeToSendControlMessage";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
