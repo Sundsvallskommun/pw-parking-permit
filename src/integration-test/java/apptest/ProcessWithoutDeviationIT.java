@@ -12,6 +12,7 @@ import java.time.Duration;
 
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Decision.mockDecision;
+import static apptest.mock.Execution.mockExecution;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -56,6 +57,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
         mockActualization("123", "create-process-for-citizen");
         //TODO add corresponding mocks for all phases.
         mockDecision("123", "create-process-for-citizen");
+        mockExecution("123", "create-process-for-citizen");
 
         // Start process
         final var startResponse = setupCall()
