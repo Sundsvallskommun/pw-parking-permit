@@ -42,6 +42,19 @@ public class CaseData {
                 .getNewScenarioState();
     }
 
+    public static String mockCaseDataDecisionPatch(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+        return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/errands/%s/decisions", caseId)))
+                .inScenario(scenarioName)
+                .whenScenarioStateIs(requiredScenarioState)
+                .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+                .withRequestBody(bodyPattern)
+                .willReturn(aResponse()
+                        .withStatus(204)
+                        .withHeader("Content-Type", "*/*"))
+                .willSetStateTo(newScenarioState))
+                .getNewScenarioState();
+    }
+
     public static String mockCaseDataPutStatus(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
         return stubFor(put(urlEqualTo(String.format("/api-casedata/2281/errands/%s/statuses", caseId)))
                 .inScenario(scenarioName)
