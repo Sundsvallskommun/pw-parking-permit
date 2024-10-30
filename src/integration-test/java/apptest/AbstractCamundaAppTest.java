@@ -85,10 +85,20 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 				.until(() -> camundaClient.getHistoricProcessInstance(processId).getState(), equalTo(COMPLETED));
 	}
 
-	protected void assertProcessPathway(String processId, ArrayList<Tuple> list) {
-		assertThat(getProcessInstanceRoute(processId))
+	protected void awaitProcessState(String state, long timeoutInSeconds) {
+		await()
+				.ignoreExceptions()
+				.atMost(timeoutInSeconds, SECONDS)
+				.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> state.equals(eventSubscription.getActivityId())).count(), equalTo(1L));
+	}
+
+	protected void assertProcessPathway(String processId, boolean acceptDuplication, ArrayList<Tuple> list) {
+		var element = assertThat(getProcessInstanceRoute(processId))
 				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
-				.doesNotHaveDuplicates()
 				.containsExactlyInAnyOrderElementsOf(list);
+		if(!acceptDuplication) {
+			element.doesNotHaveDuplicates();
+		}
 	}
 }
