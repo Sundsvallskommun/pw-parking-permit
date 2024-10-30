@@ -4,6 +4,7 @@ import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
@@ -15,6 +16,7 @@ import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
+import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -33,7 +35,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 
-@WireMockAppTestSuite(files = "classpath:/ProcessWithoutDeviation/", classes = Application.class)
+@DirtiesContext
+@WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
 class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 
     private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
@@ -55,13 +58,12 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
     void test001_createProcessForCitizen() throws JsonProcessingException, ClassNotFoundException {
 
         //Setup mocks
-        //TODO rename scenarioName when all mock-helpers are created
-        mockActualization("123", "create-process-for-citizen");
-        mockInvestigation("123", "create-process-for-citizen");
-        //TODO add corresponding mocks for all phases.
-        mockDecision("123", "create-process-for-citizen");
-        mockExecution("123", "create-process-for-citizen");
-        mockFollowUp("123", "create-process-for-citizen");
+        mockApiGatewayToken();
+        mockActualization("123", "test001_createProcessForCitizen");
+        mockInvestigation("123", "test001_createProcessForCitizen");
+        mockDecision("123", "test001_createProcessForCitizen");
+        mockExecution("123", "test001_createProcessForCitizen");
+        mockFollowUp("123", "test001_createProcessForCitizen");
 
         // Start process
         final var startResponse = setupCall()
@@ -78,7 +80,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
         verifyAllStubs();
 
         // Verify process pathway.
-        assertProcessPathway(startResponse.getProcessId(), Tuples.create()
+        assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
                 .with(tuple("Start process", "start_process"))
                 .with(actualizationPathway())
                 .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
