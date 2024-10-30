@@ -26,6 +26,7 @@ public class CaseData {
                                 .withHeader("Content-Type", "application/json")
                                 .withBodyFile("common/responses/casedata/get-errand.json")
                                 .withTransformers("response-template")
+                                .withTransformerParameter("caseId", caseId)
                                 .withTransformerParameters(transformParameters))
                         .willSetStateTo(newScenarioState))
                 .getNewScenarioState();

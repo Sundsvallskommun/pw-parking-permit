@@ -45,7 +45,7 @@ public class Execution {
 	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
-			Map.of(
+			Map.of("caseTypeParameter", "PARKING_PERMIT",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
@@ -59,10 +59,10 @@ public class Execution {
 						{
 					  		"Name": "${json-unit.any-string}",
 					  		"SpecificContent":{},
-					  		"Reference":"123"
+					  		"Reference":"%s"
 						}
 				}
-				"""));
+				""".formatted(caseId)));
 
 		return mockCaseDataPutStatus(caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-put-errand",
@@ -93,7 +93,7 @@ public class Execution {
 							"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
 						  	"assetId": "12345",
 						  	"caseReferenceIds": [
-						    	"123"
+								"%s"
 						  	],
 						  	"origin": "CASEDATA",
 						  	"type": "PARKINGPERMIT",
@@ -102,7 +102,7 @@ public class Execution {
 						  	"description": "Parkeringstillstånd",
 						  	"additionalParameters": {}
 					  }
-				"""));
+				""".formatted(caseId)));
 	}
 
 	public static String mockExecutionCheckIfCardExists(String caseId, String scenarioName, String requiredScenarioState) {
