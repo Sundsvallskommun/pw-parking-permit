@@ -93,8 +93,8 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Normal mocks
         mockDecision(caseId, scenarioName);
-        mockExecution(caseId, scenarioName);
-        mockFollowUp(caseId, scenarioName);
+        final var stateAfterExcecution = mockExecution(caseId, scenarioName);
+        mockFollowUp(caseId, scenarioName, stateAfterExcecution);
 
         // Start process
         final var startResponse = setupCall()
@@ -185,8 +185,8 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
         mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision2);
         // Normal mocks
         mockDecision(caseId, scenarioName);
-        mockExecution(caseId, scenarioName);
-        mockFollowUp(caseId, scenarioName);
+        final var stateAfterExcecution = mockExecution(caseId, scenarioName);
+        mockFollowUp(caseId, scenarioName, stateAfterExcecution);
 
 
         // Start process
