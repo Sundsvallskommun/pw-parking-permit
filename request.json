@@ -1,0 +1,34 @@
+{
+	"context": "PARKING_PERMIT",
+	"facts": [
+		{
+			"key": "type",
+			"value": "PARKING_PERMIT"
+		},
+		{
+			"key": "stakeholders.applicant.personid",
+			"value": "ee734d15-679f-485a-b2e5-a49eed90a43f"
+		},
+		{
+			"key": "application.applicant.capacity",
+			"value": "PASSENGER"
+		},
+		{
+			"key": "disability.duration",
+			"value": "P0Y"
+		},
+		{
+			"key": "disability.walkingAbility",
+			"value": "true"
+		},
+		{
+			"key": "disability.walkingDistance.max",
+			"value": "3"
+		},
+		{
+			"key": "disability.canBeAloneWhileParking",
+			"value": "true"
+		}
+	]
+}
+}

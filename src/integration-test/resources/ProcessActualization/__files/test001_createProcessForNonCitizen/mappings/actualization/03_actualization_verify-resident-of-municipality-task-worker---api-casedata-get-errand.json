@@ -1,0 +1,21 @@
+{
+	"scenarioName": "create-process-for-non-citizen",
+	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
+	"newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
+	"request": {
+		"urlPath": "/api-casedata/2281/errands/456",
+		"method": "GET",
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		}
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"status": 200,
+		"bodyFileName": "test001_createProcessForNonCitizen/responses/verify-resident-of-municipality-task-worker---api-casedata-get-errand.json"
+	}
+}

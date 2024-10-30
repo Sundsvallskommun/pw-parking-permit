@@ -73,4 +73,17 @@ public class ProcessPathway {
                 .with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
                 .with(tuple("End follow up phase", "end_follow_up_phase"));
     }
+
+    public static Tuples denialPathway() {
+        return Tuples.create()
+            .with(tuple("Start automatic denial phase", "start_automatic_denial_phase"))
+            .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+            .with(tuple("Update phase on errand", "external_task_update_errand_phase"))
+            .with(tuple("Add decision for denial to errand", "external_task_add_denial_decision"))
+            .with(tuple("Update errand status", "external_task_update_errand_status"))
+            .with(tuple("Send denial decision to applicant", "external_task_send_denial_decision"))
+            .with(tuple("Add message to errand", "external_task_add_message"))
+            .with(tuple("End automatic denial phase", "end_automatic_denial_phase"))
+            .with(tuple("Automatic denial", "subprocess_automatic_denial"));
+    }
 }
