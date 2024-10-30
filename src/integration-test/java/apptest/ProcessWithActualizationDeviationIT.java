@@ -1,19 +1,25 @@
 package apptest;
 
+import apptest.mock.Actualization;
 import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 import java.time.Duration;
 
+import static apptest.mock.Actualization.mockActualizationUpdatePhase;
+import static apptest.mock.Actualization.mockActualizationVerifyResident;
 import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.FollowUp.mockFollowUp;
+import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.verification.ProcessPathway.denialPathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -23,8 +29,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 
-@WireMockAppTestSuite(files = "classpath:/ProcessActualization/", classes = Application.class)
-class ProcessActualizationIT extends AbstractCamundaAppTest {
+@DirtiesContext
+@WireMockAppTestSuite(files = "classpath:/WireMock/", classes = Application.class)
+class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
@@ -44,9 +51,14 @@ class ProcessActualizationIT extends AbstractCamundaAppTest {
 	@Test
 	void test001_createProcessForNonCitizen() throws JsonProcessingException, ClassNotFoundException {
 
+		final var caseId = "456";
+		final var scenarioName = "test_actualization_001_createProcessForNonCitizen";
 		//Setup mocks
-		final var stateAfterDenial = mockDenial("456", "create-process-for-non-citizen", "verify-resident-of-municipality-task-worker---api-citizen-getcitizen");
-		mockFollowUp("456", "create-process-for-non-citizen", stateAfterDenial);
+		mockApiGatewayToken();
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality");
+		final var stateAfterDenial = mockDenial(caseId, scenarioName, "verify-resident-of-municipality-task-worker---api-citizen-getcitizen");
+		mockFollowUp(caseId, scenarioName, stateAfterDenial);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -63,7 +75,7 @@ class ProcessActualizationIT extends AbstractCamundaAppTest {
 		verifyAllStubs();
 
 		// Verify process pathway.
-		assertProcessPathway(startResponse.getProcessId(), Tuples.create()
+		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
 			.with(tuple("Start process", "start_process"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
