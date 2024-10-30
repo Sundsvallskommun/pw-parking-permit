@@ -96,7 +96,6 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 	protected void assertProcessPathway(String processId, boolean acceptDuplication, ArrayList<Tuple> list) {
 		var element = assertThat(getProcessInstanceRoute(processId))
 				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
-				//.doesNotHaveDuplicates()
 				.containsExactlyInAnyOrderElementsOf(list);
 		if(!acceptDuplication) {
 			element.doesNotHaveDuplicates();
