@@ -11,7 +11,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 public class FollowUp {
 
     public static String mockFollowUp(String caseId, String scenarioName) {
-        var scenarioAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, "execution_create-asset-task-worker---api-party-assets-post-asset");
+        return mockFollowUp(caseId, scenarioName, "execution_create-asset-task-worker---api-party-assets-post-asset");
+    }
+
+    public static String mockFollowUp(String caseId, String scenarioName, String requiredScenarioState) {
+        var scenarioAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, requiredScenarioState);
         return mockFollowUpCleanUpNotes(caseId, scenarioName, scenarioAfterUpdatePhase);
     }
 
@@ -19,7 +23,8 @@ public class FollowUp {
 
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "follow_up_update-phase-task-worker---api-casedata-get-errand",
-                Map.of("phaseParameter", "Beslut",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Beslut",
                         "displayPhaseParameter", "Beslut"));
 
 

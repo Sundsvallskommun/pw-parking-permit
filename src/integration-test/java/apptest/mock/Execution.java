@@ -22,7 +22,8 @@ public class Execution {
 
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"actualization_update-phase-task-worker---api-casedata-get-errand",
-			Map.of("phaseParameter", "Beslut",
+			Map.of("decisionTypeParameter", "FINAL",
+					"phaseParameter", "Beslut",
 				"phaseActionParameter", "",
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
@@ -45,7 +46,8 @@ public class Execution {
 	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
-			Map.of("caseTypeParameter", "PARKING_PERMIT",
+			Map.of("decisionTypeParameter", "FINAL",
+					"caseTypeParameter", "PARKING_PERMIT",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
@@ -81,7 +83,8 @@ public class Execution {
 	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_create-asset-task-worker---api-casedata-get-errand",
-			Map.of("phaseParameter", "Verkställa",
+			Map.of("decisionTypeParameter", "FINAL",
+					"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa"));
@@ -108,7 +111,8 @@ public class Execution {
 	public static String mockExecutionCheckIfCardExists(String caseId, String scenarioName, String requiredScenarioState) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
-			Map.of("phaseParameter", "Verkställa",
+			Map.of("decisionTypeParameter", "FINAL",
+					"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa"));

@@ -24,7 +24,8 @@ public class Actualization {
 
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "actualization_update-phase-task-worker---api-casedata-get-errand",
-                Map.of("phaseParameter", "Aktualisering",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Aktualisering",
                         "displayPhaseParameter", "Aktualisering"));
 
 
@@ -46,7 +47,7 @@ public class Actualization {
     public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
@@ -63,7 +64,7 @@ public class Actualization {
     public static String mockActualizationVerifyAdministratorStakeholder(String caseId, String scenarioName, String requiredScenarioState) {
         return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "actualization_verify-administrator-stakeholder---api-casedata-get-errand",
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
@@ -73,7 +74,8 @@ public class Actualization {
     public static String mockActualizationUpdateDisplayPhase(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "actualization_update-display-phase---api-casedata-get-errand",
-                Map.of("phaseParameter", "Aktualisering",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Registrerad"));
@@ -97,7 +99,8 @@ public class Actualization {
     public static String mockActualizationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "actualization_update-errand-status---api-casedata-get-errand",
-                Map.of("phaseParameter", "Aktualisering",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Granskning"));
@@ -118,7 +121,8 @@ public class Actualization {
     public static String mockActualizationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "actualization_check-phase-action_task-worker---api-casedata-get-errand",
-                Map.of("phaseParameter", "Aktualisering",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "COMPLETE",
                         "displayPhaseParameter", "Granskning"));
