@@ -19,7 +19,8 @@ public class Decision {
 
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"decision_update-phase-task-worker---api-casedata-patch-errand",
-			Map.of("phaseParameter", "Utredning",
+			Map.of("decisionTypeParameter", "FINAL",
+					"phaseParameter", "Utredning",
 				"phaseActionParameter", "ONGOING",
 				"phaseStatusParameter", "UNKNOWN",
 				"displayPhaseParameter", "Utredning"));
@@ -42,7 +43,8 @@ public class Decision {
 	public static String mockDecisionUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"decision_update-status-task-worker---api-casedata-get-errand",
-			Map.of("statusTypeParameter", "Ärende inkommit",
+			Map.of("decisionTypeParameter", "FINAL",
+					"statusTypeParameter", "Ärende inkommit",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
@@ -64,7 +66,8 @@ public class Decision {
 	public static String mockDecisionCheckIfDecisionMade(String caseId, String scenarioName, String requiredScenarioState) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"check-decision-task-worker---api-casedata-get-errand",
-			Map.of("phaseParameter", "Beslut",
+			Map.of("decisionTypeParameter", "FINAL",
+					"phaseParameter", "Beslut",
 				"displayPhaseParameter", "Beslut",
 				"statusTypeParameter", "Beslutad"));
 	}

@@ -23,7 +23,7 @@ public class Investigation {
     public static String mockInvestigationUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "investigation_update-phase-task-worker---api-casedata-get-errand",
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Aktualisering",
                         "phaseStatusParameter", "COMPLETE",
                         "phaseActionParameter", "COMPLETED",
@@ -47,7 +47,8 @@ public class Investigation {
     public static String mockInvestigationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "investigation_update-status-task-worker---api-casedata-get-errand",
-                Map.of("statusTypeParameter", "Ärende inkommit",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "statusTypeParameter", "Ärende inkommit",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
@@ -76,7 +77,8 @@ public class Investigation {
             newScenarioState = newScenarioState.concat(newScenarioStateSuffix);
         }
         return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState,
-                Map.of("caseTypeParameter", "PARKING_PERMIT",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "caseTypeParameter", "PARKING_PERMIT",
                         "statusTypeParameter", "Ärende inkommit",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
@@ -85,16 +87,18 @@ public class Investigation {
     }
 
     public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState) {
-        return mockInvestigationExecuteRules(caseId, scenarioName, requiredScenarioState, null);
+        return mockInvestigationExecuteRules(caseId, scenarioName, requiredScenarioState, null, true);
     }
 
-    public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix) {
+
+    public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix, boolean validResponse) {
         var newScenarioStateGet = "investigation_execute-rules-task-worker---api-casedata-get-errand";
         if(newScenarioStateSuffix != null) {
             newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
         }
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioStateGet,
-                Map.of("caseTypeParameter", "PARKING_PERMIT",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "caseTypeParameter", "PARKING_PERMIT",
                         "statusTypeParameter", "Ärende inkommit",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
@@ -133,7 +137,8 @@ public class Investigation {
                             ]
                         }
                         """),
-        Map.of());
+        Map.of(),
+        validResponse);
     }
 
     public static String mockInvestigationConstructDecision(String caseId, String scenarioName, String requiredScenarioState) {
@@ -146,7 +151,7 @@ public class Investigation {
             newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
         }
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioStateGet,
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
@@ -181,7 +186,7 @@ public class Investigation {
             newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
         }
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioStateGet,
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "COMPLETE",
