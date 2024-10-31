@@ -90,15 +90,15 @@
 		{
 			"id": 1,
 			"decisionType": "RECOMMENDED",
-			"decisionOutcome": "APPROVAL",
+			"decisionOutcome": "{{parameters.decisionOutcome}}",
 			"description": "Beskrivning",
 			"version": 0
 		},
 		{
 			"id": 2,
 			"version": 1,
-			"decisionType": "FINAL",
-			"decisionOutcome": "APPROVAL",
+			"decisionType": "{{parameters.decisionTypeParameter}}",
+			"decisionOutcome": "{{parameters.decisionOutcome}}",
 			"description": "Beskrivning",
 			"validFrom": "2024-05-17T08:31:29.181Z",
 			"validTo": "2025-05-17T08:31:29.181Z"

@@ -23,6 +23,7 @@ import static apptest.mock.Investigation.mockInvestigationSanityChecks;
 import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
 import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
@@ -77,7 +78,8 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
         var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
         var scenarioAfterSanityCheckFail = mockCaseDataGet(caseId, scenarioName, scenarioAfterUpdateStatus,
                 "investigation_sanity-checks--fail-task-worker---api-casedata-get-errand",
-                Map.of("caseTypeParameter", "ANMALAN_ATTEFALL",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "caseTypeParameter", "ANMALAN_ATTEFALL",
                         "statusTypeParameter", "Ärende inkommit",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
@@ -163,11 +165,11 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
         var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
         var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
         var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterUpdateStatus, "willNotComplete");
-        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks, "willNotComplete");
+        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks, "willNotComplete", true);
         var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules, "willNotComplete");
         var scenarioAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecision,
                 "investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
@@ -264,7 +266,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         //Setup mocks
         mockApiGatewayToken();
-        var scenarioAfterActualization= mockActualization(caseId, scenarioName);
+        var scenarioAfterActualization = mockActualization(caseId, scenarioName);
 
         // Mock deviation
         var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
@@ -275,7 +277,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         var scenarioAfterCheckPhaseCancel = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecision,
                 "investigation_check-phase-action_task-worker---api-casedata-get-errand",
-                Map.of(
+                Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "CANCEL",
@@ -329,6 +331,133 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"))
                 .with(tuple("End when canceled", "end_investigation_canceled"))
                 .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
+                .with(tuple("End process", "end_process")));
+    }
+
+    @Test
+    void test_investigation_004_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
+
+        var caseId = "1617";
+        var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
+
+        //Setup mocks
+        mockApiGatewayToken();
+        var scenarioAfterActualization = mockActualization(caseId, scenarioName);
+        // Mock deviation
+        var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
+        var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
+        var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterUpdateStatus, "willNotComplete");
+        // Returns validation error
+        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks, "willNotComplete", false);
+        var scenarioAfterConstructDecisionGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterExecuteRules,
+                "construct-recommended-decision-task-worker-rejection---api-casedata-get-errand",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Utredning",
+                        "phaseStatusParameter", "ONGOING",
+                        "phaseActionParameter", "UNKNOWN",
+                        "displayPhaseParameter", "Utredning"));
+        var scenarioAfterConstructDecisionPatch = mockCaseDataDecisionPatch(caseId, scenarioName, scenarioAfterConstructDecisionGet,
+                "investigation_execute-rules-task-worker-rejection---api-businessrules-engine",
+                equalToJson("""
+                        {
+                            "version": 2,
+                            "created": "${json-unit.any-string}",
+                            "decisionType": "RECOMMENDED",
+                            "decisionOutcome": "REJECTION",
+                            "description": "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande).",
+                            "law": [],
+                            "attachments": [],
+                            "extraParameters": {}
+                        }
+                        """));
+        //Will loop back and wait for update
+        var scenarioAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecisionPatch,
+                "investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
+                Map.of("decisionTypeParameter", "FINAL",
+                        "phaseParameter", "Utredning",
+                        "phaseStatusParameter", "ONGOING",
+                        "phaseActionParameter", "UNKNOWN",
+                        "displayPhaseParameter", "Utredning"));
+        var scenarioAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedGet,
+                "investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
+                equalToJson("""
+                            {
+                                "externalCaseId": "2971",
+                                "phase": "Utredning",
+                                "extraParameters": {
+                                    "process.phaseStatus": "WAITING",
+                                    "process.phaseAction": "UNKNOWN",
+                                    "process.displayPhase": "Utredning"
+                                }
+                            }
+                            """));
+        // Passes on second attempt
+        var scenarioAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedPatch);
+        var scenarioAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks2);
+        var scenarioAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules2);
+        mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision2);
+        // Normal mocks
+        mockDecision(caseId, scenarioName);
+        mockExecution(caseId, scenarioName);
+        mockFollowUp(caseId, scenarioName);
+
+        // Start process
+        final var startResponse = setupCall()
+                .withServicePath("/2281/process/start/1617")
+                .withHttpMethod(POST)
+                .withExpectedResponseStatus(ACCEPTED)
+                .sendRequest()
+                .andReturnBody(StartProcessResponse.class);
+
+        // Wait for process to be waiting for update of errand
+        awaitProcessState("investigation_phase_action_is_update_available", DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+
+        // Update process
+        setupCall()
+                .withServicePath("/2281/process/update/" + startResponse.getProcessId())
+                .withHttpMethod(POST)
+                .withExpectedResponseStatus(ACCEPTED)
+                .withExpectedResponseBodyIsNull()
+                .sendRequest();
+
+        // Wait for process to finish
+        awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+
+        // Verify wiremock stubs
+        verifyAllStubs();
+
+        // Verify process pathway.
+        assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
+                .with(tuple("Start process", "start_process"))
+                .with(actualizationPathway())
+                .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+                // Investigation with deviation
+                .with(tuple("Investigation", "investigation_phase"))
+                .with(tuple("Start investigation phase", "start_investigation_phase"))
+                .with(tuple("Update phase", "external_task_investigation_update_phase"))
+                .with(tuple("Update errand status", "external_task_investigation_update_errand_status"))
+                .with(tuple("Sanity checks", "external_task_investigation_sanity_check"))
+                .with(tuple("Sanity check passed", "gateway_investigation_sanity_check"))
+                .with(tuple("Execute rules", "external_task_investigation_execute_rules"))
+                .with(tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"))
+                .with(tuple("Check phase action", "external_task_investigation_check_phase_action_task"))
+                .with(tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"))
+                // Phase action not complete
+                .with(tuple("Wait for update", "investigation_phase_action_is_update_available"))
+                .with(tuple("Sanity checks", "external_task_investigation_sanity_check"))
+                .with(tuple("Sanity check passed", "gateway_investigation_sanity_check"))
+                .with(tuple("Execute rules", "external_task_investigation_execute_rules"))
+                .with(tuple("Construct recommended decision and update case", "external_task_investigation_construct_decision"))
+                .with(tuple("Check phase action", "external_task_investigation_check_phase_action_task"))
+                .with(tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"))
+                .with(tuple("End investigation phase", "end_investigation_phase"))
+                .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+                .with(decisionPathway())
+                .with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+                .with(handlingPathway())
+                .with(executionPathway())
+                .with(followUpPathway())
                 .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }

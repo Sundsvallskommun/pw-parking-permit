@@ -13,6 +13,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 public class BusinessRules {
 
     public static String mockBusinessRulesPost(String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern, Map<String, Object> transformParameters) {
+        return mockBusinessRulesPost(scenarioName, requiredScenarioState, newScenarioState, bodyPattern, transformParameters, true);
+    }
+
+    public static String mockBusinessRulesPost(String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern, Map<String, Object> transformParameters, boolean validResponse) {
+        var bodyFile = validResponse ? "common/responses/businessrules/rules-result.json" : "common/responses/businessrules/rules-result-validation-error.json";
+
         return stubFor(post(urlEqualTo(String.format("/api-business-rules/2281/engine")))
                 .inScenario(scenarioName)
                 .whenScenarioStateIs(requiredScenarioState)
@@ -21,7 +27,7 @@ public class BusinessRules {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBodyFile("common/responses/businessrules/rules-result.json")
+                        .withBodyFile(bodyFile)
                         .withTransformers("response-template")
                         .withTransformerParameters(transformParameters))
                 .willSetStateTo(newScenarioState))

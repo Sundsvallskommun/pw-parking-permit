@@ -17,18 +17,23 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 public class CaseData {
 
     public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters) {
+        return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, "APPROVAL");
+    }
+
+    public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters, String decisionOutcome) {
         return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/errands/%s", caseId)))
-                        .inScenario(scenarioName)
-                        .whenScenarioStateIs(requiredScenarioState)
-                        .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", "application/json")
-                                .withBodyFile("common/responses/casedata/get-errand.json")
-                                .withTransformers("response-template")
-                                .withTransformerParameter("caseId", caseId)
-                                .withTransformerParameters(transformParameters))
-                        .willSetStateTo(newScenarioState))
+                .inScenario(scenarioName)
+                .whenScenarioStateIs(requiredScenarioState)
+                .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("common/responses/casedata/get-errand.json")
+                        .withTransformers("response-template")
+                        .withTransformerParameter("caseId", caseId)
+                        .withTransformerParameter("decisionOutcome", decisionOutcome)
+                        .withTransformerParameters(transformParameters))
+                .willSetStateTo(newScenarioState))
                 .getNewScenarioState();
     }
 
