@@ -13,30 +13,20 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
-import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
-import static apptest.mock.Decision.mockDecisionUpdatePhase;
-import static apptest.mock.Decision.mockDecisionUpdateStatus;
+import static apptest.mock.Decision.*;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.verification.ProcessPathway.actualizationPathway;
-import static apptest.verification.ProcessPathway.decisionPathway;
-import static apptest.verification.ProcessPathway.executionPathway;
-import static apptest.verification.ProcessPathway.followUpPathway;
-import static apptest.verification.ProcessPathway.handlingPathway;
-import static apptest.verification.ProcessPathway.investigationPathway;
+import static apptest.verification.ProcessPathway.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.setDefaultPollDelay;
-import static org.awaitility.Awaitility.setDefaultPollInterval;
-import static org.awaitility.Awaitility.setDefaultTimeout;
+import static org.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -85,11 +75,19 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Beslut",
-				    "extraParameters": {
-				        "process.phaseStatus": "WAITING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Beslut"
-				    }
+				    "extraParameters" : [
+				    {
+                       "key" : "process.phaseStatus",
+                       "values" : [ "WAITING" ]
+                    },
+                    {
+                       "key" : "process.phaseAction",
+                       "values" : [ "UNKNOWN" ]
+                    },
+                    {
+                       "key" : "process.displayPhase",
+                       "values" : [ "Beslut" ]
+                    }]
 				}
 				"""));
         mockDecisionCheckIfDecisionMade(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalPatch);

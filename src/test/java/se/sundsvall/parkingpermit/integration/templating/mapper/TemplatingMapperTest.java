@@ -1,8 +1,8 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
-import generated.se.sundsvall.casedata.AddressDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.Address;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.templating.RenderRequest;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
@@ -100,8 +100,8 @@ class TemplatingMapperTest {
 		assertThat(e.getMessage()).isEqualTo("Not Found: Errand is missing stakeholder with role 'APPLICANT'");
 	}
 
-	private static ErrandDTO createErrand(boolean withApplicant) {
-		final var errand = new ErrandDTO()
+	private static Errand createErrand(boolean withApplicant) {
+		final var errand = new Errand()
 			.errandNumber(ERRAND_NUMBER)
 			.created(CREATED);
 
@@ -112,8 +112,8 @@ class TemplatingMapperTest {
 		return errand;
 	}
 
-	private static StakeholderDTO createStakeholder(String role, boolean withContactAddress) {
-		final var stakeholder = new StakeholderDTO()
+	private static Stakeholder createStakeholder(String role, boolean withContactAddress) {
+		final var stakeholder = new Stakeholder()
 			.firstName(role + " " + FIRST_NAME)
 			.lastName(role + " " + LAST_NAME)
 			.roles(List.of(role));
@@ -125,8 +125,8 @@ class TemplatingMapperTest {
 		return stakeholder;
 	}
 
-	private static AddressDTO createAddress() {
-		return new AddressDTO()
+	private static Address createAddress() {
+		return new Address()
 			.careOf(CARE_OF)
 			.addressCategory(POSTAL_ADDRESS)
 			.street(STREET)

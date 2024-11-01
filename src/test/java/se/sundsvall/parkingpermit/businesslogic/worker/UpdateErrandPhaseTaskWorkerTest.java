@@ -1,22 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-
-import java.util.HashMap;
-
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.PatchErrand;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -30,13 +15,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
+import java.util.HashMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static se.sundsvall.parkingpermit.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateErrandPhaseTaskWorkerTest {
@@ -44,6 +33,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -61,13 +51,13 @@ class UpdateErrandPhaseTaskWorkerTest {
 	private FailureHandler failureHandlerMock;
 
 	@Mock
-	private ErrandDTO errandMock;
+	private Errand errandMock;
 
 	@InjectMocks
 	private UpdateErrandPhaseTaskWorker worker;
 
 	@Captor
-	private ArgumentCaptor<PatchErrandDTO> patchErrandCaptor;
+	private ArgumentCaptor<PatchErrand> patchErrandCaptor;
 
 	@Test
 	void verifyAnnotations() {
@@ -88,8 +78,9 @@ class UpdateErrandPhaseTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_PHASE)).thenReturn(CASEDATA_PHASE_DECISION);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseId);
 
 		// Act
@@ -100,8 +91,8 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_PHASE);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(ERRAND_ID), patchErrandCaptor.capture());
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
@@ -119,9 +110,10 @@ class UpdateErrandPhaseTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_PHASE)).thenReturn(CASEDATA_PHASE_DECISION);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), any(), any())).thenThrow(problem);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(caseDataClientMock.patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any())).thenThrow(problem);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

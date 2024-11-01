@@ -3,7 +3,7 @@
 	"requiredScenarioState": "execution_order-card-task-worker---api-rpa-post-queue-item",
 	"newScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/123/statuses",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123/statuses",
 		"method": "PUT",
 		"headers": {
 			"Authorization": {

@@ -33,6 +33,8 @@ public final class Constants {
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
+	//TODO Remove when API is updated
+	public static final String CASEDATA_PARKING_PERMIT_NAMESPACE = "SBK_PARKINGPERMIT";
 	public static final String CASEDATA_PHASE_ACTUALIZATION = "Aktualisering";
 	public static final String CASEDATA_PHASE_INVESTIGATION = "Utredning";
 	public static final String CASEDATA_PHASE_DECISION = "Beslut";

@@ -4,15 +4,7 @@ import com.github.tomakehurst.wiremock.matching.ContentPattern;
 
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.delete;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.patch;
-import static com.github.tomakehurst.wiremock.client.WireMock.put;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class CaseData {
 
@@ -21,7 +13,7 @@ public class CaseData {
     }
 
     public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters, String decisionOutcome) {
-        return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/errands/%s", caseId)))
+        return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s", caseId)))
                 .inScenario(scenarioName)
                 .whenScenarioStateIs(requiredScenarioState)
                 .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -38,7 +30,7 @@ public class CaseData {
     }
 
     public static String mockCaseDataPatch(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-        return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/errands/%s", caseId)))
+        return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s", caseId)))
                         .inScenario(scenarioName)
                         .whenScenarioStateIs(requiredScenarioState)
                         .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -51,7 +43,7 @@ public class CaseData {
     }
 
     public static String mockCaseDataDecisionPatch(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-        return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/errands/%s/decisions", caseId)))
+        return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s/decisions", caseId)))
                 .inScenario(scenarioName)
                 .whenScenarioStateIs(requiredScenarioState)
                 .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -64,7 +56,7 @@ public class CaseData {
     }
 
     public static String mockCaseDataPutStatus(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-        return stubFor(put(urlEqualTo(String.format("/api-casedata/2281/errands/%s/statuses", caseId)))
+        return stubFor(put(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s/statuses", caseId)))
                 .inScenario(scenarioName)
                 .whenScenarioStateIs(requiredScenarioState)
                 .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -77,7 +69,7 @@ public class CaseData {
     }
 
     public static String mockCaseDataNotesGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, String noteType) {
-        return stubFor(get(urlPathEqualTo(String.format("/api-casedata/2281/notes/errand/%s", caseId)))
+        return stubFor(get(urlPathEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s/notes", caseId)))
             .inScenario(scenarioName)
             .whenScenarioStateIs(requiredScenarioState)
             .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -90,8 +82,8 @@ public class CaseData {
             .getNewScenarioState();
     }
 
-    public static String mockCaseDataNotesDelete(String noteId, String scenarioName, String requiredScenarioState, String newScenarioState) {
-        return stubFor(delete(urlEqualTo(String.format("/api-casedata/2281/notes/%s", noteId)))
+    public static String mockCaseDataNotesDelete(String caseId, String noteId, String scenarioName, String requiredScenarioState, String newScenarioState) {
+        return stubFor(delete(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKINGPERMIT/errands/%s/notes/%s", caseId, noteId)))
             .inScenario(scenarioName)
             .whenScenarioStateIs(requiredScenarioState)
             .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))

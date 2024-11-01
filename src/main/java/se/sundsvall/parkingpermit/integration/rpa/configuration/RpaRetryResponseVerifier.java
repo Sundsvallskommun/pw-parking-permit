@@ -1,14 +1,13 @@
 package se.sundsvall.parkingpermit.integration.rpa.configuration;
 
+import feign.Response;
+import org.springframework.stereotype.Component;
+import se.sundsvall.dept44.configuration.feign.decoder.RetryResponseVerifier;
+
 import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
-import org.springframework.stereotype.Component;
-
-import feign.Response;
-import se.sundsvall.dept44.configuration.feign.decoder.RetryResponseVerifier;
 
 @Component
 public class RpaRetryResponseVerifier implements RetryResponseVerifier {

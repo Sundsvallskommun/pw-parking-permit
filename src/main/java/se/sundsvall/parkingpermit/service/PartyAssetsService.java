@@ -1,11 +1,10 @@
 package se.sundsvall.parkingpermit.service;
 
-import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
-
+import generated.se.sundsvall.casedata.Errand;
 import org.springframework.stereotype.Service;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
 import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
+
+import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
 
 @Service
 public class PartyAssetsService {
@@ -16,7 +15,7 @@ public class PartyAssetsService {
 		this.partyAssetsClient = partyAssetsClient;
 	}
 
-	public void createAsset(String municipalityId, ErrandDTO errand) {
+	public void createAsset(String municipalityId, Errand errand) {
 		partyAssetsClient.createAsset(municipalityId, toAssetCreateRequest(errand));
 	}
 }

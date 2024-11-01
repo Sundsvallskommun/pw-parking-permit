@@ -2,9 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.*;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -34,11 +32,17 @@ public class Execution {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Verkställa",
-				    "extraParameters": {
-				        "process.phaseStatus": "ONGOING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Verkställa"
-				    }
+				    "extraParameters" : [ {
+				    	"key" : "process.phaseStatus",
+				   		"values" : [ "ONGOING" ]
+				    },
+				    {
+				     	"key" : "process.phaseAction",
+				    	"values" : [ "UNKNOWN" ]
+				    }, {
+				    	"key" : "process.displayPhase",
+				 		"values" : [ "Verkställa" ]
+					} ]
 				}
 				"""));
 	}

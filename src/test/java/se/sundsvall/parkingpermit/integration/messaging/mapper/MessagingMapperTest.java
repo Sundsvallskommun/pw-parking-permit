@@ -1,35 +1,28 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
-import static java.nio.charset.Charset.defaultCharset;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Base64;
-import java.util.UUID;
-
+import generated.se.sundsvall.messaging.*;
+import generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum;
+import generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum;
+import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-
-import generated.se.sundsvall.messaging.LetterAttachment;
-import generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum;
-import generated.se.sundsvall.messaging.LetterParty;
-import generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum;
-import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
-import generated.se.sundsvall.messaging.WebMessageAttachment;
-import generated.se.sundsvall.messaging.WebMessageParty;
-import generated.se.sundsvall.templating.RenderResponse;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.util.Base64;
+import java.util.UUID;
+
+import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
+import static java.nio.charset.Charset.defaultCharset;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("junit")
