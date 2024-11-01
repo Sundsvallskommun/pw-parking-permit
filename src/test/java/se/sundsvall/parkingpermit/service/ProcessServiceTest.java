@@ -1,33 +1,25 @@
 package se.sundsvall.parkingpermit.service;
 
+import generated.se.sundsvall.camunda.PatchVariablesDto;
+import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
+import generated.se.sundsvall.camunda.StartProcessInstanceDto;
+import generated.se.sundsvall.camunda.VariableValueDto;
+import org.camunda.bpm.engine.variable.type.ValueType;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.dept44.requestid.RequestId;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+
+import java.util.Random;
+
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Random;
-
-import org.camunda.bpm.engine.variable.type.ValueType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import generated.se.sundsvall.camunda.PatchVariablesDto;
-import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
-import generated.se.sundsvall.camunda.StartProcessInstanceDto;
-import generated.se.sundsvall.camunda.VariableValueDto;
-import se.sundsvall.dept44.requestid.RequestId;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProcessServiceTest {

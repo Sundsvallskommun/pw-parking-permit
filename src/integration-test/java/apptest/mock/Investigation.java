@@ -3,10 +3,7 @@ package apptest.mock;
 import java.util.Map;
 
 import static apptest.mock.api.BusinessRules.mockBusinessRulesPost;
-import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
-import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class Investigation {
@@ -35,11 +32,16 @@ public class Investigation {
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "ONGOING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [ {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "ONGOING" ]
+                                }, {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                }, {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                } ]
                             }
                             """));
     }
@@ -201,11 +203,16 @@ public class Investigation {
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "COMPLETED",
-                                    "process.phaseAction": "COMPLETE",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [ {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "COMPLETED" ]
+                                }, {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "COMPLETE" ]
+                                }, {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                } ]
                             }
                             """));
     }

@@ -16,30 +16,16 @@ import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
-import static apptest.mock.Investigation.mockInvestigationCheckPhaseAction;
-import static apptest.mock.Investigation.mockInvestigationConstructDecision;
-import static apptest.mock.Investigation.mockInvestigationExecuteRules;
-import static apptest.mock.Investigation.mockInvestigationSanityChecks;
-import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
-import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
+import static apptest.mock.Investigation.*;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
-import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
-import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.verification.ProcessPathway.actualizationPathway;
-import static apptest.verification.ProcessPathway.decisionPathway;
-import static apptest.verification.ProcessPathway.executionPathway;
-import static apptest.verification.ProcessPathway.followUpPathway;
-import static apptest.verification.ProcessPathway.handlingPathway;
+import static apptest.mock.api.CaseData.*;
+import static apptest.verification.ProcessPathway.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.setDefaultPollDelay;
-import static org.awaitility.Awaitility.setDefaultPollInterval;
-import static org.awaitility.Awaitility.setDefaultTimeout;
+import static org.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -180,11 +166,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "WAITING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "WAITING" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
 
@@ -289,11 +283,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "CANCELED",
-                                    "process.phaseAction": "CANCEL",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "CANCELED" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "CANCEL" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
 
@@ -385,11 +387,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "WAITING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "WAITING" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
         // Passes on second attempt

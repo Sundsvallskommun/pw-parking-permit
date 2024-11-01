@@ -1,23 +1,17 @@
 package se.sundsvall.parkingpermit.integration.camunda.configuration;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
+import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
+import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration.CLIENT_ID;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
-
-import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
-import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
 class CamundaConfigurationTest {

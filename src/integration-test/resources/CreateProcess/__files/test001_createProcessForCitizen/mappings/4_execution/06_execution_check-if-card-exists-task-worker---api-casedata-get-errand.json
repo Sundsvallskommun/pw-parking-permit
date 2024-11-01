@@ -3,7 +3,7 @@
 	"requiredScenarioState": "execution_update-phase-task-worker---api-casedata-put-errand",
 	"newScenarioState": "execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/123",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123",
 		"method": "GET",
 		"headers": {
 			"Authorization": {
@@ -21,6 +21,7 @@
 			"response-template"
 		],
 		"transformerParameters": {
+			"permitNumberParameter": "12345",
 			"phaseParameter": "Beslut",
 			"phaseActionParameter": "",
 			"phaseStatusParameter": "",

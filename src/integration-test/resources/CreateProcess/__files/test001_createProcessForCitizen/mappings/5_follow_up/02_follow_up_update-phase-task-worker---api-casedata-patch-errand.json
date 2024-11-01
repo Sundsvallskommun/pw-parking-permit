@@ -3,7 +3,7 @@
 	"requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-errand",
 	"newScenarioState": "follow_up_update-phase-task-worker---api-casedata-patch-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/123",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
@@ -13,13 +13,18 @@
 		"bodyPatterns": [
 			{
 				"equalToJson": {
-					"externalCaseId": "2971",
-					"phase": "Uppföljning",
-					"extraParameters": {
-						"process.phaseStatus": "ONGOING",
-						"process.phaseAction": "UNKNOWN",
-						"process.displayPhase": "Uppföljning"
-					}
+					"externalCaseId" : "2971",
+					"phase" : "Uppföljning",
+					"extraParameters" : [ {
+						"key" : "process.phaseStatus",
+						"values" : [ "ONGOING" ]
+					}, {
+						"key" : "process.phaseAction",
+						"values" : [ "UNKNOWN" ]
+					}, {
+						"key" : "process.displayPhase",
+						"values" : [ "Uppföljning" ]
+					} ]
 				}
 			}
 		]

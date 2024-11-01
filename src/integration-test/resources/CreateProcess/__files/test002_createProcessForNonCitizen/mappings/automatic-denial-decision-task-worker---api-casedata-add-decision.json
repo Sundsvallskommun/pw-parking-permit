@@ -3,7 +3,7 @@
 	"requiredScenarioState": "automatic-denial-decision-task-worker---api-templating-render-pdf",
 	"newScenarioState": "automatic-denial-decision-task-worker---api-casedata-add-decision",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/456/decisions",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/456/decisions",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {

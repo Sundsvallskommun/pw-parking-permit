@@ -1,32 +1,15 @@
 package se.sundsvall.parkingpermit.integration.casedata;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
+import generated.se.sundsvall.casedata.*;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
 
 import java.util.List;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
-
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.MessageRequest;
-import generated.se.sundsvall.casedata.NoteDTO;
-import generated.se.sundsvall.casedata.PageErrandDTO;
-import generated.se.sundsvall.casedata.PatchDecisionDTO;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StatusDTO;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.casedata.url}", configuration = CaseDataConfiguration.class)
 public interface CaseDataClient {
@@ -34,25 +17,29 @@ public interface CaseDataClient {
 	/**
 	 * Updates a decision.
 	 *
-	 * @param patchDecisionDTO for patching decision
+	 * @param patchDecision for patching decision
 	 * @param errandId of case to update
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@PatchMapping(path = "/{municipalityId}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchNewDecision(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable("errandId") Long errandId,
-		@RequestBody DecisionDTO patchDecisionDTO);
+		@RequestBody Decision patchDecision);
 
-	@PatchMapping(path = "/{municipalityId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchDecisionWithId(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable("errandId") Long errandId,
 		@PathVariable("decisionId") Long decisionId,
-		@RequestBody PatchDecisionDTO patchDecisionDTO);
+		@RequestBody PatchDecision patchDecision);
 
-	@DeleteMapping(path = "/{municipalityId}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> deleteDecision(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable("errandId") Long errandId,
 		@PathVariable("decisionId") Long decisionId);
 
@@ -62,9 +49,10 @@ public interface CaseDataClient {
 	 * @param errandId of errand to get
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@GetMapping(path = "/{municipalityId}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
-	ErrandDTO getErrandById(
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
+	Errand getErrandById(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId);
 
 	/**
@@ -78,54 +66,60 @@ public interface CaseDataClient {
 	 * @param filter the filter to use
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@GetMapping(path = "/{municipalityId}/errands", produces = APPLICATION_JSON_VALUE)
-	PageErrandDTO getErrandsByQueryFilter(
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands", produces = APPLICATION_JSON_VALUE)
+	PageErrand getErrandsByQueryFilter(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@RequestParam(name = "filter") String filter);
 
 	/**
 	 * Updates an errand.
 	 *
-	 * @param patchErrandDTO for patching errand
+	 * @param patchErrand for patching errand
 	 * @param errandId of errand to update
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@PatchMapping(path = "/{municipalityId}/errands/{errandId}", consumes = APPLICATION_JSON_VALUE)
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchErrand(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
-		@RequestBody PatchErrandDTO patchErrandDTO);
+		@RequestBody PatchErrand patchErrand);
 
 	/**
 	 * Adds a new stakeholder to an errand.
 	 *
 	 * @param errandId of errand to update
-	 * @param stakeholderDTO the stakeholder to add to the errand
+	 * @param stakeholder the stakeholder to add to the errand
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@PatchMapping(path = "/{municipalityId}/errands/{errandId}/stakeholders", consumes = APPLICATION_JSON_VALUE)
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addStakeholderToErrand(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
-		@RequestBody StakeholderDTO stakeholderDTO);
+		@RequestBody Stakeholder stakeholder);
 
 	/**
 	 * Get stakeholder matching sent in id.
 	 *
 	 * @param stakeholderId of stakeholder to fetch
-	 * @return StakeholderDTO containing information of the requested stakeholder
+	 * @return Stakeholder containing information of the requested stakeholder
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@GetMapping(path = "/{municipalityId}/stakeholders/{stakeholderId}", produces = APPLICATION_JSON_VALUE)
-	StakeholderDTO getStakeholder(
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders/{stakeholderId}", produces = APPLICATION_JSON_VALUE)
+	Stakeholder getStakeholder(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable("errandId") Long errandId,
 		@PathVariable(name = "stakeholderId") Long stakeholderId);
 
-	@PutMapping("/{municipalityId}/errands/{errandId}/statuses")
+	@PutMapping("/{municipalityId}/{namespace}/errands/{errandId}/statuses")
 	ResponseEntity<Void> putStatus(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
-		@RequestBody List<StatusDTO> statusDTOList);
+		@RequestBody List<Status> statusList);
 
 	/**
 	 * Add a message to an errand.
@@ -133,9 +127,11 @@ public interface CaseDataClient {
 	 * @param messageRequest containing information for message to add
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@PostMapping(path = "/{municipalityId}/messages", consumes = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/messages", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addMessage(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable("errandId") Long errandId,
 		@RequestBody MessageRequest messageRequest);
 
 	/**
@@ -144,9 +140,10 @@ public interface CaseDataClient {
 	 * @param errandId of errand containing notes to get
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@GetMapping(path = "/{municipalityId}/notes/errand/{errandId}", produces = APPLICATION_JSON_VALUE)
-	List<NoteDTO> getNotesByErrandId(
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", produces = APPLICATION_JSON_VALUE)
+	List<Note> getNotesByErrandId(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
 		@RequestParam(name = "noteType", required = false) String noteType);
 
@@ -156,8 +153,10 @@ public interface CaseDataClient {
 	 * @param noteId of note to delete
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@DeleteMapping(path = "/{municipalityId}/notes/{noteId}")
+	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes/{noteId}")
 	ResponseEntity<Void> deleteNoteById(
 		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable(name = "errandId") Long errandId,
 		@PathVariable(name = "noteId") Long noteId);
 }

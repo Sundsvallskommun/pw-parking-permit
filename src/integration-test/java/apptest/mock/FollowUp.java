@@ -2,10 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
-import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class FollowUp {
@@ -34,11 +31,19 @@ public class FollowUp {
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Uppföljning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "ONGOING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Uppföljning"
-                                }
+                                 "extraParameters" : [
+                                    {
+                                        "key" : "process.phaseStatus",
+                                        "values" : [ "ONGOING" ]
+                                    },
+                                    {
+                                        "key" : "process.phaseAction",
+                                        "values" : [ "UNKNOWN" ]
+                                    },
+                                    {
+                                        "key" : "process.displayPhase",
+                                        "values" : [ "Uppföljning" ]
+                                    }]
                             }
                             """));
     }
@@ -48,7 +53,7 @@ public class FollowUp {
                 "follow_up_update-phase-task-worker---api-casedata-get-notes", "INTERNAL");
 
 
-        return mockCaseDataNotesDelete("128", scenarioName, state,
+        return mockCaseDataNotesDelete(caseId, "128", scenarioName, state,
                 "follow_up_update-phase-task-worker---api-casedata-delete-note");
 
     }

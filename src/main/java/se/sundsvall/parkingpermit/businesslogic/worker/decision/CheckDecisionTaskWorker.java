@@ -1,7 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -10,14 +10,17 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 
 import java.util.HashMap;
 import java.util.Optional;
 
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPROVED;
@@ -32,7 +35,6 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 @Component
@@ -55,7 +57,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, caseNumber);
+			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 
 			final var variables = new HashMap<String, Object>();
 
@@ -70,13 +72,13 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 					} else {
 						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 						variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-						caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
+						caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
 						logInfo("Decision is not made yet.");
 					}
 				}, () -> {
 					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 					variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-					caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
+					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION, PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
 					logInfo("Decision is not made yet.");
 				});
 
@@ -98,11 +100,11 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private boolean isApproved(DecisionDTO.DecisionOutcomeEnum decisionOutcome) {
+	private boolean isApproved(Decision.DecisionOutcomeEnum decisionOutcome) {
 		return APPROVAL.equals(decisionOutcome);
 	}
 
-	private boolean isFinalDecision(ErrandDTO errand) {
+	private boolean isFinalDecision(Errand errand) {
 		if (errand.getDecisions() == null) {
 			return false;
 		}

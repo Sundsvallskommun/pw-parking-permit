@@ -1,22 +1,14 @@
 package se.sundsvall.parkingpermit.service;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.PROCESS_KEY;
-import static se.sundsvall.parkingpermit.Constants.TENANTID_TEMPLATE;
-import static se.sundsvall.parkingpermit.Constants.TRUE;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toPatchVariablesDto;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toStartProcessInstanceDto;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toVariableValueDto;
+import org.camunda.bpm.engine.variable.type.ValueType;
+import org.springframework.stereotype.Service;
+import se.sundsvall.dept44.requestid.RequestId;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 import java.util.Map;
 
-import org.camunda.bpm.engine.variable.type.ValueType;
-import org.springframework.stereotype.Service;
-
-import se.sundsvall.dept44.requestid.RequestId;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.*;
 
 @Service
 public class ProcessService {

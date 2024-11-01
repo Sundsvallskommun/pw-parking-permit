@@ -2,9 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class Decision {
@@ -31,11 +29,17 @@ public class Decision {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Beslut",
-				    "extraParameters": {
-				        "process.phaseStatus": "ONGOING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Beslut"
-				    }
+				    "extraParameters" : [ {
+				    	"key" : "process.phaseStatus",
+				   		"values" : [ "ONGOING" ]
+				    },
+				    {
+				     	"key" : "process.phaseAction",
+				    	"values" : [ "UNKNOWN" ]
+				    }, {
+				    	"key" : "process.displayPhase",
+				 		"values" : [ "Beslut" ]
+					} ]
 				}
 				"""));
 	}
