@@ -1,5 +1,33 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.PatchErrand;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,37 +51,6 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import generated.se.sundsvall.casedata.ExtraParameter;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.PatchErrand;
 
 @ExtendWith(MockitoExtension.class)
 class CheckErrandPhaseActionTaskWorkerTest {

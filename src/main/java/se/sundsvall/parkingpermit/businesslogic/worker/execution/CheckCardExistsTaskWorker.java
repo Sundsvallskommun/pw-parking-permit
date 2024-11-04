@@ -15,7 +15,11 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 
 @Component
 @ExternalTaskSubscription("CardExistsTask")

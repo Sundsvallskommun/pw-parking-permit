@@ -15,7 +15,10 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBOUND;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 

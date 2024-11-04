@@ -16,7 +16,13 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 @Component

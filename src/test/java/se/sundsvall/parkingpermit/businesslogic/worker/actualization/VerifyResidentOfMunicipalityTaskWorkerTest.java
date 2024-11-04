@@ -27,8 +27,16 @@ import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.*;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
 
 @ExtendWith(MockitoExtension.class)

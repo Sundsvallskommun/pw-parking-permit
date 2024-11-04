@@ -14,7 +14,11 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 

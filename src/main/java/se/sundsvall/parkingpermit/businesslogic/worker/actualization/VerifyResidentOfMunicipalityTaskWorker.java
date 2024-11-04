@@ -20,7 +20,11 @@ import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 @Component

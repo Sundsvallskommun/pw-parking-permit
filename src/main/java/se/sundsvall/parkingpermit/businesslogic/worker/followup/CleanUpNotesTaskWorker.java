@@ -13,7 +13,9 @@ import java.util.Optional;
 
 import static generated.se.sundsvall.casedata.NoteType.INTERNAL;
 import static java.util.Collections.emptyList;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 
 @Component
 @ExternalTaskSubscription("CleanUpNotesTask")

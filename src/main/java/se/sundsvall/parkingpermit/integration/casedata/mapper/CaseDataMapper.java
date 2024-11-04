@@ -1,10 +1,19 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import generated.se.sundsvall.casedata.*;
+import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
 import generated.se.sundsvall.casedata.Decision.DecisionTypeEnum;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Law;
+import generated.se.sundsvall.casedata.MessageAttachment;
+import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
+import generated.se.sundsvall.casedata.Status;
 import generated.se.sundsvall.templating.RenderResponse;
 
 import java.time.OffsetDateTime;
@@ -14,7 +23,9 @@ import java.util.Optional;
 import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 
 public class CaseDataMapper {
 

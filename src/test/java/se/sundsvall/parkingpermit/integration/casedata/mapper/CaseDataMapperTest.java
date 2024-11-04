@@ -1,7 +1,15 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import generated.se.sundsvall.casedata.*;
+import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Law;
+import generated.se.sundsvall.casedata.MessageAttachment;
+import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;

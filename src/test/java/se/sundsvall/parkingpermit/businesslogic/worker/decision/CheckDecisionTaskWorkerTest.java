@@ -2,10 +2,14 @@ package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
 import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
 import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Status;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +21,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +34,8 @@ import static org.assertj.core.api.Assertions.tuple;
 
 
 import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.PatchErrand;
-import generated.se.sundsvall.casedata.Status;
-import org.joda.time.DateTime;
-
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 
-import java.util.Date;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;

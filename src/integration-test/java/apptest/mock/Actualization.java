@@ -2,7 +2,9 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.*;
+import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static apptest.mock.api.Citizen.mockGetCitizen;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;

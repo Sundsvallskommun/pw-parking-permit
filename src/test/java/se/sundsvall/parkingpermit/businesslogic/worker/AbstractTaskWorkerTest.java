@@ -18,7 +18,10 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractTaskWorkerTest {

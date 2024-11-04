@@ -2,7 +2,12 @@ package se.sundsvall.parkingpermit.integration.camunda.configuration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;

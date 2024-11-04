@@ -54,45 +54,6 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 
-import generated.se.sundsvall.casedata.*;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Random;
-
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.*;
-
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
 
