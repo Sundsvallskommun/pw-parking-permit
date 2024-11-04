@@ -23,7 +23,7 @@ public class Execution {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"actualization_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
-					"phaseParameter", "Beslut",
+				"phaseParameter", "Beslut",
 				"phaseActionParameter", "",
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
@@ -47,7 +47,7 @@ public class Execution {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
-					"caseTypeParameter", "PARKING_PERMIT",
+				"caseTypeParameter", "PARKING_PERMIT",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
@@ -84,10 +84,11 @@ public class Execution {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_create-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
-					"phaseParameter", "Verkställa",
+				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Verkställa"));
+				"displayPhaseParameter", "Verkställa",
+				"permitNumberParameter", "12345"));
 
 		return mockPartyAssetsPost(scenarioName, state,
 			"execution_create-asset-task-worker---api-party-assets-post-asset",
@@ -112,9 +113,10 @@ public class Execution {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
-					"phaseParameter", "Verkställa",
+				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Verkställa"));
+				"displayPhaseParameter", "Verkställa",
+				"permitNumberParameter", "12345"));
 	}
 }
