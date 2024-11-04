@@ -1,6 +1,13 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import generated.se.sundsvall.messaging.*;
+import generated.se.sundsvall.messaging.LetterAttachment;
+import generated.se.sundsvall.messaging.LetterParty;
+import generated.se.sundsvall.messaging.LetterRequest;
+import generated.se.sundsvall.messaging.LetterSender;
+import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
+import generated.se.sundsvall.messaging.WebMessageAttachment;
+import generated.se.sundsvall.messaging.WebMessageParty;
+import generated.se.sundsvall.messaging.WebMessageRequest;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.util.TextProvider;

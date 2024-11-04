@@ -3,7 +3,10 @@ package apptest.mock;
 import java.util.Map;
 
 import static apptest.mock.api.BusinessRules.mockBusinessRulesPost;
-import static apptest.mock.api.CaseData.*;
+import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
+import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class Investigation {

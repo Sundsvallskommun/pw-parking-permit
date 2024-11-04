@@ -1,10 +1,26 @@
 package se.sundsvall.parkingpermit.integration.camunda;
 
-import generated.se.sundsvall.camunda.*;
+import generated.se.sundsvall.camunda.EventSubscriptionDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
-import se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import generated.se.sundsvall.camunda.ActivityInstanceDto;
+import generated.se.sundsvall.camunda.DeploymentDto;
+import generated.se.sundsvall.camunda.DeploymentWithDefinitionsDto;
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import generated.se.sundsvall.camunda.HistoricExternalTaskLogDto;
+import generated.se.sundsvall.camunda.HistoricIncidentDto;
+import generated.se.sundsvall.camunda.HistoricProcessInstanceDto;
+import generated.se.sundsvall.camunda.PatchVariablesDto;
+import generated.se.sundsvall.camunda.ProcessInstanceDto;
+import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
+import generated.se.sundsvall.camunda.StartProcessInstanceDto;
+import generated.se.sundsvall.camunda.VariableValueDto;
+import se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration;
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;

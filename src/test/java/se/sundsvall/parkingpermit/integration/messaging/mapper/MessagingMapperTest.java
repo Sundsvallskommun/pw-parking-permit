@@ -1,8 +1,12 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import generated.se.sundsvall.messaging.*;
+import generated.se.sundsvall.messaging.LetterAttachment;
 import generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum;
+import generated.se.sundsvall.messaging.LetterParty;
 import generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum;
+import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
+import generated.se.sundsvall.messaging.WebMessageAttachment;
+import generated.se.sundsvall.messaging.WebMessageParty;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +26,9 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("junit")
