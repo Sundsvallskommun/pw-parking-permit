@@ -1,14 +1,11 @@
 package se.sundsvall.parkingpermit.businesslogic.util;
 
-import static generated.se.sundsvall.businessrules.ResultValue.PASS;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.capitalize;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.dept44.util.DateUtils.toOffsetDateTimeWithLocalOffset;
+import com.google.re2j.Pattern;
+import generated.se.sundsvall.businessrules.Result;
+import generated.se.sundsvall.businessrules.ResultDetail;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.Decision.DecisionTypeEnum;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -16,13 +13,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.google.re2j.Pattern;
-
-import generated.se.sundsvall.businessrules.Result;
-import generated.se.sundsvall.businessrules.ResultDetail;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum;
+import static generated.se.sundsvall.businessrules.ResultValue.PASS;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.dept44.util.DateUtils.toOffsetDateTimeWithLocalOffset;
 
 public final class BusinessRulesUtil {
 
@@ -33,7 +32,7 @@ public final class BusinessRulesUtil {
 
 	private BusinessRulesUtil() {}
 
-	public static DecisionDTO constructDecision(Result resultFromRuleEngine) {
+	public static Decision constructDecision(Result resultFromRuleEngine) {
 		if (isApproved(resultFromRuleEngine)) {
 			// Return decision with information from outcome of each control
 			return createDecision(RECOMMENDED, APPROVAL, PREFIX_APPROVAL.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
@@ -42,8 +41,8 @@ public final class BusinessRulesUtil {
 		return createDecision(RECOMMENDED, REJECTION, PREFIX_REJECT.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
 	}
 
-	private static DecisionDTO createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description) {
-		return new DecisionDTO()
+	private static Decision createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description) {
+		return new Decision()
 			.decisionType(decisionType)
 			.decisionOutcome(decisionOutcomeEnum)
 			.description(description)

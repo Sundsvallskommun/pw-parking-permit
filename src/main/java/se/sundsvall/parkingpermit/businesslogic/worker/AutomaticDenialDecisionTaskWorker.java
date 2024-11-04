@@ -1,23 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
-
-import java.util.Objects;
-
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -26,14 +10,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.util.Objects;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -56,7 +56,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-			final var errand = getErrand(municipalityId, caseNumber);
+			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());
 
 			// PE needs to be added as stakeholder to the errand (if not already present) and store for later use when setting
@@ -73,7 +73,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
 				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
-			caseDataClient.patchNewDecision(municipalityId, errand.getId(), decision);
+			caseDataClient.patchNewDecision(municipalityId, errand.getNamespace(), errand.getId(), decision);
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {
@@ -82,9 +82,9 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private StakeholderDTO createProcessEngineStakeholder(final ErrandDTO errand, final String municipalityId) {
-		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(municipalityId, errand.getId(), toStakeholder(ROLE_ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
-		return caseDataClient.getStakeholder(municipalityId, id);
+	private Stakeholder createProcessEngineStakeholder(final Errand errand, final String municipalityId) {
+		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(municipalityId, errand.getNamespace(), errand.getId(), toStakeholder(ROLE_ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
+		return caseDataClient.getStakeholder(municipalityId, errand.getNamespace(), errand.getId(), id);
 	}
 
 	private Long extractStakeholderId(final ResponseEntity<Void> response) {
@@ -97,7 +97,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			.orElseThrow(() -> Problem.valueOf(Status.BAD_GATEWAY, "CaseData integration did not return any location for created stakeholder"));
 	}
 
-	private static boolean isProcessEngineStakeholder(StakeholderDTO stakeholder) {
+	private static boolean isProcessEngineStakeholder(Stakeholder stakeholder) {
 		return stakeholder.getRoles().contains(ROLE_ADMINISTRATOR) &&
 			PROCESS_ENGINE_FIRST_NAME.equals(stakeholder.getFirstName()) &&
 			PROCESS_ENGINE_LAST_NAME.equals(stakeholder.getLastName());

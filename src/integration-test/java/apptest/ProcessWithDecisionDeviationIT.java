@@ -13,9 +13,9 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
-import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
+import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
@@ -85,11 +85,19 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Beslut",
-				    "extraParameters": {
-				        "process.phaseStatus": "WAITING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Beslut"
-				    }
+				    "extraParameters" : [
+				    {
+				       "key" : "process.phaseStatus",
+				       "values" : [ "WAITING" ]
+                    },
+                    {
+                       "key" : "process.phaseAction",
+                       "values" : [ "UNKNOWN" ]
+                    },
+                    {
+                       "key" : "process.displayPhase",
+                       "values" : [ "Beslut" ]
+                    }]
 				}
 				"""));
         mockDecisionCheckIfDecisionMade(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalPatch);

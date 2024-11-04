@@ -3,7 +3,7 @@
 	"requiredScenarioState": "actualization_update-phase-task-worker---api-casedata-patch-errand",
 	"newScenarioState": "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/789",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/789",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

@@ -180,11 +180,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "WAITING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "WAITING" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
 
@@ -289,11 +297,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "CANCELED",
-                                    "process.phaseAction": "CANCEL",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "CANCELED" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "CANCEL" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
 
@@ -385,11 +401,19 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "WAITING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [
+                                {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "WAITING" ]
+                                },
+                                {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                },
+                                {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                }]
                             }
                             """));
         // Passes on second attempt

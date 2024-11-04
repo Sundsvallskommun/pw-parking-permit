@@ -1,8 +1,37 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Law;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.templating.RenderResponse;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Random;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,43 +50,13 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Random;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
-
-import generated.se.sundsvall.casedata.AttachmentDTO;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.LawDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.templating.RenderResponse;
-
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
 	private static final String ROLE_DOCTOR = "DOCTOR";
 
 	@Mock
@@ -85,16 +84,16 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private DenialTextProperties denialTextPropertiesMock;
 
 	@Mock
-	private ErrandDTO errandMock;
+	private Errand errandMock;
 
 	@InjectMocks
 	private AutomaticDenialDecisionTaskWorker worker;
 
 	@Captor
-	private ArgumentCaptor<StakeholderDTO> stakeholderCaptor;
+	private ArgumentCaptor<Stakeholder> stakeholderCaptor;
 
 	@Captor
-	private ArgumentCaptor<DecisionDTO> decisionCaptor;
+	private ArgumentCaptor<Decision> decisionCaptor;
 
 	@Test
 	void verifyAnnotations() {
@@ -112,17 +111,18 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var lawChapter = "lawChapter";
 		final var lawArticle = "lawArticle";
 		final var stakeholderId = new Random().nextLong();
-		final var stakeholderDTO = new StakeholderDTO().id(stakeholderId);
+		final var stakeholder = new Stakeholder().id(stakeholderId);
 		final var output = "output";
 
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID,NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
-		when(caseDataClientMock.getStakeholder(MUNICIPALITY_ID, stakeholderId)).thenReturn(stakeholderDTO);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
+		when(caseDataClientMock.getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId)).thenReturn(stakeholder);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse().output(output));
 		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
 		when(denialTextPropertiesMock.filename()).thenReturn(filename);
@@ -139,9 +139,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(ERRAND_ID), stakeholderCaptor.capture());
-		verify(caseDataClientMock).getStakeholder(MUNICIPALITY_ID, stakeholderId);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), stakeholderCaptor.capture());
+		verify(caseDataClientMock).getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId);
 		verify(denialTextPropertiesMock).filename();
 		verify(denialTextPropertiesMock).description();
 		verify(denialTextPropertiesMock).lawHeading();
@@ -149,25 +149,25 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(denialTextPropertiesMock).lawChapter();
 		verify(denialTextPropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
-		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(ERRAND_ID), decisionCaptor.capture());
-		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
+		verify(externalTaskServiceMock).complete(any(ExternalTask.class));
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
 		assertThat(stakeholderCaptor.getValue())
-			.extracting(StakeholderDTO::getType, StakeholderDTO::getFirstName, StakeholderDTO::getLastName, StakeholderDTO::getRoles)
+			.extracting(Stakeholder::getType, Stakeholder::getFirstName, Stakeholder::getLastName, Stakeholder::getRoles)
 			.containsExactly(PERSON, "Process", "Engine", List.of(ROLE_ADMINISTRATOR));
 
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue())
-			.extracting(DecisionDTO::getDecisionType, DecisionDTO::getDecisionOutcome, DecisionDTO::getDescription, DecisionDTO::getDecidedBy)
-			.containsExactly(FINAL, DISMISSAL, description, stakeholderDTO);
+			.extracting(Decision::getDecisionType, Decision::getDecisionOutcome, Decision::getDescription, Decision::getDecidedBy)
+			.containsExactly(FINAL, DISMISSAL, description, stakeholder);
 
 		assertThat(decisionCaptor.getValue().getLaw())
 			.extracting(
-				LawDTO::getArticle,
-				LawDTO::getChapter,
-				LawDTO::getHeading,
-				LawDTO::getSfs)
+				Law::getArticle,
+				Law::getChapter,
+				Law::getHeading,
+				Law::getSfs)
 			.containsExactly(tuple(
 				lawArticle,
 				lawChapter,
@@ -175,11 +175,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				lawSfs));
 		assertThat(decisionCaptor.getValue().getAttachments())
 			.extracting(
-				AttachmentDTO::getCategory,
-				AttachmentDTO::getExtension,
-				AttachmentDTO::getFile,
-				AttachmentDTO::getName,
-				AttachmentDTO::getMimeType)
+				Attachment::getCategory,
+				Attachment::getExtension,
+				Attachment::getFile,
+				Attachment::getName,
+				Attachment::getMimeType)
 			.containsExactly(tuple(
 				CATEGORY_BESLUT,
 				"pdf",
@@ -205,8 +205,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Process", "Engine"),
 			createStakeholder(null, ROLE_ADMINISTRATOR, "Ssecorp", "Engine"),
@@ -229,9 +230,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(caseDataClientMock, never()).addStakeholderToErrand(eq(MUNICIPALITY_ID), any(), any());
-		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), any());
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock, never()).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
+		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(denialTextPropertiesMock).filename();
 		verify(denialTextPropertiesMock).description();
 		verify(denialTextPropertiesMock).lawHeading();
@@ -239,8 +240,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(denialTextPropertiesMock).lawChapter();
 		verify(denialTextPropertiesMock).lawArticle();
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
-		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(ERRAND_ID), decisionCaptor.capture());
-		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
+		verify(externalTaskServiceMock).complete(any(ExternalTask.class));
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
@@ -250,10 +251,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		assertThat(decisionCaptor.getValue().getDecidedBy()).isEqualTo(processEngineStakeholder);
 		assertThat(decisionCaptor.getValue().getLaw())
 			.extracting(
-				LawDTO::getArticle,
-				LawDTO::getChapter,
-				LawDTO::getHeading,
-				LawDTO::getSfs)
+				Law::getArticle,
+				Law::getChapter,
+				Law::getHeading,
+				Law::getSfs)
 			.containsExactly(tuple(
 				lawArticle,
 				lawChapter,
@@ -261,11 +262,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				lawSfs));
 		assertThat(decisionCaptor.getValue().getAttachments())
 			.extracting(
-				AttachmentDTO::getCategory,
-				AttachmentDTO::getExtension,
-				AttachmentDTO::getFile,
-				AttachmentDTO::getName,
-				AttachmentDTO::getMimeType)
+				Attachment::getCategory,
+				Attachment::getExtension,
+				Attachment::getFile,
+				Attachment::getName,
+				Attachment::getMimeType)
 			.containsExactly(tuple(
 				CATEGORY_BESLUT,
 				"pdf",
@@ -280,9 +281,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(ResponseEntity.noContent().build());
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.noContent().build());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -291,11 +293,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(ERRAND_ID), any());
-		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), any());
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
+		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(messagingServiceMock, never()).renderPdf(eq(MUNICIPALITY_ID), any());
-		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), any(), any());
+		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
@@ -309,9 +311,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/abc")).build());
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/abc")).build());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -320,11 +323,11 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
-		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(ERRAND_ID), any());
-		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), any());
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
+		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(messagingServiceMock, never()).renderPdf(eq(MUNICIPALITY_ID), any());
-		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), any(), any());
+		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
@@ -333,8 +336,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 
 	}
 
-	private StakeholderDTO createStakeholder(Long stakeholderId, String role, String firstName, String lastName) {
-		return new StakeholderDTO()
+	private Stakeholder createStakeholder(Long stakeholderId, String role, String firstName, String lastName) {
+		return new Stakeholder()
 			.id(stakeholderId)
 			.firstName(firstName)
 			.lastName(lastName)

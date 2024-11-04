@@ -34,11 +34,17 @@ public class Execution {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Verkställa",
-				    "extraParameters": {
-				        "process.phaseStatus": "ONGOING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Verkställa"
-				    }
+				    "extraParameters" : [ {
+				    	"key" : "process.phaseStatus",
+				   		"values" : [ "ONGOING" ]
+				    },
+				    {
+				     	"key" : "process.phaseAction",
+				    	"values" : [ "UNKNOWN" ]
+				    }, {
+				    	"key" : "process.displayPhase",
+				 		"values" : [ "Verkställa" ]
+					} ]
 				}
 				"""));
 	}

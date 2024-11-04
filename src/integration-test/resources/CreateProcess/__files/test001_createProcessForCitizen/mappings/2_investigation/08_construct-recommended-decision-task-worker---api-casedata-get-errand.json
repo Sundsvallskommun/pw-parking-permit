@@ -3,7 +3,7 @@
 	"requiredScenarioState": "investigation_execute-rules-task-worker---api-businessrules-engine",
 	"newScenarioState": "construct-recommended-decision-task-worker---api-casedata-get-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/errands/123",
+		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

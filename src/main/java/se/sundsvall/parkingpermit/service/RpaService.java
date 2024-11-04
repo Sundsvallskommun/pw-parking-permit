@@ -1,20 +1,19 @@
 package se.sundsvall.parkingpermit.service;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.springframework.util.ObjectUtils.nullSafeEquals;
-import static se.sundsvall.parkingpermit.service.mapper.RpaMapper.toQueuesAddQueueItemParameters;
-
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.parkingpermit.integration.rpa.RpaClient;
 import se.sundsvall.parkingpermit.integration.rpa.configuration.RpaProperties;
+
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
+import static se.sundsvall.parkingpermit.service.mapper.RpaMapper.toQueuesAddQueueItemParameters;
 
 @Service
 public class RpaService {

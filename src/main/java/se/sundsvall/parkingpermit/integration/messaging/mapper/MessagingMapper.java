@@ -1,15 +1,5 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
-import static generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum.ANY;
-import static generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum.HTML;
-import static java.nio.charset.Charset.defaultCharset;
-
-import java.util.Base64;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import generated.se.sundsvall.messaging.LetterAttachment;
 import generated.se.sundsvall.messaging.LetterParty;
 import generated.se.sundsvall.messaging.LetterRequest;
@@ -19,7 +9,16 @@ import generated.se.sundsvall.messaging.WebMessageAttachment;
 import generated.se.sundsvall.messaging.WebMessageParty;
 import generated.se.sundsvall.messaging.WebMessageRequest;
 import generated.se.sundsvall.templating.RenderResponse;
+import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.util.Base64;
+import java.util.UUID;
+
+import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
+import static generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum.ANY;
+import static generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum.HTML;
+import static java.nio.charset.Charset.defaultCharset;
 
 @Service
 public class MessagingMapper {

@@ -1,12 +1,36 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.RECOMMENDED;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Status;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.List;
+import java.util.Map;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -34,37 +58,13 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
-import java.util.List;
-import java.util.Map;
-
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.DecisionDTO.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
-import generated.se.sundsvall.casedata.StatusDTO;
-
 @ExtendWith(MockitoExtension.class)
 class CheckDecisionTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
 	private static final String PROCESS_INSTANCE_ID = "processInstanceId";
 	private static final String KEY_PHASE_ACTION = "process.phaseAction";
 
@@ -75,7 +75,7 @@ class CheckDecisionTaskWorkerTest {
 	private CaseDataClient caseDataClientMock;
 
 	@Mock
-	private ErrandDTO errandMock;
+	private Errand errandMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -90,21 +90,21 @@ class CheckDecisionTaskWorkerTest {
 	private CheckDecisionTaskWorker worker;
 
 	@Captor
-	private ArgumentCaptor<PatchErrandDTO> patchErrandCaptor;
+	private ArgumentCaptor<PatchErrand> patchErrandCaptor;
 
 	@Test
 	void executeWhenDecisionIsDecidedAndApproved() {
 
 		// Arrange
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.setStatusType(CASEDATA_STATUS_CASE_DECIDED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
 		// Act
@@ -124,22 +124,21 @@ class CheckDecisionTaskWorkerTest {
 	void executeWhenDecisionIsExecutedAndNotApproved() {
 
 		// Arrange
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.setStatusType(CASEDATA_STATUS_DECISION_EXECUTED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(REJECTION)));
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, "COMPLETE"));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -159,16 +158,18 @@ class CheckDecisionTaskWorkerTest {
 
 		// Arrange
 		final var phaseActionCancel = "CANCEL";
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.statusType(CASEDATA_STATUS_CASE_RECEIVED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(KEY_PHASE_ACTION, phaseActionCancel));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem(phaseActionCancel)));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -180,26 +181,30 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), anyLong(), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
-			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
-			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
-			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+			.containsExactlyInAnyOrder(
+				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
+			);
 	}
 
 	@Test
 	void executeWhenDecisionIsNotFinal() {
 
 		// Arrange
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
@@ -213,27 +218,31 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), anyLong(), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
-			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
-			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
-			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+			.containsExactlyInAnyOrder(
+				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
+			);
 	}
 
 	@Test
 	void executeWhenDecisionsIsNull() {
 
 		// Arrange
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.statusType(CASEDATA_STATUS_DECISION_EXECUTED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(null);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
 		// Act
@@ -246,13 +255,15 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), anyLong(), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).hasSize(3)
-			.containsEntry(CASEDATA_KEY_PHASE_ACTION, PHASE_ACTION_UNKNOWN)
-			.containsEntry(CASEDATA_KEY_DISPLAY_PHASE, CASEDATA_PHASE_DECISION)
-			.containsEntry(CASEDATA_KEY_PHASE_STATUS, PHASE_STATUS_WAITING);
+		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+			.containsExactlyInAnyOrder(
+				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
+			);
 	}
 
 	@Test
@@ -260,14 +271,16 @@ class CheckDecisionTaskWorkerTest {
 
 		// Arrange
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
-		final var status = new StatusDTO();
+		final var status = new Status();
 		status.statusType(CASEDATA_STATUS_CASE_RECEIVED);
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(REJECTION)));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
@@ -285,16 +298,16 @@ class CheckDecisionTaskWorkerTest {
 		verifyNoMoreInteractions(camundaClientMock);
 	}
 
-	private DecisionDTO createFinalDecision(DecisionOutcomeEnum decisionOutcome) {
-		final var decision = new DecisionDTO();
+	private Decision createFinalDecision(DecisionOutcomeEnum decisionOutcome) {
+		final var decision = new Decision();
 		decision.setId(1L);
 		decision.setDecisionType(FINAL);
 		decision.setDecisionOutcome(decisionOutcome);
 		return decision;
 	}
 
-	private DecisionDTO createDecision(DecisionOutcomeEnum decisionOutcome) {
-		final var decision = new DecisionDTO();
+	private Decision createDecision(DecisionOutcomeEnum decisionOutcome) {
+		final var decision = new Decision();
 		decision.setId(1L);
 		decision.setDecisionType(RECOMMENDED);
 		decision.setDecisionOutcome(decisionOutcome);

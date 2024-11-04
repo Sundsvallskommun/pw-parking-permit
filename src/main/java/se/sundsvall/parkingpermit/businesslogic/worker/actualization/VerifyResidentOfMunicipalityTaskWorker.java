@@ -1,32 +1,31 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
-
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 @Component
 @ExternalTaskSubscription("VerifyResidentOfMunicipalityTask")
@@ -50,7 +49,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, caseNumber);
+			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 
 			getOptionalStakeholder(errand, PERSON, ROLE_APPLICANT).ifPresent(applicant -> {
 

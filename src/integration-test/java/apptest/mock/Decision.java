@@ -31,11 +31,17 @@ public class Decision {
 				{
 				    "externalCaseId": "2971",
 				    "phase": "Beslut",
-				    "extraParameters": {
-				        "process.phaseStatus": "ONGOING",
-				        "process.phaseAction": "UNKNOWN",
-				        "process.displayPhase": "Beslut"
-				    }
+				    "extraParameters" : [ {
+				    	"key" : "process.phaseStatus",
+				   		"values" : [ "ONGOING" ]
+				    },
+				    {
+				     	"key" : "process.phaseAction",
+				    	"values" : [ "UNKNOWN" ]
+				    }, {
+				    	"key" : "process.displayPhase",
+				 		"values" : [ "Beslut" ]
+					} ]
 				}
 				"""));
 	}

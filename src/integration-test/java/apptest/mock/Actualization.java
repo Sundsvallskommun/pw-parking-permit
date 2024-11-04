@@ -32,16 +32,21 @@ public class Actualization {
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_update-phase-task-worker---api-casedata-patch-errand",
                 equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Aktualisering",
-                                "extraParameters": {
-                                    "process.phaseStatus": "ONGOING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Registrerad"
-                                }
-                            }
-                            """));
+                     {
+                        "externalCaseId" : "2971",
+                        "phase" : "Aktualisering",
+                        "extraParameters" : [ {
+                            "key" : "process.phaseStatus",
+                            "values" : [ "ONGOING" ]
+                        }, {
+                            "key" : "process.phaseAction",
+                            "values" : [ "UNKNOWN" ]
+                        }, {
+                            "key" : "process.displayPhase",
+                            "values" : [ "Registrerad" ]
+                        }]
+                     }
+                 """));
     }
 
     public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState) {
@@ -84,16 +89,21 @@ public class Actualization {
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_update-display-phase---api-casedata-patch-errand",
                 equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Aktualisering",
-                                "extraParameters": {
-                                    "process.phaseStatus": "ONGOING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Granskning"
-                                }
-                            }
-                            """));
+                    {
+                       "externalCaseId" : "2971",
+                       "phase" : "Aktualisering",
+                       "extraParameters" : [ {
+                         "key" : "process.phaseStatus",
+                         "values" : [ "ONGOING" ]
+                       }, {
+                         "key" : "process.phaseAction",
+                         "values" : [ "UNKNOWN" ]
+                       }, {
+                         "key" : "process.displayPhase",
+                         "values" : [ "Granskning" ]
+                       } ]
+                     }
+                    """));
     }
 
     public static String mockActualizationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
@@ -130,15 +140,20 @@ public class Actualization {
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_check-phase-action_task-worker---api-casedata-patch-errand",
                 equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Aktualisering",
-                                "extraParameters": {
-                                    "process.phaseStatus": "COMPLETED",
-                                    "process.phaseAction": "COMPLETE",
-                                    "process.displayPhase": "Granskning"
-                                }
-                            }
-                            """));
+                        {
+                            "externalCaseId" : "2971",
+                            "phase" : "Aktualisering",
+                            "extraParameters" : [ {
+                                "key" : "process.phaseStatus",
+                                "values" : [ "COMPLETED" ]
+                            }, {
+                                "key" : "process.phaseAction",
+                                "values" : [ "COMPLETE" ]
+                            }, {
+                                "key" : "process.displayPhase",
+                                "values" : [ "Granskning" ]
+                            } ]
+                        }
+                    """));
     }
 }

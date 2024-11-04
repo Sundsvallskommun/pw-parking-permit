@@ -35,11 +35,16 @@ public class Investigation {
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "ONGOING",
-                                    "process.phaseAction": "UNKNOWN",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [ {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "ONGOING" ]
+                                }, {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "UNKNOWN" ]
+                                }, {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                } ]
                             }
                             """));
     }
@@ -201,11 +206,16 @@ public class Investigation {
                             {
                                 "externalCaseId": "2971",
                                 "phase": "Utredning",
-                                "extraParameters": {
-                                    "process.phaseStatus": "COMPLETED",
-                                    "process.phaseAction": "COMPLETE",
-                                    "process.displayPhase": "Utredning"
-                                }
+                                "extraParameters" : [ {
+                                    "key" : "process.phaseStatus",
+                                    "values" : [ "COMPLETED" ]
+                                }, {
+                                    "key" : "process.phaseAction",
+                                    "values" : [ "COMPLETE" ]
+                                }, {
+                                    "key" : "process.displayPhase",
+                                    "values" : [ "Utredning" ]
+                                } ]
                             }
                             """));
     }

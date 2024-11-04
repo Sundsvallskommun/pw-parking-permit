@@ -1,25 +1,24 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import generated.se.sundsvall.camunda.VariableValueDto;
+import generated.se.sundsvall.casedata.Errand;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskHandler;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.sundsvall.dept44.requestid.RequestId;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
-
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskHandler;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.sundsvall.dept44.requestid.RequestId;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import generated.se.sundsvall.camunda.VariableValueDto;
-import generated.se.sundsvall.casedata.ErrandDTO;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
@@ -49,8 +48,8 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), variableName, variableValue);
 	}
 
-	protected ErrandDTO getErrand(String municipalityId, Long caseNumber) {
-		return caseDataClient.getErrandById(municipalityId, caseNumber);
+	protected Errand getErrand(String municipalityId, String namespace, Long caseNumber) {
+		return caseDataClient.getErrandById(municipalityId, namespace, caseNumber);
 	}
 
 	protected void logInfo(String msg, Object... arguments) {
@@ -69,10 +68,12 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 		executeBusinessLogic(externalTask, externalTaskService);
 	}
 
-	protected boolean isCancel(ErrandDTO errand) {
-		return ofNullable(errand.getExtraParameters())
-				.map(extraParameters -> extraParameters.get(CASEDATA_KEY_PHASE_ACTION))
-				.filter(PHASE_ACTION_CANCEL::equals)
-				.isPresent();
+	protected boolean isCancel(Errand errand) {
+		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
+			.findFirst()
+			.map(extraParameters -> extraParameters.getValues().getFirst())
+			.filter(PHASE_ACTION_CANCEL::equals)
+			.isPresent();
 	}
 }
