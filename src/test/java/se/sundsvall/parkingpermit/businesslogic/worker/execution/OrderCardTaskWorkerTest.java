@@ -49,7 +49,7 @@ class OrderCardTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
-	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
+	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String QUEUE_NEW_CARD = "NyttKortNyPerson";
 	private static final String QUEUE_REPLACEMENT_CARD = "NyttKortBefintligPerson";
 	private static final String QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD = "StöldspärraSamtSkapaNyttKort";

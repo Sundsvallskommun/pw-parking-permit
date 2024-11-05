@@ -3,7 +3,7 @@
 	"requiredScenarioState": "add-message-to-errand-task-worker---api-templating-render-pdf",
 	"newScenarioState": "add-message-to-errand-task-worker---api-post-message",
 	"request": {
-		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/messages",
+		"urlPath": "/api-casedata/2281/SBK_PARKING_PERMIT/messages",
 		"method": "POST",
 		"headers": {
 			"Authorization": {
