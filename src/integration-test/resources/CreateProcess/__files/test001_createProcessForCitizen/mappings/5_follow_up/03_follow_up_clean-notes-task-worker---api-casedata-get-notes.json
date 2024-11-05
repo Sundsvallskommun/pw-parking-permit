@@ -3,7 +3,7 @@
 	"requiredScenarioState": "follow_up_update-phase-task-worker---api-casedata-patch-errand",
 	"newScenarioState": "follow_up_update-phase-task-worker---api-casedata-get-notes",
 	"request": {
-		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123/notes",
+		"urlPath": "/api-casedata/2281/SBK_PARKING_PERMIT/errands/123/notes",
 		"method": "GET",
 		"headers": {
 			"Authorization": {

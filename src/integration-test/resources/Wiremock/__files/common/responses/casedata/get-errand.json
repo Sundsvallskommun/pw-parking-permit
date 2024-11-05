@@ -6,7 +6,7 @@
 	"errandNumber": "PRH-2022-000001",
 	"externalCaseId": "2971",
 	"caseType": "{{parameters.caseTypeParameter}}",
-	"namespace": "SBK_PARKINGPERMIT",
+	"namespace": "SBK_PARKING_PERMIT",
 	"priority": "MEDIUM",
 	"description": "",
 	"caseTitleAddition": "Nytt parkeringstillstånd",

@@ -34,7 +34,7 @@ public final class Constants {
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
 	//TODO CASEDATA_PARKING_PERMIT_NAMESPACE will be removed when PwParkingPermit-API is updated with namespace
-	public static final String CASEDATA_PARKING_PERMIT_NAMESPACE = "SBK_PARKINGPERMIT";
+	public static final String CASEDATA_PARKING_PERMIT_NAMESPACE = "SBK_PARKING_PERMIT";
 	public static final String CASEDATA_PHASE_ACTUALIZATION = "Aktualisering";
 	public static final String CASEDATA_PHASE_INVESTIGATION = "Utredning";
 	public static final String CASEDATA_PHASE_DECISION = "Beslut";

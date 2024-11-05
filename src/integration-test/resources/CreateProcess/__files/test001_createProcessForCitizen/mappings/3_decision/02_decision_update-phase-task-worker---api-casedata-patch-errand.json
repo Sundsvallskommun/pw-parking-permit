@@ -3,7 +3,7 @@
 	"requiredScenarioState": "decision_update-phase-task-worker---api-casedata-get-errand",
 	"newScenarioState": "decision_update-phase-task-worker---api-casedata-patch-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123",
+		"urlPath": "/api-casedata/2281/SBK_PARKING_PERMIT/errands/123",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {

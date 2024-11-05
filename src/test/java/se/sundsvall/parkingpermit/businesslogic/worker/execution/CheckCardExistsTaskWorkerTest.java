@@ -37,7 +37,7 @@ class CheckCardExistsTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
-	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
+	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String PERMIT_NUMBER = "1234567890";
 	private static final String PROCESS_INSTANCE_ID = "processInstanceId";
 
