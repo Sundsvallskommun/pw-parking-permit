@@ -30,7 +30,7 @@ class CleanUpNotesTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
-	private static final String NAMESPACE = "SBK_PARKINGPERMIT";
+	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String VARIABLE_CASE_NUMBER = "caseNumber";
 	private static final String VARIABLE_REQUEST_ID = "requestId";
 	private static final String VARIABLE_MUNICIPALITY_ID = "municipalityId";

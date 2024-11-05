@@ -3,7 +3,7 @@
   "requiredScenarioState": "actualization_update-display-phase--api-casedata-patch-errand",
   "newScenarioState": "actualization_update-errand-status--api-casedata-get-errand",
   "request": {
-    "urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/123",
+    "urlPath": "/api-casedata/2281/SBK_PARKING_PERMIT/errands/123",
     "method": "GET",
     "headers": {
       "Authorization": {

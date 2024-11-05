@@ -3,7 +3,7 @@
 	"requiredScenarioState": "automatic-denial-decision-task-worker---api-casedata-get-errand",
 	"newScenarioState": "automatic-denial-decision-task-worker---api-casedata-add-stakeholder-to-errand",
 	"request": {
-		"urlPath": "/api-casedata/2281/SBK_PARKINGPERMIT/errands/456/stakeholders",
+		"urlPath": "/api-casedata/2281/SBK_PARKING_PERMIT/errands/456/stakeholders",
 		"method": "PATCH",
 		"headers": {
 			"Authorization": {
