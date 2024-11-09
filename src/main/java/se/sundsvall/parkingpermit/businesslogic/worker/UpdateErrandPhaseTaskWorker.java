@@ -45,7 +45,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 					final var newDisplayPhase = ofNullable(displayPhase).orElse(phaseValue);
 					logInfo("Setting phase to {}", phaseValue);
 					// Set phase action to unknown to errand in the beginning of the phase
-					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase));
+					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase, errand.getExtraParameters()));
 				},
 				() -> logInfo("Phase is not set"));
 

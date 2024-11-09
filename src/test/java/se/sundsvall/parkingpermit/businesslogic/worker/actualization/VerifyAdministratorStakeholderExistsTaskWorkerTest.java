@@ -34,21 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.FALSE;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class VerifyAdministratorStakeholderExistsTaskWorkerTest {
@@ -148,7 +134,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
         verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
         verify(errandMock).getStakeholders();
         verify(errandMock, times(2)).getId();
-        verify(errandMock).getExtraParameters();
+        verify(errandMock, times(2)).getExtraParameters();
         verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
         verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
         verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -158,6 +144,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
             assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
             assertThat(patch.getPhase()).isEqualTo(phase);
             assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+                    tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
                     tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
                     tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
         });
@@ -190,7 +177,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
         verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
         verify(errandMock).getStakeholders();
         verify(errandMock, times(3)).getId();
-        verify(errandMock).getExtraParameters();
+        verify(errandMock,times(2)).getExtraParameters();
         verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
         verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
         verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -200,6 +187,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
             assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
             assertThat(patch.getPhase()).isEqualTo(phase);
             assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+                    tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
                     tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_CANCELED)),
                     tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)));
         });
