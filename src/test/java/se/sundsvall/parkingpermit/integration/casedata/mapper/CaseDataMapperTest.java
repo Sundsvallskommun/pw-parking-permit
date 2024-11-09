@@ -151,12 +151,12 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithNullAsParameters() {
-		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null);
+		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null, null);
 
 		final var expectedExtraParameters = List.of(
-			new ExtraParameter("process.phaseStatus"),
-			new ExtraParameter("process.phaseAction"),
-			new ExtraParameter("process.displayPhase"));
+			new ExtraParameter("process.phaseStatus").values(emptyList()),
+			new ExtraParameter("process.phaseAction").values(emptyList()),
+			new ExtraParameter("process.displayPhase").values(emptyList()));
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
 			.extracting(PatchErrand::getFacilities,
 						PatchErrand::getExtraParameters)
@@ -170,8 +170,14 @@ class CaseDataMapperTest {
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
 		final var displayPhase = "displayPhase";
+		final var keyPhaseAction = "process.phaseAction";
+		final var keyPhaseStatus = "process.phaseStatus";
+		final var keyDisplayPhase = "process.displayPhase";
+		final var keyOther = "key";
+		final var valueOther = "value";
+		final var extraParameters = List.of(new ExtraParameter(keyOther).addValuesItem(valueOther), new ExtraParameter(keyPhaseAction).addValuesItem("existingPhaseAction"));
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase, extraParameters);
 
 		assertThat(bean).isNotNull()
 			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
@@ -185,9 +191,10 @@ class CaseDataMapperTest {
 				phase,
 				null,
 				List.of(
-					new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
-					new ExtraParameter("process.phaseAction").addValuesItem(phaseAction),
-					new ExtraParameter("process.displayPhase").addValuesItem(displayPhase)));
+					new ExtraParameter(keyOther).addValuesItem(valueOther),
+					new ExtraParameter(keyPhaseStatus).addValuesItem(phaseStatus),
+					new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction),
+					new ExtraParameter(keyDisplayPhase).addValuesItem(displayPhase)));
 	}
 
 	@Test
@@ -196,8 +203,10 @@ class CaseDataMapperTest {
 		final var phase = "phase";
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
+		final var keyPhaseAction = "process.phaseAction";
+		final var extraParameters = List.of(new ExtraParameter("key").addValuesItem("value"), new ExtraParameter(keyPhaseAction).addValuesItem("existingPhaseAction"));
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		assertThat(bean).isNotNull()
 				.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
@@ -210,8 +219,9 @@ class CaseDataMapperTest {
 						externalCaseId,
 						phase,
 						null,
-						List.of(new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
-								new ExtraParameter("process.phaseAction").addValuesItem(phaseAction)));
+						List.of(new ExtraParameter("key").addValuesItem("value"),
+								new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
+								new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction)));
 	}
 
 	@Test

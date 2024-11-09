@@ -62,16 +62,16 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 			switch (phaseAction) {
 				case PHASE_ACTION_COMPLETE -> {
 					logInfo("Phase action is complete. Setting phase status to {}", PHASE_STATUS_COMPLETED);
-					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_COMPLETED, phaseAction, displayPhase));
+					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_COMPLETED, phaseAction, displayPhase, errand.getExtraParameters()));
 				}
 				case PHASE_ACTION_CANCEL -> {
 					logInfo("Phase action is cancel. Setting phase status to {}", PHASE_STATUS_CANCELED);
-					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, phaseAction, displayPhase));
+					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, phaseAction, displayPhase, errand.getExtraParameters()));
 				}
 				default -> {
 					logInfo("Phase action is unknown. Setting phase status to {}", PHASE_STATUS_WAITING);
 					if (isPhaseStatusNotWaiting(errand)) {
-						caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, phaseAction, displayPhase));
+						caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, phaseAction, displayPhase, errand.getExtraParameters()));
 					}
 				}
 			}
