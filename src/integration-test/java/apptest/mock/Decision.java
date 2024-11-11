@@ -2,6 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
@@ -27,23 +28,7 @@ public class Decision {
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
 			"decision_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson("""
-				{
-				    "externalCaseId": "2971",
-				    "phase": "Beslut",
-				    "extraParameters" : [ {
-				    	"key" : "process.phaseStatus",
-				   		"values" : [ "ONGOING" ]
-				    },
-				    {
-				     	"key" : "process.phaseAction",
-				    	"values" : [ "UNKNOWN" ]
-				    }, {
-				    	"key" : "process.displayPhase",
-				 		"values" : [ "Beslut" ]
-					} ]
-				}
-				"""));
+			equalToJson(createPatchBody("Beslut", "UNKNOWN", "ONGOING", "Beslut")));
 	}
 
 	public static String mockDecisionUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {

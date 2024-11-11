@@ -23,6 +23,7 @@ import static apptest.mock.Investigation.mockInvestigationSanityChecks;
 import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
 import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
@@ -176,25 +177,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                         "displayPhaseParameter", "Utredning"));
         var scenarioAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedGet,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Utredning",
-                                "extraParameters" : [
-                                {
-                                    "key" : "process.phaseStatus",
-                                    "values" : [ "WAITING" ]
-                                },
-                                {
-                                    "key" : "process.phaseAction",
-                                    "values" : [ "UNKNOWN" ]
-                                },
-                                {
-                                    "key" : "process.displayPhase",
-                                    "values" : [ "Utredning" ]
-                                }]
-                            }
-                            """));
+                equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
 
         var scenarioAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedPatch);
         var scenarioAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks2);
@@ -293,26 +276,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseCancel,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Utredning",
-                                "extraParameters" : [
-                                {
-                                    "key" : "process.phaseStatus",
-                                    "values" : [ "CANCELED" ]
-                                },
-                                {
-                                    "key" : "process.phaseAction",
-                                    "values" : [ "CANCEL" ]
-                                },
-                                {
-                                    "key" : "process.displayPhase",
-                                    "values" : [ "Utredning" ]
-                                }]
-                            }
-                            """));
-
+                equalToJson(createPatchBody("Utredning", "CANCEL", "CANCELED", "Utredning")));
 
         // Start process
         final var startResponse = setupCall()
@@ -397,25 +361,8 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                         "displayPhaseParameter", "Utredning"));
         var scenarioAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedGet,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Utredning",
-                                "extraParameters" : [
-                                {
-                                    "key" : "process.phaseStatus",
-                                    "values" : [ "WAITING" ]
-                                },
-                                {
-                                    "key" : "process.phaseAction",
-                                    "values" : [ "UNKNOWN" ]
-                                },
-                                {
-                                    "key" : "process.displayPhase",
-                                    "values" : [ "Utredning" ]
-                                }]
-                            }
-                            """));
+                equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
+
         // Passes on second attempt
         var scenarioAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedPatch);
         var scenarioAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks2);

@@ -148,7 +148,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
         verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
         verify(errandMock).getStakeholders();
         verify(errandMock, times(2)).getId();
-        verify(errandMock).getExtraParameters();
+        verify(errandMock, times(2)).getExtraParameters();
         verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
         verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
         verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -158,6 +158,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
             assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
             assertThat(patch.getPhase()).isEqualTo(phase);
             assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+                    tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
                     tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
                     tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
         });
@@ -190,7 +191,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
         verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
         verify(errandMock).getStakeholders();
         verify(errandMock, times(3)).getId();
-        verify(errandMock).getExtraParameters();
+        verify(errandMock,times(2)).getExtraParameters();
         verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
         verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
         verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -200,6 +201,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
             assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
             assertThat(patch.getPhase()).isEqualTo(phase);
             assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+                    tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
                     tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_CANCELED)),
                     tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)));
         });

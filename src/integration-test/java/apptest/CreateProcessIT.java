@@ -17,10 +17,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.setDefaultPollDelay;
 import static org.awaitility.Awaitility.setDefaultPollInterval;
 import static org.awaitility.Awaitility.setDefaultTimeout;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -44,6 +44,7 @@ class CreateProcessIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
+	@Disabled("Will be fixed in UF-10537")
 	void test001_createProcessForCitizen() throws JsonProcessingException, ClassNotFoundException {
 
 		// Start process

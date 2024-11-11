@@ -18,10 +18,14 @@ import generated.se.sundsvall.templating.RenderResponse;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
@@ -31,27 +35,39 @@ public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
-	public static PatchErrand toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction, String displayPhase) {
-		final var patchErrand =  toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
-		return displayPhase != null ? patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(displayPhase)) :
-			patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE));
+	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final String displayPhase, final List<ExtraParameter> extraParameters) {
+		final var patchErrand =  toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
+
+		var result = patchErrand.getExtraParameters().stream()
+			.filter(extraParameter -> !CASEDATA_KEY_DISPLAY_PHASE.equals(extraParameter.getKey()))
+			.collect(Collectors.toCollection(ArrayList::new));
+
+		Optional.ofNullable(displayPhase).ifPresentOrElse(display -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(List.of(display))),
+			() -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(emptyList())));
+
+		return patchErrand.extraParameters(result);
 	}
 
-	public static PatchErrand toPatchErrand(String externalCaseId, String phase, String phaseStatus, String phaseAction) {
-		final var patchErrand =  new PatchErrand()
-				.externalCaseId(externalCaseId)
-				.phase(phase)
-				.facilities(null);
+	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final List<ExtraParameter> extraParameters) {
+		final var patchErrand = new PatchErrand()
+			.externalCaseId(externalCaseId)
+			.phase(phase)
+			.facilities(null);
 
-		Optional.ofNullable(phaseStatus).ifPresentOrElse(aPhaseStatus -> patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(aPhaseStatus)),
-				() -> patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS)));
-		Optional.ofNullable(phaseAction).ifPresentOrElse(aPhaseAction -> patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(aPhaseAction)),
-			() -> patchErrand.addExtraParametersItem(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION)));
+		var result = Optional.ofNullable(extraParameters).orElse(emptyList()).stream()
+			.filter(extraParameter -> !CASEDATA_KEY_PHASE_STATUS.equals(extraParameter.getKey()) && !CASEDATA_KEY_PHASE_ACTION.equals(extraParameter.getKey()))
+			.collect(Collectors.toCollection(ArrayList::new));
 
-		return patchErrand;
+		Optional.ofNullable(phaseStatus).ifPresentOrElse(status -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(List.of(status))),
+			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(emptyList())));
+
+		Optional.ofNullable(phaseAction).ifPresentOrElse(action -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(action))),
+			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(emptyList())));
+
+		return patchErrand.extraParameters(result);
 	}
 
-	public static Stakeholder toStakeholder(String role, TypeEnum type, String firstName, String lastName) {
+	public static Stakeholder toStakeholder(final String role, final TypeEnum type, final String firstName, final String lastName) {
 		final var bean = new Stakeholder()
 			.firstName(firstName)
 			.lastName(lastName)
@@ -62,7 +78,7 @@ public class CaseDataMapper {
 		return bean;
 	}
 
-	public static Decision toDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcome, String description) {
+	public static Decision toDecision(final DecisionTypeEnum decisionType, final DecisionOutcomeEnum decisionOutcome, final String description) {
 		return new Decision()
 			.created(getNow())
 			.decisionType(decisionType)
@@ -70,7 +86,7 @@ public class CaseDataMapper {
 			.description(description);
 	}
 
-	public static Law toLaw(String heading, String sfs, String chapter, String article) {
+	public static Law toLaw(final String heading, final String sfs, final String chapter, final String article) {
 		return new Law()
 			.heading(heading)
 			.sfs(sfs)
@@ -78,7 +94,7 @@ public class CaseDataMapper {
 			.article(article);
 	}
 
-	public static Attachment toAttachment(String category, String name, String extension, String mimeType, RenderResponse renderedContent) {
+	public static Attachment toAttachment(final String category, final String name, final String extension, final String mimeType, final RenderResponse renderedContent) {
 		final var bean = new Attachment()
 			.category(category)
 			.name(name)
@@ -92,7 +108,7 @@ public class CaseDataMapper {
 		return bean;
 	}
 
-	public static MessageAttachment toMessageAttachment(String fileName, String contentType, RenderResponse renderedContent) {
+	public static MessageAttachment toMessageAttachment(final String fileName, final String contentType, final RenderResponse renderedContent) {
 		final var bean = new MessageAttachment()
 			.name(fileName)
 			.contentType(contentType);
@@ -104,7 +120,7 @@ public class CaseDataMapper {
 		return bean;
 	}
 
-	public static MessageRequest toMessageRequest(String messageId, String subject, String message, Errand errand, DirectionEnum direction, String username, MessageAttachment attachment) {
+	public static MessageRequest toMessageRequest(final String messageId, final String subject, final String message, final Errand errand, final DirectionEnum direction, final String username, final MessageAttachment attachment) {
 		final var bean = new MessageRequest()
 			.messageId(messageId)
 			.direction(direction)
@@ -123,7 +139,7 @@ public class CaseDataMapper {
 		return bean;
 	}
 
-	public static Status toStatus(String statusType, String description) {
+	public static Status toStatus(final String statusType, final String description) {
 		return new Status()
 			.statusType(statusType)
 			.dateTime(getNow())

@@ -2,10 +2,11 @@ package apptest.mock;
 
 import java.util.Map;
 
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
 import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
+import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class FollowUp {
@@ -30,25 +31,7 @@ public class FollowUp {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "follow_up_update-phase-task-worker---api-casedata-patch-errand",
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Uppföljning",
-                                 "extraParameters" : [
-                                    {
-                                        "key" : "process.phaseStatus",
-                                        "values" : [ "ONGOING" ]
-                                    },
-                                    {
-                                        "key" : "process.phaseAction",
-                                        "values" : [ "UNKNOWN" ]
-                                    },
-                                    {
-                                        "key" : "process.displayPhase",
-                                        "values" : [ "Uppföljning" ]
-                                    }]
-                            }
-                            """));
+                equalToJson(createPatchBody("Uppföljning","UNKNOWN", "ONGOING", "Uppföljning")));
     }
 
     public static String mockFollowUpCleanUpNotes(String caseId, String scenarioName, String requiredScenarioState) {

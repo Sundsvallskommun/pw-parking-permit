@@ -55,12 +55,12 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
             if (isCancel(errand)) {
                 logInfo("Cancel has been requested for errand with id {}", errand.getId());
 
-                caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL));
+                caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL, errand.getExtraParameters()));
                 variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 
             } else if (!administratorIsAssigned) {
-                caseDataClient.patchErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
+                caseDataClient.patchErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, errand.getExtraParameters()));
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
             }
 

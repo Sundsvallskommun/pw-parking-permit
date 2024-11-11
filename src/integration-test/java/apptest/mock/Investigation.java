@@ -3,6 +3,7 @@ package apptest.mock;
 import java.util.Map;
 
 import static apptest.mock.api.BusinessRules.mockBusinessRulesPost;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
@@ -31,22 +32,7 @@ public class Investigation {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "investigation_update-phase-task-worker---api-casedata-patch-errand",
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Utredning",
-                                "extraParameters" : [ {
-                                    "key" : "process.phaseStatus",
-                                    "values" : [ "ONGOING" ]
-                                }, {
-                                    "key" : "process.phaseAction",
-                                    "values" : [ "UNKNOWN" ]
-                                }, {
-                                    "key" : "process.displayPhase",
-                                    "values" : [ "Utredning" ]
-                                } ]
-                            }
-                            """));
+                equalToJson(createPatchBody("Utredning","UNKNOWN", "ONGOING", "Utredning")));
     }
 
     public static String mockInvestigationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
@@ -202,21 +188,6 @@ public class Investigation {
             newScenarioStatePatch = newScenarioStatePatch.concat(newScenarioStateSuffix);
         }
         return mockCaseDataPatch(caseId, scenarioName, state, newScenarioStatePatch,
-                equalToJson("""
-                            {
-                                "externalCaseId": "2971",
-                                "phase": "Utredning",
-                                "extraParameters" : [ {
-                                    "key" : "process.phaseStatus",
-                                    "values" : [ "COMPLETED" ]
-                                }, {
-                                    "key" : "process.phaseAction",
-                                    "values" : [ "COMPLETE" ]
-                                }, {
-                                    "key" : "process.displayPhase",
-                                    "values" : [ "Utredning" ]
-                                } ]
-                            }
-                            """));
+                equalToJson(createPatchBody("Utredning","COMPLETE", "COMPLETED", "Utredning")));
     }
 }
