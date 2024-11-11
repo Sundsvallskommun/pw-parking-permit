@@ -20,7 +20,7 @@ import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
-import static apptest.mock.api.CaseData.getPatchBody;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
@@ -82,7 +82,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                         "statusTypeParameter", "Beslutad"));
         var scenarioAfterCheckDecisionNonFinalPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalGet,
                 "check-decision-task-worker-not-final---api-casedata-patch-errand",
-                equalToJson(getPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
+                equalToJson(createPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
         mockDecisionCheckIfDecisionMade(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalPatch);
         // Normal mock
         mockExecution(caseId, scenarioName);

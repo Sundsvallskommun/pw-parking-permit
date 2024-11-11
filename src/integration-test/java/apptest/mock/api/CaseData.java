@@ -101,7 +101,7 @@ public class CaseData {
 			.getNewScenarioState();
 	}
 
-	public static String getPatchBody(String phase, String phaseAction, String phaseStatus, String displayPhase) {
+	public static String createPatchBody(String phase, String phaseAction, String phaseStatus, String displayPhase) {
 		return String.format("""
 			{
 			                "externalCaseId" : "2971",
