@@ -13,6 +13,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class CaseData {
 
@@ -26,7 +28,7 @@ public class CaseData {
 			.whenScenarioStateIs(requiredScenarioState)
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.willReturn(aResponse()
-				.withStatus(200)
+				.withStatus(OK_200)
 				.withHeader("Content-Type", "application/json")
 				.withBodyFile("common/responses/casedata/get-errand.json")
 				.withTransformers("response-template")
@@ -44,7 +46,7 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withRequestBody(bodyPattern)
 			.willReturn(aResponse()
-				.withStatus(204)
+				.withStatus(NO_CONTENT_204)
 				.withHeader("Content-Type", "*/*"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
@@ -57,7 +59,7 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withRequestBody(bodyPattern)
 			.willReturn(aResponse()
-				.withStatus(204)
+				.withStatus(NO_CONTENT_204)
 				.withHeader("Content-Type", "*/*"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
@@ -70,7 +72,7 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withRequestBody(bodyPattern)
 			.willReturn(aResponse()
-				.withStatus(204)
+				.withStatus(NO_CONTENT_204)
 				.withHeader("Content-Type", "*/*"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
@@ -83,7 +85,7 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withQueryParam("noteType", equalTo(noteType))
 			.willReturn(aResponse()
-				.withStatus(200)
+				.withStatus(OK_200)
 				.withHeader("Content-Type", "application/json")
 				.withBodyFile("common/responses/casedata/get-notes.json"))
 			.willSetStateTo(newScenarioState))
@@ -96,7 +98,7 @@ public class CaseData {
 			.whenScenarioStateIs(requiredScenarioState)
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.willReturn(aResponse()
-				.withStatus(204))
+				.withStatus(NO_CONTENT_204))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
@@ -104,63 +106,63 @@ public class CaseData {
 	public static String createPatchBody(String phase, String phaseAction, String phaseStatus, String displayPhase) {
 		return String.format("""
 			{
-			                "externalCaseId" : "2971",
-			                "phase" : "%s",
-			                "extraParameters" : [ {
-			                  "key" : "disability.walkingAbility",
-			                  "values" : [ "false" ]
-			                }, {
-			                  "key" : "application.applicant.testimonial",
-			                  "values" : [ "true" ]
-			                }, {
-			                  "key" : "consent.view.transportationServiceDetails",
-			                  "values" : [ "false" ]
-			                }, {
-			                  "key" : "disability.aid",
-			                  "values" : [ "Inget" ]
-			                }, {
-			                  "key" : "disability.canBeAloneWhileParking",
-			                  "values" : [ "true" ]
-			                }, {
-			                  "key" : "application.role",
-			                  "values" : [ "SELF" ]
-			                }, {
-			                  "key" : "application.applicant.capacity",
-			                  "values" : [ "DRIVER" ]
-			                }, {
-			                  "key" : "application.applicant.signingAbility",
-			                  "values" : [ "false" ]
-			                }, {
-			                  "key" : "disability.walkingDistance.max",
-			                  "values" : [ ]
-			                }, {
-			                  "key" : "disability.walkingDistance.beforeRest",
-			                  "values" : [ ]
-			                }, {
-			                  "key" : "consent.contact.doctor",
-			                  "values" : [ "false" ]
-			                }, {
-			                  "key" : "application.reason",
-			                  "values" : [ "" ]
-			                }, {
-			                  "key" : "disability.canBeAloneWhileParking.note",
-			                  "values" : [ ]
-			                }, {
-			                  "key" : "disability.duration",
-			                  "values" : [ "P6M" ]
-			                }, {
-			                  "key" : "artefact.permit.number",
-			                  "values" : [ "" ]
-			                }, {
-			                  "key" : "process.phaseStatus",
-			                  "values" : [ "%s" ]
-			                }, {
-			                  "key" : "process.phaseAction",
-			                  "values" : [ "%s" ]
-			                }, {
-			                  "key" : "process.displayPhase",
-			                  "values" : [ "%s" ]
-			                } ]
-			              }""", phase, phaseStatus, phaseAction, displayPhase);
+				"externalCaseId" : "2971",
+				"phase" : "%s",
+				"extraParameters" : [ {
+						"key" : "disability.walkingAbility",
+						"values" : [ "false" ]
+					}, {
+						"key" : "application.applicant.testimonial",
+						"values" : [ "true" ]
+					}, {
+						"key" : "consent.view.transportationServiceDetails",
+						"values" : [ "false" ]
+					}, {
+						"key" : "disability.aid",
+						"values" : [ "Inget" ]
+					}, {
+						"key" : "disability.canBeAloneWhileParking",
+						"values" : [ "true" ]
+					}, {
+						"key" : "application.role",
+						"values" : [ "SELF" ]
+					}, {
+						"key" : "application.applicant.capacity",
+						"values" : [ "DRIVER" ]
+					}, {
+						"key" : "application.applicant.signingAbility",
+						"values" : [ "false" ]
+					}, {
+						"key" : "disability.walkingDistance.max",
+						"values" : [ ]
+					}, {
+						"key" : "disability.walkingDistance.beforeRest",
+						"values" : [ ]
+					}, {
+						"key" : "consent.contact.doctor",
+						"values" : [ "false" ]
+					}, {
+						"key" : "application.reason",
+						"values" : [ "" ]
+					}, {
+						"key" : "disability.canBeAloneWhileParking.note",
+						"values" : [ ]
+					}, {
+						"key" : "disability.duration",
+						"values" : [ "P6M" ]
+					}, {
+						"key" : "artefact.permit.number",
+						"values" : [ "" ]
+					}, {
+						"key" : "process.phaseStatus",
+						"values" : [ "%s" ]
+					}, {
+						"key" : "process.phaseAction",
+						"values" : [ "%s" ]
+					}, {
+						"key" : "process.displayPhase",
+						"values" : [ "%s" ]
+					} ]
+					}""", phase, phaseStatus, phaseAction, displayPhase);
 	}
 }

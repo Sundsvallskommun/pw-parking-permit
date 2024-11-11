@@ -34,7 +34,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.*;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
 class VerifyAdministratorStakeholderExistsTaskWorkerTest {

@@ -71,7 +71,7 @@ class CaseDataMapperTest {
 	void toMessageRequestWithNullAsParameters() {
 		final var bean = CaseDataMapper.toMessageRequest(null, null, null, null, null, null, null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent","attachmentRequests", "emailHeaders");
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent", "attachmentRequests", "emailHeaders");
 		assertThat(OffsetDateTime.parse(bean.getSent())).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
 
@@ -159,7 +159,7 @@ class CaseDataMapperTest {
 			new ExtraParameter("process.displayPhase").values(emptyList()));
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
 			.extracting(PatchErrand::getFacilities,
-						PatchErrand::getExtraParameters)
+				PatchErrand::getExtraParameters)
 			.containsExactly(null, expectedExtraParameters);
 	}
 
@@ -177,7 +177,7 @@ class CaseDataMapperTest {
 		final var valueOther = "value";
 		final var extraParameters = List.of(new ExtraParameter(keyOther).addValuesItem(valueOther), new ExtraParameter(keyPhaseAction).addValuesItem("existingPhaseAction"));
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase, extraParameters);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, displayPhase, extraParameters);
 
 		assertThat(bean).isNotNull()
 			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
@@ -209,19 +209,19 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		assertThat(bean).isNotNull()
-				.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
-				.extracting(
-						PatchErrand::getExternalCaseId,
-						PatchErrand::getPhase,
-						PatchErrand::getFacilities,
-						PatchErrand::getExtraParameters)
-				.containsExactly(
-						externalCaseId,
-						phase,
-						null,
-						List.of(new ExtraParameter("key").addValuesItem("value"),
-								new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
-								new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction)));
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+			.extracting(
+				PatchErrand::getExternalCaseId,
+				PatchErrand::getPhase,
+				PatchErrand::getFacilities,
+				PatchErrand::getExtraParameters)
+			.containsExactly(
+				externalCaseId,
+				phase,
+				null,
+				List.of(new ExtraParameter("key").addValuesItem("value"),
+					new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
+					new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction)));
 	}
 
 	@Test
