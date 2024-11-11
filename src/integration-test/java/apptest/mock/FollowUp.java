@@ -2,7 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.getPatchBody;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
 import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
@@ -31,7 +31,7 @@ public class FollowUp {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "follow_up_update-phase-task-worker---api-casedata-patch-errand",
-                equalToJson(getPatchBody("Uppföljning","UNKNOWN", "ONGOING", "Uppföljning")));
+                equalToJson(createPatchBody("Uppföljning","UNKNOWN", "ONGOING", "Uppföljning")));
     }
 
     public static String mockFollowUpCleanUpNotes(String caseId, String scenarioName, String requiredScenarioState) {

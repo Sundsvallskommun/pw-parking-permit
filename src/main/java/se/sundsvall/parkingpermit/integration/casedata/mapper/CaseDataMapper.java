@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -37,10 +38,9 @@ public class CaseDataMapper {
 	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final String displayPhase, final List<ExtraParameter> extraParameters) {
 		final var patchErrand =  toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
-		var filteredList = patchErrand.getExtraParameters().stream()
-			.filter(extraParameter -> !extraParameter.getKey().equals(CASEDATA_KEY_DISPLAY_PHASE))
-			.toList();
-		var result = new ArrayList<>(filteredList);
+		var result = patchErrand.getExtraParameters().stream()
+			.filter(extraParameter -> !CASEDATA_KEY_DISPLAY_PHASE.equals(extraParameter.getKey()))
+			.collect(Collectors.toCollection(ArrayList::new));
 
 		Optional.ofNullable(displayPhase).ifPresentOrElse(display -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(List.of(display))),
 			() -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(emptyList())));
@@ -54,11 +54,9 @@ public class CaseDataMapper {
 			.phase(phase)
 			.facilities(null);
 
-		var filteredList = Optional.ofNullable(extraParameters).orElse(emptyList()).stream()
-			.filter(extraParameter -> !extraParameter.getKey().equals(CASEDATA_KEY_PHASE_STATUS) && !extraParameter.getKey().equals(CASEDATA_KEY_PHASE_ACTION))
-			.toList();
-
-		var result = new ArrayList<>(filteredList);
+		var result = Optional.ofNullable(extraParameters).orElse(emptyList()).stream()
+			.filter(extraParameter -> !CASEDATA_KEY_PHASE_STATUS.equals(extraParameter.getKey()) && !CASEDATA_KEY_PHASE_ACTION.equals(extraParameter.getKey()))
+			.collect(Collectors.toCollection(ArrayList::new));
 
 		Optional.ofNullable(phaseStatus).ifPresentOrElse(status -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(List.of(status))),
 			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(emptyList())));

@@ -2,7 +2,7 @@ package apptest.mock;
 
 import java.util.Map;
 
-import static apptest.mock.api.CaseData.getPatchBody;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
@@ -32,7 +32,7 @@ public class Actualization {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_update-phase-task-worker---api-casedata-patch-errand",
-                equalToJson(getPatchBody("Aktualisering", "UNKNOWN", "ONGOING", "Registrerad")));
+                equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "ONGOING", "Registrerad")));
     }
 
     public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState) {
@@ -74,7 +74,7 @@ public class Actualization {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_update-display-phase---api-casedata-patch-errand",
-                equalToJson(getPatchBody("Aktualisering","UNKNOWN", "ONGOING", "Granskning")));
+                equalToJson(createPatchBody("Aktualisering","UNKNOWN", "ONGOING", "Granskning")));
     }
 
     public static String mockActualizationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
@@ -110,6 +110,6 @@ public class Actualization {
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "actualization_check-phase-action_task-worker---api-casedata-patch-errand",
-                equalToJson(getPatchBody("Aktualisering", "COMPLETE", "COMPLETED", "Granskning")));
+                equalToJson(createPatchBody("Aktualisering", "COMPLETE", "COMPLETED", "Granskning")));
     }
 }
