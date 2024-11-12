@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
@@ -35,7 +34,6 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
 
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("junit")
 class MessagingMapperTest {
 
 	private static final UUID PARTY_ID = UUID.randomUUID();
