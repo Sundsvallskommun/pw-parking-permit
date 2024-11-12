@@ -83,4 +83,6 @@ public final class Constants {
 	public static final String CASE_TYPE_PARKING_PERMIT = "PARKING_PERMIT";
 	public static final String CASE_TYPE_PARKING_PERMIT_RENEWAL = "PARKING_PERMIT_RENEWAL";
 	public static final String CASE_TYPE_LOST_PARKING_PERMIT = "LOST_PARKING_PERMIT";
+
+	public static final String MESSAGING_KEY_FLOW_INSTANCE_ID = "flowInstanceId";
 }
