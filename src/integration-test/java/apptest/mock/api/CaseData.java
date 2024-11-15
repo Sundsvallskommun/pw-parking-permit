@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -19,10 +20,14 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 public class CaseData {
 
 	public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters) {
-		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, "APPROVAL");
+		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, "APPROVAL", "ADMINISTRATOR");
 	}
 
 	public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters, String decisionOutcome) {
+		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, decisionOutcome, "ADMINISTRATOR");
+	}
+
+	public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters, String decisionOutcome, String role) {
 		return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s", caseId)))
 			.inScenario(scenarioName)
 			.whenScenarioStateIs(requiredScenarioState)
@@ -34,7 +39,21 @@ public class CaseData {
 				.withTransformers("response-template")
 				.withTransformerParameter("caseId", caseId)
 				.withTransformerParameter("decisionOutcome", decisionOutcome)
+				.withTransformerParameter("role", role)
 				.withTransformerParameters(transformParameters))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
+	public static String mockCaseDataStakeholdersGet(String caseId, String stakeholderId, String scenarioName, String requiredScenarioState, String newScenarioState) {
+		return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/stakeholders/%s", caseId, stakeholderId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.willReturn(aResponse()
+				.withStatus(OK_200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/casedata/get-stakeholder.json"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
@@ -61,6 +80,20 @@ public class CaseData {
 			.willReturn(aResponse()
 				.withStatus(NO_CONTENT_204)
 				.withHeader("Content-Type", "*/*"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
+	public static String mockCaseDataAddStakeholderPatch(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/stakeholders", caseId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(NO_CONTENT_204)
+				.withHeader("Content-Type", "*/*")
+				.withHeader("Location", String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/stakeholders/", caseId) + "2"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
@@ -99,6 +132,19 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.willReturn(aResponse()
 				.withStatus(NO_CONTENT_204))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
+	public static String mockCaseDataAddMessagePost(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/messages", caseId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(NO_CONTENT_204)
+				.withHeader("Content-Type", "*/*"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}

@@ -63,7 +63,7 @@
 			"lastName": "Anka",
 			"personId": "6b8928bb-9800-4d52-a9fa-20d88c812345",
 			"roles": [
-				"ADMINISTRATOR"
+				"{{parameters.role}}"
 			],
 			"addresses": [
 				{

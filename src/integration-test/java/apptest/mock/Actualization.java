@@ -14,7 +14,7 @@ public class Actualization {
 
     public static String mockActualization(String caseId, String scenarioName) {
         var scenarioAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
-        var scenarioAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, scenarioAfterUpdatePhase);
+        var scenarioAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, scenarioAfterUpdatePhase, "2281");
         var scenarioAfterVerifyAdministrator = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, scenarioAfterVerifyResident);
         var scenarioAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, scenarioAfterVerifyAdministrator);
         var scenarioAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, scenarioAfterUpdateDisplayPhase);
@@ -35,7 +35,7 @@ public class Actualization {
                 equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "ONGOING", "Registrerad")));
     }
 
-    public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState) {
+    public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState, String municipalityId) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
                 "verify-resident-of-municipality-task-worker---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
@@ -47,7 +47,7 @@ public class Actualization {
 
         return mockGetCitizen(scenarioName, state,
                 "verify-resident-of-municipality-task-worker---api-citizen-getcitizen",
-                Map.of("municipalityId", "2281",
+                Map.of("municipalityId", municipalityId,
                         "personId", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6"));
 
     }
