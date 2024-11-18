@@ -27,13 +27,13 @@ public class Denial {
 	public static String mockDenialUpdatePhase(final String caseId, final String scenarioName, final String requiredScenarioState) {
 
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"update-phase-task-worker---api-casedata-get-errand",
+			"automatic-denial-update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
 				"displayPhaseParameter", "Aktualisering"));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
-			"update-phase-task-worker---api-casedata-patch-errand",
+			"automatic-denial-update-phase-task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Beslut", "UNKNOWN", "ONGOING", "Beslut")));
 	}
 
@@ -65,7 +65,7 @@ public class Denial {
 		state = mockCaseDataStakeholdersGet(caseId, "2", scenarioName, state,
 			"automatic-denial-decision-task-worker---api-casedata-get-stakeholder");
 
-		state = mockRenderPdf(scenarioName, state, "add-message-to-errand-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic-denial-add-message-to-errand-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -128,7 +128,7 @@ public class Denial {
 
 	public static String mockDenialUpdateStatus(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"update-status-task-worker---api-casedata-get-errand",
+			"automatic-denial-update-status-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
@@ -136,7 +136,7 @@ public class Denial {
 				"displayPhaseParameter", "Beslut"));
 
 		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"update-status-task-worker---api-casedata-put-status",
+			"automatic-denial-update-status-task-worker---api-casedata-put-status",
 			equalToJson("""
 				[
 					{
@@ -150,14 +150,14 @@ public class Denial {
 
 	public static String mockDenialSendDecision(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"send-denial-decision-task-worker---api-casedata-get-errand",
+			"automatic-denial-send-denial-decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Beslut"));
 
-		state = mockRenderPdf(scenarioName, state, "send-denial-decision-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic-denial-send-denial-decision-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -172,7 +172,7 @@ public class Denial {
 				    		}
 				"""));
 
-		return mockMessagingWebMessagePost(scenarioName, state, "send-denial-decision-task-worker---api-messaging-send-web-message",
+		return mockMessagingWebMessagePost(scenarioName, state, "automatic-denial-send-denial-decision-task-worker---api-messaging-send-web-message",
 			equalToJson("""
 							{
 								"party": {
@@ -193,14 +193,14 @@ public class Denial {
 
 	public static String mockDenialAddMessageToErrand(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"add-message-to-errand-task-worker---api-casedata-get-errand",
+			"automatic-denial-add-message-to-errand-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Beslut"));
 
-		state = mockRenderPdf(scenarioName, state, "add-message-to-errand-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic-denial-add-message-to-errand-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -216,7 +216,7 @@ public class Denial {
 				"""));
 
 		return mockCaseDataAddMessagePost(caseId, scenarioName, state,
-			"add-message-to-errand-task-worker---api-post-message",
+			"automatic-denial-add-message-to-errand-task-worker---api-post-message",
 			equalToJson("""
 							{
 								"messageId": "570c3e28-b640-49e9-899c-9d290eb0539a",
