@@ -177,9 +177,13 @@ public class Denial {
 							{
 								"party": {
 									"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-									"externalReferences": []
+									"externalReferences" : [ {
+				                              "key" : "flowInstanceId",
+				                              "value" : "2971"
+				                          } ]
 								},
 								"message": "Ärendet avskrivs",
+								"oepInstance" : "external",
 								"attachments": [
 									{
 										"fileName": "beslut.pdf",
