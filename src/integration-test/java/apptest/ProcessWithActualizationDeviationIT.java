@@ -48,7 +48,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 
 @DirtiesContext
-@WireMockAppTestSuite(files = "classpath:/WireMock/", classes = Application.class)
+@WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
 class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
@@ -322,7 +322,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		mockApiGatewayToken();
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
-		final var stateAfterVerifyStakeholderNoAdministrator =  mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
+		final var stateAfterVerifyStakeholderNoAdministrator = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
 			"actualization_verify-administrator-stakeholder---api-casedata-get-errand-no-administrator",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
