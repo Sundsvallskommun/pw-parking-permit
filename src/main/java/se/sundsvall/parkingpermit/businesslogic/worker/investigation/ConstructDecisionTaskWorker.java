@@ -1,5 +1,22 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.Decision;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
+import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -8,25 +25,7 @@ import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
-
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
-import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.DecisionDTO;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")
@@ -43,26 +42,27 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, caseNumber);
+			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 
 			final var latestDecision = errand.getDecisions().stream()
-				.max(Comparator.comparingInt(DecisionDTO::getVersion)).orElse(null);
+				.max(Comparator.comparingInt(Decision::getVersion)).orElse(null);
 
 			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
 
 			validateResponse(ruleEngineResponse);
 
-			final var decisionDTO = ruleEngineResponse.getResults().stream()
+			final var decision = ruleEngineResponse.getResults().stream()
 				.filter(result -> !NOT_APPLICABLE.equals(result.getValue()))
 				.findFirst()
 				.map(BusinessRulesUtil::constructDecision)
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
-			if (isDecisionsNotEqual(latestDecision, decisionDTO)) {
+			if (isDecisionsNotEqual(latestDecision, decision)) {
 				caseDataClient.patchNewDecision(
 					municipalityId,
+					errand.getNamespace(),
 					caseNumber,
-					decisionDTO.version(Optional.ofNullable(latestDecision).map(decision -> decision.getVersion() + 1).orElse(0)));
+					decision.version(Optional.ofNullable(latestDecision).map(theDecision -> theDecision.getVersion() + 1).orElse(0)));
 			}
 
 			externalTaskService.complete(externalTask);
@@ -82,12 +82,12 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private boolean isDecisionsNotEqual(DecisionDTO latestDecision, DecisionDTO decisionDTO) {
+	private boolean isDecisionsNotEqual(Decision latestDecision, Decision decision) {
 		if (isNull(latestDecision)) {
 			return true;
 		}
-		return !(Objects.equals(latestDecision.getDecisionType(), decisionDTO.getDecisionType())
-			&& Objects.equals(latestDecision.getDecisionOutcome(), decisionDTO.getDecisionOutcome())
-			&& Objects.equals(latestDecision.getDescription(), decisionDTO.getDescription()));
+		return !(Objects.equals(latestDecision.getDecisionType(), decision.getDecisionType())
+			&& Objects.equals(latestDecision.getDecisionOutcome(), decision.getDecisionOutcome())
+			&& Objects.equals(latestDecision.getDescription(), decision.getDescription()));
 	}
 }

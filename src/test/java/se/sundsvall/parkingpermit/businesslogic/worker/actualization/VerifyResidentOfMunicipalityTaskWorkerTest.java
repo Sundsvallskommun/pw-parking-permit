@@ -1,6 +1,29 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -16,31 +39,6 @@ import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
-
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
-
 @ExtendWith(MockitoExtension.class)
 class VerifyResidentOfMunicipalityTaskWorkerTest {
 
@@ -48,6 +46,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	private static final UUID PERSON_ID = randomUUID();
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String OTHER_MUNICIPALITY_ID = "1234";
 	private static final String ROLE_DOCTOR = "DOCTOR";
 
@@ -58,7 +57,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	private ExternalTask externalTaskMock;
 
 	@Mock
-	private ErrandDTO errandMock;
+	private Errand errandMock;
 
 	@Mock
 	private ExternalTaskService externalTaskServiceMock;
@@ -82,7 +81,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
@@ -98,7 +97,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
@@ -111,7 +110,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
@@ -127,7 +126,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
@@ -140,7 +139,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.empty());
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
@@ -156,7 +155,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
@@ -169,7 +168,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, OTHER_MUNICIPALITY_ID).addresses(null)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
@@ -185,7 +184,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
@@ -200,7 +199,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(citizenClientMock.getCitizen(PERSON_ID.toString())).thenReturn(Optional.of(createCitizen(PERSON_ID, MUNICIPALITY_ID)));
 		when(errandMock.getStakeholders()).thenReturn(List.of(
 			createStakeholder(null, ROLE_DOCTOR, "Dr", "Who"),
@@ -219,14 +218,14 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, ERRAND_ID);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
 		verifyNoInteractions(camundaClientMock);
 	}
 
-	private StakeholderDTO createStakeholder(String personId, String role, String firstName, String lastName) {
-		return new StakeholderDTO()
+	private Stakeholder createStakeholder(String personId, String role, String firstName, String lastName) {
+		return new Stakeholder()
 			.personId(personId)
 			.firstName(firstName)
 			.lastName(lastName)

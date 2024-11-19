@@ -1,7 +1,7 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.messaging.LetterRequest;
 import generated.se.sundsvall.messaging.MessageBatchResult;
 import generated.se.sundsvall.messaging.MessageResult;
@@ -22,18 +22,18 @@ import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 import java.util.List;
 import java.util.UUID;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.zalando.problem.Status.BAD_GATEWAY;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
@@ -169,14 +169,14 @@ class MessagingServiceTest {
 		verifyNoInteractions(templatingClientMock);
 	}
 
-	private static ErrandDTO createErrand(boolean withExternalCaseId) {
-		return new ErrandDTO()
+	private static Errand createErrand(boolean withExternalCaseId) {
+		return new Errand()
 			.externalCaseId(withExternalCaseId ? "1234" : null)
 			.stakeholders(List.of(createStakeholder(ROLE_APPLICANT), createStakeholder(ROLE_ADMINISTRATOR)));
 	}
 
-	public static StakeholderDTO createStakeholder(String role) {
-		return new StakeholderDTO()
+	public static Stakeholder createStakeholder(String role) {
+		return new Stakeholder()
 			.type(PERSON)
 			.personId("d7af5f83-166a-468b-ab86-da8ca30ea97c")
 			.roles(List.of(role));

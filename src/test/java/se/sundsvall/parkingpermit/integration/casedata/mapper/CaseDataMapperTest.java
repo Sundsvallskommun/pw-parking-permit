@@ -1,24 +1,23 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
-import generated.se.sundsvall.casedata.AttachmentDTO;
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.LawDTO;
+import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Law;
 import generated.se.sundsvall.casedata.MessageAttachment;
 import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.MessageRequest.DirectionEnum;
-import generated.se.sundsvall.casedata.PatchErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
@@ -44,7 +43,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toDecision() {
-		final var bean = CaseDataMapper.toDecision(DecisionDTO.DecisionTypeEnum.FINAL, DecisionDTO.DecisionOutcomeEnum.REJECTION, "Description");
+		final var bean = CaseDataMapper.toDecision(Decision.DecisionTypeEnum.FINAL, Decision.DecisionOutcomeEnum.REJECTION, "Description");
 
 		assertThat(bean).hasAllNullFieldsOrPropertiesExcept("attachments", "created", "created", "decisionType", "decisionOutcome", "description", "extraParameters", "law");
 		assertThat(bean.getAttachments()).isNullOrEmpty();
@@ -52,8 +51,8 @@ class CaseDataMapperTest {
 		assertThat(bean.getLaw()).isNullOrEmpty();
 
 		assertThat(bean.getCreated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
-		assertThat(bean.getDecisionType()).isEqualTo(DecisionDTO.DecisionTypeEnum.FINAL);
-		assertThat(bean.getDecisionOutcome()).isEqualTo(DecisionDTO.DecisionOutcomeEnum.REJECTION);
+		assertThat(bean.getDecisionType()).isEqualTo(Decision.DecisionTypeEnum.FINAL);
+		assertThat(bean.getDecisionOutcome()).isEqualTo(Decision.DecisionOutcomeEnum.REJECTION);
 		assertThat(bean.getDescription()).isEqualTo("Description");
 	}
 
@@ -72,7 +71,7 @@ class CaseDataMapperTest {
 	void toMessageRequestWithNullAsParameters() {
 		final var bean = CaseDataMapper.toMessageRequest(null, null, null, null, null, null, null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent","attachmentRequests", "emailHeaders");
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent", "attachmentRequests", "emailHeaders");
 		assertThat(OffsetDateTime.parse(bean.getSent())).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
 
@@ -83,12 +82,12 @@ class CaseDataMapperTest {
 		final var messageId = "messageId";
 		final var subject = "subject";
 		final var message = "message";
-		final var errandDTO = new ErrandDTO().errandNumber(errandNumber).externalCaseId(externalCaseId);
+		final var errand = new Errand().errandNumber(errandNumber).externalCaseId(externalCaseId);
 		final var direction = DirectionEnum.OUTBOUND;
 		final var username = "username";
 		final var attachment = new MessageAttachment();
 
-		final var bean = CaseDataMapper.toMessageRequest(messageId, subject, message, errandDTO, direction, username, attachment);
+		final var bean = CaseDataMapper.toMessageRequest(messageId, subject, message, errand, direction, username, attachment);
 
 		assertThat(bean).isNotNull()
 			.extracting(
@@ -96,14 +95,14 @@ class CaseDataMapperTest {
 				MessageRequest::getDirection,
 				MessageRequest::getEmail,
 				MessageRequest::getErrandNumber,
-				MessageRequest::getExternalCaseID,
-				MessageRequest::getFamilyID,
+				MessageRequest::getExternalCaseId,
+				MessageRequest::getFamilyId,
 				MessageRequest::getFirstName,
 				MessageRequest::getLastName,
 				MessageRequest::getMessage,
-				MessageRequest::getMessageID,
+				MessageRequest::getMessageId,
 				MessageRequest::getSubject,
-				MessageRequest::getUserID,
+				MessageRequest::getUserId,
 				MessageRequest::getUsername)
 			.containsExactly(
 				List.of(attachment),
@@ -152,16 +151,15 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithNullAsParameters() {
-		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null);
+		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null, null);
 
-		final var expectedExtraParameters = new HashMap<String, String>();
-		expectedExtraParameters.put("process.phaseStatus", null);
-		expectedExtraParameters.put("process.phaseAction", null);
-		expectedExtraParameters.put("process.displayPhase", null);
-
+		final var expectedExtraParameters = List.of(
+			new ExtraParameter("process.phaseStatus").values(emptyList()),
+			new ExtraParameter("process.phaseAction").values(emptyList()),
+			new ExtraParameter("process.displayPhase").values(emptyList()));
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
-			.extracting(PatchErrandDTO::getFacilities,
-						PatchErrandDTO::getExtraParameters)
+			.extracting(PatchErrand::getFacilities,
+				PatchErrand::getExtraParameters)
 			.containsExactly(null, expectedExtraParameters);
 	}
 
@@ -172,24 +170,31 @@ class CaseDataMapperTest {
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
 		final var displayPhase = "displayPhase";
+		final var keyPhaseAction = "process.phaseAction";
+		final var keyPhaseStatus = "process.phaseStatus";
+		final var keyDisplayPhase = "process.displayPhase";
+		final var keyOther = "key";
+		final var valueOther = "value";
+		final var extraParameters = List.of(new ExtraParameter(keyOther).addValuesItem(valueOther), new ExtraParameter(keyPhaseAction).addValuesItem("existingPhaseAction"));
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction,displayPhase);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, displayPhase, extraParameters);
 
 		assertThat(bean).isNotNull()
 			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
 			.extracting(
-				PatchErrandDTO::getExternalCaseId,
-				PatchErrandDTO::getPhase,
-				PatchErrandDTO::getFacilities,
-				PatchErrandDTO::getExtraParameters)
+				PatchErrand::getExternalCaseId,
+				PatchErrand::getPhase,
+				PatchErrand::getFacilities,
+				PatchErrand::getExtraParameters)
 			.containsExactly(
 				externalCaseId,
 				phase,
 				null,
-				Map.of(
-					"process.displayPhase", displayPhase,
-					"process.phaseStatus", phaseStatus,
-					"process.phaseAction", phaseAction));
+				List.of(
+					new ExtraParameter(keyOther).addValuesItem(valueOther),
+					new ExtraParameter(keyPhaseStatus).addValuesItem(phaseStatus),
+					new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction),
+					new ExtraParameter(keyDisplayPhase).addValuesItem(displayPhase)));
 	}
 
 	@Test
@@ -198,22 +203,25 @@ class CaseDataMapperTest {
 		final var phase = "phase";
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
+		final var keyPhaseAction = "process.phaseAction";
+		final var extraParameters = List.of(new ExtraParameter("key").addValuesItem("value"), new ExtraParameter(keyPhaseAction).addValuesItem("existingPhaseAction"));
 
-		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction);
+		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		assertThat(bean).isNotNull()
-				.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
-				.extracting(
-						PatchErrandDTO::getExternalCaseId,
-						PatchErrandDTO::getPhase,
-						PatchErrandDTO::getFacilities,
-						PatchErrandDTO::getExtraParameters)
-				.containsExactly(
-						externalCaseId,
-						phase,
-						null,
-						Map.of("process.phaseStatus", phaseStatus,
-								"process.phaseAction", phaseAction));
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+			.extracting(
+				PatchErrand::getExternalCaseId,
+				PatchErrand::getPhase,
+				PatchErrand::getFacilities,
+				PatchErrand::getExtraParameters)
+			.containsExactly(
+				externalCaseId,
+				phase,
+				null,
+				List.of(new ExtraParameter("key").addValuesItem("value"),
+					new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
+					new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction)));
 	}
 
 	@Test
@@ -234,10 +242,10 @@ class CaseDataMapperTest {
 
 		assertThat(bean).isNotNull()
 			.extracting(
-				LawDTO::getArticle,
-				LawDTO::getChapter,
-				LawDTO::getHeading,
-				LawDTO::getSfs)
+				Law::getArticle,
+				Law::getChapter,
+				Law::getHeading,
+				Law::getSfs)
 			.containsExactly(
 				article,
 				chapter,
@@ -250,7 +258,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toAttachment(null, null, null, null, null);
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
-			.extracting(AttachmentDTO::getExtraParameters)
+			.extracting(Attachment::getExtraParameters)
 			.isEqualTo(emptyMap());
 	}
 
@@ -267,12 +275,12 @@ class CaseDataMapperTest {
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("category", "name", "extension", "mimeType", "file", "extraParameters")
 			.extracting(
-				AttachmentDTO::getCategory,
-				AttachmentDTO::getName,
-				AttachmentDTO::getExtension,
-				AttachmentDTO::getMimeType,
-				AttachmentDTO::getFile,
-				AttachmentDTO::getExtraParameters)
+				Attachment::getCategory,
+				Attachment::getName,
+				Attachment::getExtension,
+				Attachment::getMimeType,
+				Attachment::getFile,
+				Attachment::getExtraParameters)
 			.containsExactly(
 				category,
 				name,
@@ -288,8 +296,8 @@ class CaseDataMapperTest {
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "roles", "addresses", "contactInformation")
 			.extracting(
-				StakeholderDTO::getExtraParameters,
-				StakeholderDTO::getRoles)
+				Stakeholder::getExtraParameters,
+				Stakeholder::getRoles)
 			.containsExactly(
 				emptyMap(),
 				emptyList());
@@ -306,11 +314,11 @@ class CaseDataMapperTest {
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("roles", "type", "firstName", "lastName", "extraParameters", "addresses", "contactInformation")
 			.extracting(
-				StakeholderDTO::getExtraParameters,
-				StakeholderDTO::getFirstName,
-				StakeholderDTO::getLastName,
-				StakeholderDTO::getRoles,
-				StakeholderDTO::getType)
+				Stakeholder::getExtraParameters,
+				Stakeholder::getFirstName,
+				Stakeholder::getLastName,
+				Stakeholder::getRoles,
+				Stakeholder::getType)
 			.containsExactly(
 				emptyMap(),
 				firstName,

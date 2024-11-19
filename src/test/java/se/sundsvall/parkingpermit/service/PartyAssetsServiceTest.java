@@ -1,8 +1,9 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.DecisionDTO;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.partyassets.AssetCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,11 +16,10 @@ import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.DecisionDTO.DecisionTypeEnum.PROPOSED;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.PROPOSED;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -69,24 +69,25 @@ class PartyAssetsServiceTest {
 		assertThat(assetCreateRequest.getDescription()).isEqualTo("Parkeringstillstånd");
 	}
 
-	private static ErrandDTO createErrand() {
-		return new ErrandDTO()
+	private static Errand createErrand() {
+		return new Errand()
 			.id(Long.valueOf(ERRAND_ID))
 			.decisions(List.of(createDecision(PROPOSED), createDecision(FINAL)))
 			.stakeholders(List.of(createStakeholder(ROLE_APPLICANT), createStakeholder(ROLE_ADMINISTRATOR)))
-			.extraParameters(Map.of("artefact.permit.number", PERMIT_NUMBER,
-				"artefact.permit.status", "Aktivt"));
+			.extraParameters(List.of(
+				new ExtraParameter("artefact.permit.number").addValuesItem(PERMIT_NUMBER),
+				new ExtraParameter("artefact.permit.status").addValuesItem("Aktivt")));
 	}
 
-	public static StakeholderDTO createStakeholder(String role) {
-		return new StakeholderDTO()
+	public static Stakeholder createStakeholder(String role) {
+		return new Stakeholder()
 			.type(PERSON)
 			.personId("d7af5f83-166a-468b-ab86-da8ca30ea97c")
 			.roles(List.of(role));
 	}
 
-	public static DecisionDTO createDecision(DecisionDTO.DecisionTypeEnum decisionType) {
-		return new DecisionDTO()
+	public static Decision createDecision(Decision.DecisionTypeEnum decisionType) {
+		return new Decision()
 			.decisionType(decisionType)
 			.validFrom(VALID_FROM)
 			.validTo(VALID_TO);

@@ -1,6 +1,6 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.messaging.MessageResult;
 import generated.se.sundsvall.templating.RenderResponse;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -37,11 +37,11 @@ public class MessagingService {
 		this.messagingMapper = messagingMapper;
 	}
 
-	public RenderResponse renderPdf(String municipalityId, ErrandDTO errand) {
+	public RenderResponse renderPdf(String municipalityId, Errand errand) {
 		return templatingClient.renderPdf(municipalityId, toRenderRequestWhenNotMemberOfMunicipality(errand));
 	}
 
-	public UUID sendMessageToNonCitizen(String municipalityId, ErrandDTO errand, RenderResponse pdf) {
+	public UUID sendMessageToNonCitizen(String municipalityId, Errand errand, RenderResponse pdf) {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 
 		if (isNotEmpty(errand.getExternalCaseId())) {

@@ -1,17 +1,16 @@
 package se.sundsvall.parkingpermit.integration.businessrules.mapper;
 
 import generated.se.sundsvall.businessrules.Fact;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Stakeholder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.DefaultProblem;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -32,9 +31,9 @@ import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 class BusinessRulesMapperTest {
 
 	@Mock
-	private ErrandDTO errandMock;
+	private Errand errandMock;
 	@Mock
-	private StakeholderDTO stakeholderMock;
+	private Stakeholder stakeholderMock;
 
 	@Test
 	void toRuleEngineRequestWhenDriverNewParkingPermit() {
@@ -42,13 +41,13 @@ class BusinessRulesMapperTest {
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
 		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-				CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "DRIVER",
-				CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
-				CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
-				//Test that empty values are not included
-				CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, ""
-		));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("DRIVER"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
+			//Test that empty values are not included
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem("")));
+
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
 		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
@@ -75,12 +74,12 @@ class BusinessRulesMapperTest {
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
 		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "PASSENGER",
-			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
-			CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING, "disabilityCanBeAloneWhileParking",
-			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
-			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("PASSENGER"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING).addValuesItem("disabilityCanBeAloneWhileParking"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem("walkingDistanceMax")));
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
 		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
@@ -108,13 +107,13 @@ class BusinessRulesMapperTest {
 
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
-		final var extraParameters = new HashMap<String, String>();
-		extraParameters.put(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "DRIVER");
-		extraParameters.put(CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration");
-		extraParameters.put(CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES, "changedCircumstances");
-		extraParameters.put(CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility");
-		//Test that null values are not included
-		extraParameters.put(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, null);
+		final var extraParameters = List.of(
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("DRIVER"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES).addValuesItem("changedCircumstances"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
+			//Test that empty values are not included
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem(""));
 
 		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
@@ -145,13 +144,13 @@ class BusinessRulesMapperTest {
 		// Arrange
 		final var applicantPersonId = "applicantPersonId";
 		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
-		when(errandMock.getExtraParameters()).thenReturn(Map.of(
-			CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY, "PASSENGER",
-			CASEDATA_KEY_DISABILITY_DURATION, "disabilityDuration",
-			CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES, "changedCircumstances",
-			CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING, "disabilityCanBeAloneWhileParking",
-			CASEDATA_KEY_DISABILITY_WALKING_ABILITY, "walkingAbility",
-			CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX, "walkingDistanceMax"));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("PASSENGER"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
+			new ExtraParameter(CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES).addValuesItem("changedCircumstances"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING).addValuesItem("disabilityCanBeAloneWhileParking"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem("walkingDistanceMax")));
 		when(stakeholderMock.getPersonId()).thenReturn(applicantPersonId);
 		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));

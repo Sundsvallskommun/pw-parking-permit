@@ -1,10 +1,10 @@
 package se.sundsvall.parkingpermit.util;
 
-import generated.se.sundsvall.casedata.AddressDTO;
-import generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum;
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum;
+import generated.se.sundsvall.casedata.Address;
+import generated.se.sundsvall.casedata.Address.AddressCategoryEnum;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
@@ -12,10 +12,10 @@ import org.zalando.problem.ThrowableProblem;
 import java.util.List;
 import java.util.Map;
 
-import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
-import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.VISITING_ADDRESS;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.ORGANIZATION;
-import static generated.se.sundsvall.casedata.StakeholderDTO.TypeEnum.PERSON;
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,7 @@ class ErrandUtilTest {
 	private static final String ROLE_DRIVER = "DRIVER";
 	private static final String ROLE_DOCTOR = "DOCTOR";
 
-	private static final ErrandDTO ERRAND = createErrand(List.of(
+	private static final Errand ERRAND = createErrand(List.of(
 		Map.entry(PERSON, "DRIVER"),
 		Map.entry(ORGANIZATION, "CONTROL_OFFICIAL")));
 
@@ -85,22 +85,22 @@ class ErrandUtilTest {
 		assertThat(ErrandUtil.getAddress(createStakeholder(Map.entry(PERSON, ROLE_DRIVER)).addAddressesItem(createAddress(POSTAL_ADDRESS)), VISITING_ADDRESS)).isEmpty();
 	}
 
-	private static ErrandDTO createErrand(List<Map.Entry<TypeEnum, String>> stakeholders) {
-		return new ErrandDTO()
+	private static Errand createErrand(List<Map.Entry<TypeEnum, String>> stakeholders) {
+		return new Errand()
 			.stakeholders(createStakeholders(stakeholders));
 	}
 
-	private static List<StakeholderDTO> createStakeholders(List<Map.Entry<TypeEnum, String>> stakeholders) {
+	private static List<Stakeholder> createStakeholders(List<Map.Entry<TypeEnum, String>> stakeholders) {
 		return ofNullable(stakeholders).orElse(emptyList()).stream()
 			.map(ErrandUtilTest::createStakeholder)
 			.toList();
 	}
 
-	private static StakeholderDTO createStakeholder(Map.Entry<TypeEnum, String> classification) {
-		return new StakeholderDTO().type(classification.getKey()).roles(List.of(classification.getValue()));
+	private static Stakeholder createStakeholder(Map.Entry<TypeEnum, String> classification) {
+		return new Stakeholder().type(classification.getKey()).roles(List.of(classification.getValue()));
 	}
 
-	private static AddressDTO createAddress(AddressCategoryEnum category) {
-		return new AddressDTO().addressCategory(category);
+	private static Address createAddress(AddressCategoryEnum category) {
+		return new Address().addressCategory(category);
 	}
 }

@@ -1,25 +1,25 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import java.util.HashMap;
+
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
-
-import java.util.HashMap;
-
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.stereotype.Component;
-
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @Component
 @ExternalTaskSubscription("UpdateErrandPhaseTask")
@@ -37,7 +37,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 			final String phase = externalTask.getVariable(CAMUNDA_VARIABLE_PHASE);
 			final String displayPhase = externalTask.getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE);
 
-			final var errand = getErrand(municipalityId, caseNumber);
+			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 			logInfo("Executing update of phase for errand with id {}", errand.getId());
 
 			ofNullable(phase).ifPresentOrElse(
@@ -45,7 +45,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 					final var newDisplayPhase = ofNullable(displayPhase).orElse(phaseValue);
 					logInfo("Setting phase to {}", phaseValue);
 					// Set phase action to unknown to errand in the beginning of the phase
-					caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase));
+					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase, errand.getExtraParameters()));
 				},
 				() -> logInfo("Phase is not set"));
 

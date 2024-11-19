@@ -1,6 +1,6 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
+import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.templating.RenderRequest;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static generated.se.sundsvall.casedata.AddressDTO.AddressCategoryEnum.POSTAL_ADDRESS;
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
@@ -33,7 +33,7 @@ public class TemplatingMapper {
 
 	private TemplatingMapper() {}
 
-	public static RenderRequest toRenderRequestWhenNotMemberOfMunicipality(ErrandDTO errand) {
+	public static RenderRequest toRenderRequestWhenNotMemberOfMunicipality(Errand errand) {
 		if (isNull(errand)) {
 			return null;
 		}

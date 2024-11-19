@@ -1,14 +1,5 @@
 package se.sundsvall.parkingpermit.integration.camunda;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration.CLIENT_ID;
-
-import java.io.File;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-
 import generated.se.sundsvall.camunda.EventSubscriptionDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +21,14 @@ import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.camunda.StartProcessInstanceDto;
 import generated.se.sundsvall.camunda.VariableValueDto;
 import se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration;
+import java.io.File;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.camunda.url}", configuration = CamundaConfiguration.class)
 public interface CamundaClient {

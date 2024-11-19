@@ -1,13 +1,7 @@
 package apptest;
 
-import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
-import static java.util.stream.Stream.concat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
+import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -16,11 +10,21 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
-import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Stream.concat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Test class using testcontainer to execute the process.
@@ -69,5 +73,30 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 			.sorted(comparing(HistoricActivityInstanceDto::getEndTime))
 			.flatMap(activity -> concat(Stream.of(activity), getRoute(activity.getCalledProcessInstanceId(), route).stream()))
 			.toList();
+	}
+
+	protected void awaitProcessCompleted(String processId, long timeoutInSeconds) {
+		await()
+				.ignoreExceptions()
+				.atMost(timeoutInSeconds, SECONDS)
+				.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getHistoricProcessInstance(processId).getState(), equalTo(COMPLETED));
+	}
+
+	protected void awaitProcessState(String state, long timeoutInSeconds) {
+		await()
+				.ignoreExceptions()
+				.atMost(timeoutInSeconds, SECONDS)
+				.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+				.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> state.equals(eventSubscription.getActivityId())).count(), equalTo(1L));
+	}
+
+	protected void assertProcessPathway(String processId, boolean acceptDuplication, ArrayList<Tuple> list) {
+		var element = assertThat(getProcessInstanceRoute(processId))
+				.extracting(HistoricActivityInstanceDto::getActivityName, HistoricActivityInstanceDto::getActivityId)
+				.containsExactlyInAnyOrderElementsOf(list);
+		if(!acceptDuplication) {
+			element.doesNotHaveDuplicates();
+		}
 	}
 }

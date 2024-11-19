@@ -1,7 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import generated.se.sundsvall.casedata.ErrandDTO;
-import generated.se.sundsvall.casedata.StakeholderDTO;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -20,6 +20,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
@@ -43,7 +44,7 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
 
             final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
             final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-            final var errand = getErrand(municipalityId, caseNumber);
+            final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
 
 
             final var administratorIsAssigned = isAdministratorAssigned(errand);
@@ -54,12 +55,12 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
             if (isCancel(errand)) {
                 logInfo("Cancel has been requested for errand with id {}", errand.getId());
 
-                caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL));
+                caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL, errand.getExtraParameters()));
                 variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 
             } else if (!administratorIsAssigned) {
-                caseDataClient.patchErrand(municipalityId, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
+                caseDataClient.patchErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, errand.getExtraParameters()));
                 variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
             }
 
@@ -70,9 +71,9 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
         }
     }
 
-    private boolean isAdministratorAssigned(ErrandDTO errand) {
+    private boolean isAdministratorAssigned(Errand errand) {
         final var isControlOfficialAssigned = ofNullable(errand.getStakeholders()).orElse(emptyList()).stream()
-                .map(StakeholderDTO::getRoles)
+                .map(Stakeholder::getRoles)
                 .anyMatch(roles -> roles.contains("ADMINISTRATOR"));
 
         logInfo("Errand with id {} {} been assigned to a control official", errand.getId(), isControlOfficialAssigned ? "has" : "has not yet");
