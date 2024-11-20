@@ -45,10 +45,21 @@ public class MessagingService {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 
 		if (isNotEmpty(errand.getExternalCaseId())) {
-			final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequest(pdf, partyId, errand.getExternalCaseId()));
+			final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequestDenial(pdf, partyId, errand.getExternalCaseId()));
 			return extractId(List.of(messageResult));
 		}
-		final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequest(pdf, partyId));
+		final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequestDenial(pdf, partyId));
+		return extractId(messageResult.getMessages());
+	}
+
+	public UUID sendMessageSimplifiedService(String municipalityId, Errand errand) {
+		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
+
+		if (isNotEmpty(errand.getExternalCaseId())) {
+			final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequestSimplifiedService(partyId, errand.getExternalCaseId()));
+			return extractId(List.of(messageResult));
+		}
+		final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequestSimplifiedService(partyId));
 		return extractId(messageResult.getMessages());
 	}
 
