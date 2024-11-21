@@ -27,13 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.zalando.problem.Status.BAD_GATEWAY;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.BAD_GATEWAY;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
@@ -85,7 +85,7 @@ class MessagingServiceTest {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 
-		when(messagingMapperMock.toWebMessageRequest(any(), any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any())).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -108,7 +108,7 @@ class MessagingServiceTest {
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
-		when(messagingMapperMock.toLetterRequest(any(), any())).thenReturn(letterRequest);
+		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -124,13 +124,13 @@ class MessagingServiceTest {
 	@Test
 	void noMessageIdReturnedFromMessagingWebmessageResource() {
 
-		// Arrangte
+		// Arrange
 		final var errand = createErrand(true);
 		final var renderResponse = new RenderResponse();
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult();
 
-		when(messagingMapperMock.toWebMessageRequest(any(), any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any())).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -154,11 +154,101 @@ class MessagingServiceTest {
 		final var letterRequest = new LetterRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
-		when(messagingMapperMock.toLetterRequest(any(), any())).thenReturn(letterRequest);
+		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(MUNICIPALITY_ID, errand, renderResponse));
+
+		// Assert
+		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
+		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
+		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
+		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void sendMessageSimplifiedServiceWithExternalCaseIdPresentInErrand() {
+
+		// Arrange
+		final var errand = createErrand(true);
+		final var webMessageRequest = new WebMessageRequest();
+		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any())).thenReturn(webMessageRequest);
+		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+
+		// Act
+		final var uuid = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
+
+		// Assert
+		assertThat(uuid).isEqualTo(messageResult.getMessageId());
+		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
+		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void sendMessageSimplifiedServiceWithExternalCaseIdAbsent() {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
+		final var letterRequest = new LetterRequest();
+		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
+
+		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
+		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+
+		// Act
+		final var uuid = messagingService.sendMessageToNonCitizen(MUNICIPALITY_ID, errand, renderResponse);
+
+		// Assert
+		assertThat(uuid).isEqualTo(messageResult.getMessageId());
+		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
+		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void noMessageIdReturnedFromMessagingWebmessageResourceSimplifiedService() {
+
+		// Arrange
+		final var errand = createErrand(true);
+		final var webMessageRequest = new WebMessageRequest();
+		final var messageResult = new MessageResult();
+
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any())).thenReturn(webMessageRequest);
+		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand));
+
+		// Assert
+		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
+		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
+		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
+		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void noMessageIdReturnedFromMessagingLetterResourceSimplifiedService() {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var letterRequest = new LetterRequest();
+		final var messageBatchResult = new MessageBatchResult();
+
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any())).thenReturn(letterRequest);
+		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand));
 
 		// Assert
 		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());

@@ -32,10 +32,19 @@ public class MessagingMapper {
 		this.textProvider = textProvider;
 	}
 
-	public WebMessageRequest toWebMessageRequest(RenderResponse renderResponse, String partyId, String externalCaseId) {
+	public WebMessageRequest toWebMessageRequestDenial(RenderResponse renderResponse, String partyId, String externalCaseId) {
 		return new WebMessageRequest()
 			.addAttachmentsItem(toWebMessageAttachment(renderResponse))
 			.message(textProvider.getDenialTexts().message())
+			.oepInstance(EXTERNAL)
+			.party(new WebMessageParty()
+				.partyId(UUID.fromString(partyId))
+				.addExternalReferencesItem(new ExternalReference().key(MESSAGING_KEY_FLOW_INSTANCE_ID).value(externalCaseId)));
+	}
+
+	public WebMessageRequest toWebMessageRequestSimplifiedService(String partyId, String externalCaseId) {
+		return new WebMessageRequest()
+			.message(textProvider.getSimplifiedServiceTexts().message())
 			.oepInstance(EXTERNAL)
 			.party(new WebMessageParty()
 				.partyId(UUID.fromString(partyId))
@@ -49,7 +58,7 @@ public class MessagingMapper {
 			.mimeType(APPLICATION_PDF.getValue());
 	}
 
-	public LetterRequest toLetterRequest(RenderResponse renderResponse, String partyId) {
+	public LetterRequest toLetterRequestDenial(RenderResponse renderResponse, String partyId) {
 		return new LetterRequest()
 			.addAttachmentsItem(toLetterAttachment(renderResponse))
 			.body(Base64.getEncoder().encodeToString(textProvider.getDenialTexts().htmlBody().getBytes(defaultCharset())))
@@ -59,6 +68,17 @@ public class MessagingMapper {
 			.sender(toLetterSender())
 			.subject(textProvider.getDenialTexts().subject());
 	}
+
+	public LetterRequest toLetterRequestSimplifiedService(String partyId) {
+		return new LetterRequest()
+			.body(Base64.getEncoder().encodeToString(textProvider.getSimplifiedServiceTexts().htmlBody().getBytes(defaultCharset())))
+			.contentType(HTML)
+			.department(textProvider.getCommonTexts().department())
+			.party(new LetterParty().addPartyIdsItem(UUID.fromString(partyId)))
+			.sender(toLetterSender())
+			.subject(textProvider.getSimplifiedServiceTexts().subject());
+	}
+
 
 	private LetterSender toLetterSender() {
 		return new LetterSender()
