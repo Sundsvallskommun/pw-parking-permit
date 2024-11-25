@@ -60,18 +60,18 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 	@Test
 	void test_execution_001_createProcessForCardNotExistsToExists() throws JsonProcessingException, ClassNotFoundException {
 
-		var caseId = "1415";
-		var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
+		final var caseId = "1415";
+		final var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
 
 		//Setup mocks
 		mockApiGatewayToken();
 		mockActualization(caseId, scenarioName);
 		mockInvestigation(caseId, scenarioName);
-		var scenarioAfterDecision = mockDecision(caseId, scenarioName);
+		final var stateAfterDecision = mockDecision(caseId, scenarioName);
 		// Mock Deviation
-		var scenarioAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, scenarioAfterDecision);
-		var scenarioAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, scenarioAfterUpdatePhase);
-		var scenarioAfterCheckIfCardDoesNotExist = mockCaseDataGet(caseId, scenarioName, scenarioAfterOrderCard,
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, stateAfterDecision);
+		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterCheckIfCardDoesNotExist = mockCaseDataGet(caseId, scenarioName, stateAfterOrderCard,
 			"execution_check-if-card-exists-task-worker-when-it-does-not---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -79,7 +79,7 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", ""));
-		var scenarioAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, scenarioAfterCheckIfCardDoesNotExist,
+		final var stateAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, stateAfterCheckIfCardDoesNotExist,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -87,7 +87,7 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
-		mockExecutionCreateAsset(caseId, scenarioName, scenarioAfterCheckIfCardExists);
+		mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
 		// Normal mock
 		mockFollowUp(caseId, scenarioName);
 
@@ -139,7 +139,6 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Create Asset", "external_task_execution_create_asset"))
 			.with(tuple("End execution phase", "end_execution_phase"))
 			.with(followUpPathway())
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
 			.with(tuple("End process", "end_process")));
 	}
 }

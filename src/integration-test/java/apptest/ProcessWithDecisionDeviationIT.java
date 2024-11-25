@@ -64,26 +64,26 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
     @Test
     void test_decision_001_createProcessForDecisionNotFinalToFinal() throws JsonProcessingException, ClassNotFoundException {
 
-        var caseId = "789";
-        var scenarioName = "test_decision_001_createProcessForDecisionNotFinalToFinal";
+        final var caseId = "789";
+        final var scenarioName = "test_decision_001_createProcessForDecisionNotFinalToFinal";
 
         //Setup mocks
         mockApiGatewayToken();
         mockActualization(caseId, scenarioName);
-        var scenarioAfterInvestigation = mockInvestigation(caseId, scenarioName);
+        final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, scenarioAfterInvestigation);
-        var scenarioAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterCheckDecisionNonFinalGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterUpdateStatus,
+        final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
+        final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterCheckDecisionNonFinalGet = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
                 "check-decision-task-worker-not-final---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "PROPOSED",
                         "phaseParameter", "Beslut",
                         "displayPhaseParameter", "Beslut",
                         "statusTypeParameter", "Beslutad"));
-        var scenarioAfterCheckDecisionNonFinalPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalGet,
+        final var stateAfterCheckDecisionNonFinalPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckDecisionNonFinalGet,
                 "check-decision-task-worker-not-final---api-casedata-patch-errand",
                 equalToJson(createPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
-        mockDecisionCheckIfDecisionMade(caseId, scenarioName, scenarioAfterCheckDecisionNonFinalPatch);
+        mockDecisionCheckIfDecisionMade(caseId, scenarioName, stateAfterCheckDecisionNonFinalPatch);
         // Normal mock
         mockExecution(caseId, scenarioName);
         mockFollowUp(caseId, scenarioName);
@@ -137,29 +137,30 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }
 
     @Test
     void test_decision_002_createProcessForCancelDecision() throws JsonProcessingException, ClassNotFoundException {
-        var caseId = "1516";
-        var scenarioName = "test_decision_002_createProcessForCancelDecision";
+        final var caseId = "1516";
+        final var scenarioName = "test_decision_002_createProcessForCancelDecision";
 
         //Setup mocks
         mockApiGatewayToken();
         mockActualization(caseId, scenarioName);
-        var scenarioAfterInvestigation = mockInvestigation(caseId, scenarioName);
+        final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, scenarioAfterInvestigation);
-        var scenarioAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        mockCaseDataGet(caseId, scenarioName, scenarioAfterUpdateStatus,
+        final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
+        final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
                 "check-decision-task-worker---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseActionParameter", "CANCEL",
                         "phaseParameter", "Beslut",
                         "displayPhaseParameter", "Beslut",
                         "statusTypeParameter", "Beslutad"));
+        // Normal mocks
+        mockFollowUp(caseId, scenarioName, stateAfterGetErrand);
 
         // Start process
         final var startResponse = setupCall()
@@ -184,23 +185,23 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                 .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
                 .with(decisionPathway())
                 .with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
+                .with(followUpPathway())
                 .with(tuple("End process", "end_process")));
     }
 
     @Test
     void test_decision_003_createProcessForDecisionRejected() throws JsonProcessingException, ClassNotFoundException {
-        var caseId = "1718";
-        var scenarioName = "test_decision_003_createProcessForDecisionRejected";
+        final var caseId = "1718";
+        final var scenarioName = "test_decision_003_createProcessForDecisionRejected";
 
         //Setup mocks
         mockApiGatewayToken();
         mockActualization(caseId, scenarioName);
-        var scenarioAfterInvestigation = mockInvestigation(caseId, scenarioName);
+        final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, scenarioAfterInvestigation);
-        var scenarioAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterCheckDecision = mockCaseDataGet(caseId, scenarioName, scenarioAfterUpdateStatus,
+        final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
+        final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterCheckDecision = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
                 "check-decision-task-worker---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseActionParameter", "UNKNOWN",
@@ -209,7 +210,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                         "statusTypeParameter", "Beslutad"),
                 "REJECTION");
         // Normal mocks
-        mockFollowUp(caseId, scenarioName, scenarioAfterCheckDecision);
+        mockFollowUp(caseId, scenarioName, stateAfterCheckDecision);
 
         // Start process
         final var startResponse = setupCall()
@@ -235,7 +236,6 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                 .with(decisionPathway())
                 .with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
                 .with(followUpPathway())
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }
 }

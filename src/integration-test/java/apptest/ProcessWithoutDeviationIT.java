@@ -57,8 +57,8 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 	@Test
 	void test001_createProcessForCitizen() throws JsonProcessingException, ClassNotFoundException {
 
-		var caseId = "123";
-		var scenarioName = "test001_createProcessForCitizen";
+		final var caseId = "123";
+		final var scenarioName = "test001_createProcessForCitizen";
 
 		//Setup mocks
 		mockApiGatewayToken();
@@ -94,7 +94,6 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
 			.with(tuple("End process", "end_process")));
 	}
 }
