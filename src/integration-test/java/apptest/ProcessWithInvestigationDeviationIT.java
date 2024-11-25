@@ -67,17 +67,17 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
     @Test
     void test_investigation_001_createProcessForSanityChecksFailToPass() throws JsonProcessingException, ClassNotFoundException {
 
-        var caseId = "1112";
-        var scenarioName = "test_investigation_001_createProcessForSanityChecksFailToPass";
+        final var caseId = "1112";
+        final var scenarioName = "test_investigation_001_createProcessForSanityChecksFailToPass";
 
         //Setup mocks
         mockApiGatewayToken();
-        var scenarioAfterActualization= mockActualization(caseId, scenarioName);
+        final var stateAfterActualization = mockActualization(caseId, scenarioName);
 
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
-        var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterSanityCheckFail = mockCaseDataGet(caseId, scenarioName, scenarioAfterUpdateStatus,
+        final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);
+        final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterSanityCheckFail = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
                 "investigation_sanity-checks--fail-task-worker---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
                         "caseTypeParameter", "ANMALAN_ATTEFALL",
@@ -86,10 +86,10 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Utredning"));
-        var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterSanityCheckFail);
-        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks);
-        var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules);
-        mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision);
+        final var stateAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterSanityCheckFail);
+        final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks);
+        final var stateAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules);
+        mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision);
 
         // Normal mocks
         mockDecision(caseId, scenarioName);
@@ -149,40 +149,39 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }
 
     @Test
     void test_investigation_002_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
 
-        var caseId = "1213";
-        var scenarioName = "test_investigation_002_createProcessForPhaseActionNotComplete";
+        final var caseId = "1213";
+        final var scenarioName = "test_investigation_002_createProcessForPhaseActionNotComplete";
 
         //Setup mocks
         mockApiGatewayToken();
-        var scenarioAfterActualization = mockActualization(caseId, scenarioName);
+        final var stateAfterActualization = mockActualization(caseId, scenarioName);
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
-        var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterUpdateStatus, "willNotComplete");
-        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks, "willNotComplete", true);
-        var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules, "willNotComplete");
-        var scenarioAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecision,
+        final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);
+        final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterUpdateStatus, "willNotComplete");
+        final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks, "willNotComplete", true);
+        final var stateAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules, "willNotComplete");
+        final var stateAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecision,
                 "investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Utredning"));
-        var scenarioAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedGet,
+        final var stateAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseNotCompletedGet,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
                 equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
 
-        var scenarioAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedPatch);
-        var scenarioAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks2);
-        var scenarioAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules2);
-        mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision2);
+        final var stateAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterCheckPhaseNotCompletedPatch);
+        final var stateAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks2);
+        final var stateAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules2);
+        mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision2);
         // Normal mocks
         mockDecision(caseId, scenarioName);
         mockExecution(caseId, scenarioName);
@@ -244,28 +243,27 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }
 
     @Test
     void test_investigation_003_createProcessForCancelInInvestigation() throws JsonProcessingException, ClassNotFoundException {
 
-        var caseId = "1314";
-        var scenarioName = "test_investigation_003_createProcessForCancelInInvestigation";
+        final var caseId = "1314";
+        final var scenarioName = "test_investigation_003_createProcessForCancelInInvestigation";
 
         //Setup mocks
         mockApiGatewayToken();
-        var scenarioAfterActualization = mockActualization(caseId, scenarioName);
+        final var stateAfterActualization = mockActualization(caseId, scenarioName);
 
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
-        var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterUpdateStatus);
-        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks);
-        var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules);
+        final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);
+        final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterUpdateStatus);
+        final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks);
+        final var stateAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules);
 
-        var scenarioAfterCheckPhaseCancel = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecision,
+        final var stateAfterCheckPhaseCancel = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecision,
                 "investigation_check-phase-action_task-worker---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
@@ -273,9 +271,11 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                         "phaseActionParameter", "CANCEL",
                         "displayPhaseParameter", "Utredning"));
 
-        mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseCancel,
+        final var stateAfterPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseCancel,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
                 equalToJson(createPatchBody("Utredning", "CANCEL", "CANCELED", "Utredning")));
+        // Normal mocks
+        mockFollowUp(caseId, scenarioName, stateAfterPatch);
 
         // Start process
         final var startResponse = setupCall()
@@ -310,33 +310,33 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"))
                 .with(tuple("End when canceled", "end_investigation_canceled"))
                 .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
+                .with(followUpPathway())
                 .with(tuple("End process", "end_process")));
     }
 
     @Test
     void test_investigation_004_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
 
-        var caseId = "1617";
-        var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
+        final var caseId = "1617";
+        final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
 
         //Setup mocks
         mockApiGatewayToken();
-        var scenarioAfterActualization = mockActualization(caseId, scenarioName);
+        final var stateAfterActualization = mockActualization(caseId, scenarioName);
         // Mock deviation
-        var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, scenarioAfterActualization);
-        var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-        var scenarioAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterUpdateStatus, "willNotComplete");
+        final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);
+        final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterSanityChecks = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterUpdateStatus, "willNotComplete");
         // Returns validation error
-        var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks, "willNotComplete", false);
-        var scenarioAfterConstructDecisionGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterExecuteRules,
+        final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks, "willNotComplete", false);
+        final var stateAfterConstructDecisionGet = mockCaseDataGet(caseId, scenarioName, stateAfterExecuteRules,
                 "construct-recommended-decision-task-worker-rejection---api-casedata-get-errand",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Utredning"));
-        var scenarioAfterConstructDecisionPatch = mockCaseDataDecisionPatch(caseId, scenarioName, scenarioAfterConstructDecisionGet,
+        final var stateAfterConstructDecisionPatch = mockCaseDataDecisionPatch(caseId, scenarioName, stateAfterConstructDecisionGet,
                 "investigation_execute-rules-task-worker-rejection---api-businessrules-engine",
                 equalToJson("""
                         {
@@ -351,22 +351,22 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                         }
                         """));
         //Will loop back and wait for update
-        var scenarioAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, scenarioAfterConstructDecisionPatch,
+        final var stateAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecisionPatch,
                 "investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
                 Map.of("decisionTypeParameter", "FINAL",
                         "phaseParameter", "Utredning",
                         "phaseStatusParameter", "ONGOING",
                         "phaseActionParameter", "UNKNOWN",
                         "displayPhaseParameter", "Utredning"));
-        var scenarioAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedGet,
+        final var stateAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseNotCompletedGet,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
                 equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
 
         // Passes on second attempt
-        var scenarioAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, scenarioAfterCheckPhaseNotCompletedPatch);
-        var scenarioAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterSanityChecks2);
-        var scenarioAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules2);
-        mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision2);
+        final var stateAfterSanityChecks2 = mockInvestigationSanityChecks(caseId, scenarioName, stateAfterCheckPhaseNotCompletedPatch);
+        final var stateAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterSanityChecks2);
+        final var stateAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules2);
+        mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision2);
         // Normal mocks
         mockDecision(caseId, scenarioName);
         mockExecution(caseId, scenarioName);
@@ -428,7 +428,6 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
                 .with(tuple("End process", "end_process")));
     }
 }

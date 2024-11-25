@@ -104,7 +104,6 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End when not citizen of municipality", "end_actualization_not_citizen"))
 			.with(denialPathway())
 			.with(followUpPathway())
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -121,7 +120,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
 		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase);
 
-		var state = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
+		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"actualization_check-phase-action_task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
@@ -129,9 +128,11 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "CANCEL",
 				"displayPhaseParameter", "Granskning"));
 
-		mockCaseDataPatch(caseId, scenarioName, state,
+		final var stateAfterPatchErrand = mockCaseDataPatch(caseId, scenarioName, stateAfterGetErrand,
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Granskning"), true, false));
+
+		mockFollowUp(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -164,7 +165,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"))
 			.with(tuple("End when canceled", "end_actualization_canceled"))
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
+			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -255,7 +256,6 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -277,9 +277,11 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "CANCEL",
 				"displayPhaseParameter", "Registrerad"));
 
-		mockCaseDataPatch(caseId, scenarioName, stateAfterGetCancelInVerifyStakeholder,
+		final var stateAfterPatchErrand = mockCaseDataPatch(caseId, scenarioName, stateAfterGetCancelInVerifyStakeholder,
 			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Registrerad"), true, false));
+
+		mockFollowUp(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -308,7 +310,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"))
 			.with(tuple("End when canceled", "end_actualization_canceled"))
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
+			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -400,7 +402,6 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
-			.with(tuple("Gateway closing isCitizen", "gateway_closing_is_citizen"))
 			.with(tuple("End process", "end_process")));
 	}
 
