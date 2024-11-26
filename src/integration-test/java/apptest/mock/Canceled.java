@@ -15,7 +15,7 @@ public class Canceled {
     public static String mockCanceled(String caseId, String scenarioName, String requiredScenarioState) {
         final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState,  Map.of("decisionTypeParameter", "PROPOSED",
 			"phaseParameter", "PhaseBeforeCancel",
-			"phaseStatusParameter", "ONGOING",
+			"phaseStatusParameter", "CANCELED",
 			"phaseActionParameter", "CANCEL",
 			"displayPhaseParameter", "DisplayPhaseBeforeCancel"));
 		final var stateAfterUpdateStatus = mockCanceledUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
