@@ -18,7 +18,7 @@ import static apptest.mock.Actualization.mockActualizationUpdatePhase;
 import static apptest.mock.Actualization.mockActualizationUpdateStatus;
 import static apptest.mock.Actualization.mockActualizationVerifyAdministratorStakeholder;
 import static apptest.mock.Actualization.mockActualizationVerifyResident;
-import static apptest.mock.Canceled.mockCanceledInActualization;
+import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.Execution.mockExecution;
@@ -134,7 +134,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Granskning"), true, false));
 
-		mockCanceledInActualization(caseId, scenarioName, stateAfterPatchErrand);
+		mockCanceled(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -284,7 +284,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Registrerad"), true, false));
 
-		mockCanceledInActualization(caseId, scenarioName, stateAfterPatchErrand);
+		mockCanceled(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()

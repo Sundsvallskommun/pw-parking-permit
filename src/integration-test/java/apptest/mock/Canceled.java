@@ -12,35 +12,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class Canceled {
 
-    public static String mockCanceledInActualization(String caseId, String scenarioName, String requiredScenarioState) {
+    public static String mockCanceled(String caseId, String scenarioName, String requiredScenarioState) {
         final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState,  Map.of("decisionTypeParameter", "PROPOSED",
-			"phaseParameter", "Aktualisering",
+			"phaseParameter", "PhaseBeforeCancel",
 			"phaseStatusParameter", "ONGOING",
 			"phaseActionParameter", "CANCEL",
-			"displayPhaseParameter", "Granskning"));
+			"displayPhaseParameter", "DisplayPhaseBeforeCancel"));
 		final var stateAfterUpdateStatus = mockCanceledUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
         return mockCanceledCleanUpNotes(caseId, scenarioName, stateAfterUpdateStatus);
     }
-
-	public static String mockCanceledInInvestigation(String caseId, String scenarioName, String requiredScenarioState) {
-		final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState, Map.of("decisionTypeParameter", "FINAL",
-			"phaseParameter", "Utredning",
-			"phaseStatusParameter", "ONGOING",
-			"phaseActionParameter", "CANCEL",
-			"displayPhaseParameter", "Utredning"));
-		final var stateAfterUpdateStatus = mockCanceledUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
-		return mockCanceledCleanUpNotes(caseId, scenarioName, stateAfterUpdateStatus);
-	}
-
-	public static String mockCanceledInDecision(String caseId, String scenarioName, String requiredScenarioState) {
-		final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState,  Map.of("decisionTypeParameter", "FINAL",
-			"phaseActionParameter", "CANCEL",
-			"phaseParameter", "Beslut",
-			"displayPhaseParameter", "Beslut",
-			"statusTypeParameter", "Beslutad"));
-		final var stateAfterUpdateStatus = mockCanceledUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
-		return mockCanceledCleanUpNotes(caseId, scenarioName, stateAfterUpdateStatus);
-	}
 
     public static String mockCanceledUpdatePhase(String caseId, String scenarioName, String requiredScenarioState,  Map<String, Object> transformParameters) {
 

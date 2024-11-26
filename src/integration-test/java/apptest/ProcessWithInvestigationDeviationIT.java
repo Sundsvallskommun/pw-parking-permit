@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
-import static apptest.mock.Canceled.mockCanceledInInvestigation;
+import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
@@ -277,7 +277,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
                 equalToJson(createPatchBody("Utredning", "CANCEL", "CANCELED", "Utredning")));
 
-        mockCanceledInInvestigation(caseId, scenarioName, stateAfterPatch);
+        mockCanceled(caseId, scenarioName, stateAfterPatch);
 
         // Start process
         final var startResponse = setupCall()

@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
-import static apptest.mock.Canceled.mockCanceledInDecision;
+import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
@@ -162,7 +162,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                         "displayPhaseParameter", "Beslut",
                         "statusTypeParameter", "Beslutad"));
 
-        mockCanceledInDecision(caseId, scenarioName, stateAfterGetErrand);
+        mockCanceled(caseId, scenarioName, stateAfterGetErrand);
 
         // Start process
         final var startResponse = setupCall()
