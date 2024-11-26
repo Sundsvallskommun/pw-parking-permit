@@ -13,18 +13,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 public class Canceled {
 
     public static String mockCanceled(String caseId, String scenarioName, String requiredScenarioState) {
-        final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState,  Map.of("decisionTypeParameter", "PROPOSED",
-			"phaseParameter", "PhaseBeforeCancel",
-			"phaseStatusParameter", "CANCELED",
-			"phaseActionParameter", "CANCEL",
-			"displayPhaseParameter", "DisplayPhaseBeforeCancel"));
+        final var stateAfterUpdatePhase = mockCanceledUpdatePhase(caseId, scenarioName, requiredScenarioState);
 		final var stateAfterUpdateStatus = mockCanceledUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
         return mockCanceledCleanUpNotes(caseId, scenarioName, stateAfterUpdateStatus);
     }
 
-    public static String mockCanceledUpdatePhase(String caseId, String scenarioName, String requiredScenarioState,  Map<String, Object> transformParameters) {
+    public static String mockCanceledUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
 
-        var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState, "canceled_update-phase-task-worker---api-casedata-get-errand", transformParameters);
+        var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState, "canceled_update-phase-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "PROPOSED",
+			"phaseParameter", "PhaseBeforeCancel",
+			"phaseStatusParameter", "CANCELED",
+			"phaseActionParameter", "CANCEL",
+			"displayPhaseParameter", "DisplayPhaseBeforeCancel"));
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "canceled_update-phase-task-worker---api-casedata-patch-errand",
