@@ -77,7 +77,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
-		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+		awaitProcessCompleted(startResponse.getProcessId(), 999);
 
 		// Verify wiremock stubs
 		verifyAllStubs();

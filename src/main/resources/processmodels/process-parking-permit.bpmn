@@ -391,6 +391,24 @@
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${cardExists}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0txyxat" sourceRef="external_task_execution_create_asset" targetRef="end_execution_phase" />
+      <bpmn:serviceTask id="external_task_execution_send_message_task" name="Send simplified service message" camunda:type="external" camunda:topic="SendSimplifiedServiceTask">
+        <bpmn:incoming>Flow_0pv23lp</bpmn:incoming>
+        <bpmn:outgoing>Flow_02g7y4k</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="Event_1tyczp9" name="Message is sent">
+        <bpmn:incoming>Flow_02g7y4k</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_02g7y4k" sourceRef="external_task_execution_send_message_task" targetRef="Event_1tyczp9" />
+      <bpmn:boundaryEvent id="Event_1gytcz5" cancelActivity="false" attachedToRef="external_task_execution_update_phase">
+        <bpmn:outgoing>Flow_0pv23lp</bpmn:outgoing>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_0945ncy" />
+      </bpmn:boundaryEvent>
+      <bpmn:boundaryEvent id="timer_event_execution_send_message" name="Wait to send message" attachedToRef="external_task_execution_send_message_task">
+        <bpmn:timerEventDefinition id="TimerEventDefinition_0rpth8i">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1S</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_0pv23lp" sourceRef="Event_1gytcz5" targetRef="external_task_execution_send_message_task" />
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_follow_up" name="Follow up">
       <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
@@ -1152,6 +1170,25 @@
         <dc:Bounds x="1010" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a1eujx_di" bpmnElement="external_task_execution_send_message_task">
+        <dc:Bounds x="310" y="320" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1tyczp9_di" bpmnElement="Event_1tyczp9">
+        <dc:Bounds x="1202" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="385" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gytcz5_di" bpmnElement="Event_1gytcz5">
+        <dc:Bounds x="342" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0thgbl1_di" bpmnElement="timer_event_execution_send_message">
+        <dc:Bounds x="352" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="343" y="425" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_1s9cx8u" bpmnElement="Flow_09weu60">
         <di:waypoint x="206" y="140" />
         <di:waypoint x="310" y="140" />
@@ -1191,6 +1228,14 @@
       <bpmndi:BPMNEdge id="Flow_0txyxat_di" bpmnElement="Flow_0txyxat">
         <di:waypoint x="1110" y="140" />
         <di:waypoint x="1202" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02g7y4k_di" bpmnElement="Flow_02g7y4k">
+        <di:waypoint x="410" y="360" />
+        <di:waypoint x="1202" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pv23lp_di" bpmnElement="Flow_0pv23lp">
+        <di:waypoint x="360" y="198" />
+        <di:waypoint x="360" y="320" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
