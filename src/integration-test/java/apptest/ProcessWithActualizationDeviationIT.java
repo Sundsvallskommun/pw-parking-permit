@@ -18,6 +18,7 @@ import static apptest.mock.Actualization.mockActualizationUpdatePhase;
 import static apptest.mock.Actualization.mockActualizationUpdateStatus;
 import static apptest.mock.Actualization.mockActualizationVerifyAdministratorStakeholder;
 import static apptest.mock.Actualization.mockActualizationVerifyResident;
+import static apptest.mock.Canceled.mockCanceledInActualization;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.Execution.mockExecution;
@@ -27,6 +28,7 @@ import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.denialPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -132,7 +134,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Granskning"), true, false));
 
-		mockFollowUp(caseId, scenarioName, stateAfterPatchErrand);
+		mockCanceledInActualization(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -165,7 +167,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is phase action complete", "gateway_actualization_is_phase_action_complete"))
 			.with(tuple("End when canceled", "end_actualization_canceled"))
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
-			.with(followUpPathway())
+			// Canceled
+			.with(canceledPathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -281,7 +284,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand",
 			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Registrerad"), true, false));
 
-		mockFollowUp(caseId, scenarioName, stateAfterPatchErrand);
+		mockCanceledInActualization(caseId, scenarioName, stateAfterPatchErrand);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -310,7 +313,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"))
 			.with(tuple("End when canceled", "end_actualization_canceled"))
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
-			.with(followUpPathway())
+			// Canceled
+			.with(canceledPathway())
 			.with(tuple("End process", "end_process")));
 	}
 

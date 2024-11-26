@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
+import static apptest.mock.Canceled.mockCanceledInDecision;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
@@ -24,6 +25,7 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
+import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
@@ -159,8 +161,8 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                         "phaseParameter", "Beslut",
                         "displayPhaseParameter", "Beslut",
                         "statusTypeParameter", "Beslutad"));
-        // Normal mocks
-        mockFollowUp(caseId, scenarioName, stateAfterGetErrand);
+
+        mockCanceledInDecision(caseId, scenarioName, stateAfterGetErrand);
 
         // Start process
         final var startResponse = setupCall()
@@ -185,7 +187,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
                 .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
                 .with(decisionPathway())
                 .with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
-                .with(followUpPathway())
+                .with(canceledPathway())
                 .with(tuple("End process", "end_process")));
     }
 
