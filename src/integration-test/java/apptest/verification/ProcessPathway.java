@@ -74,6 +74,16 @@ public class ProcessPathway {
                 .with(tuple("End follow up phase", "end_follow_up_phase"));
     }
 
+    public static Tuples canceledPathway() {
+        return Tuples.create()
+            .with(tuple("Canceled", "canceled_phase"))
+            .with(tuple("Start canceled phase", "start_canceled_phase"))
+            .with(tuple("Update phase", "external_task_canceled_update_phase"))
+            .with(tuple("Update errand status", "external_task_canceled_update_errand_status"))
+            .with(tuple("Clean up notes", "external_task_canceled_clean_up_notes"))
+            .with(tuple("End canceled phase", "end_canceled_phase"));
+    }
+
     public static Tuples denialPathway() {
         return Tuples.create()
             .with(tuple("Start automatic denial phase", "start_automatic_denial_phase"))

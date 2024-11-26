@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
+import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
@@ -28,6 +29,7 @@ import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
+import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
@@ -274,8 +276,8 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
         final var stateAfterPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseCancel,
                 "investigation_check-phase-action_task-worker---api-casedata-patch-errand",
                 equalToJson(createPatchBody("Utredning", "CANCEL", "CANCELED", "Utredning")));
-        // Normal mocks
-        mockFollowUp(caseId, scenarioName, stateAfterPatch);
+
+        mockCanceled(caseId, scenarioName, stateAfterPatch);
 
         // Start process
         final var startResponse = setupCall()
@@ -310,7 +312,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
                 .with(tuple("Is phase action complete", "gateway_decision_is_phase_action_complete"))
                 .with(tuple("End when canceled", "end_investigation_canceled"))
                 .with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
-                .with(followUpPathway())
+                .with(canceledPathway())
                 .with(tuple("End process", "end_process")));
     }
 

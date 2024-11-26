@@ -8,6 +8,7 @@
     <bpmn:endEvent id="end_process" name="End process">
       <bpmn:documentation>The end of the process execution</bpmn:documentation>
       <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
+      <bpmn:incoming>Flow_123m201</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="actualization_phase" />
     <bpmn:exclusiveGateway id="gateway_is_citizen" name="Gateway isCitizen" default="applicant_resident_of_municipality">
@@ -395,9 +396,6 @@
       <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
       <bpmn:incoming>Flow_0xpanp5</bpmn:incoming>
       <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
-      <bpmn:incoming>Flow_1ks4wqv</bpmn:incoming>
-      <bpmn:incoming>Flow_0evqnur</bpmn:incoming>
-      <bpmn:incoming>Flow_0dmonfx</bpmn:incoming>
       <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
       <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
         <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
@@ -440,17 +438,52 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isApproved &amp;&amp; phaseAction != 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_13ofnma" sourceRef="call_activity_handling" targetRef="call_activity_execution" />
-    <bpmn:sequenceFlow id="Flow_0dmonfx" name="Is canceled" sourceRef="gateway_decision_canceled" targetRef="call_activity_follow_up">
+    <bpmn:sequenceFlow id="Flow_0dmonfx" name="Is canceled" sourceRef="gateway_decision_canceled" targetRef="canceled_phase">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0evqnur" name="Is canceled" sourceRef="gateway_investigation_canceled" targetRef="call_activity_follow_up">
+    <bpmn:sequenceFlow id="Flow_0evqnur" name="Is canceled" sourceRef="gateway_investigation_canceled" targetRef="canceled_phase">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1ks4wqv" name="Is canceled" sourceRef="gateway_is_citizen" targetRef="call_activity_follow_up">
+    <bpmn:sequenceFlow id="Flow_1ks4wqv" name="Is canceled" sourceRef="gateway_is_citizen" targetRef="canceled_phase">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1fmqs5z" name="Is not approved" sourceRef="gateway_decision_canceled" targetRef="call_activity_follow_up" />
     <bpmn:sequenceFlow id="Flow_0xpanp5" sourceRef="call_activity_execution" targetRef="call_activity_follow_up" />
+    <bpmn:subProcess id="canceled_phase" name="Canceled">
+      <bpmn:incoming>Flow_1ks4wqv</bpmn:incoming>
+      <bpmn:incoming>Flow_0evqnur</bpmn:incoming>
+      <bpmn:incoming>Flow_0dmonfx</bpmn:incoming>
+      <bpmn:outgoing>Flow_123m201</bpmn:outgoing>
+      <bpmn:serviceTask id="external_task_canceled_clean_up_notes" name="Clean up notes" camunda:type="external" camunda:topic="CleanUpNotesTask">
+        <bpmn:incoming>Flow_1w50k22</bpmn:incoming>
+        <bpmn:outgoing>Flow_0r4a88k</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="end_canceled_phase" name="End canceled phase">
+        <bpmn:incoming>Flow_0r4a88k</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0r4a88k" sourceRef="external_task_canceled_clean_up_notes" targetRef="end_canceled_phase" />
+      <bpmn:startEvent id="start_canceled_phase" name="Start canceled phase">
+        <bpmn:outgoing>Flow_0dgo608</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="external_task_canceled_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:documentation>Set phase to execution</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Canceled&#34;)}" event="start" />
+          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Avbruten&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0dgo608</bpmn:incoming>
+        <bpmn:outgoing>Flow_0rlep1q</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="external_task_canceled_update_errand_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
+        <bpmn:extensionElements />
+        <bpmn:incoming>Flow_0rlep1q</bpmn:incoming>
+        <bpmn:outgoing>Flow_1w50k22</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0dgo608" sourceRef="start_canceled_phase" targetRef="external_task_canceled_update_phase" />
+      <bpmn:sequenceFlow id="Flow_0rlep1q" sourceRef="external_task_canceled_update_phase" targetRef="external_task_canceled_update_errand_status" />
+      <bpmn:sequenceFlow id="Flow_1w50k22" sourceRef="external_task_canceled_update_errand_status" targetRef="external_task_canceled_clean_up_notes" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_123m201" sourceRef="canceled_phase" targetRef="end_process" />
   </bpmn:process>
   <bpmn:signal id="Signal_12tih0s" name="Signal_12tih0s" />
   <bpmn:message id="Message_0l2uuvr" name="cancelMessage" />
@@ -462,16 +495,16 @@
           <dc:Bounds x="157" y="238" width="66" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
-        <dc:Bounds x="375" y="255" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="355.5" y="231" width="89" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="end_process">
         <dc:Bounds x="1412" y="262" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1400" y="305" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
+        <dc:Bounds x="375" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="355.5" y="231" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0u04fml_di" bpmnElement="subprocess_automatic_denial">
@@ -509,6 +542,10 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="807" y="212" width="73" height="40" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11s4wgj_di" bpmnElement="canceled_phase">
+        <dc:Bounds x="1080" y="50" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1bt8y6y_di" bpmnElement="Flow_1bt8y6y">
         <di:waypoint x="208" y="280" />
@@ -562,8 +599,7 @@
       <bpmndi:BPMNEdge id="Flow_0dmonfx_di" bpmnElement="Flow_0dmonfx">
         <di:waypoint x="840" y="255" />
         <di:waypoint x="840" y="90" />
-        <di:waypoint x="1310" y="90" />
-        <di:waypoint x="1310" y="240" />
+        <di:waypoint x="1080" y="90" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="852" y="163" width="56" height="14" />
         </bpmndi:BPMNLabel>
@@ -571,8 +607,7 @@
       <bpmndi:BPMNEdge id="Flow_0evqnur_di" bpmnElement="Flow_0evqnur">
         <di:waypoint x="620" y="255" />
         <di:waypoint x="620" y="90" />
-        <di:waypoint x="1310" y="90" />
-        <di:waypoint x="1310" y="240" />
+        <di:waypoint x="1080" y="90" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="632" y="163" width="56" height="14" />
         </bpmndi:BPMNLabel>
@@ -580,10 +615,9 @@
       <bpmndi:BPMNEdge id="Flow_1ks4wqv_di" bpmnElement="Flow_1ks4wqv">
         <di:waypoint x="400" y="255" />
         <di:waypoint x="400" y="90" />
-        <di:waypoint x="1310" y="90" />
-        <di:waypoint x="1310" y="240" />
+        <di:waypoint x="1080" y="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="412" y="163" width="56" height="14" />
+          <dc:Bounds x="412" y="164" width="56" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fmqs5z_di" bpmnElement="Flow_1fmqs5z">
@@ -598,6 +632,11 @@
       <bpmndi:BPMNEdge id="Flow_0xpanp5_di" bpmnElement="Flow_0xpanp5">
         <di:waypoint x="1180" y="280" />
         <di:waypoint x="1260" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_123m201_di" bpmnElement="Flow_123m201">
+        <di:waypoint x="1180" y="90" />
+        <di:waypoint x="1430" y="90" />
+        <di:waypoint x="1430" y="262" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1188,6 +1227,49 @@
       <bpmndi:BPMNEdge id="Flow_0m6v59o_di" bpmnElement="Flow_0m6v59o">
         <di:waypoint x="390" y="120" />
         <di:waypoint x="470" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1bgpsgy">
+    <bpmndi:BPMNPlane id="BPMNPlane_0ihf8a0" bpmnElement="canceled_phase">
+      <bpmndi:BPMNShape id="BPMNShape_0r9kpy5" bpmnElement="external_task_canceled_clean_up_notes">
+        <dc:Bounds x="960" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0gv11bq_di" bpmnElement="end_canceled_phase">
+        <dc:Bounds x="1112" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1097" y="345" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1x8yf1x_di" bpmnElement="start_canceled_phase">
+        <dc:Bounds x="422" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="409" y="345" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0apbufb" bpmnElement="external_task_canceled_update_phase">
+        <dc:Bounds x="570" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0qw4pfa" bpmnElement="external_task_canceled_update_errand_status">
+        <dc:Bounds x="760" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0r4a88k_di" bpmnElement="Flow_0r4a88k">
+        <di:waypoint x="1060" y="320" />
+        <di:waypoint x="1112" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dgo608_di" bpmnElement="Flow_0dgo608">
+        <di:waypoint x="458" y="320" />
+        <di:waypoint x="570" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rlep1q_di" bpmnElement="Flow_0rlep1q">
+        <di:waypoint x="670" y="320" />
+        <di:waypoint x="760" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w50k22_di" bpmnElement="Flow_1w50k22">
+        <di:waypoint x="860" y="320" />
+        <di:waypoint x="960" y="320" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
