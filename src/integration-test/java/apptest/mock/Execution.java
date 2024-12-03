@@ -6,27 +6,34 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
+import static apptest.mock.api.Templating.mockRenderPdf;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 
 public class Execution {
 
 	public static String mockExecution(String caseId, String scenarioName) {
-		var scenarioAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand");
-		var scenarioAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, scenarioAfterUpdatePhase);
-		var scenarioAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, scenarioAfterOrderCard);
-		return mockExecutionCreateAsset(caseId, scenarioName, scenarioAfterCheckIfCardExists);
+		final var initialState = "check-decision-task-worker---api-casedata-get-errand";
+
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, initialState);
+		// Parallel execution
+		final var stateAfterSendMessage = mockSendSimplifiedService(caseId, scenarioName + "_2", initialState);
+		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, stateAfterOrderCard);
+		return mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
 	}
 
 	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
 
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"actualization_update-phase-task-worker---api-casedata-get-errand",
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
-				"phaseActionParameter", "",
-				"phaseStatusParameter", "",
+				"phaseStatusParameter", "ONGOING",
+				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Beslut"));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
@@ -35,7 +42,7 @@ public class Execution {
 	}
 
 	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState) {
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"caseTypeParameter", "PARKING_PERMIT",
@@ -44,7 +51,7 @@ public class Execution {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa"));
 
-		state = mockRpaAddQueueItems(scenarioName, state,
+		final var stateAfterOrderCard = mockRpaAddQueueItems(scenarioName, stateAfterGetErrand,
 			"execution_order-card-task-worker---api-rpa-post-queue-item",
 			equalToJson("""
 				{
@@ -57,7 +64,7 @@ public class Execution {
 				}
 				""".formatted(caseId)));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
+		return mockCaseDataPutStatus(caseId, scenarioName, stateAfterOrderCard,
 			"execution_update-phase-task-worker---api-casedata-put-errand",
 			equalToJson("""
 				[
@@ -109,5 +116,32 @@ public class Execution {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
+	}
+
+	public static String mockSendSimplifiedService(final String caseId, final String scenarioName, final String requiredScenarioState) {
+		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"execution_send-simplified-service-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Beslut"));
+
+		//Returns same state as mockExecutionCreateAsset since it's a parallel execution
+		return mockMessagingWebMessagePost(scenarioName, STARTED, "final-state",
+			equalToJson("""
+							{
+								"party" : {
+									"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+									"externalReferences" : [ {
+										"key" : "flowInstanceId",
+										"value" : "2971"
+									} ]
+				      			},
+				      			"message" : "Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
+				      			"oepInstance" : "external",
+				      			"attachments" : [ ]
+				    		}
+				"""));
 	}
 }
