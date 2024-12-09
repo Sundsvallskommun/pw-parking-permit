@@ -9,4 +9,4 @@ public record SimplifiedServiceTextProperties(
 	String htmlBody,
 	String plainBody,
 	String description,
-	int delayDays) {}
+	String delay) {}

@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.businesslogic.worker;
+package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
 import generated.se.sundsvall.casedata.Errand;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;

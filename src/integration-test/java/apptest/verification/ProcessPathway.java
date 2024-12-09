@@ -57,11 +57,17 @@ public class ProcessPathway {
         return Tuples.create()
                 .with(tuple("Execution", "call_activity_execution"))
                 .with(tuple("Start execution phase", "start_execution_phase"))
+                .with(tuple("Send message in parallel flow", "parallel_gateway_start"))
                 .with(tuple("Update phase", "external_task_execution_update_phase"))
                 .with(tuple("Order card", "external_task_execution_order_card_task"))
                 .with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))
                 .with(tuple("Is card manufactured", "gateway_card_exists"))
                 .with(tuple("Create Asset", "external_task_execution_create_asset"))
+                //Added delay to send control message to make it happen after the asset is created
+                .with(tuple("Wait to send message", "timer_wait_to_send_message"))
+                .with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
+                .with(tuple("End parallel gateway", "parallel_gateway_end"))
+                .with(tuple("End parallel gateway", "parallel_gateway_end"))
                 .with(tuple("End execution phase", "end_execution_phase"));
     }
 

@@ -21,4 +21,14 @@ public class Messaging {
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
+
+	public static void mockMessagingWebMessagePost(final ContentPattern<?> bodyPattern) {
+		stubFor(post(urlEqualTo("/api-messaging/2281/webmessage"))
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/messaging/web-message.json")));
+	}
 }

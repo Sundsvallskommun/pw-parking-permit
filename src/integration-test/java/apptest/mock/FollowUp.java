@@ -12,7 +12,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 public class FollowUp {
 
     public static String mockFollowUp(String caseId, String scenarioName) {
-        return mockFollowUp(caseId, scenarioName, "execution_create-asset-task-worker---api-party-assets-post-asset");
+        return mockFollowUp(caseId, scenarioName, "execution_send-simplified-service-task-worker---api-casedata-get-errand");
     }
 
     public static String mockFollowUp(String caseId, String scenarioName, String requiredScenarioState) {

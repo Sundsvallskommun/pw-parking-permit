@@ -83,7 +83,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 		verifyAllStubs();
 
 		// Verify process pathway.
-		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
 			.with(actualizationPathway())
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
