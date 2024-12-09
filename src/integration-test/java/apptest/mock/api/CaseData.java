@@ -45,22 +45,6 @@ public class CaseData {
 			.getNewScenarioState();
 	}
 
-	public static void mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, Map<String, Object> transformParameters, String decisionOutcome, String role) {
-		stubFor(get(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s", caseId)))
-			.inScenario(scenarioName)
-			.whenScenarioStateIs(requiredScenarioState)
-			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
-			.willReturn(aResponse()
-				.withStatus(OK_200)
-				.withHeader("Content-Type", "application/json")
-				.withBodyFile("common/responses/casedata/get-errand.json")
-				.withTransformers("response-template")
-				.withTransformerParameter("caseId", caseId)
-				.withTransformerParameter("decisionOutcome", decisionOutcome)
-				.withTransformerParameter("role", role)
-				.withTransformerParameters(transformParameters)));
-	}
-
 	public static String mockCaseDataStakeholdersGet(String caseId, String stakeholderId, String scenarioName, String requiredScenarioState, String newScenarioState) {
 		return stubFor(get(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/stakeholders/%s", caseId, stakeholderId)))
 			.inScenario(scenarioName)

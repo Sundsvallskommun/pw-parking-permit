@@ -77,13 +77,13 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
-		awaitProcessCompleted(startResponse.getProcessId(), 999);
+		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
 
 		// Verify wiremock stubs
 		verifyAllStubs();
 
 		// Verify process pathway.
-		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
 			.with(actualizationPathway())
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))

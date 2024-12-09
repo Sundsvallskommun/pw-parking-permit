@@ -20,12 +20,16 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
@@ -33,12 +37,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
-
-
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 @Component
@@ -85,7 +83,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			caseDataClient.patchNewDecision(municipalityId, errand.getNamespace(), errand.getId(), decision);
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(simplifiedServiceTextProperties.delayDays()));
+			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, simplifiedServiceTextProperties.delay()));
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

@@ -9,38 +9,30 @@ import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class Execution {
 
 	public static String mockExecution(String caseId, String scenarioName) {
-		final var initialState = "check-decision-task-worker---api-casedata-get-errand";
 
-		mockSendSimplifiedService(caseId, scenarioName, initialState);
-
-		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, initialState);
-		// Parallel execution
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand");
 		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
 		final var stateAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, stateAfterOrderCard);
-		return mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
+		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
+		return mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 	}
 
 	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
 
-		mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
-				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Beslut"), "APPROVAL", "ADMINISTRATOR");
+				"phaseActionParameter", "",
+				"phaseStatusParameter", "",
+				"displayPhaseParameter", "Beslut"));
 
-		return mockCaseDataPatch(caseId, scenarioName, requiredScenarioState,
+		return mockCaseDataPatch(caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Verkställa", "UNKNOWN", "ONGOING", "Verkställa")));
 	}
@@ -84,7 +76,7 @@ public class Execution {
 
 	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			null,
+			"execution_create-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
@@ -122,13 +114,14 @@ public class Execution {
 				"permitNumberParameter", "12345"));
 	}
 
-	public static void mockSendSimplifiedService(final String caseId, final String scenarioName, String requiredScenarioState) {
-		mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+	public static String mockSendSimplifiedService(final String caseId, final String scenarioName, String requiredScenarioState) {
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"execution_send-simplified-service-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
-				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Beslut"), "APPROVAL", "ADMINISTRATOR");
+				"phaseActionParameter", "",
+				"phaseStatusParameter", "",
+				"displayPhaseParameter", "Beslut"));
 
 		//Returns same state as mockExecutionCreateAsset since it's a parallel execution
 		mockMessagingWebMessagePost(
@@ -141,10 +134,11 @@ public class Execution {
 										"value" : "2971"
 									} ]
 				      			},
-				      			"message" : "Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
+				      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
 				      			"oepInstance" : "external",
 				      			"attachments" : [ ]
 				    		}
 				"""));
+		return state;
 	}
 }

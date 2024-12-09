@@ -59,5 +59,4 @@ config:
 
 texts:
   simplified-service:
-    delay-days: 0
-    
+    delay: "PT5S"
