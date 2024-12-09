@@ -9,18 +9,23 @@ import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
-import static apptest.mock.api.Templating.mockRenderPdf;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class Execution {
 
 	public static String mockExecution(String caseId, String scenarioName) {
 		final var initialState = "check-decision-task-worker---api-casedata-get-errand";
 
+		mockSendSimplifiedService(caseId, scenarioName, initialState);
+
 		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, initialState);
 		// Parallel execution
-		final var stateAfterSendMessage = mockSendSimplifiedService(caseId, scenarioName + "_2", initialState);
 		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
 		final var stateAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, stateAfterOrderCard);
 		return mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
@@ -28,15 +33,14 @@ public class Execution {
 
 	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
 
-		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"execution_update-phase-task-worker---api-casedata-get-errand",
+		mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Beslut"));
+				"displayPhaseParameter", "Beslut"), "APPROVAL", "ADMINISTRATOR");
 
-		return mockCaseDataPatch(caseId, scenarioName, state,
+		return mockCaseDataPatch(caseId, scenarioName, requiredScenarioState,
 			"execution_update-phase-task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Verkställa", "UNKNOWN", "ONGOING", "Verkställa")));
 	}
@@ -80,7 +84,7 @@ public class Execution {
 
 	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"execution_create-asset-task-worker---api-casedata-get-errand",
+			null,
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
@@ -118,17 +122,16 @@ public class Execution {
 				"permitNumberParameter", "12345"));
 	}
 
-	public static String mockSendSimplifiedService(final String caseId, final String scenarioName, final String requiredScenarioState) {
-		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"execution_send-simplified-service-task-worker---api-casedata-get-errand",
+	public static void mockSendSimplifiedService(final String caseId, final String scenarioName, String requiredScenarioState) {
+		mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
-				"phaseActionParameter", "UNKNOWN",
 				"phaseStatusParameter", "ONGOING",
-				"displayPhaseParameter", "Beslut"));
+				"phaseActionParameter", "UNKNOWN",
+				"displayPhaseParameter", "Beslut"), "APPROVAL", "ADMINISTRATOR");
 
 		//Returns same state as mockExecutionCreateAsset since it's a parallel execution
-		return mockMessagingWebMessagePost(scenarioName, STARTED, "final-state",
+		mockMessagingWebMessagePost(
 			equalToJson("""
 							{
 								"party" : {
