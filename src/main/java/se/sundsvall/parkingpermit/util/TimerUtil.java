@@ -12,7 +12,7 @@ public final class TimerUtil {
 	private TimerUtil() {}
 
 	public static Date getControlMessageTime(Decision decision, String controlMessageDelay) {
-		final var decisionCreated = Optional.ofNullable(decision.getCreated()).orElse(OffsetDateTime.now());
+		final var decisionCreated = decision != null ? Optional.ofNullable(decision.getCreated()).orElse(OffsetDateTime.now()) : OffsetDateTime.now();
 		final var duration = Duration.parse(controlMessageDelay);
 		return Date.from(decisionCreated.plus(duration).toInstant());
 	}
