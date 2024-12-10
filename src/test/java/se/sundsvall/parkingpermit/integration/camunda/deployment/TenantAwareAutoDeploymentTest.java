@@ -1,5 +1,20 @@
 package se.sundsvall.parkingpermit.integration.camunda.deployment;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import org.assertj.core.api.FileAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,22 +28,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TenantAwareAutoDeploymentTest {
@@ -147,7 +146,9 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.tenant()).thenReturn(tenant);
 		when(processArchiveMock.name()).thenReturn(name);
-		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[]{resourceMock});
+		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[] {
+			resourceMock
+		});
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(processFile.getInputStream());
 
@@ -187,7 +188,9 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.name()).thenReturn(name);
 		when(deploymentApiMock.deploy(any(), any(), anyBoolean(), anyBoolean(), any(), any(), any())).thenThrow(originException);
-		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[]{resourceMock});
+		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[] {
+			resourceMock
+		});
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(new ClassPathResource(PROCESSMODEL_PATH + PROCESSMODEL_FILE).getInputStream());
 

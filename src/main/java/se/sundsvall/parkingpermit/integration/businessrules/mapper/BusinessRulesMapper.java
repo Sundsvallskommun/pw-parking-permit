@@ -1,15 +1,5 @@
 package se.sundsvall.parkingpermit.integration.businessrules.mapper;
 
-import generated.se.sundsvall.businessrules.Fact;
-import generated.se.sundsvall.businessrules.RuleEngineRequest;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.Stakeholder;
-import org.zalando.problem.Problem;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -26,6 +16,15 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+
+import generated.se.sundsvall.businessrules.Fact;
+import generated.se.sundsvall.businessrules.RuleEngineRequest;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.zalando.problem.Problem;
 
 public class BusinessRulesMapper {
 

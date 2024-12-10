@@ -1,28 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.citizen.CitizenAddress;
-import generated.se.sundsvall.citizen.CitizenExtended;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +15,28 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.businesslogic.worker.actualization.VerifyResidentOfMunicipalityTaskWorker.MAIN_ADDRESS_TYPE;
+
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.citizen.CitizenAddress;
+import generated.se.sundsvall.citizen.CitizenExtended;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 
 @ExtendWith(MockitoExtension.class)
 class VerifyResidentOfMunicipalityTaskWorkerTest {

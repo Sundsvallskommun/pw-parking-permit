@@ -1,17 +1,16 @@
 package se.sundsvall.parkingpermit.integration.camunda.mapper;
 
-import generated.se.sundsvall.camunda.VariableValueDto;
-import org.camunda.bpm.engine.variable.type.ValueType;
-import org.junit.jupiter.api.Test;
-import se.sundsvall.dept44.requestid.RequestId;
-
-import java.util.Map;
-import java.util.Random;
-
 import static java.util.Map.entry;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.parkingpermit.Constants.*;
+
+import generated.se.sundsvall.camunda.VariableValueDto;
+import java.util.Map;
+import java.util.Random;
+import org.camunda.bpm.engine.variable.type.ValueType;
+import org.junit.jupiter.api.Test;
+import se.sundsvall.dept44.requestid.RequestId;
 
 class CamundaMapperTest {
 

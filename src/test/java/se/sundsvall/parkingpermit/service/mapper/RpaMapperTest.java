@@ -1,12 +1,12 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import generated.se.sundsvall.rpa.QueueItemDataDto;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.parkingpermit.service.mapper.RpaMapper.toQueuesAddQueueItemParameters;
+
+import generated.se.sundsvall.rpa.QueueItemDataDto;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class RpaMapperTest {
 

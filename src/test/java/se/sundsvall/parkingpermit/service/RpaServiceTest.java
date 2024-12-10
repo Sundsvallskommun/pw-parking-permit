@@ -1,6 +1,18 @@
 package se.sundsvall.parkingpermit.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.CONFLICT;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
 import generated.se.sundsvall.rpa.QueuesAddQueueItemParameters;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,19 +26,6 @@ import org.zalando.problem.DefaultProblem;
 import org.zalando.problem.Problem;
 import se.sundsvall.parkingpermit.integration.rpa.RpaClient;
 import se.sundsvall.parkingpermit.integration.rpa.configuration.RpaProperties;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.CONFLICT;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class RpaServiceTest {
@@ -95,7 +94,7 @@ class RpaServiceTest {
 	@Test
 	void returnOtherErrorWhenAddingQueueItem() {
 		// Arrange
-		when(rpaClientMock.addQueueItem(eq(FOLDER_ID), queueArgumentCaptor.capture())).thenThrow(Problem.valueOf(INTERNAL_SERVER_ERROR, "Other error" ));
+		when(rpaClientMock.addQueueItem(eq(FOLDER_ID), queueArgumentCaptor.capture())).thenThrow(Problem.valueOf(INTERNAL_SERVER_ERROR, "Other error"));
 		when(rpaPropertiesMock.folderId()).thenReturn(FOLDER_ID);
 		final var queues = List.of("Queue-1", "Queue-2", "Queue-3");
 

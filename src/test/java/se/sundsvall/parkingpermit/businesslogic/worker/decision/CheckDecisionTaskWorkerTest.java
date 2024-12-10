@@ -1,41 +1,11 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.PatchErrand;
-import generated.se.sundsvall.casedata.Status;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.joda.time.DateTime;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-
-
-import generated.se.sundsvall.casedata.Decision;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,6 +34,32 @@ import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Status;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 
 @ExtendWith(MockitoExtension.class)
 class CheckDecisionTaskWorkerTest {
@@ -120,7 +116,6 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 		when(simplifiedServiceTextPropertiesMock.delayDays()).thenReturn(1);
-
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -214,8 +209,7 @@ class CheckDecisionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
-			);
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
 	}
 
 	@Test
@@ -251,8 +245,7 @@ class CheckDecisionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
-			);
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
 	}
 
 	@Test
@@ -288,8 +281,7 @@ class CheckDecisionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING))
-			);
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
 	}
 
 	@Test

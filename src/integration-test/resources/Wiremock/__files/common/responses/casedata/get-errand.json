@@ -161,20 +161,19 @@
 		},
 		{
 			"key": "disability.walkingDistance.max",
-			"values": [
-			]
+			"values": []
 		},
 		{
 			"key": "disability.walkingDistance.beforeRest",
-			"values": [
-			]
+			"values": []
 		},
 		{
 			"key": "consent.contact.doctor",
 			"values": [
 				"false"
 			]
-		},		{
+		},
+		{
 			"key": "application.reason",
 			"values": [
 				""
@@ -182,8 +181,7 @@
 		},
 		{
 			"key": "disability.canBeAloneWhileParking.note",
-			"values": [
-			]
+			"values": []
 		},
 		{
 			"key": "disability.duration",
@@ -209,7 +207,6 @@
 				"{{parameters.displayPhaseParameter}}"
 			]
 		},
-
 		{
 			"key": "process.phaseStatus",
 			"values": [

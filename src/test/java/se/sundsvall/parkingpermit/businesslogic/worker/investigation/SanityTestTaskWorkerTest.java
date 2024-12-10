@@ -1,8 +1,29 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SANITY_CHECK_PASSED;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+
 import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -21,28 +42,6 @@ import org.zalando.problem.Status;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SANITY_CHECK_PASSED;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class SanityTestTaskWorkerTest {
@@ -144,13 +143,13 @@ class SanityTestTaskWorkerTest {
 		return Stream.of(
 			// Sanity check passes
 			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), CASE_TYPE_PARKING_PERMIT, true),
-			//Sanity check fails when no administrator
+			// Sanity check fails when no administrator
 			Arguments.of(List.of(ROLE_APPLICANT), CASE_TYPE_PARKING_PERMIT, false),
-			//Sanity check fails when no applicant
+			// Sanity check fails when no applicant
 			Arguments.of(List.of(ROLE_ADMINISTRATOR), CASE_TYPE_PARKING_PERMIT, false),
-			//Sanity check fails when wrong case type
+			// Sanity check fails when wrong case type
 			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), "ANMALAN_INSTALLATION_VARMEPUMP", false),
-			//Sanity check fails when no case type
+			// Sanity check fails when no case type
 			Arguments.of(List.of(ROLE_ADMINISTRATOR, ROLE_APPLICANT), null, false));
 	}
 }

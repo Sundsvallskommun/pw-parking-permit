@@ -1,9 +1,20 @@
 package se.sundsvall.parkingpermit.service;
 
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import generated.se.sundsvall.camunda.PatchVariablesDto;
 import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.camunda.StartProcessInstanceDto;
 import generated.se.sundsvall.camunda.VariableValueDto;
+import java.util.Random;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,18 +26,6 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-
-import java.util.Random;
-
-import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProcessServiceTest {

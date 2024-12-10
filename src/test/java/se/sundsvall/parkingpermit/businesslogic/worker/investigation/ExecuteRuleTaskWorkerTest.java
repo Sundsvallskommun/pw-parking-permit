@@ -1,25 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.Stakeholder;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,6 +16,25 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Stakeholder;
+import java.util.List;
+import java.util.Map;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @ExtendWith(MockitoExtension.class)
 class ExecuteRuleTaskWorkerTest {

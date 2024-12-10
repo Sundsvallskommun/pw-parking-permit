@@ -1,27 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.messaging.LetterRequest;
-import generated.se.sundsvall.messaging.MessageBatchResult;
-import generated.se.sundsvall.messaging.MessageResult;
-import generated.se.sundsvall.messaging.WebMessageRequest;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
-import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
-import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
-import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
-
-import java.util.List;
-import java.util.UUID;
-
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,6 +12,27 @@ import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.messaging.LetterRequest;
+import generated.se.sundsvall.messaging.MessageBatchResult;
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.messaging.WebMessageRequest;
+import generated.se.sundsvall.templating.RenderResponse;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
+import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
+import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {

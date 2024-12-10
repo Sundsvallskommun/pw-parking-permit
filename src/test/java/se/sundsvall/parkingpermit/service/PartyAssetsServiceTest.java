@@ -1,22 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.partyassets.AssetCreateRequest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.PROPOSED;
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
@@ -26,6 +9,22 @@ import static org.mockito.Mockito.verify;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
+
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import java.time.OffsetDateTime;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
 
 @ExtendWith(MockitoExtension.class)
 class PartyAssetsServiceTest {

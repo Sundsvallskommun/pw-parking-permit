@@ -1,22 +1,21 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static se.sundsvall.parkingpermit.Constants.*;
+
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.partyassets.AssetCreateRequest;
 import generated.se.sundsvall.partyassets.Status;
-import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
-
 import java.time.OffsetDateTime;
 import java.util.List;
-
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static se.sundsvall.parkingpermit.Constants.*;
+import org.junit.jupiter.api.Test;
+import org.zalando.problem.ThrowableProblem;
 
 class PartyAssetsMapperTest {
 	private static final String ERRAND_ID = "123";
@@ -127,8 +126,7 @@ class PartyAssetsMapperTest {
 				.id(456L)
 				.type(PERSON)
 				.roles(List.of(ROLE_APPLICANT))
-				.personId("456")
-		);
+				.personId("456"));
 	}
 
 	private List<Decision> createDecisions() {

@@ -1,9 +1,9 @@
 package se.sundsvall.parkingpermit.util;
 
-import org.junit.jupiter.api.Test;
-
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class TimerUtilTest {
 
