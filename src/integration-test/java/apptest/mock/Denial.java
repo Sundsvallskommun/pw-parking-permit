@@ -21,25 +21,26 @@ public class Denial {
 		final var stateAfterAddDecision = mockDenialAddDecision(caseId, scenarioName, stateAfterDenialUpdatePhase);
 		final var stateAfterUpdateStatus = mockDenialUpdateStatus(caseId, scenarioName, stateAfterAddDecision);
 		final var stateAfterSendDecision = mockDenialSendDecision(caseId, scenarioName, stateAfterUpdateStatus);
-		return mockDenialAddMessageToErrand(caseId, scenarioName, stateAfterSendDecision);
+		final var stateAfterAddedMessageToErrand = mockDenialAddMessageToErrand(caseId, scenarioName, stateAfterSendDecision);
+		return mockSendSimplifiedService(caseId, scenarioName, stateAfterAddedMessageToErrand);
 	}
 
 	public static String mockDenialUpdatePhase(final String caseId, final String scenarioName, final String requiredScenarioState) {
 
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"automatic-denial-update-phase-task-worker---api-casedata-get-errand",
+			"automatic_denial_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
 				"displayPhaseParameter", "Aktualisering"));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
-			"automatic-denial-update-phase-task-worker---api-casedata-patch-errand",
+			"automatic_denial_update-phase-task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBody("Beslut", "UNKNOWN", "ONGOING", "Beslut")));
 	}
 
 	public static String mockDenialAddDecision(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"automatic-denial-decision-task-worker---api-casedata-get-errand",
+			"automatic_denial_decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
@@ -47,7 +48,7 @@ public class Denial {
 				"displayPhaseParameter", "Beslut"));
 
 		state = mockCaseDataAddStakeholderPatch(caseId, scenarioName, state,
-			"automatic-denial-decision-task-worker---api-casedata-add-stakeholder-to-errand",
+			"automatic_denial_decision-task-worker---api-casedata-add-stakeholder-to-errand",
 			equalToJson("""
 					{
 						"type": "PERSON",
@@ -63,9 +64,9 @@ public class Denial {
 				"""));
 
 		state = mockCaseDataStakeholdersGet(caseId, "2", scenarioName, state,
-			"automatic-denial-decision-task-worker---api-casedata-get-stakeholder");
+			"automatic_denial_decision-task-worker---api-casedata-get-stakeholder");
 
-		state = mockRenderPdf(scenarioName, state, "automatic-denial-add-message-to-errand-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic_denial_add-message-to-errand-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -81,7 +82,7 @@ public class Denial {
 				"""));
 
 		return mockCaseDataDecisionPatch(caseId, scenarioName, state,
-			"automatic-denial-decision-task-worker---api-casedata-add-decision",
+			"automatic_denial_decision-task-worker---api-casedata-add-decision",
 			equalToJson("""
 							{
 								"created": "${json-unit.any-string}",
@@ -128,7 +129,7 @@ public class Denial {
 
 	public static String mockDenialUpdateStatus(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"automatic-denial-update-status-task-worker---api-casedata-get-errand",
+			"automatic_denial_update-status-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
@@ -136,7 +137,7 @@ public class Denial {
 				"displayPhaseParameter", "Beslut"));
 
 		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"automatic-denial-update-status-task-worker---api-casedata-put-status",
+			"automatic_denial_update-status-task-worker---api-casedata-put-status",
 			equalToJson("""
 				[
 					{
@@ -150,14 +151,14 @@ public class Denial {
 
 	public static String mockDenialSendDecision(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"automatic-denial-send-denial-decision-task-worker---api-casedata-get-errand",
+			"automatic_denial_send-denial-decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Beslut"));
 
-		state = mockRenderPdf(scenarioName, state, "automatic-denial-send-denial-decision-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic_denial_send-denial-decision-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -172,7 +173,7 @@ public class Denial {
 				    		}
 				"""));
 
-		return mockMessagingWebMessagePost(scenarioName, state, "automatic-denial-send-denial-decision-task-worker---api-messaging-send-web-message",
+		return mockMessagingWebMessagePost(scenarioName, state, "automatic-denial_send-denial-decision-task-worker---api-messaging-send-web-message",
 			equalToJson("""
 							{
 								"party": {
@@ -197,14 +198,14 @@ public class Denial {
 
 	public static String mockDenialAddMessageToErrand(final String caseId, final String scenarioName, final String requiredScenarioState) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"automatic-denial-add-message-to-errand-task-worker---api-casedata-get-errand",
+			"automatic_denial_add-message-to-errand-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Beslut"));
 
-		state = mockRenderPdf(scenarioName, state, "automatic-denial-add-message-to-errand-task-worker---api-templating-render-pdf",
+		state = mockRenderPdf(scenarioName, state, "automatic_denial_add-message-to-errand-task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 								"identifier": "sbk.prh.decision.all.rejection.municipality",
@@ -220,7 +221,7 @@ public class Denial {
 				"""));
 
 		return mockCaseDataAddMessagePost(caseId, scenarioName, state,
-			"automatic-denial-add-message-to-errand-task-worker---api-post-message",
+			"automatic_denial_add-message-to-errand-task-worker---api-post-message",
 			equalToJson("""
 							{
 								"messageId": "570c3e28-b640-49e9-899c-9d290eb0539a",
@@ -241,5 +242,32 @@ public class Denial {
 								"emailHeaders": []
 							}
 				"""));
+	}
+
+	public static String mockSendSimplifiedService(final String caseId, final String scenarioName, String requiredScenarioState) {
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"automatic_denial_send-simplified-service-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"phaseActionParameter", "",
+				"phaseStatusParameter", "",
+				"displayPhaseParameter", "Beslut"));
+
+		mockMessagingWebMessagePost(
+			equalToJson("""
+							{
+								"party" : {
+									"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+									"externalReferences" : [ {
+										"key" : "flowInstanceId",
+										"value" : "2971"
+									} ]
+				      			},
+				      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
+				      			"oepInstance" : "external",
+				      			"attachments" : [ ]
+				    		}
+				"""));
+		return state;
 	}
 }

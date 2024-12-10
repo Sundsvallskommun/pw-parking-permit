@@ -99,6 +99,8 @@ public class ProcessPathway {
             .with(tuple("Update errand status", "external_task_update_errand_status"))
             .with(tuple("Send denial decision to applicant", "external_task_send_denial_decision"))
             .with(tuple("Add message to errand", "external_task_add_message"))
+            .with(tuple("Wait to send message", "timer_denial_wait_to_send_message"))
+            .with(tuple("Send simplified service message", "external_task_send_simplified_service"))
             .with(tuple("End automatic denial phase", "end_automatic_denial_phase"))
             .with(tuple("Automatic denial", "subprocess_automatic_denial"));
     }
