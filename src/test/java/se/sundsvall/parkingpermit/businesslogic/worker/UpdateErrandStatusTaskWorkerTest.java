@@ -19,9 +19,9 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 
-import java.util.List;
-
+import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Status;
+import java.util.List;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -37,12 +37,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import generated.se.sundsvall.casedata.Errand;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateErrandStatusTaskWorkerTest {
@@ -173,7 +170,9 @@ class UpdateErrandStatusTaskWorkerTest {
 
 	@ParameterizedTest
 	@NullSource
-	@ValueSource(strings = {"testStatusDescription"})
+	@ValueSource(strings = {
+		"testStatusDescription"
+	})
 	void executeWhenPhaseActualization(String statusDescription) {
 
 		final String status = "testStatus";
@@ -206,7 +205,6 @@ class UpdateErrandStatusTaskWorkerTest {
 		assertThat(statusCaptor.getValue().getFirst().getDescription()).isEqualTo(statusDescription == null ? status : statusDescription);
 		assertThat(statusCaptor.getValue().getFirst().getStatusType()).isEqualTo(status);
 	}
-
 
 	@Test
 	void executeThrowsException() {

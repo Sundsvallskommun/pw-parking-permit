@@ -1,5 +1,13 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+
 import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.Errand;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -11,14 +19,6 @@ import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.FALSE;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
@@ -38,7 +38,8 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	}
 
 	protected void clearUpdateAvailable(ExternalTask externalTask) {
-		/* Clearing process variable has to be a blocking operation.
+		/*
+		 * Clearing process variable has to be a blocking operation.
 		 * Using ExternalTaskService.setVariables() will not work without creating race conditions.
 		 */
 		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);

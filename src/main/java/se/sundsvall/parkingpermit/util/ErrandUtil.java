@@ -1,18 +1,17 @@
 package se.sundsvall.parkingpermit.util;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.NOT_FOUND;
+
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.Address.AddressCategoryEnum;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
-import org.zalando.problem.Problem;
-
 import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.NOT_FOUND;
+import org.zalando.problem.Problem;
 
 public final class ErrandUtil {
 

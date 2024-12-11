@@ -1,37 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import generated.se.sundsvall.casedata.Attachment;
-import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.Law;
-import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.DenialTextProperties;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
-
-import java.net.URI;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
@@ -53,6 +21,37 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+
+import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Law;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.templating.RenderResponse;
+import java.net.URI;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {
@@ -128,7 +127,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID,NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
@@ -261,7 +260,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
 		assertThat(mapCaptor.getValue()).containsOnlyKeys(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(((Date) mapCaptor.getValue().get(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(),  2000);
+		assertThat(((Date) mapCaptor.getValue().get(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);

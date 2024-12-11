@@ -1,31 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import generated.se.sundsvall.businessrules.Result;
-import generated.se.sundsvall.businessrules.ResultDetail;
-import generated.se.sundsvall.businessrules.ResultValue;
-import generated.se.sundsvall.businessrules.RuleEngineResponse;
-import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Errand;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.stream.Stream;
-
 import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
@@ -47,6 +21,31 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+
+import generated.se.sundsvall.businessrules.Result;
+import generated.se.sundsvall.businessrules.ResultDetail;
+import generated.se.sundsvall.businessrules.ResultValue;
+import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import java.util.List;
+import java.util.stream.Stream;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @ExtendWith(MockitoExtension.class)
 class ConstructDecisionTaskWorkerTest {
@@ -80,7 +79,7 @@ class ConstructDecisionTaskWorkerTest {
 		return Stream.of(
 			// Sanity check passes
 			Arguments.of("PASS", new Decision().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
-			//Sanity check passes
+			// Sanity check passes
 			Arguments.of("FAIL", new Decision().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
 	}
 

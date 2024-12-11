@@ -20,5 +20,5 @@ public class TemplatingConfiguration {
 			.withRequestTimeoutsInSeconds(templatingProperties.connectTimeout(), templatingProperties.readTimeout())
 			.withRetryableOAuth2InterceptorForClientRegistration(clientRepository.findByRegistrationId(CLIENT_ID))
 			.composeCustomizersToOne();
-    }
+	}
 }

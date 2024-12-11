@@ -1,11 +1,17 @@
 package se.sundsvall.parkingpermit.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.zalando.problem.Status.BAD_REQUEST;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
@@ -13,17 +19,11 @@ import org.zalando.problem.violations.Violation;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.service.ProcessService;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.zalando.problem.Status.BAD_REQUEST;
-
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class ProcessResourceFailuresTest {
 
-	@MockBean
+	@MockitoBean
 	private ProcessService processServiceMock;
 
 	@Autowired
@@ -75,7 +75,7 @@ class ProcessResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"invalid\"");
+		assertThat(response.getDetail()).isEqualTo("Method parameter 'caseNumber': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"invalid\"");
 
 		verifyNoInteractions(processServiceMock);
 	}

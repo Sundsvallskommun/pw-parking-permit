@@ -1,15 +1,14 @@
 package se.sundsvall.parkingpermit.integration.casedata;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
+
 import generated.se.sundsvall.casedata.*;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
-
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.casedata.url}", configuration = CaseDataConfiguration.class)
 public interface CaseDataClient {
@@ -17,8 +16,8 @@ public interface CaseDataClient {
 	/**
 	 * Updates a decision.
 	 *
-	 * @param patchDecision for patching decision
-	 * @param errandId of case to update
+	 * @param  patchDecision                        for patching decision
+	 * @param  errandId                             of case to update
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
@@ -46,7 +45,7 @@ public interface CaseDataClient {
 	/**
 	 * Gets an errand by id.
 	 *
-	 * @param errandId of errand to get
+	 * @param  errandId                             of errand to get
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
@@ -63,7 +62,7 @@ public interface CaseDataClient {
 	 * filter example:
 	 * caseType:'LOST_PARKING_PERMIT' and stakeholders.personId:'744e719d-aedc-45b8-b9a6-1ada0e087910'
 	 *
-	 * @param filter the filter to use
+	 * @param  filter                               the filter to use
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands", produces = APPLICATION_JSON_VALUE)
@@ -75,8 +74,8 @@ public interface CaseDataClient {
 	/**
 	 * Updates an errand.
 	 *
-	 * @param patchErrand for patching errand
-	 * @param errandId of errand to update
+	 * @param  patchErrand                          for patching errand
+	 * @param  errandId                             of errand to update
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", consumes = APPLICATION_JSON_VALUE)
@@ -89,8 +88,8 @@ public interface CaseDataClient {
 	/**
 	 * Adds a new stakeholder to an errand.
 	 *
-	 * @param errandId of errand to update
-	 * @param stakeholder the stakeholder to add to the errand
+	 * @param  errandId                             of errand to update
+	 * @param  stakeholder                          the stakeholder to add to the errand
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders", consumes = APPLICATION_JSON_VALUE)
@@ -103,8 +102,8 @@ public interface CaseDataClient {
 	/**
 	 * Get stakeholder matching sent in id.
 	 *
-	 * @param stakeholderId of stakeholder to fetch
-	 * @return Stakeholder containing information of the requested stakeholder
+	 * @param  stakeholderId                        of stakeholder to fetch
+	 * @return                                      Stakeholder containing information of the requested stakeholder
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders/{stakeholderId}", produces = APPLICATION_JSON_VALUE)
@@ -124,7 +123,7 @@ public interface CaseDataClient {
 	/**
 	 * Add a message to an errand.
 	 *
-	 * @param messageRequest containing information for message to add
+	 * @param  messageRequest                       containing information for message to add
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/messages", consumes = APPLICATION_JSON_VALUE)
@@ -137,7 +136,7 @@ public interface CaseDataClient {
 	/**
 	 * Gets notes by errand id.
 	 *
-	 * @param errandId of errand containing notes to get
+	 * @param  errandId                             of errand containing notes to get
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", produces = APPLICATION_JSON_VALUE)
@@ -150,7 +149,7 @@ public interface CaseDataClient {
 	/**
 	 * Delete note by note id.
 	 *
-	 * @param noteId of note to delete
+	 * @param  noteId                               of note to delete
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes/{noteId}")

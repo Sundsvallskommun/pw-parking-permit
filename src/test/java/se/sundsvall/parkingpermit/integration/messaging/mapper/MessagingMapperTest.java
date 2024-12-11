@@ -1,29 +1,5 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import generated.se.sundsvall.messaging.ExternalReference;
-import generated.se.sundsvall.messaging.LetterAttachment;
-import generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum;
-import generated.se.sundsvall.messaging.LetterParty;
-import generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum;
-import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
-import generated.se.sundsvall.messaging.WebMessageAttachment;
-import generated.se.sundsvall.messaging.WebMessageParty;
-import generated.se.sundsvall.templating.RenderResponse;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import se.sundsvall.parkingpermit.util.CommonTextProperties;
-import se.sundsvall.parkingpermit.util.DenialTextProperties;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
-
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
-
 import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
 import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
 import static java.nio.charset.Charset.defaultCharset;
@@ -34,6 +10,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
+
+import generated.se.sundsvall.messaging.ExternalReference;
+import generated.se.sundsvall.messaging.LetterAttachment;
+import generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum;
+import generated.se.sundsvall.messaging.LetterParty;
+import generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum;
+import generated.se.sundsvall.messaging.LetterSenderSupportInfo;
+import generated.se.sundsvall.messaging.WebMessageAttachment;
+import generated.se.sundsvall.messaging.WebMessageParty;
+import generated.se.sundsvall.templating.RenderResponse;
+import java.util.Base64;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
+import se.sundsvall.parkingpermit.util.CommonTextProperties;
+import se.sundsvall.parkingpermit.util.DenialTextProperties;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("junit")

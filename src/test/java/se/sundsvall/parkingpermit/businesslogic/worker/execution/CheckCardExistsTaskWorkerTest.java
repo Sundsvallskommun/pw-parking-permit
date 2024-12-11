@@ -1,8 +1,21 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
+import static java.util.Collections.emptyList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+
 import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
+import java.util.List;
+import java.util.Map;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -16,20 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.emptyList;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 
 @ExtendWith(MockitoExtension.class)
 class CheckCardExistsTaskWorkerTest {
@@ -63,7 +62,7 @@ class CheckCardExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenCardExists() {
-		//Arrange
+		// Arrange
 		final var errand = new Errand()
 			.id(ERRAND_ID)
 			.extraParameters(List.of(new ExtraParameter("artefact.permit.number").addValuesItem(PERMIT_NUMBER)));
@@ -87,7 +86,7 @@ class CheckCardExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenCardNotExists() {
-		//Arrange
+		// Arrange
 		final var errand = new Errand()
 			.id(ERRAND_ID)
 			.extraParameters(emptyList());

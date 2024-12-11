@@ -1,22 +1,21 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.partyassets.AssetCreateRequest;
-import generated.se.sundsvall.partyassets.Status;
-import org.zalando.problem.Problem;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.util.ErrandUtil;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.*;
+
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.partyassets.AssetCreateRequest;
+import generated.se.sundsvall.partyassets.Status;
+import java.time.LocalDate;
+import java.util.Optional;
+import org.zalando.problem.Problem;
+import se.sundsvall.parkingpermit.Constants;
+import se.sundsvall.parkingpermit.util.ErrandUtil;
 
 public final class PartyAssetsMapper {
 

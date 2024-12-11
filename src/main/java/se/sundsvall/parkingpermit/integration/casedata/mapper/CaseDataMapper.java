@@ -1,5 +1,13 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
+import static java.time.OffsetDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
@@ -15,7 +23,6 @@ import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import generated.se.sundsvall.casedata.Status;
 import generated.se.sundsvall.templating.RenderResponse;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -23,20 +30,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.time.OffsetDateTime.now;
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
-
 public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
 	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final String displayPhase, final List<ExtraParameter> extraParameters) {
-		final var patchErrand =  toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
+		final var patchErrand = toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		var result = patchErrand.getExtraParameters().stream()
 			.filter(extraParameter -> !CASEDATA_KEY_DISPLAY_PHASE.equals(extraParameter.getKey()))

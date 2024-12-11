@@ -1,7 +1,20 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
+import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
+import static java.util.Objects.isNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.CONFLICT;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -12,20 +25,6 @@ import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-
-import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
-import static java.util.Objects.isNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.CONFLICT;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")

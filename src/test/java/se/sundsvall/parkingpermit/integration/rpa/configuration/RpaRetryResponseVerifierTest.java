@@ -1,6 +1,13 @@
 package se.sundsvall.parkingpermit.integration.rpa.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+
 import feign.Response;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,14 +15,6 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.parkingpermit.Application;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("junit")
@@ -33,7 +32,7 @@ class RpaRetryResponseVerifierTest {
 	@Test
 	@DisplayName("Should return true if we get status 401 from service and token has expired")
 	void shouldReturnRetryableException() {
-		Map<String, Collection<String>>  headers = Map.of("WWW-Authenticate", Set.of("Bearer realm=\"https://rpa.base.url/identity\""));
+		Map<String, Collection<String>> headers = Map.of("WWW-Authenticate", Set.of("Bearer realm=\"https://rpa.base.url/identity\""));
 		when(mockResponse.status()).thenReturn(401);
 		when(mockResponse.headers()).thenReturn(headers);
 		when(rpaProperties.identityServerUrl()).thenReturn("https://rpa.base.url/identity");

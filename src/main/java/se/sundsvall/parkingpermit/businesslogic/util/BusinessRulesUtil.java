@@ -1,18 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.util;
 
-import com.google.re2j.Pattern;
-import generated.se.sundsvall.businessrules.Result;
-import generated.se.sundsvall.businessrules.ResultDetail;
-import generated.se.sundsvall.casedata.Decision;
-import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
-import generated.se.sundsvall.casedata.Decision.DecisionTypeEnum;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
@@ -22,6 +9,18 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.dept44.util.DateUtils.toOffsetDateTimeWithLocalOffset;
+
+import com.google.re2j.Pattern;
+import generated.se.sundsvall.businessrules.Result;
+import generated.se.sundsvall.businessrules.ResultDetail;
+import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
+import generated.se.sundsvall.casedata.Decision.DecisionTypeEnum;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public final class BusinessRulesUtil {
 
