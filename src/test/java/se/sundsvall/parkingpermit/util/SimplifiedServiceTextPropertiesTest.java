@@ -21,6 +21,8 @@ class SimplifiedServiceTextPropertiesTest {
 		<p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
 		<p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</a></p>""";
 	private static final String PLAIN_BODY = """
+		Kontrollmeddelande för förenklad delgivning
+		
 		Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
 		När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
 		Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till

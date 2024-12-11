@@ -103,7 +103,7 @@ class MessagingMapperTest {
 		final var externalCaseId = "externalCaseId";
 
 		when(textProviderMock.getSimplifiedServiceTexts()).thenReturn(simplifiedServiceTextPropertiesMock);
-		when(simplifiedServiceTextPropertiesMock.message()).thenReturn(MESSAGE);
+		when(simplifiedServiceTextPropertiesMock.plainBody()).thenReturn(MESSAGE);
 
 		final var request = messagingMapper.toWebMessageRequestSimplifiedService(PARTY_ID.toString(), externalCaseId);
 
@@ -114,7 +114,7 @@ class MessagingMapperTest {
 		assertThat(request.getMessage()).isEqualTo(MESSAGE);
 		assertThat(request.getAttachments()).isEmpty();
 
-		verify(simplifiedServiceTextPropertiesMock).message();
+		verify(simplifiedServiceTextPropertiesMock).plainBody();
 		verifyNoMoreInteractions(commonTextPropertiesMock);
 	}
 

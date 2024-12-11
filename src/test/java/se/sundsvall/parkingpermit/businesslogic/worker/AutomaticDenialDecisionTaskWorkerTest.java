@@ -141,7 +141,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
 		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
 		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
-		when(simplifiedServiceTextPropertiesMock.delayDays()).thenReturn(1);
+		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -237,7 +237,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
 		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
 		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
-		when(simplifiedServiceTextPropertiesMock.delayDays()).thenReturn(1);
+		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
