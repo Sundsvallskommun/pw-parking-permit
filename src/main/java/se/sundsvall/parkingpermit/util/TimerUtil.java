@@ -1,13 +1,11 @@
 package se.sundsvall.parkingpermit.util;
 
-import generated.se.sundsvall.casedata.Decision;
+import static java.util.Objects.nonNull;
 
+import generated.se.sundsvall.casedata.Decision;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.Optional;
-
-import static java.util.Objects.nonNull;
 
 public final class TimerUtil {
 
@@ -15,7 +13,7 @@ public final class TimerUtil {
 
 	public static Date getControlMessageTime(Decision decision, String controlMessageDelay) {
 		var decisionCreated = OffsetDateTime.now();
-		if(nonNull(decision) && nonNull(decision.getCreated())) {
+		if (nonNull(decision) && nonNull(decision.getCreated())) {
 			decisionCreated = decision.getCreated();
 		}
 		final var duration = Duration.parse(controlMessageDelay);

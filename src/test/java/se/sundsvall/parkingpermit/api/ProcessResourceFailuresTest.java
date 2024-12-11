@@ -75,7 +75,7 @@ class ProcessResourceFailuresTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getTitle()).isEqualTo("Bad Request");
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getDetail()).isEqualTo("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"invalid\"");
+		assertThat(response.getDetail()).isEqualTo("Method parameter 'caseNumber': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"invalid\"");
 
 		verifyNoInteractions(processServiceMock);
 	}
