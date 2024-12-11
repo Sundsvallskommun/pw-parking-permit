@@ -1,5 +1,25 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
+
+import java.util.HashMap;
+import java.util.Objects;
+
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
@@ -18,25 +38,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
-
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.Stakeholder;
-import java.util.HashMap;
-import java.util.Objects;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
-import se.sundsvall.parkingpermit.util.TextProvider;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -82,7 +83,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			caseDataClient.patchNewDecision(municipalityId, errand.getNamespace(), errand.getId(), decision);
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(simplifiedServiceTextProperties.delayDays()));
+			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, simplifiedServiceTextProperties.delay()));
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

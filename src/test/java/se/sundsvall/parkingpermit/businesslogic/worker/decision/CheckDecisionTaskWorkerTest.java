@@ -115,7 +115,7 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
-		when(simplifiedServiceTextPropertiesMock.delayDays()).thenReturn(1);
+		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -154,7 +154,7 @@ class CheckDecisionTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
-		when(simplifiedServiceTextPropertiesMock.delayDays()).thenReturn(1);
+		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

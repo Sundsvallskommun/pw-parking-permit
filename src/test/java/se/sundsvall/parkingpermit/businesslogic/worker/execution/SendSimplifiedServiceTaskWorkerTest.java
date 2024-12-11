@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.businesslogic.worker;
+package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

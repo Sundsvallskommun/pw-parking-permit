@@ -43,7 +43,7 @@ public class MessagingMapper {
 
 	public WebMessageRequest toWebMessageRequestSimplifiedService(String partyId, String externalCaseId) {
 		return new WebMessageRequest()
-			.message(textProvider.getSimplifiedServiceTexts().message())
+			.message(textProvider.getSimplifiedServiceTexts().plainBody())
 			.oepInstance(EXTERNAL)
 			.party(new WebMessageParty()
 				.partyId(UUID.fromString(partyId))
