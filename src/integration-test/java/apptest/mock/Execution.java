@@ -123,7 +123,6 @@ public class Execution {
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
 
-		//Returns same state as mockExecutionCreateAsset since it's a parallel execution
 		mockMessagingWebMessagePost(
 			equalToJson("""
 							{
