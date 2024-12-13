@@ -1,15 +1,15 @@
 {
-	"id": 2,
-	"version": 2,
-	"created": "2022-12-02T15:18:45.363499+01:00",
-	"updated": "2022-12-02T15:19:01.5636+01:00",
-	"type": "PERSON",
 	"firstName": "Process",
 	"lastName": "Engine",
+	"addresses": [],
+	"contactInformation": [],
+	"created": "2022-12-02T15:18:45.363499+01:00",
 	"roles": [
 		"ADMINISTRATOR"
 	],
-	"addresses": [],
-	"contactInformation": [],
-	"extraParameters": {}
+	"extraParameters": {},
+	"id": 2,
+	"type": "PERSON",
+	"version": 2,
+	"updated": "2022-12-02T15:19:01.5636+01:00"
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
+import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
@@ -71,6 +72,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
+        mockCheckAppeal(caseId, scenarioName);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
@@ -119,6 +121,8 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
         // Verify process pathway.
         assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
                 .with(tuple("Start process", "start_process"))
+                .with(tuple("Check appeal", "external_task_check_appeal"))
+                .with(tuple("Gateway isAppeal", "gateway_is_appeal"))
                 .with(actualizationPathway())
                 .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
                 .with(investigationPathway())
@@ -149,6 +153,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
+        mockCheckAppeal(caseId, scenarioName);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
@@ -181,6 +186,8 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
         // Verify process pathway.
         assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
                 .with(tuple("Start process", "start_process"))
+                .with(tuple("Check appeal", "external_task_check_appeal"))
+                .with(tuple("Gateway isAppeal", "gateway_is_appeal"))
                 .with(actualizationPathway())
                 .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
                 .with(investigationPathway())
@@ -198,6 +205,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
+        mockCheckAppeal(caseId, scenarioName);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
@@ -231,6 +239,8 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
         // Verify process pathway.
         assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
                 .with(tuple("Start process", "start_process"))
+                .with(tuple("Check appeal", "external_task_check_appeal"))
+                .with(tuple("Gateway isAppeal", "gateway_is_appeal"))
                 .with(actualizationPathway())
                 .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
                 .with(investigationPathway())

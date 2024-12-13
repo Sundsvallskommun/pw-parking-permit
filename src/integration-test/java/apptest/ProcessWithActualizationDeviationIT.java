@@ -19,6 +19,7 @@ import static apptest.mock.Actualization.mockActualizationUpdateStatus;
 import static apptest.mock.Actualization.mockActualizationVerifyAdministratorStakeholder;
 import static apptest.mock.Actualization.mockActualizationVerifyResident;
 import static apptest.mock.Canceled.mockCanceled;
+import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.Execution.mockExecution;
@@ -36,7 +37,6 @@ import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -75,7 +75,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_actualization_001_createProcessForNonCitizen";
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality");
 		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterVerifyResident);
 		mockFollowUp(caseId, scenarioName, stateAfterDenial);
@@ -97,6 +98,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
 			.with(tuple("Update phase", "external_task_actualization_update_phase"))
@@ -116,7 +119,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
 		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
@@ -153,6 +157,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
 			.with(tuple("Update phase", "external_task_actualization_update_phase"))
@@ -180,7 +186,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
 		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
@@ -234,6 +241,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
 			.with(tuple("Start actualization phase", "start_actualization_phase"))
@@ -270,7 +279,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterGetCancelInVerifyStakeholder = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
 			"actualization_verify-administrator-stakeholder--api-casedata-get-errand",
@@ -303,6 +313,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
 			.with(tuple("Start actualization phase", "start_actualization_phase"))
@@ -326,7 +338,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, STARTED);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholderNoAdministrator = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
 			"actualization_verify-administrator-stakeholder---api-casedata-get-errand-no-administrator",
@@ -380,6 +393,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			// Actualization
 			.with(tuple("Actualization", "actualization_phase"))
 			.with(tuple("Start actualization phase", "start_actualization_phase"))

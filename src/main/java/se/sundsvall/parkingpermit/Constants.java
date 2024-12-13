@@ -31,6 +31,8 @@ public final class Constants {
 	public static final String CAMUNDA_VARIABLE_DISPLAY_PHASE = "displayPhase";
 	public static final String CAMUNDA_VARIABLE_CARD_EXISTS = "cardExists";
 	public static final String CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE = "timeToSendControlMessage";
+	public static final String CAMUNDA_VARIABLE_IS_APPEAL = "isAppeal";
+	public static final String CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW = "isInTimelinessReview";
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
@@ -87,6 +89,7 @@ public final class Constants {
 	public static final String CASE_TYPE_PARKING_PERMIT = "PARKING_PERMIT";
 	public static final String CASE_TYPE_PARKING_PERMIT_RENEWAL = "PARKING_PERMIT_RENEWAL";
 	public static final String CASE_TYPE_LOST_PARKING_PERMIT = "LOST_PARKING_PERMIT";
+	public static final String CASE_TYPE_APPEAL = "APPEAL";
 
 	public static final String MESSAGING_KEY_FLOW_INSTANCE_ID = "flowInstanceId";
 }

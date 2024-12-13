@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Actualization.mockActualization;
+import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecutionCreateAsset;
 import static apptest.mock.Execution.mockExecutionOrderCard;
@@ -66,6 +67,7 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName);
 		mockActualization(caseId, scenarioName);
 		mockInvestigation(caseId, scenarioName);
 		final var stateAfterDecision = mockDecision(caseId, scenarioName);
@@ -121,6 +123,8 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			.with(actualizationPathway())
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
 			.with(investigationPathway())

@@ -12,6 +12,7 @@ import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 import java.time.Duration;
 
 import static apptest.mock.Actualization.mockActualization;
+import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
@@ -62,6 +63,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName);
 		mockActualization(caseId, scenarioName);
 		mockInvestigation(caseId, scenarioName);
 		mockDecision(caseId, scenarioName);
@@ -85,6 +87,8 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 		// Verify process pathway.
 		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
 			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			.with(actualizationPathway())
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
 			.with(investigationPathway())
