@@ -1,44 +1,156 @@
 {
-	"id": "{{parameters.caseId}}",
-	"version": 2,
-	"created": "2022-12-02T15:13:45.363499+01:00",
-	"updated": "2022-12-02T15:17:01.5636+01:00",
-	"errandNumber": "PRH-2022-000001",
+	"municipalityId": "2281",
 	"externalCaseId": "2971",
-	"caseType": "{{parameters.caseTypeParameter}}",
-	"namespace": "SBK_PARKING_PERMIT",
-	"priority": "MEDIUM",
+	"attachments": [],
+	"notes": [],
+	"errandNumber": "PRH-2022-000001",
+	"createdByClient": "WSO2_CaseManagementUI",
+	"messageIds": [],
 	"description": "",
-	"caseTitleAddition": "Nytt parkeringstillstånd",
-	"diaryNumber": "",
-	"phase": "{{parameters.phaseParameter}}",
-	"statuses": [
+	"extraParameters": [
 		{
-			"statusType": "{{parameters.statusTypeParameter}}",
-			"description": "Ärende har kommit in från e-tjänsten.",
-			"dateTime": "2023-09-08T08:31:29.181Z"
+			"values": [
+				"false"
+			],
+			"key": "disability.walkingAbility"
+		},
+		{
+			"values": [
+				"true"
+			],
+			"key": "application.applicant.testimonial"
+		},
+		{
+			"values": [
+				"false"
+			],
+			"key": "consent.view.transportationServiceDetails"
+		},
+		{
+			"values": [
+				"Inget"
+			],
+			"key": "disability.aid"
+		},
+		{
+			"values": [
+				"true"
+			],
+			"key": "disability.canBeAloneWhileParking"
+		},
+		{
+			"values": [
+				"SELF"
+			],
+			"key": "application.role"
+		},
+		{
+			"values": [
+				"DRIVER"
+			],
+			"key": "application.applicant.capacity"
+		},
+		{
+			"values": [
+				"false"
+			],
+			"key": "application.applicant.signingAbility"
+		},
+		{
+			"values": [],
+			"key": "disability.walkingDistance.max"
+		},
+		{
+			"values": [],
+			"key": "disability.walkingDistance.beforeRest"
+		},
+		{
+			"values": [
+				"false"
+			],
+			"key": "consent.contact.doctor"
+		},
+		{
+			"values": [
+				""
+			],
+			"key": "application.reason"
+		},
+		{
+			"values": [],
+			"key": "disability.canBeAloneWhileParking.note"
+		},
+		{
+			"values": [
+				"P6M"
+			],
+			"key": "disability.duration"
+		},
+		{
+			"values": [
+				"{{parameters.permitNumberParameter}}"
+			],
+			"key": "artefact.permit.number"
+		},
+		{
+			"values": [
+				"{{parameters.phaseActionParameter}}"
+			],
+			"key": "process.phaseAction"
+		},
+		{
+			"values": [
+				"{{parameters.displayPhaseParameter}}"
+			],
+			"key": "process.displayPhase"
+		},
+		{
+			"values": [
+				"{{parameters.phaseStatusParameter}}"
+			],
+			"key": "process.phaseStatus"
 		}
 	],
-	"municipalityId": "2281",
-	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
 	"stakeholders": [
 		{
-			"id": 1,
-			"version": 0,
-			"created": "2022-12-02T15:13:45.371645+01:00",
-			"updated": "2022-12-02T15:13:45.371676+01:00",
-			"type": "PERSON",
 			"firstName": "John",
 			"lastName": "Doe",
-			"personId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+			"addresses": [
+				{
+					"city": "SUNDSVALL",
+					"street": "STORGATAN 1",
+					"postalCode": "850 00"
+				}
+			],
+			"contactInformation": [
+				{
+					"contactType": "PHONE",
+					"value": "070-1234567"
+				},
+				{
+					"contactType": "EMAIL",
+					"value": "john.doe@example.com"
+				}
+			],
+			"created": "2022-12-02T15:13:45.371645+01:00",
 			"roles": [
 				"APPLICANT"
 			],
+			"extraParameters": {},
+			"personId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+			"id": 1,
+			"type": "PERSON",
+			"version": 0,
+			"updated": "2022-12-02T15:13:45.371676+01:00"
+		},
+		{
+			"firstName": "Kalle",
+			"lastName": "Anka",
 			"addresses": [
 				{
+					"city": "SUNDSVALL",
 					"street": "STORGATAN 1",
-					"postalCode": "850 00",
-					"city": "SUNDSVALL"
+					"postalCode": "850 00"
 				}
 			],
 			"contactInformation": [
@@ -51,167 +163,55 @@
 					"value": "john.doe@example.com"
 				}
 			],
-			"extraParameters": {}
-		},
-		{
-			"id": 1,
-			"version": 0,
 			"created": "2022-12-02T15:13:45.371645+01:00",
-			"updated": "2022-12-02T15:13:45.371676+01:00",
-			"type": "PERSON",
-			"firstName": "Kalle",
-			"lastName": "Anka",
-			"personId": "6b8928bb-9800-4d52-a9fa-20d88c812345",
 			"roles": [
 				"{{parameters.role}}"
 			],
-			"addresses": [
-				{
-					"street": "STORGATAN 1",
-					"postalCode": "850 00",
-					"city": "SUNDSVALL"
-				}
-			],
-			"contactInformation": [
-				{
-					"contactType": "PHONE",
-					"value": "070-1234567"
-				},
-				{
-					"contactType": "EMAIL",
-					"value": "john.doe@example.com"
-				}
-			],
-			"extraParameters": {}
+			"extraParameters": {},
+			"personId": "6b8928bb-9800-4d52-a9fa-20d88c812345",
+			"id": 1,
+			"type": "PERSON",
+			"version": 0,
+			"updated": "2022-12-02T15:13:45.371676+01:00"
 		}
 	],
-	"facilities": [],
-	"attachments": [],
+	"caseType": "{{parameters.caseTypeParameter}}",
+	"diaryNumber": "",
+	"processId": "896a44d8-724b-11ed-a840-0242ac110002",
+	"caseTitleAddition": "Nytt parkeringstillstånd",
 	"decisions": [
 		{
-			"id": 1,
+			"description": "Beskrivning",
 			"decisionType": "RECOMMENDED",
 			"decisionOutcome": "{{parameters.decisionOutcome}}",
-			"description": "Beskrivning",
+			"id": 1,
 			"version": 0
 		},
 		{
-			"id": 2,
-			"version": 1,
+			"description": "Beskrivning",
 			"decisionType": "{{parameters.decisionTypeParameter}}",
 			"decisionOutcome": "{{parameters.decisionOutcome}}",
-			"description": "Beskrivning",
+			"id": 2,
 			"validFrom": "2024-05-17T08:31:29.181Z",
+			"version": 1,
 			"validTo": "2025-05-17T08:31:29.181Z"
 		}
 	],
-	"notes": [],
-	"messageIds": [],
-	"createdByClient": "WSO2_CaseManagementUI",
-	"createdBy": "UNKNOWN",
+	"id": "{{parameters.caseId}}",
+	"phase": "{{parameters.phaseParameter}}",
 	"updatedBy": "UNKNOWN",
-	"extraParameters": [
+	"created": "2022-12-02T15:13:45.363499+01:00",
+	"priority": "MEDIUM",
+	"version": 2,
+	"createdBy": "UNKNOWN",
+	"namespace": "SBK_PARKING_PERMIT",
+	"statuses": [
 		{
-			"key": "disability.walkingAbility",
-			"values": [
-				"false"
-			]
-		},
-		{
-			"key": "application.applicant.testimonial",
-			"values": [
-				"true"
-			]
-		},
-		{
-			"key": "consent.view.transportationServiceDetails",
-			"values": [
-				"false"
-			]
-		},
-		{
-			"key": "disability.aid",
-			"values": [
-				"Inget"
-			]
-		},
-		{
-			"key": "disability.canBeAloneWhileParking",
-			"values": [
-				"true"
-			]
-		},
-		{
-			"key": "application.role",
-			"values": [
-				"SELF"
-			]
-		},
-		{
-			"key": "application.applicant.capacity",
-			"values": [
-				"DRIVER"
-			]
-		},
-		{
-			"key": "application.applicant.signingAbility",
-			"values": [
-				"false"
-			]
-		},
-		{
-			"key": "disability.walkingDistance.max",
-			"values": []
-		},
-		{
-			"key": "disability.walkingDistance.beforeRest",
-			"values": []
-		},
-		{
-			"key": "consent.contact.doctor",
-			"values": [
-				"false"
-			]
-		},
-		{
-			"key": "application.reason",
-			"values": [
-				""
-			]
-		},
-		{
-			"key": "disability.canBeAloneWhileParking.note",
-			"values": []
-		},
-		{
-			"key": "disability.duration",
-			"values": [
-				"P6M"
-			]
-		},
-		{
-			"key": "artefact.permit.number",
-			"values": [
-				"{{parameters.permitNumberParameter}}"
-			]
-		},
-		{
-			"key": "process.phaseAction",
-			"values": [
-				"{{parameters.phaseActionParameter}}"
-			]
-		},
-		{
-			"key": "process.displayPhase",
-			"values": [
-				"{{parameters.displayPhaseParameter}}"
-			]
-		},
-		{
-			"key": "process.phaseStatus",
-			"values": [
-				"{{parameters.phaseStatusParameter}}"
-			]
+			"dateTime": "2023-09-08T08:31:29.181Z",
+			"statusType": "{{parameters.statusTypeParameter}}",
+			"description": "Ärende har kommit in från e-tjänsten."
 		}
-	]
+	],
+	"facilities": [],
+	"updated": "2022-12-02T15:17:01.5636+01:00"
 }

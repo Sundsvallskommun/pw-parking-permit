@@ -1,22 +1,22 @@
 {
-	"personId": "{{parameters.personId}}",
-	"givenname": "John",
-	"lastname": "Doe",
-	"gender": "M",
-	"civilStatus": "G ",
-	"nrDate": "20100333",
-	"classified": "N",
-	"protectedNR": "N",
 	"addresses": [
 		{
-			"realEstateDescription": "SUNDSVALL 1:1",
-			"address": "STORGATAN 1",
-			"postalCode": "850 00",
-			"city": "SUNDSVALL",
-			"municipality": "{{parameters.municipalityId}}",
 			"country": "SVERIGE",
-			"emigrated": false,
-			"addressType": "POPULATION_REGISTRATION_ADDRESS"
+			"address": "STORGATAN 1",
+			"city": "SUNDSVALL",
+			"addressType": "POPULATION_REGISTRATION_ADDRESS",
+			"postalCode": "850 00",
+			"realEstateDescription": "SUNDSVALL 1:1",
+			"municipality": "{{parameters.municipalityId}}",
+			"emigrated": false
 		}
-	]
+	],
+	"gender": "M",
+	"givenname": "John",
+	"nrDate": "20100333",
+	"personId": "{{parameters.personId}}",
+	"classified": "N",
+	"protectedNR": "N",
+	"lastname": "Doe",
+	"civilStatus": "G "
 }

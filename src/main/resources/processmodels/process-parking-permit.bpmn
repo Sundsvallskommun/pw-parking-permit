@@ -10,7 +10,7 @@
       <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
       <bpmn:incoming>Flow_123m201</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="actualization_phase" />
+    <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="external_task_check_appeal" />
     <bpmn:exclusiveGateway id="gateway_is_citizen" name="Gateway isCitizen" default="applicant_resident_of_municipality">
       <bpmn:incoming>Flow_1quthlt</bpmn:incoming>
       <bpmn:outgoing>applicant_resident_of_municipality</bpmn:outgoing>
@@ -25,6 +25,7 @@
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
       <bpmn:extensionElements />
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
+      <bpmn:incoming>Flow_0u2mzhe</bpmn:incoming>
       <bpmn:outgoing>Flow_0uzrwpk</bpmn:outgoing>
       <bpmn:startEvent id="start_automatic_denial_phase" name="Start automatic denial phase">
         <bpmn:outgoing>Flow_094lgnf</bpmn:outgoing>
@@ -80,6 +81,7 @@
     <bpmn:subProcess id="decision_phase" name="Decision">
       <bpmn:extensionElements />
       <bpmn:incoming>Flow_0f8p51c</bpmn:incoming>
+      <bpmn:incoming>Flow_0k33jw2</bpmn:incoming>
       <bpmn:outgoing>Flow_0pxgkeh</bpmn:outgoing>
       <bpmn:startEvent id="start_decision_phase" name="Start decision phase">
         <bpmn:outgoing>update_phase</bpmn:outgoing>
@@ -127,7 +129,7 @@
       <bpmn:sequenceFlow id="Flow_0q6qxpu" sourceRef="external_task_decision_update_errand_status" targetRef="external_task_check_decision_task" />
     </bpmn:subProcess>
     <bpmn:subProcess id="actualization_phase" name="Actualization">
-      <bpmn:incoming>Flow_1bt8y6y</bpmn:incoming>
+      <bpmn:incoming>Flow_1pf2pgk</bpmn:incoming>
       <bpmn:outgoing>Flow_1quthlt</bpmn:outgoing>
       <bpmn:startEvent id="start_actualization_phase" name="Start actualization phase">
         <bpmn:outgoing>Flow_0uze4jm</bpmn:outgoing>
@@ -523,159 +525,212 @@
       <bpmn:sequenceFlow id="Flow_1w50k22" sourceRef="external_task_canceled_update_errand_status" targetRef="external_task_canceled_clean_up_notes" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_123m201" sourceRef="canceled_phase" targetRef="end_process" />
+    <bpmn:serviceTask id="external_task_check_appeal" name="Check appeal" camunda:type="external" camunda:topic="CheckAppealTask">
+      <bpmn:incoming>Flow_1bt8y6y</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mbqpvl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="gateway_is_appeal" name="Gateway isAppeal" default="Flow_1pf2pgk">
+      <bpmn:incoming>Flow_1mbqpvl</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pf2pgk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0u2mzhe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0k33jw2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1mbqpvl" sourceRef="external_task_check_appeal" targetRef="gateway_is_appeal" />
+    <bpmn:sequenceFlow id="Flow_1pf2pgk" sourceRef="gateway_is_appeal" targetRef="actualization_phase" />
+    <bpmn:sequenceFlow id="Flow_0u2mzhe" name="Not in timeliness review" sourceRef="gateway_is_appeal" targetRef="subprocess_automatic_denial">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAppeal &amp;&amp; !isInTimelinessReview}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0k33jw2" name="Is appeal" sourceRef="gateway_is_appeal" targetRef="decision_phase">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAppeal}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmn:signal id="Signal_12tih0s" name="Signal_12tih0s" />
   <bpmn:message id="Message_0l2uuvr" name="cancelMessage" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process-parking-permit">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start_process">
-        <dc:Bounds x="172" y="262" width="36" height="36" />
+        <dc:Bounds x="170" y="262" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="157" y="238" width="66" height="14" />
+          <dc:Bounds x="155" y="238" width="66" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="end_process">
-        <dc:Bounds x="1412" y="262" width="36" height="36" />
+        <dc:Bounds x="1662" y="262" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1400" y="305" width="62" height="14" />
+          <dc:Bounds x="1650" y="305" width="62" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
-        <dc:Bounds x="375" y="255" width="50" height="50" />
+        <dc:Bounds x="625" y="255" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="355.5" y="231" width="89" height="14" />
+          <dc:Bounds x="606" y="231" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0u04fml_di" bpmnElement="subprocess_automatic_denial">
-        <dc:Bounds x="680" y="420" width="100" height="80" />
+        <dc:Bounds x="930" y="420" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_16z14pk_di" bpmnElement="decision_phase">
-        <dc:Bounds x="680" y="240" width="100" height="80" />
+        <dc:Bounds x="930" y="240" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0gxf5af_di" bpmnElement="actualization_phase">
-        <dc:Bounds x="240" y="240" width="100" height="80" />
+        <dc:Bounds x="490" y="240" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_12wwzep_di" bpmnElement="investigation_phase">
-        <dc:Bounds x="460" y="240" width="100" height="80" />
+        <dc:Bounds x="710" y="240" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_10gf95y_di" bpmnElement="call_activity_handling">
-        <dc:Bounds x="900" y="240" width="100" height="80" />
+        <dc:Bounds x="1150" y="240" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0q7yr2w_di" bpmnElement="call_activity_execution">
-        <dc:Bounds x="1080" y="240" width="100" height="80" />
+        <dc:Bounds x="1330" y="240" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0om9fak_di" bpmnElement="call_activity_follow_up">
-        <dc:Bounds x="1260" y="240" width="100" height="80" />
+        <dc:Bounds x="1510" y="240" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0gw4wra_di" bpmnElement="gateway_investigation_canceled" isMarkerVisible="true">
-        <dc:Bounds x="595" y="255" width="50" height="50" />
+        <dc:Bounds x="845" y="255" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="586" y="312" width="68" height="27" />
+          <dc:Bounds x="836" y="312" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0y0fji0_di" bpmnElement="gateway_decision_canceled" isMarkerVisible="true">
-        <dc:Bounds x="815" y="255" width="50" height="50" />
+        <dc:Bounds x="1065" y="255" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="807" y="212" width="73" height="40" />
+          <dc:Bounds x="1057" y="212" width="73" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_11s4wgj_di" bpmnElement="canceled_phase">
-        <dc:Bounds x="1080" y="50" width="100" height="80" />
+        <dc:Bounds x="1330" y="50" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1sufby5_di" bpmnElement="external_task_check_appeal">
+        <dc:Bounds x="248" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0cmeqid_di" bpmnElement="gateway_is_appeal" isMarkerVisible="true">
+        <dc:Bounds x="400" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="380" y="231" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1bt8y6y_di" bpmnElement="Flow_1bt8y6y">
-        <di:waypoint x="208" y="280" />
-        <di:waypoint x="240" y="280" />
+        <di:waypoint x="206" y="280" />
+        <di:waypoint x="248" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1lnpzf2_di" bpmnElement="applicant_resident_of_municipality">
-        <di:waypoint x="425" y="280" />
-        <di:waypoint x="460" y="280" />
+        <di:waypoint x="675" y="280" />
+        <di:waypoint x="710" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0g9o4ey_di" bpmnElement="applicant_not_resident_of_municipality">
-        <di:waypoint x="400" y="305" />
-        <di:waypoint x="400" y="460" />
-        <di:waypoint x="680" y="460" />
+        <di:waypoint x="650" y="305" />
+        <di:waypoint x="650" y="460" />
+        <di:waypoint x="930" y="460" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="408" y="363" width="64" height="40" />
+          <dc:Bounds x="658" y="363" width="64" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0uzrwpk_di" bpmnElement="Flow_0uzrwpk">
-        <di:waypoint x="780" y="460" />
-        <di:waypoint x="1310" y="460" />
-        <di:waypoint x="1310" y="320" />
+        <di:waypoint x="1030" y="460" />
+        <di:waypoint x="1560" y="460" />
+        <di:waypoint x="1560" y="320" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ycmz1a_di" bpmnElement="Flow_0ycmz1a">
-        <di:waypoint x="1360" y="280" />
-        <di:waypoint x="1412" y="280" />
+        <di:waypoint x="1610" y="280" />
+        <di:waypoint x="1662" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1quthlt_di" bpmnElement="Flow_1quthlt">
-        <di:waypoint x="340" y="280" />
-        <di:waypoint x="375" y="280" />
+        <di:waypoint x="590" y="280" />
+        <di:waypoint x="625" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ru4901_di" bpmnElement="Flow_0ru4901">
-        <di:waypoint x="560" y="280" />
-        <di:waypoint x="595" y="280" />
+        <di:waypoint x="810" y="280" />
+        <di:waypoint x="845" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0f8p51c_di" bpmnElement="Flow_0f8p51c">
-        <di:waypoint x="645" y="280" />
-        <di:waypoint x="680" y="280" />
+        <di:waypoint x="895" y="280" />
+        <di:waypoint x="930" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0pxgkeh_di" bpmnElement="Flow_0pxgkeh">
-        <di:waypoint x="780" y="280" />
-        <di:waypoint x="815" y="280" />
+        <di:waypoint x="1030" y="280" />
+        <di:waypoint x="1065" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0848exc_di" bpmnElement="Flow_0848exc">
-        <di:waypoint x="865" y="280" />
-        <di:waypoint x="900" y="280" />
+        <di:waypoint x="1115" y="280" />
+        <di:waypoint x="1150" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_13ofnma_di" bpmnElement="Flow_13ofnma">
-        <di:waypoint x="1000" y="280" />
-        <di:waypoint x="1080" y="280" />
+        <di:waypoint x="1250" y="280" />
+        <di:waypoint x="1330" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0dmonfx_di" bpmnElement="Flow_0dmonfx">
-        <di:waypoint x="840" y="255" />
-        <di:waypoint x="840" y="90" />
-        <di:waypoint x="1080" y="90" />
+        <di:waypoint x="1090" y="255" />
+        <di:waypoint x="1090" y="90" />
+        <di:waypoint x="1330" y="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="163" width="56" height="14" />
+          <dc:Bounds x="1102" y="163" width="56" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0evqnur_di" bpmnElement="Flow_0evqnur">
-        <di:waypoint x="620" y="255" />
-        <di:waypoint x="620" y="90" />
-        <di:waypoint x="1080" y="90" />
+        <di:waypoint x="870" y="255" />
+        <di:waypoint x="870" y="90" />
+        <di:waypoint x="1330" y="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="632" y="163" width="56" height="14" />
+          <dc:Bounds x="882" y="163" width="56" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ks4wqv_di" bpmnElement="Flow_1ks4wqv">
-        <di:waypoint x="400" y="255" />
-        <di:waypoint x="400" y="90" />
-        <di:waypoint x="1080" y="90" />
+        <di:waypoint x="650" y="255" />
+        <di:waypoint x="650" y="90" />
+        <di:waypoint x="1330" y="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="412" y="164" width="56" height="14" />
+          <dc:Bounds x="662" y="164" width="56" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fmqs5z_di" bpmnElement="Flow_1fmqs5z">
-        <di:waypoint x="840" y="305" />
-        <di:waypoint x="840" y="460" />
-        <di:waypoint x="1310" y="460" />
-        <di:waypoint x="1310" y="320" />
+        <di:waypoint x="1090" y="305" />
+        <di:waypoint x="1090" y="460" />
+        <di:waypoint x="1560" y="460" />
+        <di:waypoint x="1560" y="320" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="384" width="76" height="14" />
+          <dc:Bounds x="1102" y="384" width="76" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0xpanp5_di" bpmnElement="Flow_0xpanp5">
-        <di:waypoint x="1180" y="280" />
-        <di:waypoint x="1260" y="280" />
+        <di:waypoint x="1430" y="280" />
+        <di:waypoint x="1510" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_123m201_di" bpmnElement="Flow_123m201">
-        <di:waypoint x="1180" y="90" />
         <di:waypoint x="1430" y="90" />
-        <di:waypoint x="1430" y="262" />
+        <di:waypoint x="1680" y="90" />
+        <di:waypoint x="1680" y="262" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mbqpvl_di" bpmnElement="Flow_1mbqpvl">
+        <di:waypoint x="348" y="280" />
+        <di:waypoint x="400" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pf2pgk_di" bpmnElement="Flow_1pf2pgk">
+        <di:waypoint x="450" y="280" />
+        <di:waypoint x="490" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u2mzhe_di" bpmnElement="Flow_0u2mzhe">
+        <di:waypoint x="425" y="305" />
+        <di:waypoint x="425" y="460" />
+        <di:waypoint x="930" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="399" y="380" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k33jw2_di" bpmnElement="Flow_0k33jw2">
+        <di:waypoint x="425" y="255" />
+        <di:waypoint x="425" y="90" />
+        <di:waypoint x="980" y="90" />
+        <di:waypoint x="980" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680" y="72" width="46" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -685,6 +740,12 @@
         <dc:Bounds x="162" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="143" y="145" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11hhelj_di" bpmnElement="end_automatic_denial_phase">
+        <dc:Bounds x="1282" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1265" y="145" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0veok4u_di" bpmnElement="external_task_update_errand_phase">
@@ -713,12 +774,6 @@
       <bpmndi:BPMNShape id="BPMNShape_1x1vjht" bpmnElement="external_task_send_simplified_service">
         <dc:Bounds x="1130" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_11hhelj_di" bpmnElement="end_automatic_denial_phase">
-        <dc:Bounds x="1282" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1265" y="145" width="71" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_094lgnf_di" bpmnElement="Flow_094lgnf">
         <di:waypoint x="198" y="120" />
