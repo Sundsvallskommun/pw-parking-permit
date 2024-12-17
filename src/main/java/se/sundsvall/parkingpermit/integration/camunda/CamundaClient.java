@@ -17,6 +17,7 @@ import generated.se.sundsvall.camunda.ProcessInstanceDto;
 import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.camunda.StartProcessInstanceDto;
 import generated.se.sundsvall.camunda.VariableValueDto;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import se.sundsvall.parkingpermit.integration.businessrules.configuration.BusinessRulesConfiguration;
 import se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.camunda.url}", configuration = CamundaConfiguration.class)
+@CircuitBreaker(name = BusinessRulesConfiguration.CLIENT_ID)
 public interface CamundaClient {
 
 	@PostMapping(path = "process-definition/key/{key}/start", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
