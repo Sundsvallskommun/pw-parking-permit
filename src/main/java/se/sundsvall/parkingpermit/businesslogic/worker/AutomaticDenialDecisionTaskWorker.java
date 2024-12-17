@@ -21,6 +21,7 @@ import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Objects;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -76,6 +77,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var pdf = messagingService.renderPdf(municipalityId, errand);
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts().description())
 				.decidedBy(stakeholder)
+				.decidedAt(OffsetDateTime.now())
 				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
 				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 

@@ -208,7 +208,9 @@ public class CaseData {
 					}, {
 						"key" : "process.displayPhase",
 						"values" : [ "%s" ]
-					} ]
+					} ],
+					"relatesTo" : [ ],
+			        "labels" : [ ]
 					}""", phase, phaseStatus, phaseAction, displayPhase);
 	}
 }

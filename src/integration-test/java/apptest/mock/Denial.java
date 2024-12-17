@@ -112,6 +112,7 @@ public class Denial {
 									"contactInformation": [],
 									"extraParameters": {}
 								},
+								"decidedAt": "${json-unit.any-string}",
 								"attachments": [
 									{
 										"category": "BESLUT",

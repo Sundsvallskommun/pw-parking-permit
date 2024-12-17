@@ -156,7 +156,7 @@ class CaseDataMapperTest {
 			new ExtraParameter("process.phaseStatus").values(emptyList()),
 			new ExtraParameter("process.phaseAction").values(emptyList()),
 			new ExtraParameter("process.displayPhase").values(emptyList()));
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "relatesTo", "labels")
 			.extracting(PatchErrand::getFacilities,
 				PatchErrand::getExtraParameters)
 			.containsExactly(null, expectedExtraParameters);
@@ -179,7 +179,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, displayPhase, extraParameters);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels")
 			.extracting(
 				PatchErrand::getExternalCaseId,
 				PatchErrand::getPhase,
@@ -208,7 +208,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels")
 			.extracting(
 				PatchErrand::getExternalCaseId,
 				PatchErrand::getPhase,
