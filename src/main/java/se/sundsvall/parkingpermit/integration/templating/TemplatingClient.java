@@ -5,13 +5,16 @@ import static se.sundsvall.parkingpermit.integration.templating.configuration.Te
 
 import generated.se.sundsvall.templating.RenderRequest;
 import generated.se.sundsvall.templating.RenderResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import se.sundsvall.parkingpermit.integration.businessrules.configuration.BusinessRulesConfiguration;
 import se.sundsvall.parkingpermit.integration.templating.configuration.TemplatingConfiguration;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.templating.url}", configuration = TemplatingConfiguration.class)
+@CircuitBreaker(name = BusinessRulesConfiguration.CLIENT_ID)
 public interface TemplatingClient {
 
 	/**
