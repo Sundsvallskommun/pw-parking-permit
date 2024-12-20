@@ -13,6 +13,7 @@ public final class Constants {
 	public static final String PARTY_ASSET_ORIGIN = "CASEDATA";
 	public static final String PARTY_ASSET_TYPE = "PARKINGPERMIT";
 	public static final String PARTY_ASSET_DESCRIPTION = "Parkeringstillstånd";
+	public static final String PARTY_ASSET_STATUS_ACTIVE = "ACTIVE";
 
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR = "assignedToAdministrator";
@@ -90,6 +91,8 @@ public final class Constants {
 	public static final String CASE_TYPE_PARKING_PERMIT_RENEWAL = "PARKING_PERMIT_RENEWAL";
 	public static final String CASE_TYPE_LOST_PARKING_PERMIT = "LOST_PARKING_PERMIT";
 	public static final String CASE_TYPE_APPEAL = "APPEAL";
+
+	public static final String CASE_DATA_REASON_APPEAL = "APPEAL";
 
 	public static final String MESSAGING_KEY_FLOW_INSTANCE_ID = "flowInstanceId";
 }

@@ -2,11 +2,14 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CASE_DATA_REASON_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 
 import generated.se.sundsvall.casedata.Errand;
@@ -19,7 +22,6 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -78,16 +80,17 @@ public class CheckAppealTaskWorker extends AbstractTaskWorker {
 		final var appealedDecision = appealedErrand.getDecisions().stream()
 			.filter(decision -> FINAL.equals(decision.getDecisionType()))
 			.findFirst()
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, APPEALED_ERRAND_IS_MISSING_FINAL_DECISION.formatted(appealedErrand.getId(), appealedErrand.getNamespace(), appealedErrand.getMunicipalityId())));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, APPEALED_ERRAND_IS_MISSING_FINAL_DECISION.formatted(appealedErrand.getId(), appealedErrand.getNamespace(), appealedErrand.getMunicipalityId())));
 
-		return ofNullable(appealedDecision.getDecidedAt()).orElseThrow(() -> Problem.valueOf(Status.BAD_REQUEST, DECIDED_AT_IS_MISSING_IN_APPEALED_DECISION.formatted(appealedErrand.getId(), appealedErrand.getNamespace(), appealedErrand
+		return ofNullable(appealedDecision.getDecidedAt()).orElseThrow(() -> Problem.valueOf(BAD_REQUEST, DECIDED_AT_IS_MISSING_IN_APPEALED_DECISION.formatted(appealedErrand.getId(), appealedErrand.getNamespace(), appealedErrand
 			.getMunicipalityId())))
 			.plusDays(DAYS_IN_TIMELINESS_REVIEW).isAfter(applicationReceived);
 	}
 
 	private RelatedErrand getAppealedErrand(Errand errand) {
 		return ofNullable(errand.getRelatesTo()).orElse(Collections.emptyList()).stream()
+			.filter(relatedErrand -> CASE_DATA_REASON_APPEAL.equals(relatedErrand.getRelationReason()))
 			.findFirst()
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND, APPEAL_IS_MISSING_RELATED_ERRAND.formatted(errand.getId(), errand.getNamespace(), errand.getMunicipalityId())));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, APPEAL_IS_MISSING_RELATED_ERRAND.formatted(errand.getId(), errand.getNamespace(), errand.getMunicipalityId())));
 	}
 }
