@@ -1,8 +1,12 @@
 package se.sundsvall.parkingpermit.service;
 
+import static java.util.Objects.isNull;
+import static se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper.toAssetUpdateRequest;
 import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
 
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.partyassets.Asset;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
 
@@ -17,5 +21,19 @@ public class PartyAssetsService {
 
 	public void createAsset(String municipalityId, Errand errand) {
 		partyAssetsClient.createAsset(municipalityId, toAssetCreateRequest(errand));
+	}
+
+	public List<Asset> getAssets(String municipalityId, String assetId, String partyId, String status) {
+		if (isNull(assetId) || isNull(partyId)) {
+			return null;
+		}
+		return partyAssetsClient.getAssets(municipalityId, assetId, partyId, status).getBody();
+	}
+
+	public void updateAssetWithNewAdditionalParameter(String municipalityId, Asset asset, Long caseNumber) {
+		if (isNull(asset) || isNull(caseNumber)) {
+			return;
+		}
+		partyAssetsClient.updateAsset(municipalityId, asset.getId(), toAssetUpdateRequest(asset, caseNumber));
 	}
 }

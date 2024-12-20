@@ -95,6 +95,7 @@ class CheckAppealTaskWorkerTest {
 		when(errandMock.getApplicationReceived()).thenReturn(OffsetDateTime.now().minusDays(5));
 
 		when(relatedErrandMock.getErrandId()).thenReturn(relatedErrandId);
+		when(relatedErrandMock.getRelationReason()).thenReturn("APPEAL");
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId)).thenReturn(appealedErrandMock);
 		when(appealedErrandMock.getDecisions()).thenReturn(List.of(new Decision().decisionType(FINAL).decidedAt(OffsetDateTime.now().minusDays(10))));
 
@@ -134,6 +135,7 @@ class CheckAppealTaskWorkerTest {
 		when(errandMock.getApplicationReceived()).thenReturn(OffsetDateTime.now());
 
 		when(relatedErrandMock.getErrandId()).thenReturn(relatedErrandId);
+		when(relatedErrandMock.getRelationReason()).thenReturn("APPEAL");
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId)).thenReturn(appealedErrandMock);
 		when(appealedErrandMock.getDecisions()).thenReturn(List.of(new Decision().decisionType(FINAL).decidedAt(OffsetDateTime.now().minusDays(22))));
 
@@ -169,6 +171,7 @@ class CheckAppealTaskWorkerTest {
 		when(errandMock.getApplicationReceived()).thenReturn(OffsetDateTime.now());
 
 		when(relatedErrandMock.getErrandId()).thenReturn(relatedErrandId);
+		when(relatedErrandMock.getRelationReason()).thenReturn("APPEAL");
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId)).thenReturn(appealedErrandMock);
 		when(appealedErrandMock.getDecisions()).thenReturn(List.of(new Decision().decisionType(FINAL)));
 		when(appealedErrandMock.getId()).thenReturn(relatedErrandId);
@@ -242,6 +245,7 @@ class CheckAppealTaskWorkerTest {
 		when(errandMock.getApplicationReceived()).thenReturn(OffsetDateTime.now().minusDays(5));
 
 		when(relatedErrandMock.getErrandId()).thenReturn(relatedErrandId);
+		when(relatedErrandMock.getRelationReason()).thenReturn("APPEAL");
 		when(appealedErrandMock.getId()).thenReturn(relatedErrandId);
 		when(appealedErrandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(appealedErrandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
