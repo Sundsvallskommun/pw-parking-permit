@@ -7,7 +7,9 @@ import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
+import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
+import static apptest.mock.api.PartyAssets.mockPartyAssetsPut;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
@@ -22,9 +24,16 @@ public class Execution {
 		return mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 	}
 
+	public static String mockExecutionWhenAppeal(String caseId, String scenarioName) {
+
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand");
+		final var stateAfterUpdateAsset = mockExecutionUpdateAsset(caseId, scenarioName, stateAfterUpdatePhase);
+		return mockSendSimplifiedService(caseId, scenarioName, stateAfterUpdateAsset);
+	}
+
 	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
 
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
@@ -75,7 +84,7 @@ public class Execution {
 	}
 
 	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState) {
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_create-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -102,6 +111,43 @@ public class Execution {
 					  }
 				""".formatted(caseId)));
 	}
+
+	public static String mockExecutionUpdateAsset(String caseId, String scenarioName, String requiredScenarioState) {
+		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+			"execution_update-asset-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Verkställa",
+				"phaseStatusParameter", "ONGOING",
+				"phaseActionParameter", "UNKNOWN",
+				"displayPhaseParameter", "Verkställa",
+				"permitNumberParameter", "12345"));
+
+		final var stateAfterGetAppealedErrand = mockCaseDataGet("456", scenarioName, stateAfterGetErrand,
+			"execution_update-asset-task-worker---api-casedata-get-appealed_errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Verkställa",
+				"phaseStatusParameter", "ONGOING",
+				"phaseActionParameter", "UNKNOWN",
+				"displayPhaseParameter", "Verkställa",
+				"permitNumberParameter", "12345"));
+
+		final var stateAfterGetAssets = mockPartyAssetsGet(scenarioName, stateAfterGetAppealedErrand,
+			"execution_update-asset-task-worker---api-party-assets-get-errand", "12345", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
+
+		return mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, stateAfterGetAssets,
+			"execution_update-asset-task-worker---api-party-asset-put-asset",
+			equalToJson("""
+					{
+						"caseReferenceIds" : [ ],
+						"additionalParameters" : {
+							"foo" : "bar",
+							"appealedErrand" : "123"
+						}
+					}
+					"""));
+
+	}
+
 
 	public static String mockExecutionCheckIfCardExists(String caseId, String scenarioName, String requiredScenarioState) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,

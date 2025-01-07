@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 import java.time.Duration;
@@ -48,6 +49,9 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -75,7 +79,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_actualization_001_createProcessForNonCitizen";
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality");
 		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterVerifyResident);
@@ -107,6 +111,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"))
 			.with(tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"))
 			.with(tuple("End when not citizen of municipality", "end_actualization_not_citizen"))
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
 			.with(denialPathway())
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
@@ -119,7 +124,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
@@ -186,7 +191,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
@@ -279,7 +284,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterGetCancelInVerifyStakeholder = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
@@ -338,7 +343,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName);
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
 		final var stateAfterVerifyStakeholderNoAdministrator = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,

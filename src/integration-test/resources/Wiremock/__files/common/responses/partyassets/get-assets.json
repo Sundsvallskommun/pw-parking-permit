@@ -1,0 +1,20 @@
+[
+	{
+		"id": "1c8f38a6-b492-4037-b7dc-de5bc6c629f0",
+		"assetId": "12345",
+		"origin": "CASEDATA",
+		"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+		"caseReferenceIds": [
+			"945576d3-6e92-4118-ba33-53582d338ad3"
+		],
+		"type": "PERMIT",
+		"issued": "2021-01-01",
+		"validTo": "2021-12-31",
+		"status": "ACTIVE",
+		"statusReason": "Status reason",
+		"description": "Asset description",
+		"additionalParameters": {
+			"foo": "bar"
+		}
+	}
+]

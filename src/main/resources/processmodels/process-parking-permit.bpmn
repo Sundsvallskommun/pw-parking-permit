@@ -365,7 +365,6 @@
       </bpmn:serviceTask>
       <bpmn:endEvent id="end_execution_phase" name="End execution phase">
         <bpmn:incoming>Flow_04aq083</bpmn:incoming>
-        <bpmn:incoming>Flow_1140hwc</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:serviceTask id="external_task_execution_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:documentation>Set phase to execution</bpmn:documentation>
@@ -398,7 +397,7 @@
       <bpmn:sequenceFlow id="Flow_1vffazr" sourceRef="external_task_execution_check_if_card_exists" targetRef="gateway_card_exists" />
       <bpmn:serviceTask id="external_task_execution_create_asset" name="Create asset" camunda:type="external" camunda:topic="CreateAssetTask">
         <bpmn:incoming>Flow_05uokxb</bpmn:incoming>
-        <bpmn:outgoing>Flow_14l41vo</bpmn:outgoing>
+        <bpmn:outgoing>Flow_09qf39q</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0cd66hz" sourceRef="external_task_execution_update_phase" targetRef="execution_gateway_is_appeal" />
       <bpmn:sequenceFlow id="Flow_0g63pvk" sourceRef="external_task_execution_order_card_task" targetRef="external_task_execution_check_if_card_exists" />
@@ -417,11 +416,10 @@
       <bpmn:sequenceFlow id="Flow_1ob3w5g" sourceRef="start_execution_phase" targetRef="parallel_gateway_start" />
       <bpmn:sequenceFlow id="Flow_047oo3c" sourceRef="parallel_gateway_start" targetRef="external_task_execution_update_phase" />
       <bpmn:parallelGateway id="parallel_gateway_end" name="End parallel gateway">
-        <bpmn:incoming>Flow_14l41vo</bpmn:incoming>
         <bpmn:incoming>Flow_1o4rmfe</bpmn:incoming>
+        <bpmn:incoming>Flow_1v8af33</bpmn:incoming>
         <bpmn:outgoing>Flow_04aq083</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:sequenceFlow id="Flow_14l41vo" sourceRef="external_task_execution_create_asset" targetRef="parallel_gateway_end" />
       <bpmn:sequenceFlow id="Flow_04aq083" sourceRef="parallel_gateway_end" targetRef="end_execution_phase" />
       <bpmn:sequenceFlow id="Flow_1o4rmfe" sourceRef="external_task_execution_send_message_task" targetRef="parallel_gateway_end" />
       <bpmn:intermediateCatchEvent id="timer_wait_to_send_message" name="Wait to send message">
@@ -438,7 +436,7 @@
         <bpmn:outgoing>Flow_05m9477</bpmn:outgoing>
         <bpmn:outgoing>Flow_0gvdv5y</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:serviceTask id="external_task_execution_update_asset" name="Update existing asset" camunda:type="external" camunda:topic="UpdaAssetTask">
+      <bpmn:serviceTask id="external_task_execution_update_asset" name="Update existing asset" camunda:type="external" camunda:topic="UpdateAssetTask">
         <bpmn:incoming>Flow_05m9477</bpmn:incoming>
         <bpmn:outgoing>Flow_1140hwc</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -446,7 +444,14 @@
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAppeal}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0gvdv5y" sourceRef="execution_gateway_is_appeal" targetRef="external_task_execution_order_card_task" />
-      <bpmn:sequenceFlow id="Flow_1140hwc" sourceRef="external_task_execution_update_asset" targetRef="end_execution_phase" />
+      <bpmn:sequenceFlow id="Flow_1140hwc" sourceRef="external_task_execution_update_asset" targetRef="execution_gateway_end_appeal" />
+      <bpmn:exclusiveGateway id="execution_gateway_end_appeal" name="End appeal">
+        <bpmn:incoming>Flow_09qf39q</bpmn:incoming>
+        <bpmn:incoming>Flow_1140hwc</bpmn:incoming>
+        <bpmn:outgoing>Flow_1v8af33</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_09qf39q" sourceRef="external_task_execution_create_asset" targetRef="execution_gateway_end_appeal" />
+      <bpmn:sequenceFlow id="Flow_1v8af33" sourceRef="execution_gateway_end_appeal" targetRef="parallel_gateway_end" />
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_follow_up" name="Follow up">
       <bpmn:incoming>Flow_0uzrwpk</bpmn:incoming>
@@ -1290,9 +1295,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0cboo3k_di" bpmnElement="parallel_gateway_end">
-        <dc:Bounds x="1385" y="225" width="50" height="50" />
+        <dc:Bounds x="1465" y="225" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1381" y="195" width="59" height="27" />
+          <dc:Bounds x="1461" y="195" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_16606o6_di" bpmnElement="timer_wait_to_send_message">
@@ -1310,6 +1315,12 @@
       <bpmndi:BPMNShape id="BPMNShape_06gdxd2" bpmnElement="external_task_execution_update_asset">
         <dc:Bounds x="1030" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1xgxy63_di" bpmnElement="execution_gateway_end_appeal" isMarkerVisible="true">
+        <dc:Bounds x="1355" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1353" y="282" width="57" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_1e1hzy6" bpmnElement="Flow_18p96l5">
         <di:waypoint x="1080" y="275" />
@@ -1350,18 +1361,14 @@
         <di:waypoint x="315" y="250" />
         <di:waypoint x="380" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_14l41vo_di" bpmnElement="Flow_14l41vo">
-        <di:waypoint x="1300" y="250" />
-        <di:waypoint x="1385" y="250" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_04aq083_di" bpmnElement="Flow_04aq083">
-        <di:waypoint x="1435" y="250" />
+        <di:waypoint x="1515" y="250" />
         <di:waypoint x="1582" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1o4rmfe_di" bpmnElement="Flow_1o4rmfe">
         <di:waypoint x="870" y="470" />
-        <di:waypoint x="1410" y="470" />
-        <di:waypoint x="1410" y="275" />
+        <di:waypoint x="1490" y="470" />
+        <di:waypoint x="1490" y="275" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hnnm7t_di" bpmnElement="Flow_1hnnm7t">
         <di:waypoint x="290" y="275" />
@@ -1386,8 +1393,16 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1140hwc_di" bpmnElement="Flow_1140hwc">
         <di:waypoint x="1130" y="120" />
-        <di:waypoint x="1600" y="120" />
-        <di:waypoint x="1600" y="232" />
+        <di:waypoint x="1380" y="120" />
+        <di:waypoint x="1380" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09qf39q_di" bpmnElement="Flow_09qf39q">
+        <di:waypoint x="1300" y="250" />
+        <di:waypoint x="1355" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v8af33_di" bpmnElement="Flow_1v8af33">
+        <di:waypoint x="1405" y="250" />
+        <di:waypoint x="1465" y="250" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

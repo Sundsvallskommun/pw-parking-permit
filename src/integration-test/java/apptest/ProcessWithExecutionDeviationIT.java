@@ -39,6 +39,7 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -67,7 +68,7 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 
 		//Setup mocks
 		mockApiGatewayToken();
-		mockCheckAppeal(caseId, scenarioName);
+		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName);
 		mockInvestigation(caseId, scenarioName);
 		final var stateAfterDecision = mockDecision(caseId, scenarioName);
@@ -145,6 +146,7 @@ public class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is card manufactured", "gateway_card_exists"))
 			.with(tuple("Is card manufactured", "gateway_card_exists"))
 			.with(tuple("Create asset", "external_task_execution_create_asset"))
+			.with(tuple("End appeal", "execution_gateway_end_appeal"))
 			//Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
