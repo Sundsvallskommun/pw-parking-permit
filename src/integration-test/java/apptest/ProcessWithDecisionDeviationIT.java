@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 import java.time.Duration;
@@ -44,6 +45,7 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -72,7 +74,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
@@ -153,7 +155,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation
@@ -205,7 +207,7 @@ public class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         mockActualization(caseId, scenarioName);
         final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
         // Mock deviation

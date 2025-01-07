@@ -40,7 +40,7 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			logInfo("Execute Worker for CreateAssetTask");
+			logInfo("Execute Worker for UpdateAssetTask");
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 

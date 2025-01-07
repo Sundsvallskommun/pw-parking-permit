@@ -64,12 +64,30 @@ public class ProcessPathway {
                 .with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))
                 .with(tuple("Is card manufactured", "gateway_card_exists"))
                 .with(tuple("Create asset", "external_task_execution_create_asset"))
+                .with(tuple("End appeal", "execution_gateway_end_appeal"))
                 //Added delay to send control message to make it happen after the asset is created
                 .with(tuple("Wait to send message", "timer_wait_to_send_message"))
                 .with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
                 .with(tuple("End parallel gateway", "parallel_gateway_end"))
                 .with(tuple("End parallel gateway", "parallel_gateway_end"))
                 .with(tuple("End execution phase", "end_execution_phase"));
+    }
+
+    public static Tuples executionPathwayWhenAppeal() {
+        return Tuples.create()
+            .with(tuple("Execution", "call_activity_execution"))
+            .with(tuple("Start execution phase", "start_execution_phase"))
+            .with(tuple("Send message in parallel flow", "parallel_gateway_start"))
+            .with(tuple("Update phase", "external_task_execution_update_phase"))
+            .with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
+            .with(tuple("Update existing asset", "external_task_execution_update_asset"))
+            .with(tuple("End appeal", "execution_gateway_end_appeal"))
+            //Added delay to send control message to make it happen after the asset is created
+            .with(tuple("Wait to send message", "timer_wait_to_send_message"))
+            .with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
+            .with(tuple("End parallel gateway", "parallel_gateway_end"))
+            .with(tuple("End parallel gateway", "parallel_gateway_end"))
+            .with(tuple("End execution phase", "end_execution_phase"));
     }
 
     public static Tuples followUpPathway() {
@@ -94,7 +112,6 @@ public class ProcessPathway {
     public static Tuples denialPathway() {
         return Tuples.create()
             .with(tuple("Start automatic denial phase", "start_automatic_denial_phase"))
-            .with(tuple("Gateway isCitizen", "gateway_is_citizen"))
             .with(tuple("Update phase on errand", "external_task_update_errand_phase"))
             .with(tuple("Add decision for denial to errand", "external_task_add_denial_decision"))
             .with(tuple("Update errand status", "external_task_update_errand_status"))

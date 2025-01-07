@@ -47,6 +47,7 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -75,7 +76,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         final var stateAfterActualization = mockActualization(caseId, scenarioName);
 
         // Mock deviation
@@ -166,7 +167,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         final var stateAfterActualization = mockActualization(caseId, scenarioName);
         // Mock deviation
         final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);
@@ -263,7 +264,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         final var stateAfterActualization = mockActualization(caseId, scenarioName);
 
         // Mock deviation
@@ -334,7 +335,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         //Setup mocks
         mockApiGatewayToken();
-        mockCheckAppeal(caseId, scenarioName);
+        mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
         final var stateAfterActualization = mockActualization(caseId, scenarioName);
         // Mock deviation
         final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization);

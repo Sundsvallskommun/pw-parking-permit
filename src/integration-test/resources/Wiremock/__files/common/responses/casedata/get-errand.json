@@ -185,7 +185,8 @@
 			"decisionType": "RECOMMENDED",
 			"decisionOutcome": "{{parameters.decisionOutcome}}",
 			"id": 1,
-			"version": 0
+			"version": 0,
+			"decidedAt": "{{parameters.decidedAtParameter}}"
 		},
 		{
 			"description": "Beskrivning",
@@ -194,7 +195,8 @@
 			"id": 2,
 			"validFrom": "2024-05-17T08:31:29.181Z",
 			"version": 1,
-			"validTo": "2025-05-17T08:31:29.181Z"
+			"validTo": "2025-05-17T08:31:29.181Z",
+			"decidedAt": "{{parameters.decidedAtParameter}}"
 		}
 	],
 	"id": "{{parameters.caseId}}",
@@ -213,5 +215,13 @@
 		}
 	],
 	"facilities": [],
+	"relatesTo": [
+		{
+			"errandId": 456,
+			"errandNumber": "PRH-2022-000001",
+			"relationReason": "APPEAL"
+		}
+	],
+	"applicationReceived": "{{parameters.applicationReceivedParameter}}",
 	"updated": "2022-12-02T15:17:01.5636+01:00"
 }
