@@ -6,11 +6,9 @@ import generated.se.sundsvall.partyassets.Asset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper;
 
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("junit")
 class PartyAssetMapperTest {
 
 	@Test

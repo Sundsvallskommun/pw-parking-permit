@@ -25,9 +25,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	private final Logger logger;
 
 	private final CamundaClient camundaClient;
-
 	protected final CaseDataClient caseDataClient;
-
 	protected final FailureHandler failureHandler;
 
 	protected AbstractTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {

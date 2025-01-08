@@ -28,8 +28,8 @@ class ErrandUtilTest {
 	private static final String ROLE_DOCTOR = "DOCTOR";
 
 	private static final Errand ERRAND = createErrand(List.of(
-		Map.entry(PERSON, "DRIVER"),
-		Map.entry(ORGANIZATION, "CONTROL_OFFICIAL")));
+		Map.entry(PERSON, ROLE_DRIVER),
+		Map.entry(ORGANIZATION, ROLE_CONTROL_OFFICIAL)));
 
 	@Test
 	void getStakeholderWithRoleWithMatches() {

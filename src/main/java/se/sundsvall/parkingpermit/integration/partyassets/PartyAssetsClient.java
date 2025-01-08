@@ -1,6 +1,5 @@
 package se.sundsvall.parkingpermit.integration.partyassets;
 
-import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration.CLIENT_ID;
 
@@ -28,7 +27,7 @@ public interface PartyAssetsClient {
 	 * @param municipalityId     the municipalityId.
 	 * @param assetCreateRequest request containing asset information.
 	 */
-	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> createAsset(@PathVariable("municipalityId") final String municipalityId, final AssetCreateRequest assetCreateRequest);
 
 	/**
@@ -50,8 +49,7 @@ public interface PartyAssetsClient {
 	 * @param id                 the assetId.
 	 * @param assetUpdateRequest request containing asset information.
 	 */
-	@PutMapping(path = "/{municipalityId}/assets/{id}", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	@PutMapping(path = "/{municipalityId}/assets/{id}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> updateAsset(@PathVariable("municipalityId") final String municipalityId, @PathVariable("id") final String id,
 		final AssetUpdateRequest assetUpdateRequest);
-
 }

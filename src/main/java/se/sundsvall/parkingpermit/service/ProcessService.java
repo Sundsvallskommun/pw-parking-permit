@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.service;
 
+import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
@@ -13,6 +14,7 @@ import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMappe
 import java.util.Map;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
@@ -30,11 +32,20 @@ public class ProcessService {
 	}
 
 	public void updateProcess(String municipalityId, String processInstanceId) {
+
+		verifyExistingProcessInstance(processInstanceId);
+
 		final var variablesToUpdate = Map.of(
 			CAMUNDA_VARIABLE_MUNICIPALITY_ID, toVariableValueDto(ValueType.STRING, municipalityId),
 			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, TRUE,
 			CAMUNDA_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get()));
 
 		camundaClient.setProcessInstanceVariables(processInstanceId, toPatchVariablesDto(variablesToUpdate));
+	}
+
+	private void verifyExistingProcessInstance(String processInstanceId) {
+		if (camundaClient.getProcessInstance(processInstanceId).isEmpty()) {
+			throw Problem.valueOf(NOT_FOUND, "Process instance with ID '%s' does not exist!".formatted(processInstanceId));
+		}
 	}
 }

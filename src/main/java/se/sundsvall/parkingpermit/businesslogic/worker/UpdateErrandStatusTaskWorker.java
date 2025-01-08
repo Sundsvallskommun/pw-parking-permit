@@ -82,5 +82,4 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 		final var isInTimelinessReview = externalTask.getVariable(CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW);
 		return Optional.ofNullable(isAppeal).map(Boolean.class::cast).orElse(false) && Optional.ofNullable(isInTimelinessReview).map(Boolean.class::cast).orElse(false);
 	}
-
 }

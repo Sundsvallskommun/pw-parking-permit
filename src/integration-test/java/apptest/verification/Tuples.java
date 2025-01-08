@@ -1,23 +1,24 @@
 package apptest.verification;
 
-import org.assertj.core.groups.Tuple;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.assertj.core.groups.Tuple;
 
 public class Tuples extends ArrayList<Tuple> {
 
-    public static Tuples create() {
-        return new Tuples();
-    }
+	private static final long serialVersionUID = -4900652313152584516L;
 
-    public Tuples with(Tuple t) {
-        super.add(t);
-        return this;
-    }
+	public static Tuples create() {
+		return new Tuples();
+	}
 
-    public Tuples with(List<Tuple> l) {
-        super.addAll(l);
-        return this;
-    }
+	public Tuples with(Tuple t) {
+		super.add(t);
+		return this;
+	}
+
+	public Tuples with(List<Tuple> l) {
+		super.addAll(l);
+		return this;
+	}
 }

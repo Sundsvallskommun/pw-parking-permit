@@ -11,7 +11,7 @@ import java.util.Map;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import se.sundsvall.dept44.requestid.RequestId;
 
-public class CamundaMapper {
+public final class CamundaMapper {
 
 	private CamundaMapper() {}
 
