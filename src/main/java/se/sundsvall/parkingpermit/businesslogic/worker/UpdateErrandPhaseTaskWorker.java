@@ -4,9 +4,9 @@ import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
@@ -32,11 +32,12 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 			final String phase = externalTask.getVariable(CAMUNDA_VARIABLE_PHASE);
 			final String displayPhase = externalTask.getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing update of phase for errand with id {}", errand.getId());
 
 			ofNullable(phase).ifPresentOrElse(
@@ -44,7 +45,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 					final var newDisplayPhase = ofNullable(displayPhase).orElse(phaseValue);
 					logInfo("Setting phase to {}", phaseValue);
 					// Set phase action to unknown to errand in the beginning of the phase
-					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase, errand.getExtraParameters()));
+					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue, PHASE_STATUS_ONGOING, PHASE_ACTION_UNKNOWN, newDisplayPhase, errand.getExtraParameters()));
 				},
 				() -> logInfo("Phase is not set"));
 

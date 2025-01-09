@@ -3,7 +3,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 
 import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -30,9 +30,10 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing delivery of simplified service message to applicant for errand with id {}", errand.getId());
 
 			final var messageId = messagingService.sendMessageSimplifiedService(municipalityId, errand).toString();

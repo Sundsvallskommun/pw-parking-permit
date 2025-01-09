@@ -1,5 +1,17 @@
 package apptest;
 
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+
+import java.time.Duration;
+import java.util.Map;
+
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -33,17 +45,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
-
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import java.time.Duration;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -94,7 +95,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/process/start/789")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/789")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -105,7 +106,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
 		// Update process
 		setupCall()
-			.withServicePath("/2281/process/update/" + startResponse.getProcessId())
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponseBodyIsNull()
@@ -170,7 +171,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/process/start/1516")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1516")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -223,7 +224,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/process/start/1718")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1718")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()

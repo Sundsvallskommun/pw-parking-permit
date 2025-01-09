@@ -5,7 +5,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_ACTUALIZATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
@@ -38,30 +38,31 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing update of status for errand with id {}", errand.getId());
 
 			final var phase = errand.getPhase();
 
 			switch (phase) {
-				case CASEDATA_PHASE_INVESTIGATION -> caseDataClient.putStatus(municipalityId, errand.getNamespace(), errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
+				case CASEDATA_PHASE_INVESTIGATION -> caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
 				case CASEDATA_PHASE_DECISION -> {
 					if (isCitizen(externalTask) || isAppealAndInTimeLinessReview(externalTask)) {
 						// Errand is in decision sub process
-						caseDataClient.putStatus(municipalityId, errand.getNamespace(), errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
+						caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
 					} else {
 						// Errand is in automatic denial sub process
-						caseDataClient.putStatus(municipalityId, errand.getNamespace(), errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
+						caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 					}
 				}
 				case CASEDATA_PHASE_ACTUALIZATION -> {
 					final var status = externalTask.getVariable("status").toString();
 					final var statusDescription = Optional.ofNullable(externalTask.getVariable("statusDescription")).map(Object::toString).orElse(status);
-					caseDataClient.putStatus(municipalityId, errand.getNamespace(), errand.getId(), List.of(toStatus(status, statusDescription)));
+					caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(status, statusDescription)));
 				}
-				case CASEDATA_PHASE_CANCELED -> caseDataClient.putStatus(municipalityId, errand.getNamespace(), errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_CANCELED, "Processen har avbrutits")));
+				case CASEDATA_PHASE_CANCELED -> caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_CANCELED, "Processen har avbrutits")));
 				default -> logInfo("No status update for phase {}", phase);
 			}
 

@@ -8,7 +8,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CASE_DATA_REASON_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 
@@ -43,9 +43,10 @@ public class CheckAppealTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Check if errand is an appeal for errand with id {}", errand.getId());
 
 			final var isAppeal = isAppeal(errand);
@@ -55,7 +56,7 @@ public class CheckAppealTaskWorker extends AbstractTaskWorker {
 			if (isAppeal) {
 				final var relatedErrand = getAppealedErrand(errand);
 
-				final var appealedErrand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, relatedErrand.getErrandId());
+				final var appealedErrand = getErrand(municipalityId, namespace, relatedErrand.getErrandId());
 
 				isInTimelinessReview = isInTimelinessReview(errand.getApplicationReceived(), appealedErrand);
 				logInfo("Errand with id {} is an appeal", errand.getId());

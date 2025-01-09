@@ -6,7 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 
@@ -39,9 +39,10 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdf(municipalityId, errand);
@@ -50,7 +51,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 				.map(String::valueOf)
 				.orElseThrow(() -> Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Id of sent message could not be retreived from stored process variables"));
 
-			caseDataClient.addMessage(municipalityId, errand.getNamespace(), caseNumber, toMessageRequest(messageId, textProvider.getDenialTexts().subject(), textProvider.getDenialTexts().plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
+			caseDataClient.addMessage(municipalityId, namespace, caseNumber, toMessageRequest(messageId, textProvider.getDenialTexts().subject(), textProvider.getDenialTexts().plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {

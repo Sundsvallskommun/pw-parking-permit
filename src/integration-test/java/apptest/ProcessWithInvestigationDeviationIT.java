@@ -103,7 +103,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Start process
         final var startResponse = setupCall()
-                .withServicePath("/2281/process/start/1112")
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1112")
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .sendRequest()
@@ -114,7 +114,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Update process
         setupCall()
-                .withServicePath("/2281/process/update/" + startResponse.getProcessId())
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .withExpectedResponseBodyIsNull()
@@ -197,7 +197,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Start process
         final var startResponse = setupCall()
-                .withServicePath("/2281/process/start/1213")
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1213")
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .sendRequest()
@@ -208,7 +208,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Update process
         setupCall()
-                .withServicePath("/2281/process/update/" + startResponse.getProcessId())
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .withExpectedResponseBodyIsNull()
@@ -290,7 +290,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Start process
         final var startResponse = setupCall()
-                .withServicePath("/2281/process/start/1314")
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1314")
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .sendRequest()
@@ -388,7 +388,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Start process
         final var startResponse = setupCall()
-                .withServicePath("/2281/process/start/1617")
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1617")
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .sendRequest()
@@ -399,7 +399,7 @@ public class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest 
 
         // Update process
         setupCall()
-                .withServicePath("/2281/process/update/" + startResponse.getProcessId())
+                .withServicePath("/2281/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
                 .withHttpMethod(POST)
                 .withExpectedResponseStatus(ACCEPTED)
                 .withExpectedResponseBodyIsNull()

@@ -4,7 +4,7 @@ import static generated.se.sundsvall.casedata.NoteType.INTERNAL;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -29,12 +29,13 @@ public class CleanUpNotesTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for CleanUpNotesTask");
 
-			Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-			String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+			final String namespace = externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 
-			final var notes = caseDataClient.getNotesByErrandId(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber, INTERNAL.getValue());
+			final var notes = caseDataClient.getNotesByErrandId(municipalityId, namespace, caseNumber, INTERNAL.getValue());
 
-			Optional.ofNullable(notes).orElse(emptyList()).forEach(internalNote -> caseDataClient.deleteNoteById(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber, internalNote.getId()));
+			Optional.ofNullable(notes).orElse(emptyList()).forEach(internalNote -> caseDataClient.deleteNoteById(municipalityId, namespace, caseNumber, internalNote.getId()));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {
