@@ -46,7 +46,7 @@ class TemplatingMapperTest {
 				"addressLine2", "81234 City",
 				"addressFirstname", "Applicant First-Name",
 				"addressLastname", "Applicant Lastname",
-				"caseNumber", "errandNumber",
+				"caseNumber", ERRAND_NUMBER,
 				"creationDate", CREATED.format(ISO_LOCAL_DATE),
 				"decisionDate", OffsetDateTime.now().format(ISO_LOCAL_DATE)));
 	}

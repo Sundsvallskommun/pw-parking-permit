@@ -147,6 +147,8 @@ integration:
 #----------------------------------------
 resilience4j.circuitbreaker:
   instances:
+    camunda:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     casedata:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     templating:
@@ -156,11 +158,11 @@ resilience4j.circuitbreaker:
     citizen:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     businessrules:
-        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     rpa:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     partyassets:
-        ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       
 #----------------------------------------
 # Text properties

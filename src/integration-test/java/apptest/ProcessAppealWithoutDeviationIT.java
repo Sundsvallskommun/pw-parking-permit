@@ -1,16 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
@@ -18,12 +7,10 @@ import static apptest.mock.Decision.mockDecisionUpdateStatus;
 import static apptest.mock.Execution.mockExecutionWhenAppeal;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
-import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathwayWhenAppeal;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -36,6 +23,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
+
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -61,7 +58,7 @@ class ProcessAppealWithoutDeviationIT extends AbstractCamundaAppTest {
 
 		final var caseId = "123";
 		final var scenarioName = "test_appeal_001_createProcessForAppeal";
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_APPEAL);
@@ -99,4 +96,3 @@ class ProcessAppealWithoutDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 }
-

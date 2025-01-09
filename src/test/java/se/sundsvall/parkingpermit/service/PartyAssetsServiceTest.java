@@ -107,7 +107,7 @@ class PartyAssetsServiceTest {
 		final var result = partyAssetsService.getAssets(MUNICIPALITY_ID, null, "partyId", PARTY_ASSET_STATUS_ACTIVE);
 
 		// Assert
-		assertThat(result).isNull();
+		assertThat(result).isEmpty();
 		verifyNoInteractions(partyAssetsClientMock, responseEntityMock);
 	}
 
@@ -118,7 +118,7 @@ class PartyAssetsServiceTest {
 		final var result = partyAssetsService.getAssets(MUNICIPALITY_ID, "assetId", null, PARTY_ASSET_STATUS_ACTIVE);
 
 		// Assert
-		assertThat(result).isNull();
+		assertThat(result).isEmpty();
 		verifyNoInteractions(partyAssetsClientMock, responseEntityMock);
 	}
 

@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.zalando.problem.Problem;
 
-public class BusinessRulesMapper {
+public final class BusinessRulesMapper {
 
 	private static final String KEY_TYPE = "type";
 	private static final String CONTEXT_PARKING_PERMIT = "PARKING_PERMIT";

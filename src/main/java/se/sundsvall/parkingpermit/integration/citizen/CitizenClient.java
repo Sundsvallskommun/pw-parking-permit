@@ -9,11 +9,10 @@ import java.util.Optional;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import se.sundsvall.parkingpermit.integration.businessrules.configuration.BusinessRulesConfiguration;
 import se.sundsvall.parkingpermit.integration.citizen.configuration.CitizenConfiguration;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.citizen.url}", configuration = CitizenConfiguration.class)
-@CircuitBreaker(name = BusinessRulesConfiguration.CLIENT_ID)
+@CircuitBreaker(name = CLIENT_ID)
 public interface CitizenClient {
 
 	/**

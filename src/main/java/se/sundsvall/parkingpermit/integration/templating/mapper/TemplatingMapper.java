@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
-public class TemplatingMapper {
+public final class TemplatingMapper {
 
 	private static final String TEMPLATE_IDENTIFIER = "sbk.prh.decision.all.rejection.municipality";
 	private static final String ADDRESS_CO = "addressCo";

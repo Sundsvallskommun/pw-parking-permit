@@ -1,32 +1,11 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
-import static apptest.mock.CheckAppeal.mockCheckAppeal;
-import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
-import static apptest.mock.Decision.mockDecisionUpdatePhase;
-import static apptest.mock.Decision.mockDecisionUpdateStatus;
 import static apptest.mock.Denial.mockDenial;
-import static apptest.mock.Execution.mockExecutionWhenAppeal;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.denialPathway;
-import static apptest.verification.ProcessPathway.executionPathwayWhenAppeal;
 import static apptest.verification.ProcessPathway.followUpPathway;
-import static apptest.verification.ProcessPathway.handlingPathway;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -41,6 +20,17 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -66,7 +56,7 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 
 		final var caseId = "123";
 		final var scenarioName = "test_appeal_001_createProcessForAppealWhenNotInTime";
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 
 		final var stateAfterGetAppeal = mockCaseDataGet(caseId, scenarioName, STARTED,
@@ -77,8 +67,8 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "",
 				"decidedAtParameter", "2024-12-01T08:31:29.181Z",
-					// Appeal is received a month after the decision is made
-					"applicationReceivedParameter", "2025-01-01T15:17:01.563Z",
+				// Appeal is received a month after the decision is made
+				"applicationReceivedParameter", "2025-01-01T15:17:01.563Z",
 				"caseTypeParameter", CASE_TYPE_APPEAL));
 
 		final var stateAfterGetAppealedErrand = mockCaseDataGet("456", scenarioName, stateAfterGetAppeal,
@@ -88,8 +78,8 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "",
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "",
-					// Decision is made a month before the appeal is received
-					"decidedAtParameter", "2024-12-01T08:31:29.181Z",
+				// Decision is made a month before the appeal is received
+				"decidedAtParameter", "2024-12-01T08:31:29.181Z",
 				"applicationReceivedParameter", "2024-01-01T15:17:01.563Z",
 				"caseTypeParameter", CASE_TYPE_PARKING_PERMIT));
 
@@ -120,4 +110,3 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 }
-

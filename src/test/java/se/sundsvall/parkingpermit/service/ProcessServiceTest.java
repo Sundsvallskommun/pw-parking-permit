@@ -1,19 +1,24 @@
 package se.sundsvall.parkingpermit.service;
 
+import static java.util.Optional.empty;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import generated.se.sundsvall.camunda.PatchVariablesDto;
+import generated.se.sundsvall.camunda.ProcessInstanceDto;
 import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.camunda.StartProcessInstanceDto;
 import generated.se.sundsvall.camunda.VariableValueDto;
+import java.util.Optional;
 import java.util.Random;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
@@ -24,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.Status;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
@@ -86,6 +92,8 @@ class ProcessServiceTest {
 		final var uuid = randomUUID().toString();
 		final var logId = randomUUID().toString();
 
+		when(camundaClientMock.getProcessInstance(any())).thenReturn(Optional.of(new ProcessInstanceDto()));
+
 		// Mock static RequestId to enable spy and to verify that static method is being called
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
@@ -95,6 +103,7 @@ class ProcessServiceTest {
 		}
 
 		// Assert
+		verify(camundaClientMock).getProcessInstance(uuid);
 		verify(camundaClientMock).setProcessInstanceVariables(eq(uuid), updateProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
 		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(3)
@@ -105,5 +114,28 @@ class ProcessServiceTest {
 				tuple(ValueType.STRING.getName(), municipalityId),
 				tuple(ValueType.BOOLEAN.getName(), true),
 				tuple(ValueType.STRING.getName(), logId));
+	}
+
+	@Test
+	void updateProcessNotFound() {
+
+		// Arrange
+		final var municipalityId = "2281";
+		final var uuid = randomUUID().toString();
+
+		when(camundaClientMock.getProcessInstance(any())).thenReturn(empty());
+
+		// Act
+		final var result = assertThrows(org.zalando.problem.ThrowableProblem.class, () -> processService.updateProcess(municipalityId, uuid));
+
+		// Assert
+		assertThat(result)
+			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("detail", "Process instance with ID '%s' does not exist!".formatted(uuid));
+
+		// Assert
+		verify(camundaClientMock).getProcessInstance(uuid);
+		verify(camundaClientMock, never()).setProcessInstanceVariables(any(), any());
+		verifyNoMoreInteractions(camundaClientMock);
 	}
 }

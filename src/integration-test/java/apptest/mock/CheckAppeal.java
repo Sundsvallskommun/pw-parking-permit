@@ -1,10 +1,9 @@
 package apptest.mock;
 
-import java.time.OffsetDateTime;
-import java.util.Map;
-
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+
+import java.util.Map;
 
 public class CheckAppeal {
 

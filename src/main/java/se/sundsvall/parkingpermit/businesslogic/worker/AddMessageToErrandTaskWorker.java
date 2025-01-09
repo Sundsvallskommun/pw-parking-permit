@@ -27,7 +27,6 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
-
 	private final TextProvider textProvider;
 
 	AddMessageToErrandTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {

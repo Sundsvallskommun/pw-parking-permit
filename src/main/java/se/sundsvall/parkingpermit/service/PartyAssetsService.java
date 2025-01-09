@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.service;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper.toAssetUpdateRequest;
 import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
@@ -25,7 +26,7 @@ public class PartyAssetsService {
 
 	public List<Asset> getAssets(String municipalityId, String assetId, String partyId, String status) {
 		if (isNull(assetId) || isNull(partyId)) {
-			return null;
+			return emptyList();
 		}
 		return partyAssetsClient.getAssets(municipalityId, assetId, partyId, status).getBody();
 	}

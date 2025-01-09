@@ -1,18 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.Constants;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
 import static apptest.mock.Actualization.mockActualizationCheckPhaseAction;
 import static apptest.mock.Actualization.mockActualizationUpdateDisplayPhase;
 import static apptest.mock.Actualization.mockActualizationUpdatePhase;
@@ -53,6 +40,17 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
 class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
@@ -77,7 +75,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		final var caseId = "456";
 		final var scenarioName = "test_actualization_001_createProcessForNonCitizen";
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
@@ -122,7 +120,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		final var caseId = "789";
 		final var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
@@ -189,7 +187,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "1011";
 		final var scenarioName = "test_actualization_003_createProcessForActualizationNotComplete";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
@@ -282,7 +280,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "1920";
 		final var scenarioName = "test_actualization_004_createProcessForCancelInActualizationWhenVerifyingAdministrator";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
@@ -341,7 +339,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "2021";
 		final var scenarioName = "test_actualization_005_createProcessWaitingForStakeholderUpdateInActualization(";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
@@ -430,4 +428,3 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 }
-

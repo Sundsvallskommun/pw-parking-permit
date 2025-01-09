@@ -5,8 +5,6 @@ import org.camunda.bpm.engine.variable.type.ValueType;
 
 public final class Constants {
 
-	private Constants() {}
-
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema
 	public static final String TENANTID_TEMPLATE = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
 
@@ -95,4 +93,6 @@ public final class Constants {
 	public static final String CASE_DATA_REASON_APPEAL = "APPEAL";
 
 	public static final String MESSAGING_KEY_FLOW_INSTANCE_ID = "flowInstanceId";
+
+	private Constants() {}
 }

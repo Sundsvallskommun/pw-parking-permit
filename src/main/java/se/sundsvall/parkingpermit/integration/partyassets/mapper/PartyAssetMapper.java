@@ -7,7 +7,7 @@ import generated.se.sundsvall.partyassets.AssetUpdateRequest;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class PartyAssetMapper {
+public final class PartyAssetMapper {
 
 	private PartyAssetMapper() {}
 

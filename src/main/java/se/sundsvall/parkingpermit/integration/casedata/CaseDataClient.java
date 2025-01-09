@@ -24,11 +24,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import se.sundsvall.parkingpermit.integration.businessrules.configuration.BusinessRulesConfiguration;
 import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.casedata.url}", configuration = CaseDataConfiguration.class)
-@CircuitBreaker(name = BusinessRulesConfiguration.CLIENT_ID)
+@CircuitBreaker(name = CLIENT_ID)
 public interface CaseDataClient {
 
 	/**
