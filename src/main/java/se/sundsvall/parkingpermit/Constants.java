@@ -8,6 +8,9 @@ public final class Constants {
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema
 	public static final String TENANTID_TEMPLATE = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
 
+	public static final String NAMESPACE_REGEXP = "[\\w|\\.|\\-]+";
+	public static final String NAMESPACE_VALIDATION_MESSAGE = "can only contain A-Z, a-z, 0-9, -, _ and .";
+
 	public static final String PARTY_ASSET_ORIGIN = "CASEDATA";
 	public static final String PARTY_ASSET_TYPE = "PARKINGPERMIT";
 	public static final String PARTY_ASSET_DESCRIPTION = "Parkeringstillstånd";
@@ -17,6 +20,7 @@ public final class Constants {
 	public static final String CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR = "assignedToAdministrator";
 	public static final String CAMUNDA_VARIABLE_CASE_NUMBER = "caseNumber";
 	public static final String CAMUNDA_VARIABLE_MUNICIPALITY_ID = "municipalityId";
+	public static final String CAMUNDA_VARIABLE_NAMESPACE = "namespace";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
@@ -35,8 +39,6 @@ public final class Constants {
 	public static final VariableValueDto TRUE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(true);
 	public static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
-	// TODO CASEDATA_PARKING_PERMIT_NAMESPACE will be removed when PwParkingPermit-API is updated with namespace
-	public static final String CASEDATA_PARKING_PERMIT_NAMESPACE = "SBK_PARKING_PERMIT";
 	public static final String CASEDATA_PHASE_ACTUALIZATION = "Aktualisering";
 	public static final String CASEDATA_PHASE_INVESTIGATION = "Utredning";
 	public static final String CASEDATA_PHASE_DECISION = "Beslut";

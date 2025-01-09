@@ -2,6 +2,9 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
@@ -74,5 +77,17 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.map(extraParameters -> extraParameters.getValues().getFirst())
 			.filter(PHASE_ACTION_CANCEL::equals)
 			.isPresent();
+	}
+
+	protected String getMunicipalityId(ExternalTask externalTask) {
+		return externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+	}
+
+	protected String getNamespace(ExternalTask externalTask) {
+		return externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+	}
+
+	protected Long getCaseNumber(ExternalTask externalTask) {
+		return externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 	}
 }

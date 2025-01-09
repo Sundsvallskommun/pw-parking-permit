@@ -73,7 +73,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/process/start/123")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/123")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()

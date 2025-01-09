@@ -55,6 +55,7 @@ class ProcessServiceTest {
 		final var process = "process-parking-permit";
 		final var tenant = "PARKING_PERMIT";
 		final var municipalityId = "2281";
+		final var namespace = "SBK_PARKING_PERMIT";
 		final var caseNumber = new Random().nextLong();
 		final var uuid = randomUUID().toString();
 		final var logId = randomUUID().toString();
@@ -67,19 +68,20 @@ class ProcessServiceTest {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
 			// Act
-			assertThat(processService.startProcess(municipalityId, caseNumber)).isEqualTo(uuid);
+			assertThat(processService.startProcess(municipalityId, namespace, caseNumber)).isEqualTo(uuid);
 		}
 
 		// Assert
 		verify(camundaClientMock).startProcessWithTenant(eq(process), eq(tenant), startProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
 		assertThat(startProcessArgumentCaptor.getValue().getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
-		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(3)
-			.containsKeys("municipalityId", "caseNumber", "requestId")
-			.extractingByKeys("municipalityId", "caseNumber", "requestId")
+		assertThat(startProcessArgumentCaptor.getValue().getVariables()).hasSize(4)
+			.containsKeys("municipalityId", "namespace", "caseNumber", "requestId")
+			.extractingByKeys("municipalityId", "namespace", "caseNumber", "requestId")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
 			.contains(
 				tuple(ValueType.STRING.getName(), municipalityId),
+				tuple(ValueType.STRING.getName(), namespace),
 				tuple(ValueType.LONG.getName(), caseNumber),
 				tuple(ValueType.STRING.getName(), logId));
 	}
@@ -89,6 +91,7 @@ class ProcessServiceTest {
 
 		// Arrange
 		final var municipalityId = "2281";
+		final var namespace = "SBK_PARKING_PERMIT";
 		final var uuid = randomUUID().toString();
 		final var logId = randomUUID().toString();
 
@@ -99,19 +102,20 @@ class ProcessServiceTest {
 			requestIdMock.when(RequestId::get).thenReturn(logId);
 
 			// Act
-			processService.updateProcess(municipalityId, uuid);
+			processService.updateProcess(municipalityId, namespace, uuid);
 		}
 
 		// Assert
 		verify(camundaClientMock).getProcessInstance(uuid);
 		verify(camundaClientMock).setProcessInstanceVariables(eq(uuid), updateProcessArgumentCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock);
-		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(3)
-			.containsKeys("municipalityId", "updateAvailable", "requestId")
-			.extractingByKeys("municipalityId", "updateAvailable", "requestId")
+		assertThat(updateProcessArgumentCaptor.getValue().getModifications()).hasSize(4)
+			.containsKeys("municipalityId", "namespace", "updateAvailable", "requestId")
+			.extractingByKeys("municipalityId", "namespace", "updateAvailable", "requestId")
 			.extracting(VariableValueDto::getType, VariableValueDto::getValue)
 			.contains(
 				tuple(ValueType.STRING.getName(), municipalityId),
+				tuple(ValueType.STRING.getName(), namespace),
 				tuple(ValueType.BOOLEAN.getName(), true),
 				tuple(ValueType.STRING.getName(), logId));
 	}
@@ -121,12 +125,13 @@ class ProcessServiceTest {
 
 		// Arrange
 		final var municipalityId = "2281";
+		final var namespace = "SBK_PARKING_PERMIT";
 		final var uuid = randomUUID().toString();
 
 		when(camundaClientMock.getProcessInstance(any())).thenReturn(empty());
 
 		// Act
-		final var result = assertThrows(org.zalando.problem.ThrowableProblem.class, () -> processService.updateProcess(municipalityId, uuid));
+		final var result = assertThrows(org.zalando.problem.ThrowableProblem.class, () -> processService.updateProcess(municipalityId, namespace, uuid));
 
 		// Assert
 		assertThat(result)

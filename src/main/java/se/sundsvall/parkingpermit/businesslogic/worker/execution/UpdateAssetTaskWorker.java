@@ -3,10 +3,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CASE_DATA_REASON_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
@@ -41,15 +38,16 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for UpdateAssetTask");
-			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+			final String municipalityId = getMunicipalityId(externalTask);
+			final String namespace = getNamespace(externalTask);
+			final Long caseNumber = getCaseNumber(externalTask);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
 			final var relatedErrand = getAppealedErrand(errand);
 
 			if (!isNull(relatedErrand)) {
-				final var appealedErrand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, relatedErrand.getErrandId());
+				final var appealedErrand = getErrand(municipalityId, namespace, relatedErrand.getErrandId());
 
 				final var assets = partyAssetsService.getAssets(municipalityId, getAssetId(appealedErrand), getStakeholderPersonIdOfApplicant(appealedErrand), PARTY_ASSET_STATUS_ACTIVE);
 

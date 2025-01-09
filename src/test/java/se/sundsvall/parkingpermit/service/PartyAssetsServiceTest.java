@@ -137,7 +137,7 @@ class PartyAssetsServiceTest {
 		final var assetUpdateRequest = assetUpdateRequestArgumentCaptor.getValue();
 		assertThat(assetUpdateRequest).isNotNull();
 		assertThat(assetUpdateRequest.getAdditionalParameters()).hasSize(1);
-		assertThat(assetUpdateRequest.getAdditionalParameters().get("appealedErrand")).isEqualTo(String.valueOf(caseNumber));
+		assertThat(assetUpdateRequest.getAdditionalParameters()).containsEntry("appealedErrand", String.valueOf(caseNumber));
 	}
 
 	@Test

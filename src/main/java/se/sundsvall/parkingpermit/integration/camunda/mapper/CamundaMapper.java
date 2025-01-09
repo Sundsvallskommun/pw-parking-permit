@@ -2,6 +2,7 @@ package se.sundsvall.parkingpermit.integration.camunda.mapper;
 
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import generated.se.sundsvall.camunda.PatchVariablesDto;
@@ -15,11 +16,12 @@ public final class CamundaMapper {
 
 	private CamundaMapper() {}
 
-	public static StartProcessInstanceDto toStartProcessInstanceDto(String municipalityId, Long caseNumber) {
+	public static StartProcessInstanceDto toStartProcessInstanceDto(String municipalityId, String namespace, Long caseNumber) {
 		return new StartProcessInstanceDto()
 			.businessKey(Long.toString(caseNumber))
 			.variables(Map.of(
 				CAMUNDA_VARIABLE_MUNICIPALITY_ID, toVariableValueDto(ValueType.STRING, municipalityId),
+				CAMUNDA_VARIABLE_NAMESPACE, toVariableValueDto(ValueType.STRING, namespace),
 				CAMUNDA_VARIABLE_CASE_NUMBER, toVariableValueDto(ValueType.LONG, caseNumber),
 				CAMUNDA_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}

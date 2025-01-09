@@ -24,6 +24,8 @@ import se.sundsvall.parkingpermit.service.ProcessService;
 @ActiveProfiles("junit")
 class ProcessResourceTest {
 
+	static final String PATH = "/2281/SBK_PARKING_PERMIT";
+
 	@MockitoBean
 	private ProcessService processServiceMock;
 
@@ -38,13 +40,14 @@ class ProcessResourceTest {
 
 		// Arrange
 		final var municipalityId = "2281";
+		final var namespace = "SBK_PARKING_PERMIT";
 		final var caseNumber = 123L;
 		final var uuid = randomUUID().toString();
 
-		when(processServiceMock.startProcess(any(), any())).thenReturn(uuid);
+		when(processServiceMock.startProcess(any(), any(), any())).thenReturn(uuid);
 
 		// Act
-		final var response = webTestClient.post().uri(municipalityId + "/process/start/" + caseNumber)
+		final var response = webTestClient.post().uri(PATH + "/process/start/" + caseNumber)
 			.exchange()
 			.expectStatus().isAccepted()
 			.expectHeader().contentType(APPLICATION_JSON)
@@ -54,7 +57,7 @@ class ProcessResourceTest {
 
 		// Assert
 		assertThat(response.getProcessId()).isEqualTo(uuid);
-		verify(processServiceMock).startProcess(municipalityId, caseNumber);
+		verify(processServiceMock).startProcess(municipalityId, namespace, caseNumber);
 		verifyNoMoreInteractions(processServiceMock);
 	}
 
@@ -63,18 +66,19 @@ class ProcessResourceTest {
 
 		// Arrange
 		final var municipalityId = "2281";
+		final var namespace = "SBK_PARKING_PERMIT";
 		final var uuid = randomUUID().toString();
 
-		when(processServiceMock.startProcess(any(), any())).thenReturn(uuid);
+		when(processServiceMock.startProcess(any(), any(), any())).thenReturn(uuid);
 
 		// Act
-		webTestClient.post().uri(municipalityId + "/process/update/" + uuid)
+		webTestClient.post().uri(PATH + "/process/update/" + uuid)
 			.exchange()
 			.expectStatus().isAccepted()
 			.expectBody().isEmpty();
 
 		// Assert
-		verify(processServiceMock).updateProcess(municipalityId, uuid);
+		verify(processServiceMock).updateProcess(municipalityId, namespace, uuid);
 		verifyNoMoreInteractions(processServiceMock);
 	}
 }

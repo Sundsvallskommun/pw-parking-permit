@@ -39,7 +39,7 @@ class ProcessResourceFailuresTest {
 		final var caseNumber = -123L;
 
 		// Act
-		final var response = webTestClient.post().uri("/2281/process/start/" + caseNumber)
+		final var response = webTestClient.post().uri("/2281/SBK_PARKING_PERMIT/process/start/" + caseNumber)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectBody(ConstraintViolationProblem.class)
@@ -64,7 +64,7 @@ class ProcessResourceFailuresTest {
 		final var caseNumber = "invalid";
 
 		// Act
-		final var response = webTestClient.post().uri("/2281/process/start/" + caseNumber)
+		final var response = webTestClient.post().uri("/2281/SBK_PARKING_PERMIT/process/start/" + caseNumber)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectBody(Problem.class)
@@ -87,7 +87,7 @@ class ProcessResourceFailuresTest {
 		final var processInstanceId = "invalid";
 
 		// Act
-		final var response = webTestClient.post().uri("/2281/process/update/" + processInstanceId)
+		final var response = webTestClient.post().uri("/2281/SBK_PARKING_PERMIT/process/update/" + processInstanceId)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectBody(ConstraintViolationProblem.class)

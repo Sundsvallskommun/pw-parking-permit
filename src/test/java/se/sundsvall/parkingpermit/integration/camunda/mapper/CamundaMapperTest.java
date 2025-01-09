@@ -19,6 +19,7 @@ class CamundaMapperTest {
 
 		// Arrange
 		final var municipalityId = "2281";
+		final var namespace = "namespace";
 		final var caseNumber = new Random().nextLong();
 
 		if (isEmpty(RequestId.get())) {
@@ -26,7 +27,7 @@ class CamundaMapperTest {
 		}
 
 		// Act
-		final var dto = CamundaMapper.toStartProcessInstanceDto(municipalityId, caseNumber);
+		final var dto = CamundaMapper.toStartProcessInstanceDto(municipalityId, namespace, caseNumber);
 
 		// Assert
 		assertThat(dto.getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
@@ -34,6 +35,9 @@ class CamundaMapperTest {
 			entry(CAMUNDA_VARIABLE_MUNICIPALITY_ID, new VariableValueDto()
 				.type(ValueType.STRING.getName())
 				.value(municipalityId)),
+			entry(CAMUNDA_VARIABLE_NAMESPACE, new VariableValueDto()
+				.type(ValueType.STRING.getName())
+				.value(namespace)),
 			entry(CAMUNDA_VARIABLE_CASE_NUMBER, new VariableValueDto()
 				.type(ValueType.LONG.getName())
 				.value(caseNumber)),
