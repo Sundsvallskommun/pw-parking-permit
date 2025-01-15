@@ -81,6 +81,32 @@ class ProcessResourceFailuresTest {
 	}
 
 	@Test
+	void startProcessInvalidNamespace() {
+
+		// Arrange
+		final var caseNumber = 123L;
+		final var namespace = "SBK.PARKING.PERMIT";
+
+		// Act
+		final var response = webTestClient.post().uri("/2281/" + namespace + "/process/start/" + caseNumber)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(response).isNotNull();
+		assertThat(response.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactly(tuple("startProcess.namespace", "can only contain A-Z, a-z, 0-9, -, and _"));
+
+		verifyNoInteractions(processServiceMock);
+	}
+
+	@Test
 	void updateProcessInvalidProcessInstanceIdIsNotUUID() {
 
 		// Arrange
