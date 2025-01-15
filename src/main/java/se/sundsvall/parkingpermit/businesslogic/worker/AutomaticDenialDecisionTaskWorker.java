@@ -7,10 +7,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
@@ -19,7 +16,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
-import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -61,9 +57,10 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final String municipalityId = getMunicipalityId(externalTask);
+			final String namespace = getNamespace(externalTask);
+			final Long caseNumber = getCaseNumber(externalTask);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());
 
 			// PE needs to be added as stakeholder to the errand (if not already present) and store for later use when setting
@@ -72,7 +69,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.stream()
 				.filter(AutomaticDenialDecisionTaskWorker::isProcessEngineStakeholder)
 				.findAny()
-				.orElseGet(() -> createProcessEngineStakeholder(errand, municipalityId));
+				.orElseGet(() -> createProcessEngineStakeholder(errand.getId(), municipalityId, namespace));
 
 			final var pdf = messagingService.renderPdf(municipalityId, errand);
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts().description())
@@ -81,7 +78,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
 				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
-			caseDataClient.patchNewDecision(municipalityId, errand.getNamespace(), errand.getId(), decision);
+			caseDataClient.patchNewDecision(municipalityId, namespace, errand.getId(), decision);
 
 			final var variables = new HashMap<String, Object>();
 			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, simplifiedServiceTextProperties.delay()));
@@ -93,9 +90,9 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private Stakeholder createProcessEngineStakeholder(final Errand errand, final String municipalityId) {
-		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(municipalityId, errand.getNamespace(), errand.getId(), toStakeholder(ROLE_ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
-		return caseDataClient.getStakeholder(municipalityId, errand.getNamespace(), errand.getId(), id);
+	private Stakeholder createProcessEngineStakeholder(final Long errandId, final String municipalityId, final String namespace) {
+		final var id = extractStakeholderId(caseDataClient.addStakeholderToErrand(municipalityId, namespace, errandId, toStakeholder(ROLE_ADMINISTRATOR, PERSON, PROCESS_ENGINE_FIRST_NAME, PROCESS_ENGINE_LAST_NAME)));
+		return caseDataClient.getStakeholder(municipalityId, namespace, errandId, id);
 	}
 
 	private Long extractStakeholderId(final ResponseEntity<Void> response) {

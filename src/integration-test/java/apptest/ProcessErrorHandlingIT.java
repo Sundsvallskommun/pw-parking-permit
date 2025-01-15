@@ -49,7 +49,7 @@ class ProcessErrorHandlingIT extends AbstractCamundaAppTest {
 
 		// Update process
 		final var response = setupCall()
-			.withServicePath("/2281/process/update/" + nonExistingProcessInstanceId)
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/update/" + nonExistingProcessInstanceId)
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.sendRequest()

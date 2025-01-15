@@ -20,7 +20,7 @@ class PartyAssetMapperTest {
 
 		assertThat(request).isNotNull();
 		assertThat(request.getAdditionalParameters()).hasSize(1);
-		assertThat(request.getAdditionalParameters().get("appealedErrand")).isEqualTo(String.valueOf(caseNumber));
+		assertThat(request.getAdditionalParameters()).containsEntry("appealedErrand", String.valueOf(caseNumber));
 	}
 
 	@Test

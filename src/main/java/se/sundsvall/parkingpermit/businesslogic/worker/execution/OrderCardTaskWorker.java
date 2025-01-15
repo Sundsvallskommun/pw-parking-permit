@@ -2,9 +2,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
 import static java.util.Objects.isNull;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PARKING_PERMIT_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
@@ -44,12 +42,13 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-			final Long caseNumber = externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+			final String municipalityId = getMunicipalityId(externalTask);
+			final String namespace = getNamespace(externalTask);
+			final Long caseNumber = getCaseNumber(externalTask);
 
-			final var errand = getErrand(municipalityId, CASEDATA_PARKING_PERMIT_NAMESPACE, caseNumber);
+			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			rpaService.addQueueItems(getQueueNames(errand), errand.getId());
-			caseDataClient.putStatus(externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID), errand.getNamespace(), errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED)));
+			caseDataClient.putStatus(externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID), namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED)));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {
