@@ -96,6 +96,7 @@ public class ProcessPathway {
                 .with(tuple("Start follow up phase", "start_follow_up_phase"))
                 .with(tuple("Update phase", "external_task_follow_up_update_phase"))
                 .with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
+                .with(tuple("Update errand status", "external_task_follow_up_update_status"))
                 .with(tuple("End follow up phase", "end_follow_up_phase"));
     }
 

@@ -6,6 +6,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_IN_TIMELI
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_ACTUALIZATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_FOLLOW_UP;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
@@ -54,7 +55,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 						caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, "Ärendet avvisas")));
 					}
 				}
-				case CASEDATA_PHASE_ACTUALIZATION -> {
+				case CASEDATA_PHASE_ACTUALIZATION, CASEDATA_PHASE_FOLLOW_UP -> {
 					final var status = externalTask.getVariable("status").toString();
 					final var statusDescription = Optional.ofNullable(externalTask.getVariable("statusDescription")).map(Object::toString).orElse(status);
 					caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(status, statusDescription)));

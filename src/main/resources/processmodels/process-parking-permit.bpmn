@@ -459,7 +459,7 @@
       <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
       <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
       <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
-        <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
+        <bpmn:incoming>Flow_0pf3mt7</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="start_follow_up_phase" name="Start follow up phase">
         <bpmn:outgoing>Flow_1kmw5et</bpmn:outgoing>
@@ -469,7 +469,7 @@
         <bpmn:incoming>Flow_0m6v59o</bpmn:incoming>
         <bpmn:outgoing>Flow_18tyux3</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_18tyux3" sourceRef="external_task_follow_up_clean_up_notes" targetRef="end_follow_up_phase" />
+      <bpmn:sequenceFlow id="Flow_18tyux3" sourceRef="external_task_follow_up_clean_up_notes" targetRef="external_task_follow_up_update_status" />
       <bpmn:serviceTask id="external_task_follow_up_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:documentation>Set phase to execution</bpmn:documentation>
         <bpmn:extensionElements>
@@ -480,6 +480,17 @@
         <bpmn:outgoing>Flow_0m6v59o</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0m6v59o" sourceRef="external_task_follow_up_update_phase" targetRef="external_task_follow_up_clean_up_notes" />
+      <bpmn:serviceTask id="external_task_follow_up_update_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="status">Ärende avslutat</camunda:inputParameter>
+            <camunda:inputParameter name="statusDescription">Ärende avslutat</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
+        <bpmn:outgoing>Flow_0pf3mt7</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0pf3mt7" sourceRef="external_task_follow_up_update_status" targetRef="end_follow_up_phase" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway_investigation_canceled" name="Is canceled in investigation" default="Flow_0f8p51c">
       <bpmn:incoming>Flow_0ru4901</bpmn:incoming>
@@ -1408,12 +1419,6 @@
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_15fzdds">
     <bpmndi:BPMNPlane id="BPMNPlane_03h4jfu" bpmnElement="call_activity_follow_up">
-      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
-        <dc:Bounds x="652" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="638" y="145" width="67" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1m050le" bpmnElement="start_follow_up_phase">
         <dc:Bounds x="172" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1428,17 +1433,31 @@
         <dc:Bounds x="290" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1vh55f5" bpmnElement="external_task_follow_up_update_status">
+        <dc:Bounds x="640" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
+        <dc:Bounds x="822" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="808" y="145" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_0wc93yf" bpmnElement="Flow_1kmw5et">
         <di:waypoint x="208" y="120" />
         <di:waypoint x="290" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_18tyux3_di" bpmnElement="Flow_18tyux3">
         <di:waypoint x="570" y="120" />
-        <di:waypoint x="652" y="120" />
+        <di:waypoint x="640" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0m6v59o_di" bpmnElement="Flow_0m6v59o">
         <di:waypoint x="390" y="120" />
         <di:waypoint x="470" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pf3mt7_di" bpmnElement="Flow_0pf3mt7">
+        <di:waypoint x="740" y="120" />
+        <di:waypoint x="822" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
