@@ -23,6 +23,7 @@ import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.Execution.mockExecution;
+import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
@@ -33,6 +34,7 @@ import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.denialPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
+import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
@@ -83,6 +85,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality");
 		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterVerifyResident);
 		mockFollowUp(caseId, scenarioName, stateAfterDenial);
+		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -113,6 +116,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
 			.with(denialPathway())
 			.with(followUpPathway())
+			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -216,6 +220,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		mockDecision(caseId, scenarioName);
 		mockExecution(caseId, scenarioName);
 		mockFollowUp(caseId, scenarioName);
+		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -272,6 +277,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
+			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -368,6 +374,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		mockDecision(caseId, scenarioName);
 		mockExecution(caseId, scenarioName);
 		mockFollowUp(caseId, scenarioName);
+		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -425,6 +432,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
+			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 

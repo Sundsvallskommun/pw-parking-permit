@@ -18,8 +18,23 @@ public class FollowUp {
 
     public static String mockFollowUp(String caseId, String scenarioName, String requiredScenarioState) {
         final var stateAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, requiredScenarioState);
-        final var stateAfterCleanUp = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterUpdatePhase);
+        final var stateAfterCleanUp = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
         return mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanUp);
+    }
+
+    public static String mockFollowUpCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState) {
+        var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+            "follow_up_check-phase-action_task-worker---api-casedata-get-errand",
+            Map.of("decisionTypeParameter", "FINAL",
+                "phaseParameter", "Uppföljning",
+                "phaseStatusParameter", "ONGOING",
+                "phaseActionParameter", "COMPLETE",
+                "displayPhaseParameter", "Uppföljning"));
+
+        return mockCaseDataPatch(caseId, scenarioName, state,
+            "follow_up_check-phase-action_task-worker---api-casedata-patch-errand",
+            equalToJson(createPatchBody("Uppföljning", "COMPLETE", "COMPLETED", "Uppföljning")));
     }
 
     public static String mockFollowUpUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
@@ -48,7 +63,7 @@ public class FollowUp {
 
     public static String mockFollowUpUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-            "follow_up_update-phase-task-worker---api-casedata-delete-note",
+            "follow_up_update-phase-task-worker---api-casedata-get-errand_2",
             Map.of("decisionTypeParameter", "FINAL",
                 "phaseParameter", "Uppföljning",
                 "phaseStatusParameter", "ONGOING",

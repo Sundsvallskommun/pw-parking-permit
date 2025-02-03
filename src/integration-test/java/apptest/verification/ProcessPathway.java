@@ -95,9 +95,16 @@ public class ProcessPathway {
                 .with(tuple("Follow up", "call_activity_follow_up"))
                 .with(tuple("Start follow up phase", "start_follow_up_phase"))
                 .with(tuple("Update phase", "external_task_follow_up_update_phase"))
+                .with(tuple("Check phase action", "external_task_followup_check_phase_action"))
+                .with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
                 .with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
                 .with(tuple("Update errand status", "external_task_follow_up_update_status"))
                 .with(tuple("End follow up phase", "end_follow_up_phase"));
+    }
+
+    public static Tuples finalizePathway() {
+        return Tuples.create()
+            .with(tuple("Finalize process", "external_task_finalize_process"));
     }
 
     public static Tuples canceledPathway() {

@@ -15,12 +15,14 @@ import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
+import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
+import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
@@ -70,6 +72,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 		mockDecision(caseId, scenarioName);
 		mockExecution(caseId, scenarioName);
 		mockFollowUp(caseId, scenarioName);
+		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -99,6 +102,7 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
+			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 }

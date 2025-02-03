@@ -15,21 +15,24 @@ import java.util.Map;
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
-import static apptest.mock.Execution.mockExecutionCreateAsset;
-import static apptest.mock.Execution.mockExecutionOrderCard;
-import static apptest.mock.Execution.mockExecutionUpdatePhase;
-import static apptest.mock.Execution.mockSendSimplifiedService;
+import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.Finalize.mockFinalize;
-import static apptest.mock.FollowUp.mockFollowUp;
+import static apptest.mock.FollowUp.mockFollowUpCheckPhaseAction;
+import static apptest.mock.FollowUp.mockFollowUpCleanUpNotes;
+import static apptest.mock.FollowUp.mockFollowUpUpdatePhase;
+import static apptest.mock.FollowUp.mockFollowUpUpdateStatus;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
+import static apptest.verification.ProcessPathway.executionPathway;
 import static apptest.verification.ProcessPathway.finalizePathway;
-import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -45,7 +48,7 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
-class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
+class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
@@ -63,52 +66,48 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_execution_001_createProcessForCardNotExistsToExists() throws JsonProcessingException, ClassNotFoundException {
+	void test001_createProcessForFollowUpNotComplete() throws JsonProcessingException, ClassNotFoundException {
 
-		final var caseId = "1415";
-		final var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
+		final var caseId = "1011";
+		final var scenarioName = "test_actualization_001_createProcessForFollowUpNotComplete";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName);
 		mockInvestigation(caseId, scenarioName);
-		final var stateAfterDecision = mockDecision(caseId, scenarioName);
-		// Mock Deviation
-		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, stateAfterDecision);
-		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
-		final var stateAfterCheckIfCardDoesNotExist = mockCaseDataGet(caseId, scenarioName, stateAfterOrderCard,
-			"execution_check-if-card-exists-task-worker-when-it-does-not---api-casedata-get-errand",
+		mockDecision(caseId, scenarioName);
+		final var stateAfterExcecution = mockExecution(caseId, scenarioName);
+
+		final var stateAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, stateAfterExcecution);
+
+		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdatePhase,
+			"follow_up_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
 			Map.of("decisionTypeParameter", "FINAL",
-				"phaseParameter", "Verkställa",
+				"phaseParameter", "Uppföljning",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Verkställa",
-				"permitNumberParameter", ""));
-		final var stateAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, stateAfterCheckIfCardDoesNotExist,
-			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
-			Map.of("decisionTypeParameter", "FINAL",
-				"phaseParameter", "Verkställa",
-				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
-				"displayPhaseParameter", "Verkställa",
-				"permitNumberParameter", "12345"));
-		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
-		mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
-		// Normal mock
-		mockFollowUp(caseId, scenarioName);
+				"displayPhaseParameter", "Uppföljning"));
+
+		final var stateAfterPatchNonComplete = mockCaseDataPatch(caseId, scenarioName, stateAfterGetErrandNonComplete,
+			"follow_up_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
+			equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "WAITING", "Uppföljning"), true, false));
+
+		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete);
+		final var stateAfterCleanup = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
+		mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup);
 		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1415")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/" + caseId)
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
-		awaitProcessState("execution_card_check_is_update_available", DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+		awaitProcessState("followup_is_case_update_available", DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
 
 		// Update process
 		setupCall()
@@ -136,28 +135,22 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(decisionPathway())
 			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
 			.with(handlingPathway())
-			.with(tuple("Execution", "call_activity_execution"))
-			.with(tuple("Start execution phase", "start_execution_phase"))
-			.with(tuple("Send message in parallel flow", "parallel_gateway_start"))
-			.with(tuple("Update phase", "external_task_execution_update_phase"))
-			.with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
-			.with(tuple("Order card", "external_task_execution_order_card_task"))
-			.with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))
-			// Card does not exist
-			.with(tuple("Wait for existing card", "execution_card_check_is_update_available"))
-			.with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))
-			.with(tuple("Is card manufactured", "gateway_card_exists"))
-			.with(tuple("Is card manufactured", "gateway_card_exists"))
-			.with(tuple("Create asset", "external_task_execution_create_asset"))
-			.with(tuple("End appeal", "execution_gateway_end_appeal"))
-			//Added delay to send control message to make it happen after the asset is created
-			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
-			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
-			.with(tuple("End parallel gateway", "parallel_gateway_end"))
-			.with(tuple("End parallel gateway", "parallel_gateway_end"))
-			.with(tuple("End execution phase", "end_execution_phase"))
-			.with(followUpPathway())
+			.with(executionPathway())
+			// Follow up pathway
+			.with(tuple("Follow up", "call_activity_follow_up"))
+			.with(tuple("Start follow up phase", "start_follow_up_phase"))
+			.with(tuple("Update phase", "external_task_follow_up_update_phase"))
+			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
+			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			// Not complete
+			.with(tuple("Is caseUpdateAvailable", "followup_is_case_update_available"))
+			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
+			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			.with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
+			.with(tuple("Update errand status", "external_task_follow_up_update_status"))
+			.with(tuple("End follow up phase", "end_follow_up_phase"))
 			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
+
 }
