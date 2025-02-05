@@ -5,7 +5,7 @@ import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
@@ -65,8 +65,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean isErrandFinalized(Errand errand) {
-		final var isErrand = Optional.ofNullable(errand.getStatuses()).orElse(emptyList()).stream()
-			.anyMatch(status -> CASEDATA_STATUS_CASE_CANCELED.equals(status.getStatusType()));
-		return isErrand;
+		return Optional.ofNullable(errand.getStatuses()).orElse(emptyList()).stream()
+			.anyMatch(status -> CASEDATA_STATUS_CASE_FINALIZED.equals(status.getStatusType()));
 	}
 }

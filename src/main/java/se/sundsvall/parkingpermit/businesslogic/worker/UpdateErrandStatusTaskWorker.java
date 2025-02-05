@@ -8,8 +8,8 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_FOLLOW_UP;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_INVESTIGATION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_PROCESS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
@@ -60,7 +60,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 					final var statusDescription = Optional.ofNullable(externalTask.getVariable("statusDescription")).map(Object::toString).orElse(status);
 					caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(status, statusDescription)));
 				}
-				case CASEDATA_PHASE_CANCELED -> caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_CANCELED, "Processen har avbrutits")));
+				case CASEDATA_PHASE_CANCELED -> caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_FINALIZED, "Processen har avbrutits")));
 				default -> logInfo("No status update for phase {}", phase);
 			}
 

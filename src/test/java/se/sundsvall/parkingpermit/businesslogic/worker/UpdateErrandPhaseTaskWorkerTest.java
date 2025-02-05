@@ -18,7 +18,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
@@ -87,7 +87,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-		CASEDATA_STATUS_CASE_CANCELED, "OTHER_STATUS"
+		CASEDATA_STATUS_CASE_FINALIZED, "OTHER_STATUS"
 	})
 	void execute(String status) {
 		// Setup
@@ -125,7 +125,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		assertThat(patchErrand.getExternalCaseId()).isEqualTo(externalCaseId);
 		assertThat(patchErrand.getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
 
-		final var phaseStatus = CASEDATA_STATUS_CASE_CANCELED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
+		final var phaseStatus = CASEDATA_STATUS_CASE_FINALIZED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
 		assertThat(patchErrand.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 			tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),

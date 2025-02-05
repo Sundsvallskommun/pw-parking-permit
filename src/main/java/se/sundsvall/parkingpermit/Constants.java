@@ -53,7 +53,7 @@ public final class Constants {
 	public static final String CASEDATA_STATUS_CASE_DECIDE = "Under beslut";
 	public static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
 	public static final String CASEDATA_STATUS_CASE_DECIDED = "Beslutad";
-	public static final String CASEDATA_STATUS_CASE_CANCELED = "Ärende avslutat";
+	public static final String CASEDATA_STATUS_CASE_FINALIZED = "Ärende avslutat";
 
 	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
