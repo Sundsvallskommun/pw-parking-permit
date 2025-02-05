@@ -13,12 +13,10 @@ import java.time.Duration;
 import java.util.Map;
 
 import static apptest.mock.Denial.mockDenial;
-import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.verification.ProcessPathway.denialPathway;
-import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.time.Duration.ZERO;
@@ -88,7 +86,6 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 
 		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterGetAppealedErrand);
 		mockFollowUp(caseId, scenarioName, stateAfterDenial);
-		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -111,7 +108,6 @@ class ProcessAppealDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
 			.with(denialPathway())
 			.with(followUpPathway())
-			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 }

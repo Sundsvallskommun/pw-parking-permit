@@ -17,7 +17,6 @@ import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
-import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigationCheckPhaseAction;
 import static apptest.mock.Investigation.mockInvestigationConstructDecision;
@@ -34,7 +33,6 @@ import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
-import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -102,7 +100,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
         mockDecision(caseId, scenarioName);
         mockExecution(caseId, scenarioName);
         mockFollowUp(caseId, scenarioName);
-        mockFinalize(caseId, scenarioName);
 
         // Start process
         final var startResponse = setupCall()
@@ -159,7 +156,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(finalizePathway())
                 .with(tuple("End process", "end_process")));
     }
 
@@ -198,7 +194,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
         mockDecision(caseId, scenarioName);
         mockExecution(caseId, scenarioName);
         mockFollowUp(caseId, scenarioName);
-        mockFinalize(caseId, scenarioName);
 
         // Start process
         final var startResponse = setupCall()
@@ -258,7 +253,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(finalizePathway())
                 .with(tuple("End process", "end_process")));
     }
 
@@ -391,7 +385,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
         mockDecision(caseId, scenarioName);
         mockExecution(caseId, scenarioName);
         mockFollowUp(caseId, scenarioName);
-        mockFinalize(caseId, scenarioName);
 
         // Start process
         final var startResponse = setupCall()
@@ -451,7 +444,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
                 .with(handlingPathway())
                 .with(executionPathway())
                 .with(followUpPathway())
-                .with(finalizePathway())
                 .with(tuple("End process", "end_process")));
     }
 }

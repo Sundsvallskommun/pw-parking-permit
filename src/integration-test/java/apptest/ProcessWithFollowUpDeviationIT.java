@@ -16,10 +16,10 @@ import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
-import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUpCheckPhaseAction;
 import static apptest.mock.FollowUp.mockFollowUpCleanUpNotes;
-import static apptest.mock.FollowUp.mockFollowUpUpdatePhase;
+import static apptest.mock.FollowUp.mockFollowUpUpdatePhaseAtEnd;
+import static apptest.mock.FollowUp.mockFollowUpUpdatePhaseAtStart;
 import static apptest.mock.FollowUp.mockFollowUpUpdateStatus;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
@@ -29,7 +29,6 @@ import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
-import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -79,7 +78,7 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 		mockDecision(caseId, scenarioName);
 		final var stateAfterExcecution = mockExecution(caseId, scenarioName);
 
-		final var stateAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, stateAfterExcecution);
+		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution);
 
 		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdatePhase,
 			"follow_up_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
@@ -95,8 +94,8 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 
 		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete);
 		final var stateAfterCleanup = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
-		mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup);
-		mockFinalize(caseId, scenarioName);
+		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup);
+		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -148,8 +147,8 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
 			.with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
 			.with(tuple("Update errand status", "external_task_follow_up_update_status"))
+			.with(tuple("Update phase action", "external_task_follow_up_update_phase_action"))
 			.with(tuple("End follow up phase", "end_follow_up_phase"))
-			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 

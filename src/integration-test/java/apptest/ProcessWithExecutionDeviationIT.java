@@ -19,14 +19,12 @@ import static apptest.mock.Execution.mockExecutionCreateAsset;
 import static apptest.mock.Execution.mockExecutionOrderCard;
 import static apptest.mock.Execution.mockExecutionUpdatePhase;
 import static apptest.mock.Execution.mockSendSimplifiedService;
-import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
-import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
@@ -97,7 +95,6 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 		mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 		// Normal mock
 		mockFollowUp(caseId, scenarioName);
-		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -157,7 +154,6 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End execution phase", "end_execution_phase"))
 			.with(followUpPathway())
-			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 }

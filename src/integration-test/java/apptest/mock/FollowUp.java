@@ -17,38 +17,60 @@ public class FollowUp {
     }
 
     public static String mockFollowUp(String caseId, String scenarioName, String requiredScenarioState) {
-        final var stateAfterUpdatePhase = mockFollowUpUpdatePhase(caseId, scenarioName, requiredScenarioState);
+        final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, requiredScenarioState);
         final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterUpdatePhase);
         final var stateAfterCleanUp = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
-        return mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanUp);
+        final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanUp);
+        return mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus);
     }
 
     public static String mockFollowUpCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-            "follow_up_check-phase-action_task-worker---api-casedata-get-errand",
+            "follow_up_check-phase-action_task-worker---api-casedata-get-errand-check-phase-action",
             Map.of("decisionTypeParameter", "FINAL",
                 "phaseParameter", "Uppföljning",
                 "phaseStatusParameter", "ONGOING",
+                "statusTypeParameter", "Status",
                 "phaseActionParameter", "COMPLETE",
                 "displayPhaseParameter", "Uppföljning"));
 
         return mockCaseDataPatch(caseId, scenarioName, state,
-            "follow_up_check-phase-action_task-worker---api-casedata-patch-errand",
+            "follow_up_check-phase-action_task-worker---api-casedata-patch-errand-start",
             equalToJson(createPatchBody("Uppföljning", "COMPLETE", "COMPLETED", "Uppföljning")));
     }
 
-    public static String mockFollowUpUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
+    public static String mockFollowUpUpdatePhaseAtStart(String caseId, String scenarioName, String requiredScenarioState) {
 
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-                "follow_up_update-phase-task-worker---api-casedata-get-errand",
-                Map.of("decisionTypeParameter", "FINAL",
-                        "phaseParameter", "Beslut",
-                        "displayPhaseParameter", "Beslut"));
+                "follow_up_update-phase-task-worker---api-casedata-get-errand-update-phase-start",
+            Map.of("decisionTypeParameter", "FINAL",
+                "phaseParameter", "Beslut",
+                "phaseStatusParameter", "ONGOING",
+                "statusTypeParameter", "Status",
+                "phaseActionParameter", "UNKNOWN",
+                "displayPhaseParameter", "Beslut"));
 
 
         return mockCaseDataPatch(caseId, scenarioName, state,
                 "follow_up_update-phase-task-worker---api-casedata-patch-errand",
-                equalToJson(createPatchBody("Uppföljning","UNKNOWN", "ONGOING", "Uppföljning")));
+                equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "ONGOING", "Uppföljning")));
+    }
+
+    public static String mockFollowUpUpdatePhaseAtEnd(String caseId, String scenarioName, String requiredScenarioState) {
+
+        var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+            "follow_up_update-phase-task-worker---api-casedata-get-errand-update-phase-end",
+            Map.of("decisionTypeParameter", "FINAL",
+                "phaseParameter", "Uppföljning",
+                "phaseStatusParameter", "COMPLETED",
+                "statusTypeParameter", "Ärende avslutat",
+                "phaseActionParameter", "UNKNOWN",
+                "displayPhaseParameter", "Uppföljning"));
+
+
+        return mockCaseDataPatch(caseId, scenarioName, state,
+            "follow_up_update-phase-task-worker---api-casedata-patch-errand-end",
+            equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "COMPLETED", "Uppföljning")));
     }
 
     public static String mockFollowUpCleanUpNotes(String caseId, String scenarioName, String requiredScenarioState) {
@@ -63,11 +85,12 @@ public class FollowUp {
 
     public static String mockFollowUpUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
         var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-            "follow_up_update-phase-task-worker---api-casedata-get-errand_2",
+            "follow_up_update-phase-task-worker---api-casedata-get-errand-update-status",
             Map.of("decisionTypeParameter", "FINAL",
                 "phaseParameter", "Uppföljning",
                 "phaseStatusParameter", "ONGOING",
                 "phaseActionParameter", "UNKNOWN",
+                "statusTypeParameter", "Status",
                 "displayPhaseParameter", "Uppföljning"));
 
         return mockCaseDataPutStatus(caseId, scenarioName, state,

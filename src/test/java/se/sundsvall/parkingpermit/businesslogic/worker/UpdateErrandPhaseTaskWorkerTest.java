@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -13,17 +14,27 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
 
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.PatchErrand;
 import java.util.HashMap;
+import java.util.List;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -74,8 +85,11 @@ class UpdateErrandPhaseTaskWorkerTest {
 		assertThat(worker.getClass().getAnnotation(ExternalTaskSubscription.class).value()).isEqualTo("UpdateErrandPhaseTask");
 	}
 
-	@Test
-	void execute() {
+	@ParameterizedTest
+	@ValueSource(strings = {
+		CASEDATA_STATUS_CASE_CANCELED, "OTHER_STATUS"
+	})
+	void execute(String status) {
 		// Setup
 		final var externalCaseId = "externalCaseId";
 		// Sets phase action to unknown in UpdateErrandPhaseTaskWorker because it is the beginning of the phase
@@ -90,6 +104,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
+		when(errandMock.getStatuses()).thenReturn(List.of(new generated.se.sundsvall.casedata.Status().statusType(status)));
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseId);
 
 		// Act
@@ -106,8 +121,15 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
+		final var patchErrand = patchErrandCaptor.getValue();
+		assertThat(patchErrand.getExternalCaseId()).isEqualTo(externalCaseId);
+		assertThat(patchErrand.getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
+
+		final var phaseStatus = CASEDATA_STATUS_CASE_CANCELED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
+		assertThat(patchErrand.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+			tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(phaseStatus)));
 	}
 
 	@Test

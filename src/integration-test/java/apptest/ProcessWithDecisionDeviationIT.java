@@ -19,7 +19,6 @@ import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
 import static apptest.mock.Execution.mockExecution;
-import static apptest.mock.Finalize.mockFinalize;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
@@ -30,7 +29,6 @@ import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
-import static apptest.verification.ProcessPathway.finalizePathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
@@ -94,7 +92,6 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 		// Normal mock
 		mockExecution(caseId, scenarioName);
 		mockFollowUp(caseId, scenarioName);
-		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -146,7 +143,6 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(handlingPathway())
 			.with(executionPathway())
 			.with(followUpPathway())
-			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 
@@ -225,7 +221,6 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			"REJECTION");
 		// Normal mocks
 		mockFollowUp(caseId, scenarioName, stateAfterCheckDecision);
-		mockFinalize(caseId, scenarioName);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -253,7 +248,6 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(decisionPathway())
 			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
 			.with(followUpPathway())
-			.with(finalizePathway())
 			.with(tuple("End process", "end_process")));
 	}
 }
