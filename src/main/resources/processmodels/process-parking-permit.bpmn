@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
   <bpmn:process id="process-parking-permit" name="PROCESS Parking permit" isExecutable="true" camunda:historyTimeToLive="P30D">
     <bpmn:startEvent id="start_process" name="Start process">
       <bpmn:documentation>The start of the process execution</bpmn:documentation>
@@ -7,8 +7,8 @@
     </bpmn:startEvent>
     <bpmn:endEvent id="end_process" name="End process">
       <bpmn:documentation>The end of the process execution</bpmn:documentation>
-      <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
       <bpmn:incoming>Flow_123m201</bpmn:incoming>
+      <bpmn:incoming>Flow_0ycmz1a</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1bt8y6y" sourceRef="start_process" targetRef="external_task_check_appeal" />
     <bpmn:exclusiveGateway id="gateway_is_citizen" name="Gateway isCitizen" default="applicant_resident_of_municipality">
@@ -459,17 +459,17 @@
       <bpmn:incoming>Flow_1fmqs5z</bpmn:incoming>
       <bpmn:outgoing>Flow_0ycmz1a</bpmn:outgoing>
       <bpmn:endEvent id="end_follow_up_phase" name="End follow up phase">
-        <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
+        <bpmn:incoming>Flow_1mufxo2</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="start_follow_up_phase" name="Start follow up phase">
         <bpmn:outgoing>Flow_1kmw5et</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="Flow_1kmw5et" sourceRef="start_follow_up_phase" targetRef="external_task_follow_up_update_phase" />
       <bpmn:serviceTask id="external_task_follow_up_clean_up_notes" name="Clean up notes" camunda:type="external" camunda:topic="CleanUpNotesTask">
-        <bpmn:incoming>Flow_0m6v59o</bpmn:incoming>
+        <bpmn:incoming>Flow_1i36ltw</bpmn:incoming>
         <bpmn:outgoing>Flow_18tyux3</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_18tyux3" sourceRef="external_task_follow_up_clean_up_notes" targetRef="end_follow_up_phase" />
+      <bpmn:sequenceFlow id="Flow_18tyux3" sourceRef="external_task_follow_up_clean_up_notes" targetRef="external_task_follow_up_update_status" />
       <bpmn:serviceTask id="external_task_follow_up_update_phase" name="Update phase" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
         <bpmn:documentation>Set phase to execution</bpmn:documentation>
         <bpmn:extensionElements>
@@ -479,7 +479,51 @@
         <bpmn:incoming>Flow_1kmw5et</bpmn:incoming>
         <bpmn:outgoing>Flow_0m6v59o</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="Flow_0m6v59o" sourceRef="external_task_follow_up_update_phase" targetRef="external_task_follow_up_clean_up_notes" />
+      <bpmn:sequenceFlow id="Flow_0m6v59o" sourceRef="external_task_follow_up_update_phase" targetRef="external_task_followup_check_phase_action" />
+      <bpmn:serviceTask id="external_task_follow_up_update_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="status">Ärende avslutat</camunda:inputParameter>
+            <camunda:inputParameter name="statusDescription">Ärende avslutat</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_18tyux3</bpmn:incoming>
+        <bpmn:outgoing>Flow_0pf3mt7</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0pf3mt7" sourceRef="external_task_follow_up_update_status" targetRef="external_task_follow_up_update_phase_action" />
+      <bpmn:serviceTask id="external_task_followup_check_phase_action" name="Check phase action" camunda:type="external" camunda:topic="CheckErrandPhaseActionTask">
+        <bpmn:incoming>Flow_1t2k0gt</bpmn:incoming>
+        <bpmn:incoming>Flow_0m6v59o</bpmn:incoming>
+        <bpmn:outgoing>Flow_0ykvekf</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:exclusiveGateway id="gateway_followup_is_phase_action_complete" name="Is phase action complete" default="Flow_05cikbj">
+        <bpmn:incoming>Flow_0ykvekf</bpmn:incoming>
+        <bpmn:outgoing>Flow_05cikbj</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1i36ltw</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:intermediateCatchEvent id="followup_is_case_update_available" name="Is caseUpdateAvailable">
+        <bpmn:incoming>Flow_05cikbj</bpmn:incoming>
+        <bpmn:outgoing>Flow_1t2k0gt</bpmn:outgoing>
+        <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0ln66uu" camunda:variableName="updateAvailable">
+          <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable}</bpmn:condition>
+        </bpmn:conditionalEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:sequenceFlow id="Flow_1t2k0gt" sourceRef="followup_is_case_update_available" targetRef="external_task_followup_check_phase_action" />
+      <bpmn:sequenceFlow id="Flow_0ykvekf" sourceRef="external_task_followup_check_phase_action" targetRef="gateway_followup_is_phase_action_complete" />
+      <bpmn:sequenceFlow id="Flow_05cikbj" name="no" sourceRef="gateway_followup_is_phase_action_complete" targetRef="followup_is_case_update_available" />
+      <bpmn:sequenceFlow id="Flow_1i36ltw" name="Phase action COMPLETE" sourceRef="gateway_followup_is_phase_action_complete" targetRef="external_task_follow_up_clean_up_notes">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'COMPLETE'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:serviceTask id="external_task_follow_up_update_phase_action" name="Update phase action" camunda:type="external" camunda:topic="UpdateErrandPhaseTask">
+        <bpmn:documentation>Set phase to execution</bpmn:documentation>
+        <bpmn:extensionElements>
+          <camunda:executionListener expression="${execution.setVariable(&#34;phase&#34;, &#34;Uppföljning&#34;)}" event="start" />
+          <camunda:executionListener expression="${execution.setVariable(&#34;displayPhase&#34;, &#34;Uppföljning&#34;)}" event="start" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0pf3mt7</bpmn:incoming>
+        <bpmn:outgoing>Flow_1mufxo2</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1mufxo2" sourceRef="external_task_follow_up_update_phase_action" targetRef="end_follow_up_phase" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway_investigation_canceled" name="Is canceled in investigation" default="Flow_0f8p51c">
       <bpmn:incoming>Flow_0ru4901</bpmn:incoming>
@@ -575,9 +619,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_15c9s3f_di" bpmnElement="end_process">
-        <dc:Bounds x="1662" y="262" width="36" height="36" />
+        <dc:Bounds x="1842" y="262" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1650" y="305" width="62" height="14" />
+          <dc:Bounds x="1830" y="305" width="62" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1o2kaj8_di" bpmnElement="gateway_is_citizen" isMarkerVisible="true">
@@ -659,7 +703,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ycmz1a_di" bpmnElement="Flow_0ycmz1a">
         <di:waypoint x="1610" y="280" />
-        <di:waypoint x="1662" y="280" />
+        <di:waypoint x="1842" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1quthlt_di" bpmnElement="Flow_1quthlt">
         <di:waypoint x="590" y="280" />
@@ -724,8 +768,8 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_123m201_di" bpmnElement="Flow_123m201">
         <di:waypoint x="1430" y="90" />
-        <di:waypoint x="1680" y="90" />
-        <di:waypoint x="1680" y="262" />
+        <di:waypoint x="1860" y="90" />
+        <di:waypoint x="1860" y="262" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1mbqpvl_di" bpmnElement="Flow_1mbqpvl">
         <di:waypoint x="348" y="280" />
@@ -1408,12 +1452,6 @@
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_15fzdds">
     <bpmndi:BPMNPlane id="BPMNPlane_03h4jfu" bpmnElement="call_activity_follow_up">
-      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
-        <dc:Bounds x="652" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="638" y="145" width="67" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1m050le" bpmnElement="start_follow_up_phase">
         <dc:Bounds x="172" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1421,11 +1459,41 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1s8xom9" bpmnElement="external_task_follow_up_clean_up_notes">
-        <dc:Bounds x="470" y="80" width="100" height="80" />
+        <dc:Bounds x="750" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1ntf23t" bpmnElement="external_task_follow_up_update_phase">
         <dc:Bounds x="290" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1vh55f5" bpmnElement="external_task_follow_up_update_status">
+        <dc:Bounds x="930" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0aavo1a" bpmnElement="external_task_followup_check_phase_action">
+        <dc:Bounds x="460" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0qs3u58" bpmnElement="gateway_followup_is_phase_action_complete" isMarkerVisible="true">
+        <dc:Bounds x="625" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel color:color="#205022">
+          <dc:Bounds x="583" y="65" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0mo29uv" bpmnElement="followup_is_case_update_available">
+        <dc:Bounds x="492" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="466" y="275" width="89" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
+        <dc:Bounds x="1292" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1278" y="145" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0fizn0i" bpmnElement="external_task_follow_up_update_phase_action">
+        <dc:Bounds x="1110" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_0wc93yf" bpmnElement="Flow_1kmw5et">
@@ -1433,12 +1501,43 @@
         <di:waypoint x="290" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_18tyux3_di" bpmnElement="Flow_18tyux3">
-        <di:waypoint x="570" y="120" />
-        <di:waypoint x="652" y="120" />
+        <di:waypoint x="850" y="120" />
+        <di:waypoint x="930" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0m6v59o_di" bpmnElement="Flow_0m6v59o">
         <di:waypoint x="390" y="120" />
-        <di:waypoint x="470" y="120" />
+        <di:waypoint x="460" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pf3mt7_di" bpmnElement="Flow_0pf3mt7">
+        <di:waypoint x="1030" y="120" />
+        <di:waypoint x="1110" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1t2k0gt_di" bpmnElement="Flow_1t2k0gt">
+        <di:waypoint x="510" y="232" />
+        <di:waypoint x="510" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ykvekf_di" bpmnElement="Flow_0ykvekf">
+        <di:waypoint x="560" y="120" />
+        <di:waypoint x="625" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05cikbj_di" bpmnElement="Flow_05cikbj">
+        <di:waypoint x="650" y="145" />
+        <di:waypoint x="650" y="250" />
+        <di:waypoint x="528" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="632" y="161" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i36ltw_di" bpmnElement="Flow_1i36ltw">
+        <di:waypoint x="675" y="120" />
+        <di:waypoint x="750" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="86" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mufxo2_di" bpmnElement="Flow_1mufxo2">
+        <di:waypoint x="1210" y="120" />
+        <di:waypoint x="1292" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
