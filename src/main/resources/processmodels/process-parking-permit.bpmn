@@ -25,7 +25,6 @@
     <bpmn:subProcess id="subprocess_automatic_denial" name="Automatic denial">
       <bpmn:extensionElements />
       <bpmn:incoming>applicant_not_resident_of_municipality</bpmn:incoming>
-      <bpmn:incoming>Flow_0u2mzhe</bpmn:incoming>
       <bpmn:outgoing>Flow_0uzrwpk</bpmn:outgoing>
       <bpmn:startEvent id="start_automatic_denial_phase" name="Start automatic denial phase">
         <bpmn:outgoing>Flow_094lgnf</bpmn:outgoing>
@@ -596,14 +595,10 @@
     <bpmn:exclusiveGateway id="gateway_is_appeal" name="Gateway isAppeal" default="Flow_1pf2pgk">
       <bpmn:incoming>Flow_1mbqpvl</bpmn:incoming>
       <bpmn:outgoing>Flow_1pf2pgk</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0u2mzhe</bpmn:outgoing>
       <bpmn:outgoing>Flow_0k33jw2</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1mbqpvl" sourceRef="external_task_check_appeal" targetRef="gateway_is_appeal" />
     <bpmn:sequenceFlow id="Flow_1pf2pgk" sourceRef="gateway_is_appeal" targetRef="actualization_phase" />
-    <bpmn:sequenceFlow id="Flow_0u2mzhe" name="Not in timeliness review" sourceRef="gateway_is_appeal" targetRef="subprocess_automatic_denial">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAppeal &amp;&amp; !isInTimelinessReview}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0k33jw2" name="Is appeal" sourceRef="gateway_is_appeal" targetRef="decision_phase">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAppeal}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -778,14 +773,6 @@
       <bpmndi:BPMNEdge id="Flow_1pf2pgk_di" bpmnElement="Flow_1pf2pgk">
         <di:waypoint x="450" y="280" />
         <di:waypoint x="490" y="280" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0u2mzhe_di" bpmnElement="Flow_0u2mzhe">
-        <di:waypoint x="425" y="305" />
-        <di:waypoint x="425" y="460" />
-        <di:waypoint x="930" y="460" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="399" y="380" width="82" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0k33jw2_di" bpmnElement="Flow_0k33jw2">
         <di:waypoint x="425" y="255" />
@@ -1452,6 +1439,12 @@
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_15fzdds">
     <bpmndi:BPMNPlane id="BPMNPlane_03h4jfu" bpmnElement="call_activity_follow_up">
+      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
+        <dc:Bounds x="1292" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1278" y="145" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1m050le" bpmnElement="start_follow_up_phase">
         <dc:Bounds x="172" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1484,12 +1477,6 @@
         <dc:Bounds x="492" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="466" y="275" width="89" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1abjou8" bpmnElement="end_follow_up_phase">
-        <dc:Bounds x="1292" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1278" y="145" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0fizn0i" bpmnElement="external_task_follow_up_update_phase_action">
