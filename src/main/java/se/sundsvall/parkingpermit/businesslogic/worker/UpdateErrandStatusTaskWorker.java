@@ -2,7 +2,6 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_ACTUALIZATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
@@ -47,7 +46,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 			switch (phase) {
 				case CASEDATA_PHASE_INVESTIGATION -> caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_PROCESS, "Ärendet utreds")));
 				case CASEDATA_PHASE_DECISION -> {
-					if (isCitizen(externalTask) || isAppealAndInTimeLinessReview(externalTask)) {
+					if (isCitizen(externalTask) || isAppeal(externalTask)) {
 						// Errand is in decision sub process
 						caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_CASE_DECIDE, "Ärendet beslutas")));
 					} else {
@@ -76,9 +75,8 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 		return !Optional.ofNullable(applicantNotResidentOfMuncipality).map(Boolean.class::cast).orElse(true);
 	}
 
-	private boolean isAppealAndInTimeLinessReview(ExternalTask externalTask) {
-		final var isAppeal = externalTask.getVariable(CAMUNDA_VARIABLE_IS_APPEAL);
-		final var isInTimelinessReview = externalTask.getVariable(CAMUNDA_VARIABLE_IS_IN_TIMELINESS_REVIEW);
-		return Optional.ofNullable(isAppeal).map(Boolean.class::cast).orElse(false) && Optional.ofNullable(isInTimelinessReview).map(Boolean.class::cast).orElse(false);
+	private boolean isAppeal(ExternalTask externalTask) {
+
+		return Optional.ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_IS_APPEAL)).map(Boolean.class::cast).orElse(false);
 	}
 }
