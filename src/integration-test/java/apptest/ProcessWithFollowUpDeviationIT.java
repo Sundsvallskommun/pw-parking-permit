@@ -140,11 +140,11 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Start follow up phase", "start_follow_up_phase"))
 			.with(tuple("Update phase", "external_task_follow_up_update_phase"))
 			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
-			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			.with(tuple("Is phase action complete or automatic?", "gateway_followup_is_phase_action_complete_or_automatic"))
 			// Not complete
 			.with(tuple("Is caseUpdateAvailable", "followup_is_case_update_available"))
 			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
-			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			.with(tuple("Is phase action complete or automatic?", "gateway_followup_is_phase_action_complete_or_automatic"))
 			.with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
 			.with(tuple("Update errand status", "external_task_follow_up_update_status"))
 			.with(tuple("Update phase action", "external_task_follow_up_update_phase_action"))

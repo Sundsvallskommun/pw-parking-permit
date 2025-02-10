@@ -60,8 +60,9 @@ public class CaseDataMapper {
 		Optional.ofNullable(phaseStatus).ifPresentOrElse(status -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(List.of(status))),
 			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(emptyList())));
 
+		// Cannot be null since that could erase action when it is "AUTOMATIC"
 		Optional.ofNullable(phaseAction).ifPresentOrElse(action -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(action))),
-			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(emptyList())));
+			() -> { throw new IllegalArgumentException("phaseAction cannot be null"); });
 
 		return patchErrand.extraParameters(result);
 	}
