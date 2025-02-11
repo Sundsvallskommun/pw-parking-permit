@@ -73,12 +73,12 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		mockInvestigation(caseId, scenarioName);
-		mockDecision(caseId, scenarioName);
-		final var stateAfterExcecution = mockExecution(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, false);
+		mockInvestigation(caseId, scenarioName, false);
+		mockDecision(caseId, scenarioName, false);
+		final var stateAfterExcecution = mockExecution(caseId, scenarioName, false);
 
-		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution);
+		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution, false);
 
 		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdatePhase,
 			"follow_up_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
@@ -92,10 +92,10 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 			"follow_up_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
 			equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "WAITING", "Uppföljning"), true, false));
 
-		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete);
+		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete, false);
 		final var stateAfterCleanup = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
-		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup);
-		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus);
+		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup, false);
+		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus, false);
 
 		// Start process
 		final var startResponse = setupCall()

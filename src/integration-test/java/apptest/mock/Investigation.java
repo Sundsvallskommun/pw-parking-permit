@@ -9,39 +9,42 @@ import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 public class Investigation {
 
-	public static String mockInvestigation(String caseId, String scenarioName) {
-		var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, "actualization_check-phase-action_task-worker---api-casedata-patch-errand");
-		var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase);
-		var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterUpdateStatus);
-		var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules);
-		return mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision);
+	public static String mockInvestigation(String caseId, String scenarioName, boolean isAutomatic) {
+		var scenarioAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, "actualization_check-phase-action_task-worker---api-casedata-patch-errand", isAutomatic);
+		var scenarioAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, scenarioAfterUpdatePhase, isAutomatic);
+		var scenarioAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, scenarioAfterUpdateStatus, isAutomatic);
+		var scenarioAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, scenarioAfterExecuteRules, isAutomatic);
+		return mockInvestigationCheckPhaseAction(caseId, scenarioName, scenarioAfterConstructDecision, isAutomatic);
 	}
 
-	public static String mockInvestigationUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockInvestigationUpdatePhase(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"investigation_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
 				"phaseStatusParameter", "COMPLETE",
-				"phaseActionParameter", "COMPLETED",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
 				"displayPhaseParameter", "Aktualisering"));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
 			"investigation_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Utredning", "UNKNOWN", "ONGOING", "Utredning")));
+			equalToJson(createPatchBody("Utredning", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Utredning")));
 	}
 
-	public static String mockInvestigationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockInvestigationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"investigation_update-status-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"statusTypeParameter", "Ärende inkommit",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Utredning"));
 
 		return mockCaseDataPutStatus(caseId, scenarioName, state,
@@ -57,11 +60,11 @@ public class Investigation {
 				"""));
 	}
 
-	public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState) {
-		return mockInvestigationExecuteRules(caseId, scenarioName, requiredScenarioState, null, true);
+	public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
+		return mockInvestigationExecuteRules(caseId, scenarioName, requiredScenarioState, null, true, isAutomatic);
 	}
 
-	public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix, boolean validResponse) {
+	public static String mockInvestigationExecuteRules(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix, boolean validResponse, boolean isAutomatic) {
 		var newScenarioStateGet = "investigation_execute-rules-task-worker---api-casedata-get-errand";
 		if (newScenarioStateSuffix != null) {
 			newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
@@ -72,7 +75,7 @@ public class Investigation {
 				"statusTypeParameter", "Ärende inkommit",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Utredning"));
 
 		var newScenarioStatePost = "investigation_execute-rules-task-worker---api-businessrules-engine";
@@ -111,11 +114,11 @@ public class Investigation {
 			validResponse);
 	}
 
-	public static String mockInvestigationConstructDecision(String caseId, String scenarioName, String requiredScenarioState) {
-		return mockInvestigationConstructDecision(caseId, scenarioName, requiredScenarioState, null);
+	public static String mockInvestigationConstructDecision(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
+		return mockInvestigationConstructDecision(caseId, scenarioName, requiredScenarioState, null, isAutomatic);
 	}
 
-	public static String mockInvestigationConstructDecision(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix) {
+	public static String mockInvestigationConstructDecision(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix, boolean isAutomatic) {
 		var newScenarioStateGet = "construct-recommended-decision-task-worker---api-casedata-get-errand";
 		if (newScenarioStateSuffix != null) {
 			newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
@@ -124,7 +127,7 @@ public class Investigation {
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Utredning"));
 
 		var newScenarioStatePatch = "investigation_construct-recommended-decision_task-worker---api-casedata-patch-decision";
@@ -132,25 +135,25 @@ public class Investigation {
 			newScenarioStatePatch = newScenarioStatePatch.concat(newScenarioStateSuffix);
 		}
 		return mockCaseDataDecisionPatch(caseId, scenarioName, state, newScenarioStatePatch,
-			equalToJson("""
+			equalToJson(String.format("""
 				{
 				    "version": 2,
 				    "created": "${json-unit.any-string}",
-				    "decisionType": "RECOMMENDED",
+				    "decisionType": "%s",
 				    "decisionOutcome": "APPROVAL",
-				    "description": "Rekommenderat beslut är bevilja. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd.",
+				    "description": "%s. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd.",
 				    "law": [],
 				    "attachments": [],
 				    "extraParameters": {}
 				}
-				"""));
+				""", isAutomatic ? "FINAL" : "RECOMMENDED", isAutomatic ? "Beslut är bevilja" : "Rekommenderat beslut är bevilja")));
 	}
 
-	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState) {
-		return mockInvestigationCheckPhaseAction(caseId, scenarioName, requiredScenarioState, null);
+	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
+		return mockInvestigationCheckPhaseAction(caseId, scenarioName, requiredScenarioState, null, isAutomatic);
 	}
 
-	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix) {
+	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState, String newScenarioStateSuffix, boolean isAutomatic) {
 		var newScenarioStateGet = "investigation_check-phase-action_task-worker---api-casedata-get-errand";
 		if (newScenarioStateSuffix != null) {
 			newScenarioStateGet = newScenarioStateGet.concat(newScenarioStateSuffix);
@@ -159,7 +162,7 @@ public class Investigation {
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "COMPLETE",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
 				"displayPhaseParameter", "Utredning"));
 
 		var newScenarioStatePatch = "investigation_check-phase-action_task-worker---api-casedata-patch-errand";
@@ -167,6 +170,6 @@ public class Investigation {
 			newScenarioStatePatch = newScenarioStatePatch.concat(newScenarioStateSuffix);
 		}
 		return mockCaseDataPatch(caseId, scenarioName, state, newScenarioStatePatch,
-			equalToJson(createPatchBody("Utredning", "COMPLETE", "COMPLETED", "Utredning")));
+			equalToJson(createPatchBody("Utredning", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE, "COMPLETED", "Utredning")));
 	}
 }

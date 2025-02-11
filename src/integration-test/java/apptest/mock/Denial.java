@@ -13,38 +13,41 @@ import static apptest.mock.api.CaseData.mockCaseDataStakeholdersGet;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.Templating.mockRenderPdf;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 public class Denial {
 
-	public static String mockDenial(final String caseId, final String scenarioName, final String requiredScenarioState) {
-		final var stateAfterDenialUpdatePhase = mockDenialUpdatePhase(caseId, scenarioName, requiredScenarioState);
-		final var stateAfterAddDecision = mockDenialAddDecision(caseId, scenarioName, stateAfterDenialUpdatePhase);
-		final var stateAfterUpdateStatus = mockDenialUpdateStatus(caseId, scenarioName, stateAfterAddDecision);
-		final var stateAfterSendDecision = mockDenialSendDecision(caseId, scenarioName, stateAfterUpdateStatus);
-		final var stateAfterAddedMessageToErrand = mockDenialAddMessageToErrand(caseId, scenarioName, stateAfterSendDecision);
+	public static String mockDenial(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
+		final var stateAfterDenialUpdatePhase = mockDenialUpdatePhase(caseId, scenarioName, requiredScenarioState, isAutomatic);
+		final var stateAfterAddDecision = mockDenialAddDecision(caseId, scenarioName, stateAfterDenialUpdatePhase, isAutomatic);
+		final var stateAfterUpdateStatus = mockDenialUpdateStatus(caseId, scenarioName, stateAfterAddDecision, isAutomatic);
+		final var stateAfterSendDecision = mockDenialSendDecision(caseId, scenarioName, stateAfterUpdateStatus, isAutomatic);
+		final var stateAfterAddedMessageToErrand = mockDenialAddMessageToErrand(caseId, scenarioName, stateAfterSendDecision, isAutomatic);
 		return mockSendSimplifiedService(caseId, scenarioName, stateAfterAddedMessageToErrand);
 	}
 
-	public static String mockDenialUpdatePhase(final String caseId, final String scenarioName, final String requiredScenarioState) {
+	public static String mockDenialUpdatePhase(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
 
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"automatic_denial_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
-				"displayPhaseParameter", "Aktualisering"));
+				"displayPhaseParameter", "Aktualisering",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
 			"automatic_denial_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Beslut", "UNKNOWN", "ONGOING", "Beslut")));
+			equalToJson(createPatchBody("Beslut", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Beslut")));
 	}
 
-	public static String mockDenialAddDecision(final String caseId, final String scenarioName, final String requiredScenarioState) {
+	public static String mockDenialAddDecision(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"automatic_denial_decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
 		state = mockCaseDataAddStakeholderPatch(caseId, scenarioName, state,
@@ -128,13 +131,13 @@ public class Denial {
 				"""));
 	}
 
-	public static String mockDenialUpdateStatus(final String caseId, final String scenarioName, final String requiredScenarioState) {
+	public static String mockDenialUpdateStatus(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"automatic_denial_update-status-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
 		return mockCaseDataPutStatus(caseId, scenarioName, state,
@@ -150,13 +153,13 @@ public class Denial {
 				"""));
 	}
 
-	public static String mockDenialSendDecision(final String caseId, final String scenarioName, final String requiredScenarioState) {
+	public static String mockDenialSendDecision(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"automatic_denial_send-denial-decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
 		state = mockRenderPdf(scenarioName, state, "automatic_denial_send-denial-decision-task-worker---api-templating-render-pdf",
@@ -197,13 +200,13 @@ public class Denial {
 				"""));
 	}
 
-	public static String mockDenialAddMessageToErrand(final String caseId, final String scenarioName, final String requiredScenarioState) {
+	public static String mockDenialAddMessageToErrand(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"automatic_denial_add-message-to-errand-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
 		state = mockRenderPdf(scenarioName, state, "automatic_denial_add-message-to-errand-task-worker---api-templating-render-pdf",

@@ -4,6 +4,8 @@ import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
@@ -45,6 +47,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -74,11 +78,11 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, false);
+		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, false);
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
-		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation, false);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, false);
 		final var stateAfterCheckDecisionNonFinalGet = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"check-decision-task-worker-not-final---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "PROPOSED",
@@ -90,8 +94,8 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			equalToJson(createPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
 		mockDecisionCheckIfDecisionMade(caseId, scenarioName, stateAfterCheckDecisionNonFinalPatch);
 		// Normal mock
-		mockExecution(caseId, scenarioName);
-		mockFollowUp(caseId, scenarioName);
+		mockExecution(caseId, scenarioName, false);
+		mockFollowUp(caseId, scenarioName, false);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -146,19 +150,23 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 
-	@Test
-	void test_decision_002_createProcessForCancelDecision() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test_decision_002_createProcessForCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 		final var caseId = "1516";
-		final var scenarioName = "test_decision_002_createProcessForCancelDecision";
+		var scenarioName = "test_decision_002_createProcessForCancelDecision";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
 
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, isAutomatic);
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
-		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation, isAutomatic);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"check-decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
@@ -198,29 +206,33 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 
-	@Test
-	void test_decision_003_createProcessForDecisionRejected() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test_decision_003_createProcessForDecisionRejected(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 		final var caseId = "1718";
-		final var scenarioName = "test_decision_003_createProcessForDecisionRejected";
+		var scenarioName = "test_decision_003_createProcessForDecisionRejected";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
 
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, isAutomatic);
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation);
-		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation, isAutomatic);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		final var stateAfterCheckDecision = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"check-decision-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"phaseParameter", "Beslut",
 				"displayPhaseParameter", "Beslut",
 				"statusTypeParameter", "Beslutad"),
 			"REJECTION");
 		// Normal mocks
-		mockFollowUp(caseId, scenarioName, stateAfterCheckDecision);
+		mockFollowUp(caseId, scenarioName, stateAfterCheckDecision, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()

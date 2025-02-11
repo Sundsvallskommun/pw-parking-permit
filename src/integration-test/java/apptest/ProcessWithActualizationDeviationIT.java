@@ -4,6 +4,8 @@ import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
@@ -51,6 +53,8 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -71,18 +75,23 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
 
-	@Test
-	void test001_createProcessForNonCitizen() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test001_createProcessForNonCitizen(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "456";
-		final var scenarioName = "test_actualization_001_createProcessForNonCitizen";
+		var scenarioName = "test_actualization_001_createProcessForNonCitizen";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
+
 		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality");
-		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterVerifyResident);
-		mockFollowUp(caseId, scenarioName, stateAfterDenial);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality", isAutomatic);
+		final var stateAfterDenial = mockDenial(caseId, scenarioName, stateAfterVerifyResident, isAutomatic);
+		mockFollowUp(caseId, scenarioName, stateAfterDenial, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -116,19 +125,24 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 
-	@Test
-	void test002_createProcessForCancelInActualization() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test002_createProcessForCancelInActualization(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "789";
-		final var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
+		var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
+
 		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", isAutomatic);
+		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident, isAutomatic);
+		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, isAutomatic);
+		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, isAutomatic);
 
 		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"actualization_check-phase-action_task-worker---api-casedata-get-errand",
@@ -191,11 +205,11 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase);
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, false);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", false);
+		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident, false);
+		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, false);
+		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, false);
 
 		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
 			"actualization_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
@@ -209,13 +223,13 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
 			equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "WAITING", "Granskning"), true, false));
 
-		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete);
+		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete, false);
 
 		// Normal mock
-		mockInvestigation(caseId, scenarioName);
-		mockDecision(caseId, scenarioName);
-		mockExecution(caseId, scenarioName);
-		mockFollowUp(caseId, scenarioName);
+		mockInvestigation(caseId, scenarioName, false);
+		mockDecision(caseId, scenarioName, false);
+		mockExecution(caseId, scenarioName, false);
+		mockFollowUp(caseId, scenarioName, false);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -275,17 +289,21 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End process", "end_process")));
 	}
 
-	@Test
-	void test004_createProcessForCancelInActualizationWhenVerifyingAdministrator() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test004_createProcessForCancelInActualizationWhenVerifyingAdministrator(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1920";
-		final var scenarioName = "test_actualization_004_createProcessForCancelInActualizationWhenVerifyingAdministrator";
+		var scenarioName = "test_actualization_004_createProcessForCancelInActualizationWhenVerifyingAdministrator";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
 
 		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", isAutomatic);
 		final var stateAfterGetCancelInVerifyStakeholder = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
 			"actualization_verify-administrator-stakeholder--api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "PROPOSED",
@@ -343,8 +361,8 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281");
+		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, false);
+		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", false);
 		final var stateAfterVerifyStakeholderNoAdministrator = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
 			"actualization_verify-administrator-stakeholder---api-casedata-get-errand-no-administrator",
 			Map.of("decisionTypeParameter", "PROPOSED",
@@ -357,17 +375,17 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand-no-administrator",
 			equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "WAITING", "Registrerad"), true, false));
 
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterPatchNoAdministrator);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase);
+		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterPatchNoAdministrator, false);
+		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, false);
+		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, false);
 
-		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterUpdateStatus);
+		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterUpdateStatus, false);
 
 		// Normal mock
-		mockInvestigation(caseId, scenarioName);
-		mockDecision(caseId, scenarioName);
-		mockExecution(caseId, scenarioName);
-		mockFollowUp(caseId, scenarioName);
+		mockInvestigation(caseId, scenarioName, false);
+		mockDecision(caseId, scenarioName, false);
+		mockExecution(caseId, scenarioName, false);
+		mockFollowUp(caseId, scenarioName, false);
 
 		// Start process
 		final var startResponse = setupCall()
