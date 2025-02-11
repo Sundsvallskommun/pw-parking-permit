@@ -1,11 +1,15 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
@@ -48,10 +52,17 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 			validateResponse(ruleEngineResponse);
 
+			final var isAutomatic = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+				.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
+				.findFirst()
+				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
+				.filter(PHASE_ACTION_AUTOMATIC::equals)
+				.isPresent();
+
 			final var decision = ruleEngineResponse.getResults().stream()
 				.filter(result -> !NOT_APPLICABLE.equals(result.getValue()))
 				.findFirst()
-				.map(BusinessRulesUtil::constructDecision)
+				.map(result -> BusinessRulesUtil.constructDecision(result, isAutomatic))
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
 			if (isDecisionsNotEqual(latestDecision, decision)) {

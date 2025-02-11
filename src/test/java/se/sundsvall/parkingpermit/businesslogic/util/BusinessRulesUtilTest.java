@@ -2,6 +2,7 @@ package se.sundsvall.parkingpermit.businesslogic.util;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,9 +23,9 @@ class BusinessRulesUtilTest {
 
 	@ParameterizedTest
 	@MethodSource("constructDecisionTypeArguments")
-	void constructDecision(Result resultFromRuleEngine, Decision expectedDecision) {
+	void constructDecision(boolean isAutomatic, Result resultFromRuleEngine, Decision expectedDecision) {
 
-		final var decision = BusinessRulesUtil.constructDecision(resultFromRuleEngine);
+		final var decision = BusinessRulesUtil.constructDecision(resultFromRuleEngine, isAutomatic);
 
 		assertThat(decision).isNotNull();
 		assertThat(decision.getDecisionType()).isEqualTo(expectedDecision.getDecisionType());
@@ -35,15 +36,25 @@ class BusinessRulesUtilTest {
 
 	static Stream<Arguments> constructDecisionTypeArguments() {
 		return Stream.of(
-			Arguments.of(createRuleEngineResult("PASS"), new Decision()
+			Arguments.of(false, createRuleEngineResult("PASS"), new Decision()
 				.decisionType(RECOMMENDED)
 				.decisionOutcome(APPROVAL)
 				.description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")
 				.created(OffsetDateTime.now())),
-			Arguments.of(createRuleEngineResult("FAIL"), new Decision()
+			Arguments.of(false, createRuleEngineResult("FAIL"), new Decision()
 				.decisionType(RECOMMENDED)
 				.decisionOutcome(REJECTION)
 				.description("Rekommenderat beslut är avslag. Description1, description2 och description3.")
+				.created(OffsetDateTime.now())),
+			Arguments.of(true, createRuleEngineResult("PASS"), new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(APPROVAL)
+				.description("Beslut är bevilja. Description1, description2 och description3.")
+				.created(OffsetDateTime.now())),
+			Arguments.of(true, createRuleEngineResult("FAIL"), new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(REJECTION)
+				.description("Beslut är avslag. Description1, description2 och description3.")
 				.created(OffsetDateTime.now())));
 	}
 

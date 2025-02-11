@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.businesslogic.util;
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -24,20 +25,31 @@ import java.util.Optional;
 
 public final class BusinessRulesUtil {
 
-	static final String PREFIX_APPROVAL = "Rekommenderat beslut är bevilja. %s";
-	static final String PREFIX_REJECT = "Rekommenderat beslut är avslag. %s";
+	static final String RECOMMENDED_PREFIX_APPROVAL = "Rekommenderat beslut är bevilja. %s";
+	static final String RECOMMENDED_PREFIX_REJECT = "Rekommenderat beslut är avslag. %s";
+	static final String AUTOMATIC_PREFIX_APPROVAL = "Beslut är bevilja. %s";
+	static final String AUTOMATIC_PREFIX_REJECT = "Beslut är avslag. %s";
 
 	private static final String REGEXP_LAST_COMMA = "^(.*)(, )(.*)$";
 
 	private BusinessRulesUtil() {}
 
-	public static Decision constructDecision(Result resultFromRuleEngine) {
-		if (isApproved(resultFromRuleEngine)) {
-			// Return decision with information from outcome of each control
-			return createDecision(RECOMMENDED, APPROVAL, PREFIX_APPROVAL.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
+	public static Decision constructDecision(Result resultFromRuleEngine, boolean isAutomatic) {
+		var isApproved = isApproved(resultFromRuleEngine);
+
+		var decisionType = isAutomatic ? FINAL : RECOMMENDED;
+		var decisionOutcome = isApproved ? APPROVAL : REJECTION;
+		String prefix = getDescriptionPrefix(isAutomatic, isApproved);
+
+		return createDecision(decisionType, decisionOutcome, prefix.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
+	}
+
+	private static String getDescriptionPrefix(boolean isAutomatic, boolean isApproved) {
+		if (isAutomatic) {
+			return isApproved ? AUTOMATIC_PREFIX_APPROVAL : AUTOMATIC_PREFIX_REJECT;
+		} else {
+			return isApproved ? RECOMMENDED_PREFIX_APPROVAL : RECOMMENDED_PREFIX_REJECT;
 		}
-		// Return decision with information from outcome of each negative control
-		return createDecision(RECOMMENDED, REJECTION, PREFIX_REJECT.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
 	}
 
 	private static Decision createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description) {
