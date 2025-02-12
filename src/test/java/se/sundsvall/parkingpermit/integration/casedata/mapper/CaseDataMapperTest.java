@@ -165,7 +165,8 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithPhaseActionNull() {
-		assertThatThrownBy(() -> CaseDataMapper.toPatchErrand("externalCaseId", "phase", "phaseStatus", null, "dispayPhase", List.of(new ExtraParameter("key").values(List.of("value")))))
+		final var extraParameters = List.of(new ExtraParameter("key").values(List.of("value")));
+		assertThatThrownBy(() -> CaseDataMapper.toPatchErrand("externalCaseId", "phase", "phaseStatus", null, "dispayPhase", extraParameters))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("phaseAction cannot be null");
 	}
