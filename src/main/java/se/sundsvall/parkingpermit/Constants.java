@@ -71,6 +71,7 @@ public final class Constants {
 	public static final String BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID = "stakeholders.applicant.personid";
 
 	public static final String PHASE_ACTION_COMPLETE = "COMPLETE";
+	public static final String PHASE_ACTION_AUTOMATIC = "AUTOMATIC";
 	public static final String PHASE_ACTION_CANCEL = "CANCEL";
 	public static final String PHASE_ACTION_UNKNOWN = "UNKNOWN";
 	public static final String PHASE_STATUS_COMPLETED = "COMPLETED";

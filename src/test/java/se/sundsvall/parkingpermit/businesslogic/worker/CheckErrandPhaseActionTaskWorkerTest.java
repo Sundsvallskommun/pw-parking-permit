@@ -20,9 +20,12 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 import generated.se.sundsvall.casedata.Errand;
@@ -257,6 +260,14 @@ class CheckErrandPhaseActionTaskWorkerTest {
 			Arguments.of(PHASE_ACTION_CANCEL, List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_CANCELED),
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
+			Arguments.of(PHASE_ACTION_AUTOMATIC, List.of(
+				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_AUTOMATIC),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_COMPLETED),
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
+			Arguments.of(PHASE_ACTION_COMPLETE, List.of(
+				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_COMPLETE),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_COMPLETED),
 				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))));
 	}
 }

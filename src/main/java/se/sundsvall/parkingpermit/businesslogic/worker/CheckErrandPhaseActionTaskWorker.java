@@ -6,6 +6,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -57,7 +58,7 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 				.orElse(null);
 
 			switch (phaseAction) {
-				case PHASE_ACTION_COMPLETE -> {
+				case PHASE_ACTION_COMPLETE, PHASE_ACTION_AUTOMATIC -> {
 					logInfo("Phase action is complete. Setting phase status to {}", PHASE_STATUS_COMPLETED);
 					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_COMPLETED, phaseAction, displayPhase, errand.getExtraParameters()));
 				}

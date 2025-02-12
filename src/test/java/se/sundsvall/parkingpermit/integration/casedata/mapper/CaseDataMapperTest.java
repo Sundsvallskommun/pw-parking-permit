@@ -6,6 +6,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 
 import generated.se.sundsvall.casedata.Attachment;
@@ -150,16 +151,24 @@ class CaseDataMapperTest {
 
 	@Test
 	void toPatchErrandWithNullAsParameters() {
-		final var bean = CaseDataMapper.toPatchErrand(null, null, null, null, null, null);
+		final var bean = CaseDataMapper.toPatchErrand(null, null, null, "phaseAction", null, null);
 
 		final var expectedExtraParameters = List.of(
 			new ExtraParameter("process.phaseStatus").values(emptyList()),
-			new ExtraParameter("process.phaseAction").values(emptyList()),
+			new ExtraParameter("process.phaseAction").values(List.of("phaseAction")),
 			new ExtraParameter("process.displayPhase").values(emptyList()));
 		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "relatesTo", "labels")
 			.extracting(PatchErrand::getFacilities,
 				PatchErrand::getExtraParameters)
 			.containsExactly(null, expectedExtraParameters);
+	}
+
+	@Test
+	void toPatchErrandWithPhaseActionNull() {
+		final var extraParameters = List.of(new ExtraParameter("key").values(List.of("value")));
+		assertThatThrownBy(() -> CaseDataMapper.toPatchErrand("externalCaseId", "phase", "phaseStatus", null, "dispayPhase", extraParameters))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("phaseAction cannot be null");
 	}
 
 	@Test

@@ -4,6 +4,8 @@ import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
@@ -54,21 +56,26 @@ class ProcessAppealWithoutDeviationIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
 
-	@Test
-	void test001_createProcessForAppeal() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test001_createProcessForAppeal(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "123";
-		final var scenarioName = "test_appeal_001_createProcessForAppeal";
+		var scenarioName = "test_appeal_001_createProcessForAppeal";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
+
 		// Setup mocks
 		mockApiGatewayToken();
 
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_APPEAL);
-		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal);
-		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 
 		mockDecisionCheckIfDecisionMade(caseId, scenarioName, stateAfterUpdateStatus);
-		mockExecutionWhenAppeal(caseId, scenarioName);
-		mockFollowUp(caseId, scenarioName);
+		mockExecutionWhenAppeal(caseId, scenarioName, isAutomatic);
+		mockFollowUp(caseId, scenarioName, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -79,7 +86,7 @@ class ProcessAppealWithoutDeviationIT extends AbstractCamundaAppTest {
 			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to finish
-		awaitProcessCompleted(startResponse.getProcessId(), 999);
+		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
 
 		// Verify wiremock stubs
 		verifyAllStubs();

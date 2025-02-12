@@ -4,6 +4,7 @@ import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
 import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -22,6 +23,8 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
 import generated.se.sundsvall.businessrules.Result;
 import generated.se.sundsvall.businessrules.ResultDetail;
@@ -29,6 +32,7 @@ import generated.se.sundsvall.businessrules.ResultValue;
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.List;
 import java.util.stream.Stream;
 import org.camunda.bpm.client.exception.EngineException;
@@ -79,14 +83,32 @@ class ConstructDecisionTaskWorkerTest {
 	private static Stream<Arguments> constructDecisionTypeArguments() {
 		return Stream.of(
 			// Sanity check passes
-			Arguments.of("PASS", new Decision().decisionType(RECOMMENDED).decisionOutcome(APPROVAL).description("Rekommenderat beslut är bevilja. Description1, description2 och description3.")),
+			Arguments.of("PASS", new Decision()
+				.decisionType(RECOMMENDED)
+				.decisionOutcome(APPROVAL)
+				.description("Rekommenderat beslut är bevilja. Description1, description2 och description3."),
+				emptyList()),
+			Arguments.of("PASS", new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(APPROVAL)
+				.description("Beslut är bevilja. Description1, description2 och description3."),
+				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)))),
 			// Sanity check passes
-			Arguments.of("FAIL", new Decision().decisionType(RECOMMENDED).decisionOutcome(REJECTION).description("Rekommenderat beslut är avslag. Description1, description2 och description3.")));
+			Arguments.of("FAIL", new Decision()
+				.decisionType(RECOMMENDED)
+				.decisionOutcome(REJECTION)
+				.description("Rekommenderat beslut är avslag. Description1, description2 och description3."),
+				emptyList()),
+			Arguments.of("FAIL", new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(REJECTION)
+				.description("Beslut är avslag. Description1, description2 och description3."),
+				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)))));
 	}
 
 	@ParameterizedTest
 	@MethodSource("constructDecisionTypeArguments")
-	void execute(String resultValue, Decision expectedDecision) {
+	void execute(String resultValue, Decision expectedDecision, List<ExtraParameter> parameters) {
 
 		// Arrange
 		final var ruleEngineResponse = createRuleEngineResponse(resultValue);
@@ -96,6 +118,7 @@ class ConstructDecisionTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getExtraParameters()).thenReturn(parameters);
 		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
 		when(errandMock.getDecisions()).thenReturn(List.of(new Decision().decisionOutcome(REJECTION).decisionType(RECOMMENDED).version(0),
 			new Decision().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
@@ -112,7 +135,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		assertThat(errandIdArgumentCaptor.getValue()).isEqualTo(ERRAND_ID);
 		assertThat(decisionArgumentCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(decisionArgumentCaptor.getValue().getDecisionType()).isEqualTo(RECOMMENDED);
+		assertThat(decisionArgumentCaptor.getValue().getDecisionType()).isEqualTo(expectedDecision.getDecisionType());
 		assertThat(decisionArgumentCaptor.getValue().getDecisionOutcome()).isEqualTo(expectedDecision.getDecisionOutcome());
 		assertThat(decisionArgumentCaptor.getValue().getDescription()).isEqualTo(expectedDecision.getDescription());
 		assertThat(decisionArgumentCaptor.getValue().getVersion()).isEqualTo(2);

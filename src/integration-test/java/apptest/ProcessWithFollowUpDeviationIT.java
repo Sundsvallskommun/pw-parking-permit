@@ -73,12 +73,12 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		mockInvestigation(caseId, scenarioName);
-		mockDecision(caseId, scenarioName);
-		final var stateAfterExcecution = mockExecution(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, false);
+		mockInvestigation(caseId, scenarioName, false);
+		mockDecision(caseId, scenarioName, false);
+		final var stateAfterExcecution = mockExecution(caseId, scenarioName, false);
 
-		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution);
+		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution, false);
 
 		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdatePhase,
 			"follow_up_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
@@ -92,10 +92,10 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 			"follow_up_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
 			equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "WAITING", "Uppföljning"), true, false));
 
-		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete);
+		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete, false);
 		final var stateAfterCleanup = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
-		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup);
-		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus);
+		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup, false);
+		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus, false);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -140,11 +140,11 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Start follow up phase", "start_follow_up_phase"))
 			.with(tuple("Update phase", "external_task_follow_up_update_phase"))
 			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
-			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			.with(tuple("Is phase action complete or automatic?", "gateway_followup_is_phase_action_complete_or_automatic"))
 			// Not complete
 			.with(tuple("Is caseUpdateAvailable", "followup_is_case_update_available"))
 			.with(tuple("Check phase action", "external_task_followup_check_phase_action"))
-			.with(tuple("Is phase action complete", "gateway_followup_is_phase_action_complete"))
+			.with(tuple("Is phase action complete or automatic?", "gateway_followup_is_phase_action_complete_or_automatic"))
 			.with(tuple("Clean up notes", "external_task_follow_up_clean_up_notes"))
 			.with(tuple("Update errand status", "external_task_follow_up_update_status"))
 			.with(tuple("Update phase action", "external_task_follow_up_update_phase_action"))

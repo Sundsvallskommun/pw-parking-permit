@@ -4,6 +4,8 @@ import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
@@ -40,6 +42,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -60,27 +64,31 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
 
-	@Test
-	void test_execution_001_createProcessForCardNotExistsToExists() throws JsonProcessingException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void test_execution_001_createProcessForCardNotExistsToExists(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1415";
-		final var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
+		var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
 
 		//Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName);
-		mockInvestigation(caseId, scenarioName);
-		final var stateAfterDecision = mockDecision(caseId, scenarioName);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		mockInvestigation(caseId, scenarioName, isAutomatic);
+		final var stateAfterDecision = mockDecision(caseId, scenarioName, isAutomatic);
 		// Mock Deviation
-		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, stateAfterDecision);
-		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, stateAfterDecision, isAutomatic);
+		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		final var stateAfterCheckIfCardDoesNotExist = mockCaseDataGet(caseId, scenarioName, stateAfterOrderCard,
 			"execution_check-if-card-exists-task-worker-when-it-does-not---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", ""));
 		final var stateAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, stateAfterCheckIfCardDoesNotExist,
@@ -88,13 +96,13 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
-		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
+		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists, isAutomatic);
 		mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 		// Normal mock
-		mockFollowUp(caseId, scenarioName);
+		mockFollowUp(caseId, scenarioName, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()

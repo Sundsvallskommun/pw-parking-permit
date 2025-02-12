@@ -12,48 +12,50 @@ import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPut;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 public class Execution {
 
-	public static String mockExecution(String caseId, String scenarioName) {
+	public static String mockExecution(String caseId, String scenarioName, boolean isAutomatic) {
 
-		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand");
-		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase);
-		final var stateAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, stateAfterOrderCard);
-		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists);
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand", isAutomatic);
+		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
+		final var stateAfterCheckIfCardExists = mockExecutionCheckIfCardExists(caseId, scenarioName, stateAfterOrderCard, isAutomatic);
+		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists, isAutomatic);
 		return mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 	}
 
-	public static String mockExecutionWhenAppeal(String caseId, String scenarioName) {
+	public static String mockExecutionWhenAppeal(String caseId, String scenarioName, boolean isAutomatic) {
 
-		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand");
-		final var stateAfterUpdateAsset = mockExecutionUpdateAsset(caseId, scenarioName, stateAfterUpdatePhase);
+		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand", isAutomatic);
+		final var stateAfterUpdateAsset = mockExecutionUpdateAsset(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		return mockSendSimplifiedService(caseId, scenarioName, stateAfterUpdateAsset);
 	}
 
-	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 
 		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
-				"phaseActionParameter", "",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : "",
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
 
 		return mockCaseDataPatch(caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Verkställa", "UNKNOWN", "ONGOING", "Verkställa")));
+			equalToJson(createPatchBody("Verkställa", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Verkställa")));
 	}
 
-	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"caseTypeParameter", "PARKING_PERMIT",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa"));
 
 		final var stateAfterOrderCard = mockRpaAddQueueItems(scenarioName, stateAfterGetErrand,
@@ -83,13 +85,13 @@ public class Execution {
 
 	}
 
-	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockExecutionCreateAsset(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_create-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
@@ -112,13 +114,13 @@ public class Execution {
 				""".formatted(caseId)));
 	}
 
-	public static String mockExecutionUpdateAsset(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockExecutionUpdateAsset(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_update-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
@@ -127,7 +129,7 @@ public class Execution {
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
@@ -137,25 +139,24 @@ public class Execution {
 		return mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, stateAfterGetAssets,
 			"execution_update-asset-task-worker---api-party-asset-put-asset",
 			equalToJson("""
-					{
-						"caseReferenceIds" : [ ],
-						"additionalParameters" : {
-							"foo" : "bar",
-							"appealedErrand" : "123"
-						}
+				{
+					"caseReferenceIds" : [ ],
+					"additionalParameters" : {
+						"foo" : "bar",
+						"appealedErrand" : "123"
 					}
-					"""));
+				}
+				"""));
 
 	}
 
-
-	public static String mockExecutionCheckIfCardExists(String caseId, String scenarioName, String requiredScenarioState) {
+	public static String mockExecutionCheckIfCardExists(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", "UNKNOWN",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 	}
