@@ -106,6 +106,10 @@ public class Investigation {
 				        {
 				            "key": "disability.walkingAbility",
 				            "value": "false"
+				        },
+				        {
+				            "key": "disability.canBeAloneWhileParking",
+				            "value": "true"
 				        }
 				    ]
 				}

@@ -32,35 +32,13 @@ public final class BusinessRulesMapper {
 	private static final String CONTEXT_PARKING_PERMIT = "PARKING_PERMIT";
 	private static final String APPLICANT_DRIVER = "DRIVER";
 
-	private static final List<String> KEYS_PARKING_PERMIT_DRIVER = List.of(
-		CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY,
-		CASEDATA_KEY_DISABILITY_DURATION,
-		CASEDATA_KEY_DISABILITY_WALKING_ABILITY,
-		CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX);
-
-	private static final List<String> KEYS_PARKING_PERMIT_PASSENGER = List.of(
+	private static final List<String> KEYS_PARKING_PERMIT = List.of(
 		CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY,
 		CASEDATA_KEY_DISABILITY_DURATION,
 		CASEDATA_KEY_DISABILITY_WALKING_ABILITY,
 		CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX,
-		CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING);
-
-	private static final List<String> KEYS_PARKING_PERMIT_RENEWAL_DRIVER = List.of(
-		CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY,
-		CASEDATA_KEY_DISABILITY_DURATION,
+		CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING,
 		CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES,
-		CASEDATA_KEY_DISABILITY_WALKING_ABILITY,
-		CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX);
-
-	private static final List<String> KEYS_PARKING_PERMIT_RENEWAL_PASSENGER = List.of(
-		CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY,
-		CASEDATA_KEY_DISABILITY_DURATION,
-		CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES,
-		CASEDATA_KEY_DISABILITY_WALKING_ABILITY,
-		CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX,
-		CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING);
-
-	private static final List<String> KEYS_LOST_PARKING_PERMIT = List.of(
 		CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER);
 
 	private BusinessRulesMapper() {}
@@ -70,51 +48,18 @@ public final class BusinessRulesMapper {
 			throw Problem.valueOf(BAD_REQUEST, "Case type is null");
 		}
 
-		return switch (errand.getCaseType()) {
-			case CASE_TYPE_PARKING_PERMIT -> toRuleEngineRequestParkingPermit(errand);
-			case CASE_TYPE_PARKING_PERMIT_RENEWAL -> toRuleEngineRequestParkingPermitRenewal(errand);
-			case CASE_TYPE_LOST_PARKING_PERMIT -> toRuleEngineRequestLostParkingPermit(errand);
+		final var ruleEngineRequest = new RuleEngineRequest();
+		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
+
+		switch (errand.getCaseType()) {
+			case CASE_TYPE_PARKING_PERMIT -> ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT));
+			case CASE_TYPE_PARKING_PERMIT_RENEWAL -> ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT_RENEWAL));
+			case CASE_TYPE_LOST_PARKING_PERMIT -> ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_LOST_PARKING_PERMIT));
 			default -> throw Problem.valueOf(BAD_REQUEST, "Unsupported case type " + errand.getCaseType());
-		};
-	}
-
-	private static RuleEngineRequest toRuleEngineRequestParkingPermit(Errand errand) {
-		final var ruleEngineRequest = new RuleEngineRequest();
-		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT));
-		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errand)));
-
-		if (isDriver(errand)) {
-			toFacts(KEYS_PARKING_PERMIT_DRIVER, errand).forEach(ruleEngineRequest::addFactsItem);
-		} else {
-			toFacts(KEYS_PARKING_PERMIT_PASSENGER, errand).forEach(ruleEngineRequest::addFactsItem);
 		}
 
-		return ruleEngineRequest;
-	}
-
-	private static RuleEngineRequest toRuleEngineRequestParkingPermitRenewal(Errand errand) {
-		final var ruleEngineRequest = new RuleEngineRequest();
-		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_PARKING_PERMIT_RENEWAL));
 		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errand)));
-
-		if (isDriver(errand)) {
-			toFacts(KEYS_PARKING_PERMIT_RENEWAL_DRIVER, errand).forEach(ruleEngineRequest::addFactsItem);
-		} else {
-			toFacts(KEYS_PARKING_PERMIT_RENEWAL_PASSENGER, errand).forEach(ruleEngineRequest::addFactsItem);
-		}
-
-		return ruleEngineRequest;
-	}
-
-	private static RuleEngineRequest toRuleEngineRequestLostParkingPermit(Errand errand) {
-		final var ruleEngineRequest = new RuleEngineRequest();
-		ruleEngineRequest.setContext(CONTEXT_PARKING_PERMIT);
-		ruleEngineRequest.addFactsItem(toFact(KEY_TYPE, CASE_TYPE_LOST_PARKING_PERMIT));
-		ruleEngineRequest.addFactsItem(toFact(BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID, getApplicantPersonId(errand)));
-
-		toFacts(KEYS_LOST_PARKING_PERMIT, errand).forEach(ruleEngineRequest::addFactsItem);
+		toFacts(KEYS_PARKING_PERMIT, errand).forEach(ruleEngineRequest::addFactsItem);
 
 		return ruleEngineRequest;
 	}
