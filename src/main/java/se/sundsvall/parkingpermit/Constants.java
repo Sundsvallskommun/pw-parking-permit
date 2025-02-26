@@ -59,6 +59,7 @@ public final class Constants {
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
 	public static final String CASEDATA_KEY_DISPLAY_PHASE = "process.displayPhase";
 	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY = "application.applicant.capacity";
+	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_SIGNING_ABILITY = "application.applicant.signingAbility";
 	public static final String CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "application.lostPermit.policeReportNumber";
 	public static final String CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES = "application.renewal.changedCircumstances";
 	public static final String CASEDATA_KEY_DISABILITY_CAN_BE_ALONE_WHILE_PARKING = "disability.canBeAloneWhileParking";
@@ -68,7 +69,14 @@ public final class Constants {
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX = "disability.walkingDistance.max";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_STATUS = "artefact.permit.status";
 
+	public static final String CASEDATA_ATTACHMENT_CATEGORY_PASSPORT_PHOTO = "PASSPORT_PHOTO";
+	public static final String CASEDATA_ATTACHMENT_CATEGORY_MEDICAL_CONFIRMATION = "MEDICAL_CONFIRMATION";
+	public static final String CASEDATA_ATTACHMENT_CATEGORY_SIGNATURE = "SIGNATURE";
+
 	public static final String BUSINESS_RULES_KEY_STAKEHOLDERS_APPLICANT_PERSON_ID = "stakeholders.applicant.personid";
+	public static final String BUSINESS_RULES_KEY_ATTACHMENT_MEDICAL_CONFIRMATION = "attachment.medicalConfirmation";
+	public static final String BUSINESS_RULES_KEY_ATTACHMENT_PASSPORT_PHOTO = "attachment.passportPhoto";
+	public static final String BUSINESS_RULES_KEY_ATTACHMENT_SIGNATURE = "attachment.signature";
 
 	public static final String PHASE_ACTION_COMPLETE = "COMPLETE";
 	public static final String PHASE_ACTION_AUTOMATIC = "AUTOMATIC";

@@ -6,6 +6,7 @@ import static apptest.mock.api.BusinessRules.mockBusinessRulesPost;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataGetAttachments;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -78,11 +79,18 @@ public class Investigation {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Utredning"));
 
+		var newScenarioStateAttachment = "investigation_execute-rules-task-worker---api-case-data-get-errand-attachments";
+		if (newScenarioStateSuffix != null) {
+			newScenarioStateAttachment = newScenarioStateAttachment.concat(newScenarioStateSuffix);
+		}
+		var stateAfterAttachment = mockCaseDataGetAttachments(caseId, scenarioName, state, newScenarioStateAttachment);
+
 		var newScenarioStatePost = "investigation_execute-rules-task-worker---api-businessrules-engine";
 		if (newScenarioStateSuffix != null) {
 			newScenarioStatePost = newScenarioStatePost.concat(newScenarioStateSuffix);
 		}
-		return mockBusinessRulesPost(scenarioName, state, newScenarioStatePost,
+
+		return mockBusinessRulesPost(scenarioName, stateAfterAttachment, newScenarioStatePost,
 			equalToJson("""
 				{
 				    "context": "PARKING_PERMIT",
@@ -110,6 +118,22 @@ public class Investigation {
 				        {
 				            "key": "disability.canBeAloneWhileParking",
 				            "value": "true"
+				        },
+				        {
+				            "key": "application.applicant.signingAbility",
+				            "value": "false"
+				        },
+				        {
+				            "key": "attachment.medicalConfirmation",
+				            "value": "true"
+				        },
+				        {
+				            "key": "attachment.passportPhoto",
+				            "value": "false"
+				        },
+				        {
+				            "key": "attachment.signature",
+				            "value": "false"
 				        }
 				    ]
 				}

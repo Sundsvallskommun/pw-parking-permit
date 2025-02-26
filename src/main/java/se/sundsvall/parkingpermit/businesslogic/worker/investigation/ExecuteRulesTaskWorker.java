@@ -34,8 +34,9 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 			final Long caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
+			final var attachments = getErrandAttachments(municipalityId, namespace, caseNumber);
 
-			final var ruleEngineResponse = businessRulesClient.runRuleEngine(municipalityId, toRuleEngineRequest(errand));
+			final var ruleEngineResponse = businessRulesClient.runRuleEngine(municipalityId, toRuleEngineRequest(errand, attachments));
 
 			final var variables = new HashMap<String, Object>();
 			variables.put(Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse);

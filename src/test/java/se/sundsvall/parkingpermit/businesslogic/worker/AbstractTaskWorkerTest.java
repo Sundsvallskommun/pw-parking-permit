@@ -1,11 +1,15 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
+import generated.se.sundsvall.casedata.Attachment;
+import java.util.ArrayList;
 import java.util.UUID;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -46,6 +50,9 @@ class AbstractTaskWorkerTest {
 	@Mock
 	private ExternalTaskService externalTaskServiceMock;
 
+	@Mock
+	private CaseDataClient caseDataClientMock;
+
 	@InjectMocks
 	private Worker worker;
 
@@ -81,5 +88,19 @@ class AbstractTaskWorkerTest {
 			// Verify static method
 			requestIdMock.verify(() -> RequestId.init(requestId));
 		}
+	}
+
+	@Test
+	void getErrandAttachments() {
+		final var list = new ArrayList<Attachment>();
+		final var municipalityId = "municipalityId";
+		final var namespace = "namespace";
+		final var caseNumber = 1L;
+		when(caseDataClientMock.getErrandAttachments(any(), any(), any())).thenReturn(list);
+
+		final var result = worker.getErrandAttachments(municipalityId, namespace, caseNumber);
+
+		assertThat(result).isSameAs(list);
+		verify(caseDataClientMock).getErrandAttachments(municipalityId, namespace, caseNumber);
 	}
 }
