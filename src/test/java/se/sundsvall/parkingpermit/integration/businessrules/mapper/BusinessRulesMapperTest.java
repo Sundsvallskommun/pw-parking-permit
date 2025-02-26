@@ -152,7 +152,6 @@ class BusinessRulesMapperTest {
 		CASE_TYPE_PARKING_PERMIT, CASE_TYPE_PARKING_PERMIT_RENEWAL, CASE_TYPE_LOST_PARKING_PERMIT
 	})
 	void throwsExceptionWhenApplicantIsMissing(String type) {
-		final var applicantPersonId = "applicantPersonId";
 		when(errandMock.getCaseType()).thenReturn(type);
 
 		assertThatThrownBy(() -> BusinessRulesMapper.toRuleEngineRequest(errandMock, emptyList()))

@@ -103,7 +103,6 @@ public final class BusinessRulesMapper {
 	}
 
 	private static String getExtraParameterValue(Errand errand, String key) {
-		final var parameter = errand.getExtraParameters();
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameter -> key.equals(extraParameter.getKey()))
 			.findFirst()
