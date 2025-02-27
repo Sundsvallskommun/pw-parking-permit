@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.integration.casedata;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
+import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.MessageRequest;
@@ -67,6 +68,20 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
 	Errand getErrandById(
+		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable(name = "errandId") Long errandId);
+
+	/**
+	 * Gets attachment by errand id
+	 *
+	 * @param  municipalityId municipality id
+	 * @param  namespace      namespace
+	 * @param  errandId       errand id
+	 * @return                list of attachments for errand
+	 */
+	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments", produces = APPLICATION_JSON_VALUE)
+	List<Attachment> getErrandAttachments(
 		@PathVariable(name = "municipalityId") String municipalityId,
 		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId);

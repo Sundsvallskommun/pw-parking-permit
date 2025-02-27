@@ -12,7 +12,9 @@ import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
+import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Errand;
+import java.util.List;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -52,6 +54,10 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
 	protected Errand getErrand(String municipalityId, String namespace, Long caseNumber) {
 		return caseDataClient.getErrandById(municipalityId, namespace, caseNumber);
+	}
+
+	protected List<Attachment> getErrandAttachments(String municipalityId, String namespace, Long caseNumber) {
+		return caseDataClient.getErrandAttachments(municipalityId, namespace, caseNumber);
 	}
 
 	protected void logInfo(String msg, Object... arguments) {

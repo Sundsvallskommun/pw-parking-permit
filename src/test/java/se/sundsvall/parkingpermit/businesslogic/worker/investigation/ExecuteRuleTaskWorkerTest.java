@@ -3,26 +3,23 @@ package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
+import generated.se.sundsvall.businessrules.RuleEngineRequest;
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.Stakeholder;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
@@ -32,9 +29,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
+import se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,13 +45,6 @@ class ExecuteRuleTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final long ERRAND_ID = 123L;
 
-	private static final String KEY_APPLICATION_APPLICANT_CAPACITY = "applicationApplicantCapacity";
-	private static final String KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES = "applicationRenewalChangedCircumstances";
-	private static final String KEY_DISABILITY_DURATION = "disabilityDuration";
-	private static final String KEY_DISABILITY_WALKING_ABILITY = "disabilityWalkingAbility";
-	private static final String KEY_DISABILITY_WALKING_DISTANCE_MAX = "disabilityWalkingDistanceMax";
-	private static final String KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "lostPermitPoliceReportNumber";
-
 	@Mock
 	private CaseDataClient caseDataClientMock;
 
@@ -60,9 +53,6 @@ class ExecuteRuleTaskWorkerTest {
 
 	@Mock
 	private Errand errandMock;
-
-	@Mock
-	private Stakeholder stakeholderMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -77,29 +67,28 @@ class ExecuteRuleTaskWorkerTest {
 	private ExecuteRulesTaskWorker worker;
 
 	@Test
-	void executeWhenNewParkingPermit() {
+	void executeBusinessLogic() {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse();
+		final var ruleEngineRequest = new RuleEngineRequest();
+		final var attachmentList = new ArrayList<Attachment>();
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT);
-		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
-		when(errandMock.getExtraParameters()).thenReturn(List.of(
-			new ExtraParameter(KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("applicantCapacity"),
-			new ExtraParameter(KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
-			new ExtraParameter(KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
-			new ExtraParameter(KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem("walkingDistanceMax")));
-
+		when(caseDataClientMock.getErrandAttachments(any(), any(), any())).thenReturn(attachmentList);
 		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);
 
+		try (MockedStatic<BusinessRulesMapper> mapper = Mockito.mockStatic(BusinessRulesMapper.class)) {
+			mapper.when(() -> BusinessRulesMapper.toRuleEngineRequest(any(), any())).thenReturn(ruleEngineRequest);
+			worker.execute(externalTaskMock, externalTaskServiceMock);
+
+			mapper.verify(() -> BusinessRulesMapper.toRuleEngineRequest(same(errandMock), same(attachmentList)));
+		}
+
 		// Act
-		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
@@ -107,89 +96,11 @@ class ExecuteRuleTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		verify(businessRulesClientMock).runRuleEngine(eq(MUNICIPALITY_ID), any());
-		verify(errandMock).getStakeholders();
-		verify(errandMock, times(2)).getCaseType();
-		verify(stakeholderMock).getPersonId();
-		verify(stakeholderMock).getRoles();
+		verify(caseDataClientMock).getErrandAttachments(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(businessRulesClientMock).runRuleEngine(eq(MUNICIPALITY_ID), same(ruleEngineRequest));
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse));
 		verifyNoInteractions(failureHandlerMock);
-	}
-
-	@Test
-	void executeWhenRenewalParkingPermit() {
-
-		// Arrange
-		final var ruleEngineResponse = new RuleEngineResponse();
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
-		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_PARKING_PERMIT_RENEWAL);
-		when(errandMock.getExtraParameters()).thenReturn(List.of(
-			new ExtraParameter(KEY_APPLICATION_APPLICANT_CAPACITY).addValuesItem("applicantCapacity"),
-			new ExtraParameter(KEY_DISABILITY_DURATION).addValuesItem("disabilityDuration"),
-			new ExtraParameter(KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES).addValuesItem("changedCircumstances"),
-			new ExtraParameter(KEY_DISABILITY_WALKING_ABILITY).addValuesItem("walkingAbility"),
-			new ExtraParameter(KEY_DISABILITY_WALKING_DISTANCE_MAX).addValuesItem("walkingDistanceMax")));
-		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);
-
-		// Act
-		worker.execute(externalTaskMock, externalTaskServiceMock);
-
-		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		verify(businessRulesClientMock).runRuleEngine(eq(MUNICIPALITY_ID), any());
-		verify(errandMock).getStakeholders();
-		verify(errandMock, times(2)).getCaseType();
-		verify(stakeholderMock).getPersonId();
-		verify(stakeholderMock).getRoles();
-		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verifyNoInteractions(failureHandlerMock);
-	}
-
-	@Test
-	void executeWhenLostParkingPermit() {
-
-		// Arrange
-		final var ruleEngineResponse = new RuleEngineResponse();
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
-		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
-		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_LOST_PARKING_PERMIT);
-		when(errandMock.getExtraParameters()).thenReturn(List.of(
-			new ExtraParameter(KEY_LOST_PERMIT_POLICE_REPORT_NUMBER).addValuesItem("policeReportNumber")));
-		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);
-
-		// Act
-		worker.execute(externalTaskMock, externalTaskServiceMock);
-
-		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
-		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		verify(businessRulesClientMock).runRuleEngine(eq(MUNICIPALITY_ID), any());
-		verify(errandMock).getStakeholders();
-		verify(errandMock, times(2)).getCaseType();
-		verify(stakeholderMock).getPersonId();
-		verify(stakeholderMock).getRoles();
-		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verifyNoInteractions(failureHandlerMock);
+		verifyNoMoreInteractions(caseDataClientMock, businessRulesClientMock, errandMock, externalTaskMock);
 	}
 
 	@Test
@@ -197,6 +108,8 @@ class ExecuteRuleTaskWorkerTest {
 
 		// Arrange
 		final var ruleEngineResponse = new RuleEngineResponse();
+		final var ruleEngineRequest = new RuleEngineRequest();
+		final var attachmentList = new ArrayList<Attachment>();
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -204,18 +117,18 @@ class ExecuteRuleTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(stakeholderMock.getPersonId()).thenReturn("personId");
-		when(stakeholderMock.getRoles()).thenReturn(List.of(ROLE_APPLICANT));
-		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholderMock));
-		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_LOST_PARKING_PERMIT);
-		when(errandMock.getExtraParameters()).thenReturn(List.of(
-			new ExtraParameter(KEY_LOST_PERMIT_POLICE_REPORT_NUMBER).addValuesItem("policeReportNumber")));
+		when(caseDataClientMock.getErrandAttachments(any(), any(), any())).thenReturn(attachmentList);
 		when(businessRulesClientMock.runRuleEngine(any(), any())).thenReturn(ruleEngineResponse);
 
 		doThrow(thrownException).when(externalTaskServiceMock).complete(any(), anyMap());
 
 		// Act
-		worker.execute(externalTaskMock, externalTaskServiceMock);
+		try (MockedStatic<BusinessRulesMapper> mapper = Mockito.mockStatic(BusinessRulesMapper.class)) {
+			mapper.when(() -> BusinessRulesMapper.toRuleEngineRequest(any(), any())).thenReturn(ruleEngineRequest);
+			worker.execute(externalTaskMock, externalTaskServiceMock);
+
+			mapper.verify(() -> BusinessRulesMapper.toRuleEngineRequest(same(errandMock), same(attachmentList)));
+		}
 
 		// Assert and verify
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
@@ -224,12 +137,12 @@ class ExecuteRuleTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(businessRulesClientMock).runRuleEngine(eq(MUNICIPALITY_ID), any());
-		verify(errandMock).getStakeholders();
-		verify(errandMock, times(2)).getCaseType();
-		verify(stakeholderMock).getPersonId();
-		verify(stakeholderMock).getRoles();
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(caseDataClientMock).getErrandAttachments(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "TestException");
+		verify(externalTaskMock).getId();
+		verify(externalTaskMock).getBusinessKey();
+		verifyNoMoreInteractions(caseDataClientMock, businessRulesClientMock, errandMock, externalTaskMock, failureHandlerMock);
 	}
 }
