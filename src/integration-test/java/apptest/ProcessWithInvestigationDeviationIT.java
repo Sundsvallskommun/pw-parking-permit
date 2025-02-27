@@ -1,19 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -51,7 +37,19 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -78,7 +76,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "1213";
 		final var scenarioName = "test_investigation_002_createProcessForPhaseActionNotComplete";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, false);
@@ -164,7 +162,9 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void test_investigation_003_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1314";
@@ -173,7 +173,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, isAutomatic);
@@ -241,7 +241,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "1617";
 		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, false);
@@ -271,7 +271,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				    "extraParameters": {}
 				}
 				"""));
-		//Will loop back and wait for update
+		// Will loop back and wait for update
 		final var stateAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecisionPatch,
 			"investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
 			Map.of("decisionTypeParameter", "FINAL",
@@ -355,7 +355,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var caseId = "1617";
 		final var scenarioName = "test_investigation_005_createProcessValidationErrorInBRAutomatic";
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, true);

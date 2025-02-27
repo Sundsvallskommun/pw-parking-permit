@@ -1,19 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
@@ -45,6 +31,18 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
 class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
@@ -65,7 +63,9 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(booleans = { true, false })
+	@ValueSource(booleans = {
+		true, false
+	})
 	void test_execution_001_createProcessForCardNotExistsToExists(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1415";
@@ -74,7 +74,7 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
 
-		//Setup mocks
+		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
@@ -155,7 +155,7 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Is card manufactured", "gateway_card_exists"))
 			.with(tuple("Create asset", "external_task_execution_create_asset"))
 			.with(tuple("End appeal", "execution_gateway_end_appeal"))
-			//Added delay to send control message to make it happen after the asset is created
+			// Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
