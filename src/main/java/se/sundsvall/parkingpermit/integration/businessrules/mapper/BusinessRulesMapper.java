@@ -38,7 +38,6 @@ public final class BusinessRulesMapper {
 
 	private static final String KEY_TYPE = "type";
 	private static final String CONTEXT_PARKING_PERMIT = "PARKING_PERMIT";
-	private static final String APPLICANT_DRIVER = "DRIVER";
 
 	private static final List<String> KEYS_PARKING_PERMIT = List.of(
 		CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY,
@@ -49,10 +48,6 @@ public final class BusinessRulesMapper {
 		CASEDATA_KEY_APPLICATION_RENEWAL_CHANGED_CIRCUMSTANCES,
 		CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER,
 		CASEDATA_KEY_APPLICATION_APPLICANT_SIGNING_ABILITY);
-
-	private static final List<String> KEYS_PARKING_PERMIT_ATTACHMENTS = List.of(
-
-	);
 
 	private BusinessRulesMapper() {}
 

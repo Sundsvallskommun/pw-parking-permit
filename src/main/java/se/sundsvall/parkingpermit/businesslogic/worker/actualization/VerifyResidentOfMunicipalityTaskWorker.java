@@ -52,7 +52,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
 				final var personId = applicant.getPersonId();
 
-				getMunicipalityId(personId).ifPresent(applicantMunicipalityId -> {
+				getMunicipalityId(municipalityId, personId).ifPresent(applicantMunicipalityId -> {
 
 					// If applicant belongs to another municipality, set corresponding variable to indicate this.
 					if (!applicantMunicipalityId.equals(municipalityId)) {
@@ -74,17 +74,18 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 	/**
 	 * Get municipalityId of the persons population registration address (folkbokföringsadress).
 	 *
-	 * @param  personId the personId of the citizen.
-	 * @return          an Optional municipalityId for the person, or an empty Optional if no municipalityId could be
-	 *                  identified (due to missing
-	 *                  citizen, address, etc).
+	 * @param  municipalityId the municipalityId.
+	 * @param  personId       the personId of the citizen.
+	 * @return                an Optional municipalityId for the person, or an empty Optional if no municipalityId could be
+	 *                        identified (due to missing
+	 *                        citizen, address, etc).
 	 */
-	private Optional<String> getMunicipalityId(String personId) {
+	private Optional<String> getMunicipalityId(String municipalityId, String personId) {
 		if (isBlank(personId)) {
 			return empty();
 		}
 
-		return citizenClient.getCitizen(personId)
+		return citizenClient.getCitizen(municipalityId, personId)
 			.map(CitizenExtended::getAddresses)
 			.orElse(emptyList())
 			.stream()
