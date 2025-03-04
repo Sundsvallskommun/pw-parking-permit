@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.27.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1gxcb6n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.32.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
   <bpmn:process id="process-parking-permit" name="PROCESS Parking permit" isExecutable="true" camunda:historyTimeToLive="P30D">
     <bpmn:startEvent id="start_process" name="Start process">
       <bpmn:documentation>The start of the process execution</bpmn:documentation>
@@ -50,6 +50,12 @@
         <bpmn:outgoing>Flow_1jka2xy</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:serviceTask id="external_task_update_errand_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="status">Beslut verkställt</camunda:inputParameter>
+            <camunda:inputParameter name="statusDescription">Ärendet avvisas</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_1jka2xy</bpmn:incoming>
         <bpmn:outgoing>Flow_18owkk3</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -78,7 +84,12 @@
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_0ycmz1a" sourceRef="call_activity_follow_up" targetRef="end_process" />
     <bpmn:subProcess id="decision_phase" name="Decision">
-      <bpmn:extensionElements />
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="status">Under beslut</camunda:inputParameter>
+          <camunda:inputParameter name="statusDescription">Ärendet beslutas</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0f8p51c</bpmn:incoming>
       <bpmn:incoming>Flow_0k33jw2</bpmn:incoming>
       <bpmn:outgoing>Flow_0pxgkeh</bpmn:outgoing>
@@ -244,6 +255,12 @@
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_1quthlt" sourceRef="actualization_phase" targetRef="gateway_is_citizen" />
     <bpmn:subProcess id="investigation_phase" name="Investigation">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="status">Under beslut</camunda:inputParameter>
+          <camunda:inputParameter name="statusDescription">Ärendet utreds</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>applicant_resident_of_municipality</bpmn:incoming>
       <bpmn:outgoing>Flow_0ru4901</bpmn:outgoing>
       <bpmn:startEvent id="start_investigation_phase" name="Start investigation phase">
@@ -296,6 +313,12 @@
       </bpmn:intermediateCatchEvent>
       <bpmn:sequenceFlow id="Flow_1ydem7q" sourceRef="investigation_phase_action_is_update_available" targetRef="external_task_investigation_execute_rules" />
       <bpmn:serviceTask id="external_task_investigation_update_errand_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="status">Under utredning</camunda:inputParameter>
+            <camunda:inputParameter name="statusDescription">Ärendet utreds</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_1aruz2s</bpmn:incoming>
         <bpmn:outgoing>Flow_01n12yz</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -555,7 +578,12 @@
         <bpmn:outgoing>Flow_0rlep1q</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:serviceTask id="external_task_canceled_update_errand_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
-        <bpmn:extensionElements />
+        <bpmn:extensionElements>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="status">Ärende avslutat</camunda:inputParameter>
+            <camunda:inputParameter name="statusDescription">Processen har avbrutits</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_0rlep1q</bpmn:incoming>
         <bpmn:outgoing>Flow_1w50k22</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -1470,43 +1498,43 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1bgpsgy">
     <bpmndi:BPMNPlane id="BPMNPlane_0ihf8a0" bpmnElement="canceled_phase">
       <bpmndi:BPMNShape id="BPMNShape_0r9kpy5" bpmnElement="external_task_canceled_clean_up_notes">
-        <dc:Bounds x="960" y="280" width="100" height="80" />
+        <dc:Bounds x="710" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0gv11bq_di" bpmnElement="end_canceled_phase">
-        <dc:Bounds x="1112" y="302" width="36" height="36" />
+        <dc:Bounds x="862" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1097" y="345" width="67" height="27" />
+          <dc:Bounds x="847" y="145" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1x8yf1x_di" bpmnElement="start_canceled_phase">
-        <dc:Bounds x="422" y="302" width="36" height="36" />
+        <dc:Bounds x="172" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="409" y="345" width="71" height="27" />
+          <dc:Bounds x="159" y="145" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0apbufb" bpmnElement="external_task_canceled_update_phase">
-        <dc:Bounds x="570" y="280" width="100" height="80" />
+        <dc:Bounds x="320" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0qw4pfa" bpmnElement="external_task_canceled_update_errand_status">
-        <dc:Bounds x="760" y="280" width="100" height="80" />
+        <dc:Bounds x="510" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1w50k22_di" bpmnElement="Flow_1w50k22">
+        <di:waypoint x="610" y="120" />
+        <di:waypoint x="710" y="120" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0r4a88k_di" bpmnElement="Flow_0r4a88k">
-        <di:waypoint x="1060" y="320" />
-        <di:waypoint x="1112" y="320" />
+        <di:waypoint x="810" y="120" />
+        <di:waypoint x="862" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0dgo608_di" bpmnElement="Flow_0dgo608">
-        <di:waypoint x="458" y="320" />
-        <di:waypoint x="570" y="320" />
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="320" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0rlep1q_di" bpmnElement="Flow_0rlep1q">
-        <di:waypoint x="670" y="320" />
-        <di:waypoint x="760" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1w50k22_di" bpmnElement="Flow_1w50k22">
-        <di:waypoint x="860" y="320" />
-        <di:waypoint x="960" y="320" />
+        <di:waypoint x="420" y="120" />
+        <di:waypoint x="510" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
