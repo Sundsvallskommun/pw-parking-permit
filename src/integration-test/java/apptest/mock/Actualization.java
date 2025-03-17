@@ -93,7 +93,7 @@ public class Actualization {
 				  {
 				    "statusType": "Under granskning",
 				    "description": "Under granskning",
-				    "dateTime": "${json-unit.any-string}"
+				    "created": "${json-unit.any-string}"
 				  }
 				]
 				"""));

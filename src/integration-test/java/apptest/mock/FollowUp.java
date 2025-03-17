@@ -100,7 +100,7 @@ public class FollowUp {
 				  {
 				    "statusType": "Ärende avslutat",
 				    "description": "Ärende avslutat",
-				    "dateTime": "${json-unit.any-string}"
+				    "created": "${json-unit.any-string}"
 				  }
 				]
 				"""));

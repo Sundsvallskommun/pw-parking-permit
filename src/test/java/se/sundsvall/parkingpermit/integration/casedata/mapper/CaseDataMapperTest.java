@@ -64,25 +64,24 @@ class CaseDataMapperTest {
 
 		assertThat(bean.getStatusType()).isEqualTo(statusType);
 		assertThat(bean.getDescription()).isEqualTo(description);
-		assertThat(bean.getDateTime()).isCloseTo(now(systemDefault()), within(2, SECONDS));
+		assertThat(bean.getCreated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
 
 	@Test
 	void toMessageRequestWithNullAsParameters() {
 		final var bean = CaseDataMapper.toMessageRequest(null, null, null, null, null, null, null);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent", "attachmentRequests", "emailHeaders");
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("sent", "attachments", "emailHeaders", "recipients");
 		assertThat(OffsetDateTime.parse(bean.getSent())).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
 
 	@Test
 	void toMessageRequest() {
-		final var errandNumber = "errandNumber";
 		final var externalCaseId = "externalCaseId";
 		final var messageId = "messageId";
 		final var subject = "subject";
 		final var message = "message";
-		final var errand = new Errand().errandNumber(errandNumber).externalCaseId(externalCaseId);
+		final var errand = new Errand().externalCaseId(externalCaseId);
 		final var direction = DirectionEnum.OUTBOUND;
 		final var username = "username";
 		final var attachment = new MessageAttachment();
@@ -91,10 +90,9 @@ class CaseDataMapperTest {
 
 		assertThat(bean).isNotNull()
 			.extracting(
-				MessageRequest::getAttachmentRequests,
+				MessageRequest::getAttachments,
 				MessageRequest::getDirection,
 				MessageRequest::getEmail,
-				MessageRequest::getErrandNumber,
 				MessageRequest::getExternalCaseId,
 				MessageRequest::getFamilyId,
 				MessageRequest::getFirstName,
@@ -108,7 +106,6 @@ class CaseDataMapperTest {
 				List.of(attachment),
 				direction,
 				null,
-				errandNumber,
 				externalCaseId,
 				null,
 				null,

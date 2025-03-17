@@ -49,7 +49,7 @@ public class Canceled {
 				  {
 				    "statusType": "Ärende avslutat",
 				    "description": "Processen har avbrutits",
-				    "dateTime": "${json-unit.any-string}"
+				    "created": "${json-unit.any-string}"
 				  }
 				]
 				"""));

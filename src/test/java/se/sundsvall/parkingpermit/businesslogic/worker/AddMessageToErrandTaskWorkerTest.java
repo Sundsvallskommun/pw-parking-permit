@@ -83,9 +83,6 @@ class AddMessageToErrandTaskWorkerTest {
 	@Captor
 	private ArgumentCaptor<MessageRequest> messageRequestCaptor;
 
-	@Captor
-	private ArgumentCaptor<Attachment> attachmentCaptor;
-
 	@Test
 	void verifyAnnotations() {
 		assertThat(worker.getClass()).hasAnnotations(Component.class, ExternalTaskSubscription.class);
@@ -95,7 +92,6 @@ class AddMessageToErrandTaskWorkerTest {
 	@Test
 	void execute() {
 		// Setup
-		final var errandNumber = "errandNumber";
 		final var externalCaseID = "externalCaseId";
 		final var filename = "filename";
 		final var subject = "subject";
@@ -116,7 +112,6 @@ class AddMessageToErrandTaskWorkerTest {
 		when(denialTextPropertiesMock.plainBody()).thenReturn(plainBody);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID)).thenReturn(messageId);
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseID);
-		when(errandMock.getErrandNumber()).thenReturn(errandNumber);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -140,10 +135,9 @@ class AddMessageToErrandTaskWorkerTest {
 		assertThat(messageRequestCaptor.getValue().getMessageId()).isEqualTo(messageId);
 		assertThat(messageRequestCaptor.getValue().getSubject()).isEqualTo(subject);
 		assertThat(messageRequestCaptor.getValue().getMessage()).isEqualTo(plainBody);
-		assertThat(messageRequestCaptor.getValue().getErrandNumber()).isEqualTo(errandNumber);
 		assertThat(messageRequestCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseID);
 		assertThat(OffsetDateTime.parse(messageRequestCaptor.getValue().getSent())).isCloseTo(now(), within(2, SECONDS));
-		assertThat(messageRequestCaptor.getValue().getAttachmentRequests()).hasSize(1).extracting(MessageAttachment::getName).containsExactly(filename);
+		assertThat(messageRequestCaptor.getValue().getAttachments()).hasSize(1).extracting(MessageAttachment::getName).containsExactly(filename);
 	}
 
 	@Test

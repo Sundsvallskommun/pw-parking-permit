@@ -147,7 +147,7 @@ public class Denial {
 					{
 							"statusType": "Beslut verkställt",
 						"description": "Ärendet avvisas",
-						"dateTime": "${json-unit.any-string}"
+						"created": "${json-unit.any-string}"
 					}
 				]
 				"""));
@@ -229,14 +229,14 @@ public class Denial {
 			equalToJson("""
 							{
 								"messageId": "570c3e28-b640-49e9-899c-9d290eb0539a",
-								"errandNumber": "PRH-2022-000001",
 								"direction": "OUTBOUND",
 								"externalCaseId": "2971",
 								"message": "Hej\\n\\nDu har fått ett beslut från Sundsvalls kommun.\\n\\nMed vänlig hälsning\\nSundsvalls kommun",
 								"sent": "${json-unit.any-string}",
 								"subject": "Beslut från Sundsvalls kommun",
 								"username": "ProcessEngine",
-								"attachmentRequests": [
+								"recipients" : [ ],
+								"attachments": [
 									{
 										"content": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
 										"name": "beslut.pdf",
