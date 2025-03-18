@@ -17,7 +17,6 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
-import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.MessageAttachment;
 import generated.se.sundsvall.casedata.MessageRequest;
