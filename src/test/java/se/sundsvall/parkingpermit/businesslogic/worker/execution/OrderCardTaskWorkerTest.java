@@ -103,7 +103,7 @@ class OrderCardTaskWorkerTest {
 			.extracting(Status::getStatusType, Status::getDescription)
 			.containsExactly(
 				tuple(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
-		assertThat(statusesArgumentCaptor.getValue().getFirst().getDateTime()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
+		assertThat(statusesArgumentCaptor.getValue().getFirst().getCreated()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
 		verifyNoInteractions(failureHandlerMock);
 	}
 

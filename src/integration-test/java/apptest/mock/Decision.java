@@ -50,7 +50,7 @@ public class Decision {
 				  {
 				    "statusType": "Under beslut",
 				    "description": "Ärendet beslutas",
-				    "dateTime": "${json-unit.any-string}"
+				    "created": "${json-unit.any-string}"
 				  }
 				]
 				"""));

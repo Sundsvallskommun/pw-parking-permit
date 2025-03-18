@@ -130,11 +130,10 @@ public class CaseDataMapper {
 			.username(username);
 
 		ofNullable(errand).ifPresent(theErrand -> bean
-			.errandNumber(theErrand.getErrandNumber())
 			.externalCaseId(theErrand.getExternalCaseId()));
 
 		ofNullable(attachment)
-			.ifPresent(bean::addAttachmentRequestsItem);
+			.ifPresent(bean::addAttachmentsItem);
 
 		return bean;
 	}
@@ -142,7 +141,7 @@ public class CaseDataMapper {
 	public static Status toStatus(final String statusType, final String description) {
 		return new Status()
 			.statusType(statusType)
-			.dateTime(getNow())
+			.created(getNow())
 			.description(description);
 	}
 

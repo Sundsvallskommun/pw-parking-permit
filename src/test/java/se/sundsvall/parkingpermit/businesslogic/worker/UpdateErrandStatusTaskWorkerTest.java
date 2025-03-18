@@ -101,7 +101,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
 		assertThat(statusCaptor.getValue().size()).isOne();
-		assertThat(statusCaptor.getValue().getFirst().getDateTime()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(statusCaptor.getValue().getFirst().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(statusCaptor.getValue().getFirst().getDescription()).isEqualTo(statusDescription);
 		assertThat(statusCaptor.getValue().getFirst().getStatusType()).isEqualTo(status);
 	}

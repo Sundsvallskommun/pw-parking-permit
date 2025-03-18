@@ -55,7 +55,7 @@ public class Investigation {
 				  {
 				    "statusType": "Under utredning",
 				    "description": "Ärendet utreds",
-				    "dateTime": "${json-unit.any-string}"
+				    "created": "${json-unit.any-string}"
 				  }
 				]
 				"""));

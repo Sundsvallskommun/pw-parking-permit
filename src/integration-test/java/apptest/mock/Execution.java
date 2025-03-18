@@ -78,7 +78,7 @@ public class Execution {
 					{
 				    	"statusType": "Beslut verkställt",
 				    	"description": "Beslut verkställt",
-				    	"dateTime": "${json-unit.any-string}"
+				    	"created": "${json-unit.any-string}"
 				  	}
 				]
 				"""));
