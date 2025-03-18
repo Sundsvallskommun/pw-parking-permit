@@ -5,7 +5,7 @@ import java.util.Map;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -43,16 +43,14 @@ public class Decision {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"decision_update-status-task-worker---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"decision_update-status-task-worker---api-casedata-patch-status",
 			equalToJson("""
-				[
 				  {
 				    "statusType": "Under beslut",
 				    "description": "Ärendet beslutas",
 				    "created": "${json-unit.any-string}"
 				  }
-				]
 				"""));
 	}
 

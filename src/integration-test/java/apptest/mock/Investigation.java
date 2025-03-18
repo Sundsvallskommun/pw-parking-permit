@@ -8,7 +8,7 @@ import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataGetAttachments;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
@@ -48,16 +48,14 @@ public class Investigation {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Utredning"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"investigation_update-status-task-worker---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"investigation_update-status-task-worker---api-casedata-patch-status",
 			equalToJson("""
-				[
 				  {
 				    "statusType": "Under utredning",
 				    "description": "Ärendet utreds",
 				    "created": "${json-unit.any-string}"
 				  }
-				]
 				"""));
 	}
 

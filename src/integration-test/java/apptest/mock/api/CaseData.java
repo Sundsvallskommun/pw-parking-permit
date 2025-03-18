@@ -111,8 +111,8 @@ public class CaseData {
 			.getNewScenarioState();
 	}
 
-	public static String mockCaseDataPutStatus(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-		return stubFor(put(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/statuses", caseId)))
+	public static String mockCaseDataPatchStatus(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/status", caseId)))
 			.inScenario(scenarioName)
 			.whenScenarioStateIs(requiredScenarioState)
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))

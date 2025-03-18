@@ -2,7 +2,6 @@ package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -71,7 +70,7 @@ class OrderCardTaskWorkerTest {
 	private FailureHandler failureHandlerMock;
 
 	@Captor
-	private ArgumentCaptor<List<Status>> statusesArgumentCaptor;
+	private ArgumentCaptor<Status> statusArgumentCaptor;
 
 	@InjectMocks
 	private OrderCardTaskWorker worker;
@@ -97,13 +96,11 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(externalTaskMock, times(2)).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(rpaServiceMock).addQueueItems(expectedQueueNames, ERRAND_ID);
-		verify(caseDataClientMock).putStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusesArgumentCaptor.capture());
+		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		assertThat(statusesArgumentCaptor.getValue()).hasSize(1)
-			.extracting(Status::getStatusType, Status::getDescription)
-			.containsExactly(
-				tuple(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
-		assertThat(statusesArgumentCaptor.getValue().getFirst().getCreated()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
+		assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
+		assertThat(statusArgumentCaptor.getValue().getDescription()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
+		assertThat(statusArgumentCaptor.getValue().getCreated()).isCloseTo(OffsetDateTime.now(), within(1, SECONDS));
 		verifyNoInteractions(failureHandlerMock);
 	}
 

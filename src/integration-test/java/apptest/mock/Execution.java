@@ -5,7 +5,7 @@ import java.util.Map;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
@@ -71,16 +71,14 @@ public class Execution {
 				}
 				""".formatted(caseId)));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, stateAfterOrderCard,
-			"execution_update-phase-task-worker---api-casedata-put-errand",
+		return mockCaseDataPatchStatus(caseId, scenarioName, stateAfterOrderCard,
+			"execution_update-phase-task-worker---api-casedata-patch-status",
 			equalToJson("""
-				[
 					{
 				    	"statusType": "Beslut verkställt",
 				    	"description": "Beslut verkställt",
 				    	"created": "${json-unit.any-string}"
 				  	}
-				]
 				"""));
 
 	}

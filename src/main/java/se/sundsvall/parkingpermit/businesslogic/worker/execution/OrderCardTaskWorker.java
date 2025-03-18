@@ -48,7 +48,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			rpaService.addQueueItems(getQueueNames(errand), errand.getId());
-			caseDataClient.putStatus(externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID), namespace, errand.getId(), List.of(toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED)));
+			caseDataClient.patchStatus(externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID), namespace, errand.getId(), toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {
