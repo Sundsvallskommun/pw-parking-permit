@@ -8,7 +8,7 @@ import static apptest.mock.api.CaseData.mockCaseDataAddStakeholderPatch;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.CaseData.mockCaseDataStakeholdersGet;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.Templating.mockRenderPdf;
@@ -140,16 +140,14 @@ public class Denial {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"automatic_denial_update-status-task-worker---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"automatic_denial_update-status-task-worker---api-casedata-patch-status",
 			equalToJson("""
-				[
 					{
 							"statusType": "Beslut verkställt",
 						"description": "Ärendet avvisas",
 						"created": "${json-unit.any-string}"
 					}
-				]
 				"""));
 	}
 

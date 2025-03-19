@@ -2,7 +2,6 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
-import java.util.List;
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -32,7 +31,7 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 
 			final var status = externalTask.getVariable("status").toString();
 			final var statusDescription = Optional.ofNullable(externalTask.getVariable("statusDescription")).map(Object::toString).orElse(status);
-			caseDataClient.putStatus(municipalityId, namespace, errand.getId(), List.of(toStatus(status, statusDescription)));
+			caseDataClient.patchStatus(municipalityId, namespace, errand.getId(), toStatus(status, statusDescription));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {

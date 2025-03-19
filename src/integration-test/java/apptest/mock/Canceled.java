@@ -7,7 +7,7 @@ import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
 import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 
 public class Canceled {
@@ -42,16 +42,14 @@ public class Canceled {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Avbruten"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"canceled_update-status-task-worker---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"canceled_update-status-task-worker---api-casedata-patch-status",
 			equalToJson("""
-				[
 				  {
 				    "statusType": "Ärende avslutat",
 				    "description": "Processen har avbrutits",
 				    "created": "${json-unit.any-string}"
 				  }
-				]
 				"""));
 	}
 

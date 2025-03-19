@@ -5,7 +5,7 @@ import java.util.Map;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Citizen.mockGetCitizen;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
@@ -86,16 +86,14 @@ public class Actualization {
 				"phaseActionParameter", phaseAction(isAutomatic),
 				"displayPhaseParameter", "Granskning"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"actualization_update-errand-status---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"actualization_update-errand-status---api-casedata-patch-status",
 			equalToJson("""
-				[
 				  {
 				    "statusType": "Under granskning",
 				    "description": "Under granskning",
 				    "created": "${json-unit.any-string}"
 				  }
-				]
 				"""));
 	}
 

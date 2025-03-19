@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
@@ -143,12 +142,12 @@ public interface CaseDataClient {
 		@PathVariable("errandId") Long errandId,
 		@PathVariable(name = "stakeholderId") Long stakeholderId);
 
-	@PutMapping("/{municipalityId}/{namespace}/errands/{errandId}/statuses")
-	ResponseEntity<Void> putStatus(
+	@PatchMapping("/{municipalityId}/{namespace}/errands/{errandId}/status")
+	ResponseEntity<Void> patchStatus(
 		@PathVariable(name = "municipalityId") String municipalityId,
 		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
-		@RequestBody List<Status> statusList);
+		@RequestBody Status status);
 
 	/**
 	 * Add a message to an errand.

@@ -17,7 +17,6 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Status;
-import java.util.List;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -64,7 +63,7 @@ class UpdateErrandStatusTaskWorkerTest {
 	private UpdateErrandStatusTaskWorker worker;
 
 	@Captor
-	private ArgumentCaptor<List<Status>> statusCaptor;
+	private ArgumentCaptor<Status> statusCaptor;
 
 	@Test
 	void verifyAnnotations() {
@@ -96,14 +95,13 @@ class UpdateErrandStatusTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		verify(caseDataClientMock).putStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusCaptor.capture());
+		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
-		assertThat(statusCaptor.getValue().size()).isOne();
-		assertThat(statusCaptor.getValue().getFirst().getCreated()).isCloseTo(now(), within(2, SECONDS));
-		assertThat(statusCaptor.getValue().getFirst().getDescription()).isEqualTo(statusDescription);
-		assertThat(statusCaptor.getValue().getFirst().getStatusType()).isEqualTo(status);
+		assertThat(statusCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
+		assertThat(statusCaptor.getValue().getDescription()).isEqualTo(statusDescription);
+		assertThat(statusCaptor.getValue().getStatusType()).isEqualTo(status);
 	}
 
 	@Test
@@ -122,7 +120,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable("status")).thenReturn(status);
 		when(externalTaskMock.getVariable("statusDescription")).thenReturn(statusDescription);
-		when(caseDataClientMock.putStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenThrow(problem);
+		when(caseDataClientMock.patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenThrow(problem);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

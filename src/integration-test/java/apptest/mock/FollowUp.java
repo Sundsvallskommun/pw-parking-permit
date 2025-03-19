@@ -7,7 +7,7 @@ import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
 import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.CaseData.mockCaseDataPutStatus;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
@@ -93,16 +93,14 @@ public class FollowUp {
 				"statusTypeParameter", "Status",
 				"displayPhaseParameter", "Uppföljning"));
 
-		return mockCaseDataPutStatus(caseId, scenarioName, state,
-			"follow_up_update-errand-status---api-casedata-put-status",
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"follow_up_update-errand-status---api-casedata-patch-status",
 			equalToJson("""
-				[
 				  {
 				    "statusType": "Ärende avslutat",
 				    "description": "Ärende avslutat",
 				    "created": "${json-unit.any-string}"
 				  }
-				]
 				"""));
 	}
 
