@@ -57,6 +57,7 @@ public class ProcessPathway {
 			.with(tuple("Start execution phase", "start_execution_phase"))
 			.with(tuple("Send message in parallel flow", "parallel_gateway_start"))
 			.with(tuple("Update phase", "external_task_execution_update_phase"))
+			.with(tuple("Handle lost card", "external_task_execution_handle_lost_card"))
 			.with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
 			.with(tuple("Order card", "external_task_execution_order_card_task"))
 			.with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))

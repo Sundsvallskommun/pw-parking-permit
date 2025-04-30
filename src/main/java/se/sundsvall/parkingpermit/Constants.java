@@ -66,6 +66,7 @@ public final class Constants {
 	public static final String CASEDATA_KEY_DISABILITY_DURATION = "disability.duration";
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_ABILITY = "disability.walkingAbility";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER = "artefact.permit.number";
+	public static final String CASEDATA_KEY_ARTEFACT_LOST_PERMIT_NUMBER = "artefact.lost.permit.number";
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX = "disability.walkingDistance.max";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_STATUS = "artefact.permit.status";
 

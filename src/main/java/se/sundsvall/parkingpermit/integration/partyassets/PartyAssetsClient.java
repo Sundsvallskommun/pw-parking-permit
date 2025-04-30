@@ -43,6 +43,17 @@ public interface PartyAssetsClient {
 		@RequestParam("partyId") final String partyId, @RequestParam("status") final String status);
 
 	/**
+	 * Get asset for party.
+	 *
+	 * @param municipalityId the municipalityId.
+	 * @param partyId        the partyId of applicant.
+	 * @param status         the status of assets.
+	 */
+	@GetMapping(path = "/{municipalityId}/assets", produces = APPLICATION_JSON_VALUE)
+	ResponseEntity<List<Asset>> getAssets(@PathVariable("municipalityId") final String municipalityId,
+		@RequestParam("partyId") final String partyId, @RequestParam("status") final String status);
+
+	/**
 	 * Update asset.
 	 *
 	 * @param municipalityId     the municipalityId.
