@@ -157,7 +157,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels").satisfies(patch -> {
+		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities").satisfies(patch -> {
 			assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
 			assertThat(patch.getPhase()).isEqualTo(phase);
 			assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
@@ -200,7 +200,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels").satisfies(patch -> {
+		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities").satisfies(patch -> {
 			assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
 			assertThat(patch.getPhase()).isEqualTo(phase);
 			assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(

@@ -179,6 +179,7 @@ public class CaseData {
 			{
 				"externalCaseId" : "2971",
 				"phase" : "%s",
+				"facilities" : [],
 				"extraParameters" : [ {
 						"key" : "disability.walkingAbility",
 						"values" : [ "false" ]
@@ -242,6 +243,7 @@ public class CaseData {
 	public static String createPatchBodyWhenLostCard(String phaseAction, String phaseStatus, String displayPhase, String assetId) {
 		return String.format("""
 			{
+				"facilities" : [],
 				"extraParameters" : [ {
 						"key" : "disability.walkingAbility",
 						"values" : [ "false" ]

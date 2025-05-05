@@ -31,7 +31,7 @@ import se.sundsvall.parkingpermit.service.PartyAssetsService;
 @ExternalTaskSubscription("HandleLostCardTask")
 public class HandleLostCardTaskWorker extends AbstractTaskWorker {
 
-	private static final String NOTE_TEXT = "The asset with id %s has been blocked.";
+	private static final String NOTE_TEXT = "The asset with ID %s has been blocked.";
 	private static final String NOTE_TITLE = "Asset blocked";
 	private static final String PARTY_ASSET_STATUS_REASON = "LOST";
 
@@ -73,7 +73,7 @@ public class HandleLostCardTaskWorker extends AbstractTaskWorker {
 							.ifPresent(extraParameter -> extraParameter.setValues(List.of(asset.getAssetId())));
 					}
 
-					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), new PatchErrand().extraParameters(extraParameters).facilities(null));
+					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), new PatchErrand().extraParameters(extraParameters));
 
 					caseDataClient.addNoteToErrand(municipalityId, namespace, errand.getId(),
 						new Note()

@@ -50,8 +50,7 @@ public class CaseDataMapper {
 	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final List<ExtraParameter> extraParameters) {
 		final var patchErrand = new PatchErrand()
 			.externalCaseId(externalCaseId)
-			.phase(phase)
-			.facilities(null);
+			.phase(phase);
 
 		var result = Optional.ofNullable(extraParameters).orElse(emptyList()).stream()
 			.filter(extraParameter -> !CASEDATA_KEY_PHASE_STATUS.equals(extraParameter.getKey()) && !CASEDATA_KEY_PHASE_ACTION.equals(extraParameter.getKey()))

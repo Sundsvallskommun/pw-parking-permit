@@ -121,7 +121,7 @@ class HandleLostCardTaskWorkerTest {
 			.namespace(NAMESPACE)
 			.noteType(PUBLIC)
 			.title("Asset blocked")
-			.text("The asset with id idOfAsset has been blocked."));
+			.text("The asset with ID idOfAsset has been blocked."));
 		verifyNoMoreInteractions(caseDataClientMock, partyAssetsServiceMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
