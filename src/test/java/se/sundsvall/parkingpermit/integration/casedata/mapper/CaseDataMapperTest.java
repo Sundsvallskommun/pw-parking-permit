@@ -154,10 +154,10 @@ class CaseDataMapperTest {
 			new ExtraParameter("process.phaseStatus").values(emptyList()),
 			new ExtraParameter("process.phaseAction").values(List.of("phaseAction")),
 			new ExtraParameter("process.displayPhase").values(emptyList()));
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "relatesTo", "labels")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("extraParameters", "relatesTo", "labels", "facilities")
 			.extracting(PatchErrand::getFacilities,
 				PatchErrand::getExtraParameters)
-			.containsExactly(null, expectedExtraParameters);
+			.containsExactly(emptyList(), expectedExtraParameters);
 	}
 
 	@Test
@@ -185,7 +185,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, displayPhase, extraParameters);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities")
 			.extracting(
 				PatchErrand::getExternalCaseId,
 				PatchErrand::getPhase,
@@ -194,7 +194,7 @@ class CaseDataMapperTest {
 			.containsExactly(
 				externalCaseId,
 				phase,
-				null,
+				emptyList(),
 				List.of(
 					new ExtraParameter(keyOther).addValuesItem(valueOther),
 					new ExtraParameter(keyPhaseStatus).addValuesItem(phaseStatus),
@@ -214,7 +214,7 @@ class CaseDataMapperTest {
 		final var bean = CaseDataMapper.toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
 
 		assertThat(bean).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels")
+			.hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities")
 			.extracting(
 				PatchErrand::getExternalCaseId,
 				PatchErrand::getPhase,
@@ -223,7 +223,7 @@ class CaseDataMapperTest {
 			.containsExactly(
 				externalCaseId,
 				phase,
-				null,
+				emptyList(),
 				List.of(new ExtraParameter("key").addValuesItem("value"),
 					new ExtraParameter("process.phaseStatus").addValuesItem(phaseStatus),
 					new ExtraParameter(keyPhaseAction).addValuesItem(phaseAction)));

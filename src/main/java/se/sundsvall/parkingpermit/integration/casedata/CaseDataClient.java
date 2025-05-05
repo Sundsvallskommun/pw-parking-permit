@@ -176,6 +176,19 @@ public interface CaseDataClient {
 		@RequestParam(name = "noteType", required = false) String noteType);
 
 	/**
+	 * Create and add note.
+	 *
+	 * @param  note                                 note to add
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", consumes = APPLICATION_JSON_VALUE)
+	ResponseEntity<Void> addNoteToErrand(
+		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable(name = "errandId") Long errandId,
+		@RequestBody Note note);
+
+	/**
 	 * Delete note by note id.
 	 *
 	 * @param  noteId                               of note to delete

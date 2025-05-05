@@ -123,6 +123,35 @@ class PartyAssetsServiceTest {
 	}
 
 	@Test
+	void getAssetsByPartyId() {
+		// Arrange
+		final var partyId = "partyId";
+		final var assetId = "assetId";
+		final var assets = List.of(new Asset().id("1").assetId(assetId).partyId(partyId).status(ACTIVE));
+
+		when(partyAssetsClientMock.getAssets(MUNICIPALITY_ID, partyId, PARTY_ASSET_STATUS_ACTIVE)).thenReturn(responseEntityMock);
+		when(responseEntityMock.getBody()).thenReturn(assets);
+
+		// Act
+		final var result = partyAssetsService.getAssets(MUNICIPALITY_ID, partyId, PARTY_ASSET_STATUS_ACTIVE);
+
+		// Assert
+		assertThat(result).isEqualTo(assets);
+		verify(partyAssetsClientMock).getAssets(MUNICIPALITY_ID, partyId, PARTY_ASSET_STATUS_ACTIVE);
+		verify(responseEntityMock).getBody();
+	}
+
+	@Test
+	void getAssetsByPartyIdWhenNull() {
+		// Act
+		final var result = partyAssetsService.getAssets(MUNICIPALITY_ID, null, PARTY_ASSET_STATUS_ACTIVE);
+
+		// Assert
+		assertThat(result).isEmpty();
+		verifyNoInteractions(partyAssetsClientMock, responseEntityMock);
+	}
+
+	@Test
 	void updateAssetWithNewAdditionalParameter() {
 		// Arrange
 		final var asset = new Asset().id("1").assetId("assetId").partyId("partyId").status(ACTIVE);

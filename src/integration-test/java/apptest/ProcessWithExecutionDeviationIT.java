@@ -4,8 +4,10 @@ import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecutionCreateAsset;
+import static apptest.mock.Execution.mockExecutionHandleLostCard;
 import static apptest.mock.Execution.mockExecutionOrderCard;
 import static apptest.mock.Execution.mockExecutionUpdatePhase;
+import static apptest.mock.Execution.mockExecutionWhenLostCard;
 import static apptest.mock.Execution.mockSendSimplifiedService;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
@@ -13,6 +15,7 @@ import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
+import static apptest.verification.ProcessPathway.executionPathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
@@ -27,6 +30,7 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
@@ -82,7 +86,8 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 		final var stateAfterDecision = mockDecision(caseId, scenarioName, isAutomatic);
 		// Mock Deviation
 		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, stateAfterDecision, isAutomatic);
-		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
+		final var stateAfterHandleLostCard = mockExecutionHandleLostCard(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
+		final var stateAfterOrderCard = mockExecutionOrderCard(caseId, scenarioName, stateAfterHandleLostCard, isAutomatic);
 		final var stateAfterCheckIfCardDoesNotExist = mockCaseDataGet(caseId, scenarioName, stateAfterOrderCard,
 			"execution_check-if-card-exists-task-worker-when-it-does-not---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
@@ -146,6 +151,7 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Send message in parallel flow", "parallel_gateway_start"))
 			.with(tuple("Update phase", "external_task_execution_update_phase"))
 			.with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
+			.with(tuple("Handle lost card", "external_task_execution_handle_lost_card"))
 			.with(tuple("Order card", "external_task_execution_order_card_task"))
 			.with(tuple("Check if card exists", "external_task_execution_check_if_card_exists"))
 			// Card does not exist
@@ -161,6 +167,58 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End execution phase", "end_execution_phase"))
+			.with(followUpPathway())
+			.with(tuple("End process", "end_process")));
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {
+		true, false
+	})
+	void test_execution_002_createProcessForCitizenWhenLostCard(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+
+		final var caseId = "1416";
+		var scenarioName = "test002_createProcessForCitizenWhenLostCard";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
+
+		// Setup mocks
+		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		mockInvestigation(caseId, scenarioName, isAutomatic);
+		mockDecision(caseId, scenarioName, isAutomatic);
+		mockExecutionWhenLostCard(caseId, scenarioName, isAutomatic);
+		mockFollowUp(caseId, scenarioName, isAutomatic);
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1416")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequest()
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to finish
+		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
+			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
+			.with(actualizationPathway())
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+			.with(investigationPathway())
+			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+			.with(decisionPathway())
+			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+			.with(handlingPathway())
+			.with(executionPathway())
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}

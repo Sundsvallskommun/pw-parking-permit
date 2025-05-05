@@ -1,21 +1,19 @@
 package apptest.mock.api;
 
-import com.github.tomakehurst.wiremock.matching.ContentPattern;
-
-import java.util.Map;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
+
+import com.github.tomakehurst.wiremock.matching.ContentPattern;
+import java.util.Map;
 
 public class CaseData {
 
@@ -138,6 +136,20 @@ public class CaseData {
 			.getNewScenarioState();
 	}
 
+	public static String mockCaseDataAddNotePatch(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(patch(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/notes", caseId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(NO_CONTENT_204)
+				.withHeader("Content-Type", "*/*")
+				.withHeader("Location", String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/notes/", caseId) + "2"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
 	public static String mockCaseDataNotesDelete(String caseId, String noteId, String scenarioName, String requiredScenarioState, String newScenarioState) {
 		return stubFor(delete(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/notes/%s", caseId, noteId)))
 			.inScenario(scenarioName)
@@ -167,6 +179,7 @@ public class CaseData {
 			{
 				"externalCaseId" : "2971",
 				"phase" : "%s",
+				"facilities" : [],
 				"extraParameters" : [ {
 						"key" : "disability.walkingAbility",
 						"values" : [ "false" ]
@@ -225,5 +238,72 @@ public class CaseData {
 					"relatesTo" : [ ],
 			        "labels" : [ ]
 					}""", phase, phaseStatus, phaseAction, displayPhase);
+	}
+
+	public static String createPatchBodyWhenLostCard(String phaseAction, String phaseStatus, String displayPhase, String assetId) {
+		return String.format("""
+			{
+				"facilities" : [],
+				"extraParameters" : [ {
+						"key" : "disability.walkingAbility",
+						"values" : [ "false" ]
+					}, {
+						"key" : "application.applicant.testimonial",
+						"values" : [ "true" ]
+					}, {
+						"key" : "consent.view.transportationServiceDetails",
+						"values" : [ "false" ]
+					}, {
+						"key" : "disability.aid",
+						"values" : [ "Inget" ]
+					}, {
+						"key" : "disability.canBeAloneWhileParking",
+						"values" : [ "true" ]
+					}, {
+						"key" : "application.role",
+						"values" : [ "SELF" ]
+					}, {
+						"key" : "application.applicant.capacity",
+						"values" : [ "DRIVER" ]
+					}, {
+						"key" : "application.applicant.signingAbility",
+						"values" : [ "false" ]
+					}, {
+						"key" : "disability.walkingDistance.max",
+						"values" : [ ]
+					}, {
+						"key" : "disability.walkingDistance.beforeRest",
+						"values" : [ ]
+					}, {
+						"key" : "consent.contact.doctor",
+						"values" : [ "false" ]
+					}, {
+						"key" : "application.reason",
+						"values" : [ "" ]
+					}, {
+						"key" : "disability.canBeAloneWhileParking.note",
+						"values" : [ ]
+					}, {
+						"key" : "disability.duration",
+						"values" : [ "P6M" ]
+					}, {
+						"key" : "artefact.permit.number",
+						"values" : [ "" ]
+					}, {
+						"key" : "process.phaseAction",
+						"values" : [ "%s" ]
+					}, {
+						"key" : "process.displayPhase",
+						"values" : [ "%s" ]
+					}, {
+						"key" : "process.phaseStatus",
+						"values" : [ "%s" ]
+					}, {
+			            "key" : "artefact.lost.permit.number",
+			            "values" : [ "%s" ]
+			        } ],
+					"relatesTo" : [ ],
+			        "labels" : [ ]
+					}""", phaseAction, displayPhase, phaseStatus, assetId);
 	}
 }
