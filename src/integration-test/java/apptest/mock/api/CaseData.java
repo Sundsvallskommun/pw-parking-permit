@@ -221,7 +221,7 @@ public class CaseData {
 						"values" : [ ]
 					}, {
 						"key" : "disability.duration",
-						"values" : [ "P6M" ]
+						"values" : [ "P1Y" ]
 					}, {
 						"key" : "artefact.permit.number",
 						"values" : [ "" ]
@@ -285,7 +285,7 @@ public class CaseData {
 						"values" : [ ]
 					}, {
 						"key" : "disability.duration",
-						"values" : [ "P6M" ]
+						"values" : [ "P1Y" ]
 					}, {
 						"key" : "artefact.permit.number",
 						"values" : [ "" ]

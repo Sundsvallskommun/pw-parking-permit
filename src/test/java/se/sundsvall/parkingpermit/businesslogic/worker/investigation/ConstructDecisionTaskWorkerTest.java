@@ -23,6 +23,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
@@ -91,9 +92,27 @@ class ConstructDecisionTaskWorkerTest {
 			Arguments.of("PASS", new Decision()
 				.decisionType(FINAL)
 				.decisionOutcome(APPROVAL)
-				.description("Beslut är bevilja. Description1, description2 och description3."),
-				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)))),
-			// Sanity check passes
+				.description("Beslut är bevilja. Description1, description2 och description3.")
+				.validFrom(now())
+				.validTo(now().plusYears(1)),
+				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)),
+					new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).values(List.of("P1Y")))),
+			Arguments.of("PASS", new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(APPROVAL)
+				.description("Beslut är bevilja. Description1, description2 och description3.")
+				.validFrom(now())
+				.validTo(now().plusYears(2)),
+				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)),
+					new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).values(List.of("P0Y")))),
+			Arguments.of("PASS", new Decision()
+				.decisionType(FINAL)
+				.decisionOutcome(APPROVAL)
+				.description("Beslut är bevilja. Description1, description2 och description3.")
+				.validFrom(now())
+				.validTo(now().plusYears(2)),
+				List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)),
+					new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).values(List.of("P5Y")))),
 			Arguments.of("FAIL", new Decision()
 				.decisionType(RECOMMENDED)
 				.decisionOutcome(REJECTION)
@@ -139,6 +158,14 @@ class ConstructDecisionTaskWorkerTest {
 		assertThat(decisionArgumentCaptor.getValue().getDecisionOutcome()).isEqualTo(expectedDecision.getDecisionOutcome());
 		assertThat(decisionArgumentCaptor.getValue().getDescription()).isEqualTo(expectedDecision.getDescription());
 		assertThat(decisionArgumentCaptor.getValue().getVersion()).isEqualTo(2);
+
+		if (expectedDecision.getValidFrom() != null) {
+			assertThat(decisionArgumentCaptor.getValue().getValidFrom()).isCloseTo(expectedDecision.getValidFrom(), within(2, SECONDS));
+			assertThat(decisionArgumentCaptor.getValue().getValidTo()).isCloseTo(expectedDecision.getValidTo(), within(2, SECONDS));
+		} else {
+			assertThat(decisionArgumentCaptor.getValue().getValidFrom()).isNull();
+			assertThat(decisionArgumentCaptor.getValue().getValidTo()).isNull();
+		}
 
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(failureHandlerMock);
@@ -287,6 +314,93 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+	}
+
+	@Test
+	void executeThrowsExceptionWhenNoDisabilityDurationAndAutomatic() {
+
+		// Arrange
+		final var ruleEngineResponse = createRuleEngineResponse(PASS.toString());
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC))));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Conflict: No disability duration found in errand");
+	}
+
+	@Test
+	void executeThrowsExceptionWhenTooShortDisabilityDurationAndAutomatic() {
+
+		// Arrange
+		final var ruleEngineResponse = createRuleEngineResponse(PASS.toString());
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
+		// 6 months is too short for automatic decision (is valid when not automatic)
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).values(List.of("P6M"))));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No valid validity period found");
+	}
+
+	@Test
+	void executeThrowsExceptionWhenNotValidPeriodAndAutomatic() {
+
+		// Arrange
+		final var ruleEngineResponse = createRuleEngineResponse(PASS.toString());
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE)).thenReturn(ruleEngineResponse);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getDecisions()).thenReturn(emptyList());
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(PHASE_ACTION_AUTOMATIC)),
+			new ExtraParameter(CASEDATA_KEY_DISABILITY_DURATION).values(List.of("not-valid"))));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Text cannot be parsed to a Period");
 	}
 
 	private RuleEngineResponse createRuleEngineResponse(String resultValue) {
