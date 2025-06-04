@@ -107,7 +107,7 @@ public class Investigation {
 				        },
 				        {
 				            "key": "disability.duration",
-				            "value": "P6M"
+				            "value": "P1Y"
 				        },
 				        {
 				            "key": "disability.walkingAbility",
@@ -160,6 +160,7 @@ public class Investigation {
 		if (newScenarioStateSuffix != null) {
 			newScenarioStatePatch = newScenarioStatePatch.concat(newScenarioStateSuffix);
 		}
+
 		return mockCaseDataDecisionPatch(caseId, scenarioName, state, newScenarioStatePatch,
 			equalToJson(String.format("""
 				{
@@ -169,10 +170,13 @@ public class Investigation {
 				    "decisionOutcome": "APPROVAL",
 				    "description": "%s. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd.",
 				    "law": [],
+				    %s
+				    %s
 				    "attachments": [],
 				    "extraParameters": {}
 				}
-				""", isAutomatic ? "FINAL" : "RECOMMENDED", isAutomatic ? "Beslut är bevilja" : "Rekommenderat beslut är bevilja")));
+				""", isAutomatic ? "FINAL" : "RECOMMENDED", isAutomatic ? "Beslut är bevilja" : "Rekommenderat beslut är bevilja",
+				isAutomatic ? "\"validFrom\" :\"${json-unit.any-string}\"," : "", isAutomatic ? "\"validTo\" :\"${json-unit.any-string}\"," : "")));
 	}
 
 	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
