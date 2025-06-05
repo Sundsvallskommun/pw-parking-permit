@@ -7,12 +7,15 @@ import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Citizen.mockGetCitizen;
+import static apptest.mock.api.Citizen.mockGetCitizenNoContent;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 public class Actualization {
+
+	private static final String MUNICIPALITY_ID = "2281";
 
 	public static String mockActualization(String caseId, String scenarioName, boolean isAutomatic) {
 		var scenarioAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, "check_appeal_check-appeal-task-worker---api-casedata-get-errand", isAutomatic);
@@ -45,6 +48,12 @@ public class Actualization {
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", phaseAction(isAutomatic),
 				"displayPhaseParameter", "Registrerad"));
+
+		if (!MUNICIPALITY_ID.equals(municipalityId)) {
+			return mockGetCitizenNoContent(scenarioName, state,
+				"verify-resident-of-municipality-task-worker---api-citizen-getcitizen",
+				"6b8928bb-9800-4d52-a9fa-20d88c81f1d6");
+		}
 
 		return mockGetCitizen(scenarioName, state,
 			"verify-resident-of-municipality-task-worker---api-citizen-getcitizen",
