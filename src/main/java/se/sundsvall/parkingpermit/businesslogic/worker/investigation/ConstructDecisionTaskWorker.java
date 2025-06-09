@@ -11,7 +11,9 @@ import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
@@ -90,6 +92,10 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 					errand.getNamespace(),
 					caseNumber,
 					decision.version(Optional.ofNullable(latestDecision).map(theDecision -> theDecision.getVersion() + 1).orElse(0)));
+			}
+
+			if (isAutomatic) {
+				caseDataClient.patchStatus(errand.getMunicipalityId(), errand.getNamespace(), errand.getId(), toStatus(CASEDATA_STATUS_CASE_DECIDED, CASEDATA_STATUS_CASE_DECIDED));
 			}
 
 			externalTaskService.complete(externalTask);

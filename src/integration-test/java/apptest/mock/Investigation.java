@@ -161,7 +161,7 @@ public class Investigation {
 			newScenarioStatePatch = newScenarioStatePatch.concat(newScenarioStateSuffix);
 		}
 
-		return mockCaseDataDecisionPatch(caseId, scenarioName, state, newScenarioStatePatch,
+		var stateAfterPatchDecision = mockCaseDataDecisionPatch(caseId, scenarioName, state, newScenarioStatePatch,
 			equalToJson(String.format("""
 				{
 				    "version": 2,
@@ -177,6 +177,20 @@ public class Investigation {
 				}
 				""", isAutomatic ? "FINAL" : "RECOMMENDED", isAutomatic ? "Beslut är bevilja" : "Rekommenderat beslut är bevilja",
 				isAutomatic ? "\"validFrom\" :\"${json-unit.any-string}\"," : "", isAutomatic ? "\"validTo\" :\"${json-unit.any-string}\"," : "")));
+
+		if (isAutomatic) {
+			return mockCaseDataPatchStatus(caseId, scenarioName, stateAfterPatchDecision,
+				"investigation_construct-recommended-decision_task-worker---api-casedata-patch-status",
+				equalToJson("""
+					{
+					    "statusType": "Beslutad",
+					    "description": "Beslutad",
+					    "created": "${json-unit.any-string}"
+					}
+					"""));
+		} else {
+			return stateAfterPatchDecision;
+		}
 	}
 
 	public static String mockInvestigationCheckPhaseAction(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
