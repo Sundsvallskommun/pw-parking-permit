@@ -25,6 +25,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
 import generated.se.sundsvall.businessrules.Result;
@@ -34,6 +35,7 @@ import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Status;
 import java.util.List;
 import java.util.stream.Stream;
 import org.camunda.bpm.client.exception.EngineException;
@@ -74,6 +76,9 @@ class ConstructDecisionTaskWorkerTest {
 
 	@Captor
 	private ArgumentCaptor<Decision> decisionArgumentCaptor;
+
+	@Captor
+	private ArgumentCaptor<Status> statusArgumentCaptor;
 
 	@Captor
 	private ArgumentCaptor<Long> errandIdArgumentCaptor;
@@ -142,6 +147,17 @@ class ConstructDecisionTaskWorkerTest {
 		when(errandMock.getDecisions()).thenReturn(List.of(new Decision().decisionOutcome(REJECTION).decisionType(RECOMMENDED).version(0),
 			new Decision().decisionOutcome(APPROVAL).decisionType(RECOMMENDED).version(1)));
 
+		final var isAutomatic = parameters.stream()
+			.filter(extraParameter -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameter.getKey()))
+			.flatMap(extraParameter -> extraParameter.getValues().stream())
+			.anyMatch(PHASE_ACTION_AUTOMATIC::equals);
+
+		if (isAutomatic) {
+			when(errandMock.getId()).thenReturn(ERRAND_ID);
+			when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
+
+		}
+
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
@@ -167,7 +183,14 @@ class ConstructDecisionTaskWorkerTest {
 			assertThat(decisionArgumentCaptor.getValue().getValidTo()).isNull();
 		}
 
+		if (isAutomatic) {
+			verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
+			assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_CASE_DECIDED);
+			assertThat(statusArgumentCaptor.getValue().getDescription()).isEqualTo(CASEDATA_STATUS_CASE_DECIDED);
+		}
+
 		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoMoreInteractions(caseDataClientMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 

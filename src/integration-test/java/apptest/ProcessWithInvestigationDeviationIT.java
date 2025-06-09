@@ -16,6 +16,7 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
@@ -371,7 +372,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", PHASE_ACTION_AUTOMATIC,
 				"displayPhaseParameter", "Utredning"));
-		final var stateAfterConstructDecision = mockCaseDataDecisionPatch(caseId, scenarioName, stateAfterConstructDecisionGet,
+		final var stateAfterPatchDecision = mockCaseDataDecisionPatch(caseId, scenarioName, stateAfterConstructDecisionGet,
 			"investigation_execute-rules-task-worker-rejection---api-businessrules-engine",
 			equalToJson("""
 				{
@@ -385,6 +386,16 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				    "extraParameters": {}
 				}
 				"""));
+
+		final var stateAfterConstructDecision = mockCaseDataPatchStatus(caseId, scenarioName, stateAfterPatchDecision,
+			"investigation_construct-decision_task-worker---api-casedata-patch-status-errand",
+				equalToJson("""
+					{
+					    "statusType": "Beslutad",
+					    "description": "Beslutad",
+					    "created": "${json-unit.any-string}"
+					}
+					"""));
 
 		mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision, false);
 		// Normal mocks
