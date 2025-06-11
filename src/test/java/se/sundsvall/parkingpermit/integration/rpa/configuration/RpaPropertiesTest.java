@@ -20,7 +20,7 @@ class RpaPropertiesTest {
 	void testProperties() {
 		assertThat(properties.connectTimeout()).isEqualTo(10);
 		assertThat(properties.readTimeout()).isEqualTo(20);
-		assertThat(properties.folderId()).isEqualTo("50");
+		assertThat(properties.folderIds()).containsEntry("2281", "50").containsEntry("2260", "60");
 		assertThat(properties.identityServerUrl()).isEqualTo("https://rpa.base.url/identity");
 	}
 }

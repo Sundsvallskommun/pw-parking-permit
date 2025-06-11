@@ -9,7 +9,15 @@ spring:
     name: pw-parking-permit-it
   main:
     banner-mode: "off"
-    
+#----------------------------------------
+# Rpa settings
+# folderId per municipalityId
+#----------------------------------------
+integration:
+  rpa:
+    folderIds:
+      2281: 50
+      2260: 60
 #----------------------------------------
 # Integration settings
 #----------------------------------------

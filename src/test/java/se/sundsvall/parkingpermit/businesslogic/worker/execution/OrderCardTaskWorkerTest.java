@@ -95,7 +95,7 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(externalTaskMock, times(2)).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(rpaServiceMock).addQueueItems(expectedQueueNames, ERRAND_ID);
+		verify(rpaServiceMock).addQueueItems(expectedQueueNames, ERRAND_ID, MUNICIPALITY_ID);
 		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
@@ -118,7 +118,7 @@ class OrderCardTaskWorkerTest {
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
 
 		// Mock
-		doThrow(thrownException).when(rpaServiceMock).addQueueItems(any(), any());
+		doThrow(thrownException).when(rpaServiceMock).addQueueItems(any(), any(), any());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
