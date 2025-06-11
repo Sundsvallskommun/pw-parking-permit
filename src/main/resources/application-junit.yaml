@@ -26,7 +26,15 @@ camunda:
           bpmnResourcePattern: bpmnResourcePattern_2
           dmnResourcePattern: dmnResourcePattern_2
           formResourcePattern: formResourcePattern_2
-
+#----------------------------------------
+# Rpa settings
+# folderId per municipalityId
+#----------------------------------------
+integration:
+  rpa:
+    folderIds:
+        2281: 50
+        2260: 60
 #----------------------------------------
 # Integration settings
 #----------------------------------------
@@ -67,7 +75,6 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
-    folder-id: 50
     identity-server-url: https://rpa.base.url/identity
   partyassets:
     base-url: partyassets.base.url
