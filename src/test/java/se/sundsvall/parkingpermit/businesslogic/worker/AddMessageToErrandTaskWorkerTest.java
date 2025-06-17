@@ -105,10 +105,10 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse());
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.filename()).thenReturn(filename);
-		when(denialTextPropertiesMock.subject()).thenReturn(subject);
-		when(denialTextPropertiesMock.plainBody()).thenReturn(plainBody);
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
+		when(denialTextPropertiesMock.getSubject()).thenReturn(subject);
+		when(denialTextPropertiesMock.getPlainBody()).thenReturn(plainBody);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID)).thenReturn(messageId);
 		when(errandMock.getExternalCaseId()).thenReturn(externalCaseID);
 
@@ -121,9 +121,9 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
-		verify(denialTextPropertiesMock).filename();
-		verify(denialTextPropertiesMock).subject();
-		verify(denialTextPropertiesMock).plainBody();
+		verify(denialTextPropertiesMock).getFilename();
+		verify(denialTextPropertiesMock).getSubject();
+		verify(denialTextPropertiesMock).getPlainBody();
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(caseDataClientMock).addMessage(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), messageRequestCaptor.capture());
@@ -148,7 +148,7 @@ class AddMessageToErrandTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse());
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

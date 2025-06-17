@@ -1,6 +1,13 @@
 package se.sundsvall.parkingpermit.util;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+public class ApprovalTextProperties {
+	private String description;
 
-@ConfigurationProperties("texts.approval")
-public record ApprovalTextProperties(String description) {}
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+}

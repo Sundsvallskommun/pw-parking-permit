@@ -61,6 +61,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @ExtendWith(MockitoExtension.class)
 class CheckDecisionTaskWorkerTest {
@@ -91,6 +92,9 @@ class CheckDecisionTaskWorkerTest {
 	private SimplifiedServiceTextProperties simplifiedServiceTextPropertiesMock;
 
 	@Mock
+	private TextProvider textProviderMock;
+
+	@Mock
 	private FailureHandler failureHandlerMock;
 
 	@InjectMocks
@@ -117,7 +121,8 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
-		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -158,7 +163,8 @@ class CheckDecisionTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
-		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

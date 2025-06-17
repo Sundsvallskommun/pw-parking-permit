@@ -6,6 +6,7 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -49,6 +50,7 @@ class MessagingMapperTest {
 	private static final String CONTACTINFO_PHONENUMBER = "contactinfoPhonenumber";
 	private static final String CONTACTINFO_TEXT = "contactinfoText";
 	private static final String CONTACTINFO_URL = "contactinfoUrl";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Mock
 	private CommonTextProperties commonTextPropertiesMock;
@@ -69,11 +71,12 @@ class MessagingMapperTest {
 	void toWebMessageRequestDenial() {
 		final var externalCaseId = "externalCaseId";
 
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.filename()).thenReturn(FILENAME);
-		when(denialTextPropertiesMock.message()).thenReturn(MESSAGE);
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.getFilename()).thenReturn(FILENAME);
+		when(denialTextPropertiesMock.getMessage()).thenReturn(MESSAGE);
 
-		final var request = messagingMapper.toWebMessageRequestDenial(RENDER_RESPONSE, PARTY_ID.toString(), externalCaseId);
+		final var request = messagingMapper.toWebMessageRequestDenial(RENDER_RESPONSE, PARTY_ID.toString(), externalCaseId,
+			MUNICIPALITY_ID);
 
 		assertThat(request.getParty()).isNotNull().extracting(WebMessageParty::getPartyId, WebMessageParty::getExternalReferences).containsExactly(
 			PARTY_ID,
@@ -90,8 +93,9 @@ class MessagingMapperTest {
 				FILENAME,
 				APPLICATION_PDF.getValue()));
 
-		verify(denialTextPropertiesMock).filename();
-		verify(denialTextPropertiesMock).message();
+		verify(textProviderMock, times(2)).getDenialTexts(MUNICIPALITY_ID);
+		verify(denialTextPropertiesMock).getFilename();
+		verify(denialTextPropertiesMock).getMessage();
 		verifyNoMoreInteractions(commonTextPropertiesMock);
 	}
 
@@ -99,10 +103,10 @@ class MessagingMapperTest {
 	void toWebMessageRequestSimplifiedService() {
 		final var externalCaseId = "externalCaseId";
 
-		when(textProviderMock.getSimplifiedServiceTexts()).thenReturn(simplifiedServiceTextPropertiesMock);
-		when(simplifiedServiceTextPropertiesMock.plainBody()).thenReturn(MESSAGE);
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(simplifiedServiceTextPropertiesMock.getPlainBody()).thenReturn(MESSAGE);
 
-		final var request = messagingMapper.toWebMessageRequestSimplifiedService(PARTY_ID.toString(), externalCaseId);
+		final var request = messagingMapper.toWebMessageRequestSimplifiedService(PARTY_ID.toString(), externalCaseId, MUNICIPALITY_ID);
 
 		assertThat(request.getParty()).isNotNull().extracting(WebMessageParty::getPartyId, WebMessageParty::getExternalReferences).containsExactly(
 			PARTY_ID,
@@ -111,24 +115,25 @@ class MessagingMapperTest {
 		assertThat(request.getMessage()).isEqualTo(MESSAGE);
 		assertThat(request.getAttachments()).isEmpty();
 
-		verify(simplifiedServiceTextPropertiesMock).plainBody();
+		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
+		verify(simplifiedServiceTextPropertiesMock).getPlainBody();
 		verifyNoMoreInteractions(commonTextPropertiesMock);
 	}
 
 	@Test
 	void toLetterRequestDenial() {
-		when(textProviderMock.getCommonTexts()).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
-		when(commonTextPropertiesMock.contactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
-		when(commonTextPropertiesMock.contactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
-		when(commonTextPropertiesMock.contactInfoText()).thenReturn(CONTACTINFO_TEXT);
-		when(commonTextPropertiesMock.contactInfoUrl()).thenReturn(CONTACTINFO_URL);
-		when(commonTextPropertiesMock.department()).thenReturn(DEPARTMENT);
-		when(denialTextPropertiesMock.subject()).thenReturn(SUBJECT);
-		when(denialTextPropertiesMock.htmlBody()).thenReturn(BODY);
-		when(denialTextPropertiesMock.filename()).thenReturn(FILENAME);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
+		when(commonTextPropertiesMock.getContactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
+		when(commonTextPropertiesMock.getContactInfoText()).thenReturn(CONTACTINFO_TEXT);
+		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
+		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
+		when(denialTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
+		when(denialTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
+		when(denialTextPropertiesMock.getFilename()).thenReturn(FILENAME);
 
-		final var request = messagingMapper.toLetterRequestDenial(RENDER_RESPONSE, PARTY_ID.toString());
+		final var request = messagingMapper.toLetterRequestDenial(RENDER_RESPONSE, PARTY_ID.toString(), MUNICIPALITY_ID);
 
 		assertThat(request.getSubject()).isEqualTo(SUBJECT);
 		assertThat(Base64.getDecoder().decode(request.getBody())).isEqualTo(BODY.getBytes(defaultCharset()));
@@ -159,29 +164,31 @@ class MessagingMapperTest {
 				DeliveryModeEnum.ANY,
 				FILENAME));
 
-		verify(commonTextPropertiesMock).contactInfoEmail();
-		verify(commonTextPropertiesMock).contactInfoPhonenumber();
-		verify(commonTextPropertiesMock).contactInfoText();
-		verify(commonTextPropertiesMock).contactInfoUrl();
-		verify(commonTextPropertiesMock).department();
-		verify(denialTextPropertiesMock).htmlBody();
-		verify(denialTextPropertiesMock).filename();
-		verify(denialTextPropertiesMock).subject();
+		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(3)).getDenialTexts(MUNICIPALITY_ID);
+		verify(commonTextPropertiesMock).getContactInfoEmail();
+		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
+		verify(commonTextPropertiesMock).getContactInfoText();
+		verify(commonTextPropertiesMock).getContactInfoUrl();
+		verify(commonTextPropertiesMock).getDepartment();
+		verify(denialTextPropertiesMock).getHtmlBody();
+		verify(denialTextPropertiesMock).getFilename();
+		verify(denialTextPropertiesMock).getSubject();
 	}
 
 	@Test
 	void toLetterRequestSimplifiedService() {
-		when(textProviderMock.getCommonTexts()).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getSimplifiedServiceTexts()).thenReturn(simplifiedServiceTextPropertiesMock);
-		when(commonTextPropertiesMock.contactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
-		when(commonTextPropertiesMock.contactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
-		when(commonTextPropertiesMock.contactInfoText()).thenReturn(CONTACTINFO_TEXT);
-		when(commonTextPropertiesMock.contactInfoUrl()).thenReturn(CONTACTINFO_URL);
-		when(commonTextPropertiesMock.department()).thenReturn(DEPARTMENT);
-		when(simplifiedServiceTextPropertiesMock.subject()).thenReturn(SUBJECT);
-		when(simplifiedServiceTextPropertiesMock.htmlBody()).thenReturn(BODY);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
+		when(commonTextPropertiesMock.getContactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
+		when(commonTextPropertiesMock.getContactInfoText()).thenReturn(CONTACTINFO_TEXT);
+		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
+		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
+		when(simplifiedServiceTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
+		when(simplifiedServiceTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
 
-		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString());
+		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID);
 
 		assertThat(request.getSubject()).isEqualTo(SUBJECT);
 		assertThat(Base64.getDecoder().decode(request.getBody())).isEqualTo(BODY.getBytes(defaultCharset()));
@@ -202,12 +209,14 @@ class MessagingMapperTest {
 		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
 		assertThat(request.getAttachments()).isEmpty();
 
-		verify(commonTextPropertiesMock).contactInfoEmail();
-		verify(commonTextPropertiesMock).contactInfoPhonenumber();
-		verify(commonTextPropertiesMock).contactInfoText();
-		verify(commonTextPropertiesMock).contactInfoUrl();
-		verify(commonTextPropertiesMock).department();
-		verify(simplifiedServiceTextPropertiesMock).htmlBody();
-		verify(simplifiedServiceTextPropertiesMock).subject();
+		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(2)).getSimplifiedServiceTexts(MUNICIPALITY_ID);
+		verify(commonTextPropertiesMock).getContactInfoEmail();
+		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
+		verify(commonTextPropertiesMock).getContactInfoText();
+		verify(commonTextPropertiesMock).getContactInfoUrl();
+		verify(commonTextPropertiesMock).getDepartment();
+		verify(simplifiedServiceTextPropertiesMock).getHtmlBody();
+		verify(simplifiedServiceTextPropertiesMock).getSubject();
 	}
 }

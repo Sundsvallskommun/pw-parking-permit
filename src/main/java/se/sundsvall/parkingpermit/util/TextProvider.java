@@ -5,31 +5,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class TextProvider {
 
-	private final ApprovalTextProperties approvalTexts;
-	private final DenialTextProperties denialTexts;
-	private final CommonTextProperties commonTexts;
-	private final SimplifiedServiceTextProperties simplifiedServiceTexts;
+	private final TextProperties textProperties;
 
-	TextProvider(ApprovalTextProperties approvalTexts, DenialTextProperties denialTexts, CommonTextProperties commonTexts, SimplifiedServiceTextProperties simplifiedServiceTexts) {
-		this.approvalTexts = approvalTexts;
-		this.denialTexts = denialTexts;
-		this.commonTexts = commonTexts;
-		this.simplifiedServiceTexts = simplifiedServiceTexts;
+	TextProvider(final TextProperties textProperties) {
+		this.textProperties = textProperties;
 	}
 
-	public ApprovalTextProperties getApprovalTexts() {
-		return approvalTexts;
+	public ApprovalTextProperties getApprovalTexts(String municipalityId) {
+		return textProperties.getApprovals().get(municipalityId);
 	}
 
-	public DenialTextProperties getDenialTexts() {
-		return denialTexts;
+	public CommonTextProperties getCommonTexts(String municipalityId) {
+		return textProperties.getCommons().get(municipalityId);
 	}
 
-	public CommonTextProperties getCommonTexts() {
-		return commonTexts;
+	public DenialTextProperties getDenialTexts(String municipalityId) {
+		return textProperties.getDenials().get(municipalityId);
 	}
 
-	public SimplifiedServiceTextProperties getSimplifiedServiceTexts() {
-		return simplifiedServiceTexts;
+	public SimplifiedServiceTextProperties getSimplifiedServiceTexts(String municipalityId) {
+		return textProperties.getSimplifiedServices().get(municipalityId);
 	}
 }

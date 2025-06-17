@@ -84,7 +84,7 @@ class MessagingServiceTest {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 
-		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -107,7 +107,7 @@ class MessagingServiceTest {
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
-		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
+		when(messagingMapperMock.toLetterRequestDenial(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -129,7 +129,7 @@ class MessagingServiceTest {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult();
 
-		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestDenial(any(), any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -153,7 +153,7 @@ class MessagingServiceTest {
 		final var letterRequest = new LetterRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
-		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
+		when(messagingMapperMock.toLetterRequestDenial(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -176,7 +176,7 @@ class MessagingServiceTest {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 
-		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -190,29 +190,6 @@ class MessagingServiceTest {
 	}
 
 	@Test
-	void sendMessageSimplifiedServiceWithExternalCaseIdAbsent() {
-
-		// Arrange
-		final var errand = createErrand(false);
-		final var renderResponse = new RenderResponse();
-		final var letterRequest = new LetterRequest();
-		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
-		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
-
-		when(messagingMapperMock.toLetterRequestDenial(any(), any())).thenReturn(letterRequest);
-		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
-
-		// Act
-		final var uuid = messagingService.sendMessageToNonCitizen(MUNICIPALITY_ID, errand, renderResponse);
-
-		// Assert
-		assertThat(uuid).isEqualTo(messageResult.getMessageId());
-		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
-		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
-		verifyNoInteractions(templatingClientMock);
-	}
-
-	@Test
 	void noMessageIdReturnedFromMessagingWebmessageResourceSimplifiedService() {
 
 		// Arrange
@@ -220,7 +197,7 @@ class MessagingServiceTest {
 		final var webMessageRequest = new WebMessageRequest();
 		final var messageResult = new MessageResult();
 
-		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any())).thenReturn(webMessageRequest);
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
@@ -243,7 +220,7 @@ class MessagingServiceTest {
 		final var letterRequest = new LetterRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
-		when(messagingMapperMock.toLetterRequestSimplifiedService(any())).thenReturn(letterRequest);
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID))).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act

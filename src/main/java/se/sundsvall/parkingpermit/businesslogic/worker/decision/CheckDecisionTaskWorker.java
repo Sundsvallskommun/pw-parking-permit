@@ -30,17 +30,17 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @Component
 @ExternalTaskSubscription("CheckDecisionTask")
 public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
-	private final SimplifiedServiceTextProperties simplifiedServiceTextProperties;
+	private final TextProvider textProvider;
 
-	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, SimplifiedServiceTextProperties simplifiedServiceTextProperties) {
+	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, TextProvider textProvider) {
 		super(camundaClient, caseDataClient, failureHandler);
-		this.simplifiedServiceTextProperties = simplifiedServiceTextProperties;
+		this.textProvider = textProvider;
 
 	}
 
@@ -64,7 +64,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 					if (isFinalDecision(errand)) {
 						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
 						logInfo("Decision is made.");
-						variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(getFinalDecision(errand), simplifiedServiceTextProperties.delay()));
+						variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 					} else {
 						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
 						variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
