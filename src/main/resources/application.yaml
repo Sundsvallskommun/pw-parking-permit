@@ -167,44 +167,48 @@ resilience4j.circuitbreaker:
 # Text properties
 #----------------------------------------
 texts:
-  common:
-    department: SBK(Gatuavdelningen, Trafiksektionen)
-    contact-info-email: sundsvalls.kommun@sundsvall.se
-    contact-info-phonenumber: +46 60 191000
-    contact-info-text: Kontakta oss via epost eller telefon.
-    contact-info-url: https://sundsvall.se/
-  approval:
-    description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
-  denial:
-    message: Ärendet avskrivs
-    filename: beslut.pdf
-    subject: Beslut från Sundsvalls kommun
-    htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
-    plainBody: |-
-      Hej
-      
-      Du har fått ett beslut från Sundsvalls kommun.
-
-      Med vänlig hälsning
-      Sundsvalls kommun
-    description: Personen inte folkbokförd i Sundsvalls kommun.
-    lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
-    lawSfs: Trafikförordningen (1998:1276)
-    lawChapter: 13
-    lawArticle: 8
-  simplified-service:
-    delay: "P1D"
-    message: Kontrollmeddelande för förenklad delgivning
-    subject: Kontrollmeddelande för förenklad delgivning
-    htmlBody: |-
-      <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
-      <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
-      <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
-      <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
-    plainBody: |-
-      Kontrollmeddelande för förenklad delgivning
-      
-      Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
-      När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
-      Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till
-      kontakt@sundsvall.se eller telefon till 060-19 10 00.
+  commons:
+    2281:
+      department: SBK(Gatuavdelningen, Trafiksektionen)
+      contact-info-email: sundsvalls.kommun@sundsvall.se
+      contact-info-phonenumber: +46 60 191000
+      contact-info-text: Kontakta oss via epost eller telefon.
+      contact-info-url: https://sundsvall.se/
+  approvals:
+    2281:
+      description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
+  denials:
+    2281:
+      message: Ärendet avskrivs
+      filename: beslut.pdf
+      subject: Beslut från Sundsvalls kommun
+      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
+      plainBody: |-
+        Hej
+        
+        Du har fått ett beslut från Sundsvalls kommun.
+  
+        Med vänlig hälsning
+        Sundsvalls kommun
+      description: Personen inte folkbokförd i Sundsvalls kommun.
+      lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
+      lawSfs: Trafikförordningen (1998:1276)
+      lawChapter: 13
+      lawArticle: 8
+  simplified-services:
+    2281:
+      delay: "P1D"
+      message: Kontrollmeddelande för förenklad delgivning
+      subject: Kontrollmeddelande för förenklad delgivning
+      htmlBody: |-
+        <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
+        <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
+        <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
+        <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
+      plainBody: |-
+        Kontrollmeddelande för förenklad delgivning
+        
+        Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
+        När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
+        Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till
+        kontakt@sundsvall.se eller telefon till 060-19 10 00.

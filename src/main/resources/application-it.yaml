@@ -66,5 +66,6 @@ config:
     client-secret: ${config.common.client-secret}
 
 texts:
-  simplified-service:
-    delay: "PT5S"
+  simplified-services:
+    2281:
+      delay: "PT5S"

@@ -32,7 +32,6 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
-import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
 @Component
@@ -44,14 +43,11 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
 	private final TextProvider textProvider;
-	private final SimplifiedServiceTextProperties simplifiedServiceTextProperties;
 
-	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider,
-		SimplifiedServiceTextProperties simplifiedServiceTextProperties) {
+	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
-		this.simplifiedServiceTextProperties = simplifiedServiceTextProperties;
 	}
 
 	@Override
@@ -72,16 +68,17 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.orElseGet(() -> createProcessEngineStakeholder(errand.getId(), municipalityId, namespace));
 
 			final var pdf = messagingService.renderPdf(municipalityId, errand);
-			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts().description())
+			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts(municipalityId).getDescription())
 				.decidedBy(stakeholder)
 				.decidedAt(OffsetDateTime.now())
-				.addLawItem(toLaw(textProvider.getDenialTexts().lawHeading(), textProvider.getDenialTexts().lawSfs(), textProvider.getDenialTexts().lawChapter(), textProvider.getDenialTexts().lawArticle()))
-				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts().filename(), "pdf", APPLICATION_PDF_VALUE, pdf));
+				.addLawItem(toLaw(textProvider.getDenialTexts(municipalityId).getLawHeading(), textProvider.getDenialTexts(municipalityId).getLawSfs(),
+					textProvider.getDenialTexts(municipalityId).getLawChapter(), textProvider.getDenialTexts(municipalityId).getLawArticle()))
+				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts(municipalityId).getFilename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
 			caseDataClient.patchNewDecision(municipalityId, namespace, errand.getId(), decision);
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, simplifiedServiceTextProperties.delay()));
+			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

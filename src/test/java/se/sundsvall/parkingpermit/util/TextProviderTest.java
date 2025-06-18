@@ -13,13 +13,15 @@ import se.sundsvall.parkingpermit.Application;
 @ActiveProfiles("junit")
 class TextProviderTest {
 
+	static final String MUNICIPALITY_ID = "2281";
+
 	@Autowired
 	private TextProvider textProvider;
 
 	@Test
 	void checkCorrectAutowiring() {
-		assertThat(textProvider.getApprovalTexts()).isNotNull();
-		assertThat(textProvider.getCommonTexts()).isNotNull();
-		assertThat(textProvider.getDenialTexts()).isNotNull();
+		assertThat(textProvider.getApprovalTexts(MUNICIPALITY_ID)).isNotNull();
+		assertThat(textProvider.getCommonTexts(MUNICIPALITY_ID)).isNotNull();
+		assertThat(textProvider.getDenialTexts(MUNICIPALITY_ID)).isNotNull();
 	}
 }

@@ -43,12 +43,13 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdf(municipalityId, errand);
-			final var attachment = toMessageAttachment(textProvider.getDenialTexts().filename(), APPLICATION_PDF_VALUE, pdf);
+			final var attachment = toMessageAttachment(textProvider.getDenialTexts(municipalityId).getFilename(), APPLICATION_PDF_VALUE, pdf);
 			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)
 				.orElseThrow(() -> Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Id of sent message could not be retreived from stored process variables"));
 
-			caseDataClient.addMessage(municipalityId, namespace, caseNumber, toMessageRequest(messageId, textProvider.getDenialTexts().subject(), textProvider.getDenialTexts().plainBody(), errand, OUTBOUND, "ProcessEngine", attachment));
+			caseDataClient.addMessage(municipalityId, namespace, caseNumber, toMessageRequest(messageId, textProvider.getDenialTexts(municipalityId).getSubject(), textProvider.getDenialTexts(municipalityId).getPlainBody(), errand, OUTBOUND,
+				"ProcessEngine", attachment));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {

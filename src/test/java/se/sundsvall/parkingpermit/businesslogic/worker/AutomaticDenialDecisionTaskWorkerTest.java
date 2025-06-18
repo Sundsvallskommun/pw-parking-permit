@@ -11,6 +11,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -134,14 +135,15 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
 		when(caseDataClientMock.getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId)).thenReturn(stakeholder);
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse().output(output));
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.filename()).thenReturn(filename);
-		when(denialTextPropertiesMock.description()).thenReturn(description);
-		when(denialTextPropertiesMock.lawHeading()).thenReturn(lawHeading);
-		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
-		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
-		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
-		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
+		when(denialTextPropertiesMock.getDescription()).thenReturn(description);
+		when(denialTextPropertiesMock.getLawHeading()).thenReturn(lawHeading);
+		when(denialTextPropertiesMock.getLawSfs()).thenReturn(lawSfs);
+		when(denialTextPropertiesMock.getLawChapter()).thenReturn(lawChapter);
+		when(denialTextPropertiesMock.getLawArticle()).thenReturn(lawArticle);
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -154,12 +156,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), stakeholderCaptor.capture());
 		verify(caseDataClientMock).getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId);
-		verify(denialTextPropertiesMock).filename();
-		verify(denialTextPropertiesMock).description();
-		verify(denialTextPropertiesMock).lawHeading();
-		verify(denialTextPropertiesMock).lawSfs();
-		verify(denialTextPropertiesMock).lawChapter();
-		verify(denialTextPropertiesMock).lawArticle();
+		verify(textProviderMock, times(6)).getDenialTexts(MUNICIPALITY_ID);
+		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
@@ -231,14 +229,15 @@ class AutomaticDenialDecisionTaskWorkerTest {
 			processEngineStakeholder));
 
 		when(messagingServiceMock.renderPdf(MUNICIPALITY_ID, errandMock)).thenReturn(new RenderResponse().output(output));
-		when(textProviderMock.getDenialTexts()).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.filename()).thenReturn(filename);
-		when(denialTextPropertiesMock.description()).thenReturn(description);
-		when(denialTextPropertiesMock.lawHeading()).thenReturn(lawHeading);
-		when(denialTextPropertiesMock.lawSfs()).thenReturn(lawSfs);
-		when(denialTextPropertiesMock.lawChapter()).thenReturn(lawChapter);
-		when(denialTextPropertiesMock.lawArticle()).thenReturn(lawArticle);
-		when(simplifiedServiceTextPropertiesMock.delay()).thenReturn("P1D");
+		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
+		when(denialTextPropertiesMock.getDescription()).thenReturn(description);
+		when(denialTextPropertiesMock.getLawHeading()).thenReturn(lawHeading);
+		when(denialTextPropertiesMock.getLawSfs()).thenReturn(lawSfs);
+		when(denialTextPropertiesMock.getLawChapter()).thenReturn(lawChapter);
+		when(denialTextPropertiesMock.getLawArticle()).thenReturn(lawArticle);
+		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
+		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -250,13 +249,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock, never()).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
-		verify(denialTextPropertiesMock).filename();
-		verify(denialTextPropertiesMock).description();
-		verify(denialTextPropertiesMock).lawHeading();
-		verify(denialTextPropertiesMock).lawSfs();
-		verify(denialTextPropertiesMock).lawChapter();
-		verify(denialTextPropertiesMock).lawArticle();
+		verify(textProviderMock, times(6)).getDenialTexts(MUNICIPALITY_ID);
 		verify(messagingServiceMock).renderPdf(MUNICIPALITY_ID, errandMock);
+		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
+		verify(simplifiedServiceTextPropertiesMock).getDelay();
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
