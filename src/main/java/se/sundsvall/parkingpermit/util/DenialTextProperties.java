@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.util;
 
 public class DenialTextProperties {
+
 	private String message;
 	private String filename;
 	private String subject;

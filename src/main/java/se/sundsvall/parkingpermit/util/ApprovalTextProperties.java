@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.util;
 
 public class ApprovalTextProperties {
+
 	private String description;
 
 	public String getDescription() {

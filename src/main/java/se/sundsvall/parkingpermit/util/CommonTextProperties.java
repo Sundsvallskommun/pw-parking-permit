@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.util;
 
 public class CommonTextProperties {
+
 	private String department;
 	private String contactInfoEmail;
 	private String contactInfoPhonenumber;

@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.util;
 
 public class SimplifiedServiceTextProperties {
+
 	private String message;
 	private String subject;
 	private String htmlBody;
