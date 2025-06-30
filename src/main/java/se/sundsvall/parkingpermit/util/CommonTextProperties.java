@@ -7,6 +7,7 @@ public class CommonTextProperties {
 	private String contactInfoPhonenumber;
 	private String contactInfoText;
 	private String contactInfoUrl;
+	private Boolean sendDigitalMail = true;
 
 	public String getDepartment() {
 		return department;
@@ -46,5 +47,13 @@ public class CommonTextProperties {
 
 	public void setContactInfoUrl(String contactInfoUrl) {
 		this.contactInfoUrl = contactInfoUrl;
+	}
+
+	public Boolean getSendDigitalMail() {
+		return sendDigitalMail;
+	}
+
+	public void setSendDigitalMail(Boolean sendDigitalMail) {
+		this.sendDigitalMail = sendDigitalMail;
 	}
 }

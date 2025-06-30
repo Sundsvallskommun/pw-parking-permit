@@ -81,3 +81,12 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+  support-management:
+    base-url: support-management.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
+texts:
+  commons:
+    2260:
+      sendDigitalMail: false

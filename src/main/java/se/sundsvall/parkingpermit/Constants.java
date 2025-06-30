@@ -106,5 +106,23 @@ public final class Constants {
 
 	public static final String MESSAGING_KEY_FLOW_INSTANCE_ID = "flowInstanceId";
 
+	public static final String SM_STATUS_NEW = "NEW";
+
+	public static final String SM_CATEGORY_URBAN_DEVELOPMENT = "URBAN_DEVELOPMENT";
+	public static final String SM_TYPE_PARKING_PERMIT = "PARKING_PERMIT";
+	public static final String SM_LABEL_MAILING = "MAILING";
+	public static final String SM_LABEL_CARD_MANAGEMENT = "CARD_MANAGEMENT";
+	public static final String SM_SUBJECT_MAILING_PARKING_PERMIT = "Utskick av parkeringstillstånd";
+	public static final String SM_DESCRIPTION_MAILING_PARKING_PERMIT = "Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: %s";
+	public static final String SM_DESCRIPTION_CARD_MANAGEMENT = "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: %s";
+	public static final String SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT = "Korthantering av parkeringstillstånd";
+	public static final String SM_ROLE_CONTACT_PERSON = "CONTACT";
+	public static final String SM_EXTERNAL_ID_TYPE_PRIVATE = "PRIVATE";
+	public static final String SM_CONTACT_CHANNEL_TYPE_EMAIL = "Email";
+	public static final String SM_CONTACT_CHANNEL_TYPE_PHONE = "Phone";
+
+	// TODO: Remove this and move to configuration
+	public static final String TEMPLATE_IDENTIFIER = "sbk.prh.decision.all.rejection.municipality";
+
 	private Constants() {}
 }

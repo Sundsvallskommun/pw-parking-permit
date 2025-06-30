@@ -1,0 +1,50 @@
+package se.sundsvall.parkingpermit.service;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.zalando.problem.Status.BAD_GATEWAY;
+
+import generated.se.sundsvall.supportmanagement.Errand;
+import java.io.ByteArrayInputStream;
+import java.util.Objects;
+import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import se.sundsvall.parkingpermit.integration.supportmanagement.SupportManagementClient;
+
+@Service
+public class SupportManagementService {
+
+	private final SupportManagementClient supportManagementClient;
+
+	SupportManagementService(SupportManagementClient supportManagementClient) {
+		this.supportManagementClient = supportManagementClient;
+	}
+
+	public Optional<String> createErrand(String municipalityId, String namespace, Errand errand) {
+		final var response = supportManagementClient.createErrand(municipalityId, namespace, errand);
+
+		if (response.getStatusCode().is2xxSuccessful()) {
+			return Optional.of(extractErrandIdFromLocation(response));
+		} else {
+			throw Problem.valueOf(BAD_GATEWAY, "Failed to create errand in support-management");
+		}
+	}
+
+	public void createAttachment(String municipalityId, String namespace, String errandId, String fileName, String content) {
+		if (isNotEmpty(fileName) && Objects.nonNull(content)) {
+			supportManagementClient.createAttachment(municipalityId, namespace, errandId, AttachmentMultiPartFile.create(fileName, new ByteArrayInputStream(content.getBytes())));
+		} else {
+			throw Problem.valueOf(BAD_GATEWAY, "File name and content cannot be null or empty");
+		}
+	}
+
+	private String extractErrandIdFromLocation(ResponseEntity<Void> response) {
+		final var location = String.valueOf(response.getHeaders().getFirst(LOCATION));
+		if (location == null || !location.contains("/errands/")) {
+			throw Problem.valueOf(BAD_GATEWAY, "Invalid location header in response from support-management");
+		}
+		return location.substring(location.lastIndexOf("/") + 1);
+	}
+}

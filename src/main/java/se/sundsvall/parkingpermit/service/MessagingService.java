@@ -6,7 +6,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality;
+import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderDecisionRequest;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 import generated.se.sundsvall.casedata.Errand;
@@ -36,8 +36,9 @@ public class MessagingService {
 		this.messagingMapper = messagingMapper;
 	}
 
-	public RenderResponse renderPdf(String municipalityId, Errand errand) {
-		return templatingClient.renderPdf(municipalityId, toRenderRequestWhenNotMemberOfMunicipality(errand));
+	// TODO: Get template identifier from configuration
+	public RenderResponse renderPdfDecision(String municipalityId, Errand errand, String templateIdentifier) {
+		return templatingClient.renderPdf(municipalityId, toRenderDecisionRequest(errand, templateIdentifier));
 	}
 
 	public UUID sendMessageToNonCitizen(String municipalityId, Errand errand, RenderResponse pdf) {
@@ -51,6 +52,14 @@ public class MessagingService {
 		return extractId(messageResult.getMessages());
 	}
 
+	public UUID sendDecisionMessage(String municipalityId, Errand errand, RenderResponse pdf, boolean isApproved) {
+		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
+
+		final var messageResult = messagingClient.sendDigitalMail(municipalityId, messagingMapper.toDigitalMailRequest(pdf, partyId, municipalityId, isApproved));
+
+		return extractId(messageResult.getMessages());
+	}
+
 	public UUID sendMessageSimplifiedService(String municipalityId, Errand errand) {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 
@@ -60,6 +69,7 @@ public class MessagingService {
 			return extractId(List.of(messageResult));
 		}
 		final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequestSimplifiedService(partyId, municipalityId));
+
 		return extractId(messageResult.getMessages());
 	}
 
