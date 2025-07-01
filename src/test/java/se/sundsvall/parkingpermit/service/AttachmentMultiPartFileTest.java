@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -109,7 +110,7 @@ class AttachmentMultiPartFileTest {
 		final var content = "content".getBytes();
 		final var stream = new ByteArrayInputStream(content);
 		final var multipartFile = AttachmentMultiPartFile.create(fileName, stream);
-		final var file = File.createTempFile("test_", null);
+		final var file = Files.createTempFile("test_", null).toFile();
 
 		// Act
 		multipartFile.transferTo(file);
