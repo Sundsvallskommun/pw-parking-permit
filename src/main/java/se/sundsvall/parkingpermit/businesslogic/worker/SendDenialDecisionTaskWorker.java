@@ -1,6 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 
 import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -33,7 +34,8 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing delivery of decision message to applicant for errand with id {}", errand.getId());
 
-			final var pdf = messagingService.renderPdf(municipalityId, errand);
+			// TODO: Get template identifier from configuration
+			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, TEMPLATE_IDENTIFIER);
 			final var messageId = messagingService.sendMessageToNonCitizen(municipalityId, errand, pdf).toString();
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));

@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public final class TemplatingMapper {
 
-	private static final String TEMPLATE_IDENTIFIER = "sbk.prh.decision.all.rejection.municipality";
 	private static final String ADDRESS_CO = "addressCo";
 	private static final String ADDRESS_FIRSTNAME = "addressFirstname";
 	private static final String ADDRESS_LASTNAME = "addressLastname";
@@ -32,8 +31,8 @@ public final class TemplatingMapper {
 
 	private TemplatingMapper() {}
 
-	public static RenderRequest toRenderRequestWhenNotMemberOfMunicipality(Errand errand) {
-		if (isNull(errand)) {
+	public static RenderRequest toRenderDecisionRequest(Errand errand, String templateIdentifier) {
+		if (isNull(errand) || isBlank(templateIdentifier)) {
 			return null;
 		}
 
@@ -51,7 +50,7 @@ public final class TemplatingMapper {
 		});
 
 		return request
-			.identifier(TEMPLATE_IDENTIFIER)
+			.identifier(templateIdentifier)
 			.putParametersItem(DECISION_DATE, OffsetDateTime.now(ZoneId.systemDefault()).format(ISO_LOCAL_DATE));
 	}
 

@@ -19,6 +19,8 @@ spring:
             token-uri: ${config.rpa.token-uri}
           partyassets:
             token-uri: ${config.partyassets.token-uri}
+          support-management:
+            token-uri: ${config.support-management.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -56,6 +58,11 @@ spring:
             provider: partyassets
             client-id: ${config.partyassets.client-id}
             client-secret: ${config.partyassets.client-secret}
+          support-management:
+            authorization-grant-type: client_credentials
+            provider: support-management
+            client-id: ${config.support-management.client-id}
+            client-secret: ${config.support-management.client-secret}
 
 #----------------------------------------
 # Open API
@@ -139,6 +146,10 @@ integration:
     url: ${config.partyassets.base-url}
     connectTimeout: 5
     readTimeout: 20
+  support-management:
+    url: ${config.support-management.base-url}
+    connectTimeout: 5
+    readTimeout: 20
 
 
 #----------------------------------------
@@ -177,6 +188,9 @@ texts:
   approvals:
     2281:
       description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
+      subject: Beslut från Sundsvalls kommun
+      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
+      filename: beslut.pdf
   denials:
     2281:
       message: Ärendet avskrivs

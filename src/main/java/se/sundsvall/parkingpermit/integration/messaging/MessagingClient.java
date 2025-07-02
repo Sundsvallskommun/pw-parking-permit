@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.integration.messaging;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.integration.messaging.configuration.MessagingConfiguration.CLIENT_ID;
 
+import generated.se.sundsvall.messaging.DigitalMailRequest;
 import generated.se.sundsvall.messaging.LetterRequest;
 import generated.se.sundsvall.messaging.MessageBatchResult;
 import generated.se.sundsvall.messaging.MessageResult;
@@ -41,4 +42,16 @@ public interface MessagingClient {
 	@PostMapping(path = "/{municipalityId}/letter", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	MessageBatchResult sendLetter(@PathVariable("municipalityId") final String municipalityId,
 		@RequestBody final LetterRequest letterRequest);
+
+	/**
+	 * Send a single digital mail
+	 *
+	 * @param  municipalityId                       id of municipality
+	 * @param  digitalMailRequest                   request containing message to send
+	 * @return                                      a MessageBatchResult with delivery results and id for sent message
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@PostMapping(path = "/{municipalityId}/digital-mail", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	MessageBatchResult sendDigitalMail(@PathVariable("municipalityId") final String municipalityId,
+		@RequestBody final DigitalMailRequest digitalMailRequest);
 }

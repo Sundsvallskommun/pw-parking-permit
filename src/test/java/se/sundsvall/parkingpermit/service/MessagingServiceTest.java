@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.messaging.DigitalMailRequest;
 import generated.se.sundsvall.messaging.LetterRequest;
 import generated.se.sundsvall.messaging.MessageBatchResult;
 import generated.se.sundsvall.messaging.MessageResult;
@@ -61,14 +63,31 @@ class MessagingServiceTest {
 	private ArgumentCaptor<WebMessageRequest> webMessageRequestCaptor;
 
 	@Test
-	void renderPdf() {
+	void renderPdfNonCitizen() {
 
 		// Arrange
 		final var errand = createErrand(true);
 		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(renderResponseMock);
 
 		// Act
-		messagingService.renderPdf(MUNICIPALITY_ID, errand);
+		// TODO: Replace with the correct template identifier when available
+		messagingService.renderPdfDecision(MUNICIPALITY_ID, errand, TEMPLATE_IDENTIFIER);
+
+		// Assert
+		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(messagingClientMock, messagingMapperMock);
+	}
+
+	@Test
+	void renderPdfDecision() {
+
+		// Arrange
+		final var errand = createErrand(true);
+		final var templateIdentifier = "some-template-identifier";
+		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(renderResponseMock);
+
+		// Act
+		messagingService.renderPdfDecision(MUNICIPALITY_ID, errand, templateIdentifier);
 
 		// Assert
 		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());
@@ -232,6 +251,52 @@ class MessagingServiceTest {
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
 		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void sendDecisionMessage() {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
+		final var digitalMailRequest = new DigitalMailRequest();
+		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
+
+		when(messagingMapperMock.toDigitalMailRequest(any(), any(), eq(MUNICIPALITY_ID), eq(true))).thenReturn(digitalMailRequest);
+		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+
+		// Act
+		final var uuid = messagingService.sendDecisionMessage(MUNICIPALITY_ID, errand, renderResponse, true);
+
+		// Assert
+		assertThat(uuid).isEqualTo(messageResult.getMessageId());
+		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, digitalMailRequest);
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void noMessageIdReturnedFromSendDigitalMailResource() {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
+		final var digitalMailRequest = new DigitalMailRequest();
+		final var messageResult = new MessageResult();
+		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
+
+		when(messagingMapperMock.toDigitalMailRequest(any(), any(), eq(MUNICIPALITY_ID), eq(true))).thenReturn(digitalMailRequest);
+		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendDecisionMessage(MUNICIPALITY_ID, errand, renderResponse, true));
+
+		// Assert
+		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
+		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
+		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, digitalMailRequest);
 		verifyNoInteractions(templatingClientMock);
 	}
 

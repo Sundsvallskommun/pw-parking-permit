@@ -29,15 +29,16 @@ class TemplatingMapperTest {
 	private static final String CITY = "CITY";
 
 	@Test
-	void toRenderRequestWithNullParams() {
-		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(null)).isNull();
+	void toRenderDecisionRequestWithNullParams() {
+		assertThat(TemplatingMapper.toRenderDecisionRequest(null, null)).isNull();
 	}
 
 	@Test
-	void testToRenderRequestWithIdentifierWithAllAttributes() {
-		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(createErrand(true)))
+	void toRenderDecisionRequestWithIdentifierWithAllAttributes() {
+		final var templateIdentifier = "templateIdentifier";
+		assertThat(TemplatingMapper.toRenderDecisionRequest(createErrand(true), templateIdentifier))
 			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
-			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
+			.hasFieldOrPropertyWithValue("identifier", templateIdentifier)
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)
 			.containsExactlyInAnyOrderEntriesOf(Map.of(
@@ -52,13 +53,14 @@ class TemplatingMapperTest {
 	}
 
 	@Test
-	void testToRenderRequestWithIdentifierWithFirstNameNull() {
+	void toRenderDecisionRequestWithIdentifierWithFirstNameNull() {
 		final var errand = createErrand(true);
+		final var templateIdentifier = "templateIdentifier";
 		errand.getStakeholders().forEach(stakeholder -> stakeholder.setFirstName(null));
 
-		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(errand))
+		assertThat(TemplatingMapper.toRenderDecisionRequest(errand, templateIdentifier))
 			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
-			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
+			.hasFieldOrPropertyWithValue("identifier", templateIdentifier)
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)
 			.containsExactlyInAnyOrderEntriesOf(Map.of(
@@ -72,13 +74,14 @@ class TemplatingMapperTest {
 	}
 
 	@Test
-	void testToRenderRequestWithIdentifierWithAddressNull() {
+	void toRenderDecisionRequestWithIdentifierWithAddressNull() {
 		final var errand = createErrand(true);
+		final var templateIdentifier = "templateIdentifier";
 		errand.getStakeholders().forEach(stakeholder -> stakeholder.setAddresses(null));
 
-		assertThat(TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(errand))
+		assertThat(TemplatingMapper.toRenderDecisionRequest(errand, templateIdentifier))
 			.hasAllNullFieldsOrPropertiesExcept("identifier", "parameters", "metadata")
-			.hasFieldOrPropertyWithValue("identifier", "sbk.prh.decision.all.rejection.municipality")
+			.hasFieldOrPropertyWithValue("identifier", templateIdentifier)
 			.extracting(RenderRequest::getParameters)
 			.asInstanceOf(MAP)
 			.containsExactlyInAnyOrderEntriesOf(Map.of(
@@ -90,10 +93,11 @@ class TemplatingMapperTest {
 	}
 
 	@Test
-	void testToRenderRequestWhenApplicantStakeholderNotPresent() {
+	void toRenderDecisionRequestWhenApplicantStakeholderNotPresent() {
 		final var errand = createErrand(false);
+		final var templateIdentifier = "templateIdentifier";
 
-		final var e = assertThrows(ThrowableProblem.class, () -> TemplatingMapper.toRenderRequestWhenNotMemberOfMunicipality(errand));
+		final var e = assertThrows(ThrowableProblem.class, () -> TemplatingMapper.toRenderDecisionRequest(errand, templateIdentifier));
 
 		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Errand is missing stakeholder with role 'APPLICANT'");
