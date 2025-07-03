@@ -2,6 +2,7 @@ package apptest;
 
 import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import generated.se.sundsvall.camunda.VariableValueDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,6 +27,7 @@ import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataGetWithMunicipalityId;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
@@ -262,4 +264,106 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
+
+/*	@Test
+	void test_decision_004_createProcessForDecisionAnge() throws JsonProcessingException, ClassNotFoundException {
+
+		final var caseId = "789";
+		final var scenarioName = "test_decision_004_createProcessForDecisionAnge";
+
+		// Setup mocks
+		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
+		mockActualization(caseId, scenarioName, false);
+		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, false);
+		// Mock deviation
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation, false);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, false);
+		final var stateAfterCheckDecisionNonFinalGet = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
+			"check-decision-task-worker-not-final---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "PROPOSED",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad"));
+		final var stateAfterCheckDecisionNonFinalPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckDecisionNonFinalGet,
+			"check-decision-task-worker-not-final---api-casedata-patch-errand",
+			equalToJson(createPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
+		final var stateAfterCheckDecisionFinal = mockCaseDataGetWithMunicipalityId(caseId, scenarioName, stateAfterCheckDecisionNonFinalPatch,
+			"check-decision-task-worker-not-final---api-casedata-get-errand-municipality",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad"),
+			"APPROVAL", "ADMINISTRATOR", "2260");
+		// Normal mock
+		mockExecution(caseId, scenarioName, false);
+		mockFollowUp(caseId, scenarioName, false);
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/789")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequest()
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to be waiting for update of errand
+		awaitProcessState("decision_is_case_update_available", 999);
+
+		// Set municipalityId to 2260
+		camundaClient.setProcessInstanceVariable(startResponse.getProcessId(), "municipalityId", new VariableValueDto()
+			.type("String")
+			.value("2260"));
+		// Update process
+		setupCall()
+			.withServicePath("/2260/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.withExpectedResponseBodyIsNull()
+			.sendRequest();
+
+		awaitProcessState("start_execution_phase", 999);
+		// Reset municipalityId to 2281
+		camundaClient.setProcessInstanceVariable(startResponse.getProcessId(), "municipalityId", new VariableValueDto()
+			.type("String")
+			.value("2281"));
+		camundaClient.setProcessInstanceVariable(startResponse.getProcessId(), "suspended", new VariableValueDto()
+			.type("Boolean")
+			.value("false"));
+
+
+		// Wait for process to finish
+		awaitProcessCompleted(startResponse.getProcessId(), 999);
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
+			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
+			.with(actualizationPathway())
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+			.with(investigationPathway())
+			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+			.with(tuple("Decision", "decision_phase"))
+			.with(tuple("Start decision phase", "start_decision_phase"))
+			.with(tuple("Update phase on errand", "external_task_decision_update_phase"))
+			.with(tuple("Update errand status", "external_task_decision_update_errand_status"))
+			.with(tuple("Check if decision is made", "external_task_check_decision_task"))
+			.with(tuple("Gateway is decision final", "gateway_is_decision_final"))
+			// Decision not final
+			.with(tuple("Is caseUpdateAvailable", "decision_is_case_update_available"))
+			.with(tuple("Check if decision is made", "external_task_check_decision_task"))
+			// Decision final
+			.with(tuple("Gateway is decision final", "gateway_is_decision_final"))
+			.with(tuple("End decision phase", "end_decision_phase"))
+			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+			.with(handlingPathway())
+			.with(executionPathway())
+			.with(followUpPathway())
+			.with(tuple("End process", "end_process")));
+	}*/
+
 }

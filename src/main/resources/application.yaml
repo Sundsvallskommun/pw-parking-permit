@@ -173,6 +173,8 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     partyassets:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+    support-management:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       
 #----------------------------------------
 # Text properties
@@ -211,6 +213,22 @@ texts:
       lawArticle: 8
   simplified-services:
     2281:
+      delay: "P1D"
+      message: Kontrollmeddelande för förenklad delgivning
+      subject: Kontrollmeddelande för förenklad delgivning
+      htmlBody: |-
+        <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
+        <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
+        <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
+        <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
+      plainBody: |-
+        Kontrollmeddelande för förenklad delgivning
+        
+        Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
+        När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
+        Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till
+        kontakt@sundsvall.se eller telefon till 060-19 10 00.
+    2260:
       delay: "P1D"
       message: Kontrollmeddelande för förenklad delgivning
       subject: Kontrollmeddelande för förenklad delgivning

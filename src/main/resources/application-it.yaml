@@ -74,3 +74,5 @@ texts:
   simplified-services:
     2281:
       delay: "PT5S"
+    2260:
+      delay: "PT5S"

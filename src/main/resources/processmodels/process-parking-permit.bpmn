@@ -97,12 +97,13 @@
         <bpmn:outgoing>update_phase</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:endEvent id="end_decision_phase" name="End decision phase">
-        <bpmn:incoming>Flow_1pv0bjx</bpmn:incoming>
+        <bpmn:incoming>Flow_0zwxuup</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:exclusiveGateway id="gateway_is_decision_final" name="Gateway is decision final" default="no_final_decision">
         <bpmn:incoming>check_decision</bpmn:incoming>
         <bpmn:outgoing>no_final_decision</bpmn:outgoing>
-        <bpmn:outgoing>Flow_1pv0bjx</bpmn:outgoing>
+        <bpmn:outgoing>Flow_19hpw08</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0zwxuup</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:intermediateCatchEvent id="decision_is_case_update_available" name="Is caseUpdateAvailable">
         <bpmn:incoming>no_final_decision</bpmn:incoming>
@@ -129,14 +130,25 @@
       <bpmn:sequenceFlow id="no_final_decision" name="No" sourceRef="gateway_is_decision_final" targetRef="decision_is_case_update_available" />
       <bpmn:sequenceFlow id="update_available" sourceRef="decision_is_case_update_available" targetRef="external_task_check_decision_task" />
       <bpmn:sequenceFlow id="Flow_0srbw56" sourceRef="external_task_decision_update_phase" targetRef="external_task_decision_update_errand_status" />
-      <bpmn:sequenceFlow id="Flow_1pv0bjx" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision}</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
       <bpmn:serviceTask id="external_task_decision_update_errand_status" name="Update errand status" camunda:type="external" camunda:topic="UpdateErrandStatusTask">
         <bpmn:incoming>Flow_0srbw56</bpmn:incoming>
         <bpmn:outgoing>Flow_0q6qxpu</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0q6qxpu" sourceRef="external_task_decision_update_errand_status" targetRef="external_task_check_decision_task" />
+      <bpmn:serviceTask id="Activity_0iib6kf" name="Decision handling" camunda:type="external" camunda:topic="DecisionHandlingTask">
+        <bpmn:incoming>Flow_19hpw08</bpmn:incoming>
+        <bpmn:outgoing>Flow_0gnu6qp</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="end_decision_phase_ange" name="End decision phase (automatic)">
+        <bpmn:incoming>Flow_0gnu6qp</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0gnu6qp" sourceRef="Activity_0iib6kf" targetRef="end_decision_phase_ange" />
+      <bpmn:sequenceFlow id="Flow_19hpw08" name="Final decision and Ånge" sourceRef="gateway_is_decision_final" targetRef="Activity_0iib6kf">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision &amp;&amp; municipalityId== '2260'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0zwxuup" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:subProcess id="actualization_phase" name="Actualization">
       <bpmn:incoming>Flow_1pf2pgk</bpmn:incoming>
@@ -872,74 +884,96 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_0lsu6ln">
     <bpmndi:BPMNPlane id="BPMNPlane_1c9gmzv" bpmnElement="decision_phase">
       <bpmndi:BPMNShape id="Event_17p8i8h_di" bpmnElement="start_decision_phase">
-        <dc:Bounds x="182" y="152" width="36" height="36" />
+        <dc:Bounds x="182" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="167" y="195" width="67" height="27" />
+          <dc:Bounds x="167" y="275" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1lwu8c8_di" bpmnElement="end_decision_phase">
-        <dc:Bounds x="1012" y="152" width="36" height="36" />
+        <dc:Bounds x="1222" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1000" y="195" width="63" height="27" />
+          <dc:Bounds x="1210" y="275" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_19jrglz" bpmnElement="gateway_is_decision_final" isMarkerVisible="true">
-        <dc:Bounds x="825" y="145" width="50" height="50" />
+        <dc:Bounds x="825" y="225" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="822" y="115" width="65" height="27" />
+          <dc:Bounds x="822" y="195" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0otizl3" bpmnElement="decision_is_case_update_available">
-        <dc:Bounds x="744" y="292" width="36" height="36" />
+        <dc:Bounds x="744" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="718" y="240" width="89" height="40" />
+          <dc:Bounds x="718" y="320" width="89" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1tspsag_di" bpmnElement="external_task_check_decision_task">
-        <dc:Bounds x="630" y="130" width="100" height="80" />
+        <dc:Bounds x="630" y="210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0zdutrg_di" bpmnElement="external_task_decision_update_phase">
-        <dc:Bounds x="280" y="130" width="100" height="80" />
+        <dc:Bounds x="280" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1b1izhz" bpmnElement="external_task_decision_update_errand_status">
-        <dc:Bounds x="450" y="130" width="100" height="80" />
+        <dc:Bounds x="450" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1jjjsdw" bpmnElement="Activity_0iib6kf">
+        <dc:Bounds x="980" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0twe4u6" bpmnElement="end_decision_phase_ange">
+        <dc:Bounds x="1222" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1198" y="145" width="89" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0ywwh6g_di" bpmnElement="update_phase">
-        <di:waypoint x="218" y="170" />
-        <di:waypoint x="280" y="170" />
+        <di:waypoint x="218" y="250" />
+        <di:waypoint x="280" y="250" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="361" y="99" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0qpu02h_di" bpmnElement="check_decision">
-        <di:waypoint x="730" y="170" />
-        <di:waypoint x="825" y="170" />
+        <di:waypoint x="730" y="250" />
+        <di:waypoint x="825" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1oiywwc_di" bpmnElement="no_final_decision">
-        <di:waypoint x="850" y="195" />
-        <di:waypoint x="850" y="310" />
-        <di:waypoint x="780" y="310" />
+        <di:waypoint x="850" y="275" />
+        <di:waypoint x="850" y="390" />
+        <di:waypoint x="780" y="390" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="858" y="249" width="15" height="14" />
+          <dc:Bounds x="858" y="329" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_05i18zd_di" bpmnElement="update_available">
-        <di:waypoint x="744" y="310" />
-        <di:waypoint x="680" y="310" />
-        <di:waypoint x="680" y="210" />
+        <di:waypoint x="744" y="390" />
+        <di:waypoint x="680" y="390" />
+        <di:waypoint x="680" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0srbw56_di" bpmnElement="Flow_0srbw56">
-        <di:waypoint x="380" y="170" />
-        <di:waypoint x="450" y="170" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1pv0bjx_di" bpmnElement="Flow_1pv0bjx">
-        <di:waypoint x="875" y="170" />
-        <di:waypoint x="1012" y="170" />
+        <di:waypoint x="380" y="250" />
+        <di:waypoint x="450" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0q6qxpu_di" bpmnElement="Flow_0q6qxpu">
-        <di:waypoint x="550" y="170" />
-        <di:waypoint x="630" y="170" />
+        <di:waypoint x="550" y="250" />
+        <di:waypoint x="630" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gnu6qp_di" bpmnElement="Flow_0gnu6qp">
+        <di:waypoint x="1080" y="120" />
+        <di:waypoint x="1222" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19hpw08_di" bpmnElement="Flow_19hpw08">
+        <di:waypoint x="850" y="225" />
+        <di:waypoint x="850" y="120" />
+        <di:waypoint x="980" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="838" y="86" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zwxuup_di" bpmnElement="Flow_0zwxuup">
+        <di:waypoint x="875" y="250" />
+        <di:waypoint x="1222" y="250" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1253,6 +1287,10 @@
           <dc:Bounds x="156" y="275" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0sbnjod" bpmnElement="external_task_execution_order_card_task">
+        <dc:Bounds x="860" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0e6gbas" bpmnElement="end_execution_phase">
         <dc:Bounds x="1762" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1305,6 +1343,12 @@
           <dc:Bounds x="673" y="495" width="60" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0yx79hw_di" bpmnElement="execution_gateway_is_appeal" isMarkerVisible="true">
+        <dc:Bounds x="555" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="535" y="282" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_06gdxd2" bpmnElement="external_task_execution_update_asset">
         <dc:Bounds x="1210" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -1315,18 +1359,8 @@
           <dc:Bounds x="1533" y="282" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0yx79hw_di" bpmnElement="execution_gateway_is_appeal" isMarkerVisible="true">
-        <dc:Bounds x="555" y="225" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="535" y="282" width="90" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1ile5o5" bpmnElement="external_task_execution_handle_lost_card">
         <dc:Bounds x="680" y="210" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0sbnjod" bpmnElement="external_task_execution_order_card_task">
-        <dc:Bounds x="860" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_1e1hzy6" bpmnElement="Flow_18p96l5">
