@@ -62,4 +62,25 @@ public class Decision {
 				"displayPhaseParameter", "Beslut",
 				"statusTypeParameter", "Beslutad"));
 	}
+
+	public static String mockDecisionHandling(String municipalityId, String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
+		var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+			"decision_decision-handling-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"statusTypeParameter", "Ärende inkommit",
+				"phaseParameter", "Beslut",
+				"phaseStatusParameter", "ONGOING",
+				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
+				"displayPhaseParameter", "Beslut"));
+
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
+			"decision_update-status-task-worker---api-casedata-patch-status",
+			equalToJson("""
+				  {
+				    "statusType": "Under beslut",
+				    "description": "Ärendet beslutas",
+				    "created": "${json-unit.any-string}"
+				  }
+				"""));
+	}
 }

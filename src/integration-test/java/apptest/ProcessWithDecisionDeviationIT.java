@@ -1,19 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -27,6 +13,8 @@ import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.Messaging.mockMessagingDigitalMailPost;
+import static apptest.mock.api.Templating.mockRenderPdf;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
@@ -49,6 +37,21 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+
+import apptest.mock.DecisionHandlingCase;
+import apptest.mock.DecisionHandlingFollowUp;
+import apptest.verification.Tuples;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -262,4 +265,138 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
+
+	@Test
+	void test_decision_004_createProcessForDecisionAnge() throws JsonProcessingException, ClassNotFoundException {
+
+		final var municipalityIdAnge = "2260";
+		final var caseId = "789";
+		final var scenarioName = "test_decision_004_createProcessForDecisionAnge";
+
+		// Setup mocks
+		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
+		mockActualization(caseId, scenarioName, false);
+		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, false);
+		// Mock deviation
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterInvestigation, false);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, false);
+		final var stateAfterCheckDecisionNonFinalGet = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
+			"check-decision-task-worker-not-final---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "PROPOSED",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad",
+				"caseId", caseId,
+				"decisionOutcome", "APPROVAL",
+				"role", "ADMINISTRATOR"));
+		final var stateAfterCheckDecisionNonFinalPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckDecisionNonFinalGet,
+			"check-decision-task-worker-not-final---api-casedata-patch-errand",
+			equalToJson(createPatchBody("Beslut", "UNKNOWN", "WAITING", "Beslut")));
+		final var stateAfterCheckDecisionFinal = mockCaseDataGet("2260", caseId, scenarioName, stateAfterCheckDecisionNonFinalPatch,
+			"check-decision-task-worker-not-final---api-casedata-get-errand-municipality",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad"));
+		final var stateAfterDecisionHandlingGet = mockCaseDataGet("2260", caseId, scenarioName, stateAfterCheckDecisionFinal,
+			"decision-handling-task-worker---api-casedata-get-errand-municipality",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad"));
+		final var stateAfterDecisionHandlingRenderPdf = mockRenderPdf(municipalityIdAnge, scenarioName, stateAfterDecisionHandlingGet,
+			"decision_decision-handling-worker---api-templating-render-pdf",
+			equalToJson("""
+							{
+								"identifier": "sbk.prh.decision.all.rejection.municipality",
+								"metadata": [],
+								"parameters": {
+									"addressFirstname": "John",
+									"caseNumber": "PRH-2022-000001",
+									"addressLastname": "Doe",
+									"creationDate": "2022-12-02",
+									"decisionDate": "${json-unit.any-string}"
+				    			}
+							}
+				"""));
+
+		final var stateAfterDigitalMailPost = mockMessagingDigitalMailPost(municipalityIdAnge, scenarioName, stateAfterDecisionHandlingRenderPdf,
+			"decision_decision-handling-worker---api-messaging-digital-mail-post",
+			equalToJson("""
+				{
+				   "party" : {
+				     "partyIds" : [ "6b8928bb-9800-4d52-a9fa-20d88c81f1d6" ],
+				     "externalReferences" : [ ]
+				   },
+				   "sender" : {
+				     "supportInfo" : { }
+				   },
+				   "subject" : "Beslut från Ånge kommun",
+				   "contentType" : "text/html",
+				   "body" : "PHA+PHN0cm9uZz5IZWo8L3N0cm9uZz48L3A+PHA+RHUgaGFyIGYmYXJpbmc7dHQgZXR0IGJlc2x1dCBmciZhcmluZztuIMOFbmdlIGtvbW11bi48L3A+PHA+TWVkIHYmYXVtbDtubGlnIGgmYXVtbDtsc25pbmc8YnIgLz48c3Ryb25nPsOFbmdlIGtvbW11bjwvc3Ryb25nPjwvcD4=",
+				   "attachments" : [ {
+				     "contentType" : "application/pdf",
+				     "content" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
+				     "filename" : "beslut.pdf"
+				   } ]
+				 }
+				"""));
+
+		DecisionHandlingCase.mockExecution(municipalityIdAnge, caseId, scenarioName, stateAfterDigitalMailPost, true);
+		DecisionHandlingFollowUp.mockFollowUp(municipalityIdAnge, caseId, scenarioName, true);
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/789")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequest()
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to be waiting for update of errand
+		awaitProcessState("decision_is_case_update_available", 999);
+		// Update process
+		setupCall()
+			.withServicePath("/2260/SBK_PARKING_PERMIT/process/update/" + startResponse.getProcessId())
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.withExpectedResponseBodyIsNull()
+			.sendRequest();
+
+		// Wait for process to finish
+		awaitProcessCompleted(startResponse.getProcessId(), 999);
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
+			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
+			.with(actualizationPathway())
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+			.with(investigationPathway())
+			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+			.with(tuple("Decision", "decision_phase"))
+			.with(tuple("Start decision phase", "start_decision_phase"))
+			.with(tuple("Update phase on errand", "external_task_decision_update_phase"))
+			.with(tuple("Update errand status", "external_task_decision_update_errand_status"))
+			.with(tuple("Check if decision is made", "external_task_check_decision_task"))
+			.with(tuple("Gateway is decision final", "gateway_is_decision_final"))
+			// Decision not final
+			.with(tuple("Is caseUpdateAvailable", "decision_is_case_update_available"))
+			.with(tuple("Check if decision is made", "external_task_check_decision_task"))
+			// Decision final
+			.with(tuple("Gateway is decision final", "gateway_is_decision_final"))
+			.with(tuple("Decision handling", "external_task_decision_handling_task"))
+			.with(tuple("End decision phase (automatic)", "end_decision_phase_ange"))
+			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+			.with(handlingPathway())
+			.with(executionPathway())
+			.with(followUpPathway())
+			.with(tuple("End process", "end_process")));
+	}
+
 }

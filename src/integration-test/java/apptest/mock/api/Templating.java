@@ -23,4 +23,18 @@ public class Templating {
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
+
+	public static String mockRenderPdf(final String municipalityId, final String scenarioName, final String requiredScenarioState, final String newScenarioState, final ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo(String.format("/api-templating/%s/render/pdf", municipalityId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withRequestBody(bodyPattern)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.willReturn(aResponse()
+				.withStatus(200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/templating/render-pdf.json"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
 }
