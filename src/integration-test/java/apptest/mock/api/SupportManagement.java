@@ -15,7 +15,7 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 import com.github.tomakehurst.wiremock.matching.ContentPattern;
 import java.util.Map;
 
-public class CaseData {
+public class SupportManagement {
 
 	public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, "APPROVAL", "ADMINISTRATOR");

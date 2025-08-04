@@ -28,6 +28,19 @@ public class PartyAssets {
 			.getNewScenarioState();
 	}
 
+	public static String mockPartyAssetsPost(String scenarioName, String municipalityId, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo(String.format("/api-party-assets/%s/assets", municipalityId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(CREATED_201)
+				.withHeader("Content-Type", "*/*"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
 	public static String mockPartyAssetsGet(String scenarioName, String requiredScenarioState, String newScenarioState, String assetId, String partyId, String status) {
 		return stubFor(get(urlEqualTo(String.format("/api-party-assets/2281/assets?assetId=%s&partyId=%s&status=%s", assetId, partyId, status)))
 			.inScenario(scenarioName)

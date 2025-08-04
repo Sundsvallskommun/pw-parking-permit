@@ -33,4 +33,28 @@ public class Messaging {
 				.withHeader("Content-Type", "application/json")
 				.withBodyFile("common/responses/messaging/web-message.json")));
 	}
+
+	public static void mockMessagingWebMessagePost(final String municipalityId, final ContentPattern<?> bodyPattern) {
+		stubFor(post(urlEqualTo(String.format("/api-messaging/%s/webmessage", municipalityId)))
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/messaging/web-message.json")));
+	}
+
+	public static String mockMessagingDigitalMailPost(final String municipalityId, final String scenarioName, final String requiredScenarioState, final String newScenarioState, final ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo(String.format("/api-messaging/%s/digital-mail", municipalityId)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(201)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/messaging/digital-mail.json"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
 }

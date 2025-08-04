@@ -76,3 +76,12 @@ texts:
       delay: "PT5S"
     2260:
       delay: "PT5S"
+  commons:
+    2260:
+      sendDigitalMail: true
+  approvals:
+    2260:
+      description: Personen är folkbokförd i Ånge kommun. Rekommenderat beslut är att godkänna ansökan.
+      subject: Beslut från Ånge kommun
+      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
+      filename: beslut.pdf

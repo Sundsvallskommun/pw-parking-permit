@@ -135,15 +135,15 @@
         <bpmn:outgoing>Flow_0q6qxpu</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_0q6qxpu" sourceRef="external_task_decision_update_errand_status" targetRef="external_task_check_decision_task" />
-      <bpmn:serviceTask id="Activity_0iib6kf" name="Decision handling" camunda:type="external" camunda:topic="DecisionHandlingTask">
+      <bpmn:serviceTask id="external_task_decision_handling_task" name="Decision handling" camunda:type="external" camunda:topic="DecisionHandlingTask">
         <bpmn:incoming>Flow_19hpw08</bpmn:incoming>
         <bpmn:outgoing>Flow_0gnu6qp</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:endEvent id="end_decision_phase_ange" name="End decision phase (automatic)">
         <bpmn:incoming>Flow_0gnu6qp</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_0gnu6qp" sourceRef="Activity_0iib6kf" targetRef="end_decision_phase_ange" />
-      <bpmn:sequenceFlow id="Flow_19hpw08" name="Final decision and Ånge" sourceRef="gateway_is_decision_final" targetRef="Activity_0iib6kf">
+      <bpmn:sequenceFlow id="Flow_0gnu6qp" sourceRef="external_task_decision_handling_task" targetRef="end_decision_phase_ange" />
+      <bpmn:sequenceFlow id="Flow_19hpw08" name="Final decision and Ånge" sourceRef="gateway_is_decision_final" targetRef="external_task_decision_handling_task">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision &amp;&amp; municipalityId== '2260'}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0zwxuup" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
@@ -917,7 +917,7 @@
       <bpmndi:BPMNShape id="BPMNShape_1b1izhz" bpmnElement="external_task_decision_update_errand_status">
         <dc:Bounds x="450" y="210" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1jjjsdw" bpmnElement="Activity_0iib6kf">
+      <bpmndi:BPMNShape id="BPMNShape_1jjjsdw" bpmnElement="external_task_decision_handling_task">
         <dc:Bounds x="980" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
