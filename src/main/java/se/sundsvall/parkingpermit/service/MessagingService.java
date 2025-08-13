@@ -38,6 +38,7 @@ public class MessagingService {
 
 	// TODO: Get template identifier from configuration
 	public RenderResponse renderPdfDecision(String municipalityId, Errand errand, String templateIdentifier) {
+
 		return templatingClient.renderPdf(municipalityId, toRenderDecisionRequest(errand, templateIdentifier));
 	}
 
