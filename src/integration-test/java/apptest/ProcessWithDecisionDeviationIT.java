@@ -14,6 +14,7 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.Messaging.mockMessagingDigitalMailPost;
+import static apptest.mock.api.SupportManagement.mockSupportManagementPost;
 import static apptest.mock.api.Templating.mockRenderPdf;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.canceledPathway;
@@ -342,8 +343,44 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				   } ]
 				 }
 				"""));
+		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterDigitalMailPost, "decision_decision-handling-worker---api-support-management-post",
+			equalToJson("""
+				{
+				   "title" : "Korthantering av parkeringstillstånd",
+				   "stakeholders" : [ {
+				     "externalId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+				     "externalIdType" : "PRIVATE",
+				     "role" : "CONTACT",
+				     "city" : "SUNDSVALL",
+				     "firstName" : "John",
+				     "lastName" : "Doe",
+				     "address" : "STORGATAN 1",
+				     "zipCode" : "850 00",
+				     "contactChannels" : [ {
+				       "type" : "Email",
+				       "value" : "john.doe@example.com"
+				     }, {
+				       "type" : "Phone",
+				       "value" : "070-1234567"
+				     } ],
+				     "parameters" : [ ]
+				   } ],
+				   "externalTags" : [ ],
+				   "parameters" : [ ],
+				   "classification" : {
+				     "category" : "URBAN_DEVELOPMENT",
+				     "type" : "PARKING_PERMIT"
+				   },
+				   "status" : "NEW",
+				   "description" : "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: PRH-2022-000001",
+				   "channel" : "ESERVICE",
+				   "businessRelated" : false,
+				   "labels" : [ "CARD_MANAGEMENT" ],
+				   "activeNotifications" : [ ]
+				 }
+				"""));
 
-		DecisionHandlingCase.mockExecution(municipalityIdAnge, caseId, scenarioName, stateAfterDigitalMailPost, true);
+		DecisionHandlingCase.mockExecution(municipalityIdAnge, caseId, scenarioName, stateAfterCreateSMErrand, true);
 		DecisionHandlingFollowUp.mockFollowUp(municipalityIdAnge, caseId, scenarioName, true);
 
 		// Start process

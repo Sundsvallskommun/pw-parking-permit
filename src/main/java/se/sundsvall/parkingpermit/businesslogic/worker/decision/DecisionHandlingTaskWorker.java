@@ -62,8 +62,10 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			}
 			// If sending the decision message fails, or it's configured to not send digital mail, we will create support errands
 			if (isNull(messageId)) {
-				createSupportManagementErrands(errand, municipalityId, namespace, pdf);
+				createSupportManagementMailingErrand(errand, municipalityId, namespace, pdf);
+				createSupportManagementCardErrand(errand, municipalityId, namespace);
 			} else {
+				createSupportManagementCardErrand(errand, municipalityId, namespace);
 				externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
 				return;
 			}
@@ -87,10 +89,12 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			.orElse(null);
 	}
 
-	private void createSupportManagementErrands(Errand errand, String municipalityId, String namespace, RenderResponse pdf) {
+	private void createSupportManagementMailingErrand(Errand errand, String municipalityId, String namespace, RenderResponse pdf) {
 		final var mailingErrandId = supportManagementService.createErrand(municipalityId, namespace, toSupportManagementMailingErrand(errand));
 		mailingErrandId.ifPresent(errandId -> supportManagementService.createAttachment(municipalityId, namespace, errandId, getFilename(errand), pdf.getOutput()));
+	}
 
+	private void createSupportManagementCardErrand(Errand errand, String municipalityId, String namespace) {
 		if (isApproved(errand)) {
 			supportManagementService.createErrand(municipalityId, namespace, toSupportManagementCardManagementErrand(errand));
 		}
