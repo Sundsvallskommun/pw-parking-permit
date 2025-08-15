@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "10.1"
+  version: "10.7"
 tags:
   - name: Errand attachments
     description: Errand attachments operations
@@ -13,6 +13,8 @@ tags:
     description: Errand parameter operations
   - name: Configuration for namespace
     description: Namespace configuration operations
+  - name: Configuration message-exchange sync
+    description: Configuration for message-exchange scheduled syncing job
   - name: Metadata for categories
     description: Category metadata operations
   - name: Revisions
@@ -964,6 +966,97 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/message-exchange-sync-config/{id}:
+    put:
+      tags:
+        - Configuration message-exchange sync
+      summary: Update message-exchange sync config
+      description: Update message-exchange sync config
+      operationId: updateMessageExchangeSyncConfig
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: id
+          in: path
+          description: Config id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageExchangeSync"
+        required: true
+      responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    delete:
+      tags:
+        - Configuration message-exchange sync
+      summary: Delete message-exchange sync config
+      description: Deletes the message-exchange sync config
+      operationId: deleteMessageExchangeSyncConfig
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: id
+          in: path
+          description: Config id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/metadata/statuses:
     get:
       tags:
@@ -1472,7 +1565,7 @@ paths:
         - name: filter
           in: query
           description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
-          required: true
+          required: false
           schema:
             type: string
           example: categoryTag:'SUPPORT-CASE' and stakeholder.externalId:'81471222-5798-11e9-ae24-57fa13b361e1'
@@ -1976,6 +2069,285 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations:
+    get:
+      tags:
+        - Errand communication
+      summary: Get conversations
+      description: Get existing conversations
+      operationId: getConversations
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+        - Errand communication
+      summary: Create conversation
+      description: Create new conversation
+      operationId: createConversation
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationRequest"
+        required: true
+      responses:
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}/messages:
+    get:
+      tags:
+        - Errand communication
+      summary: Get message list
+      description: Get conversation message list
+      operationId: getConversationMessages
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: string
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        - name: page
+          in: query
+          description: Zero-based page index (0..N)
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: The size of the page to be returned
+          required: false
+          schema:
+            minimum: 1
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageMessage"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+        - Errand communication
+      summary: Create new message
+      description: Create new conversation message
+      operationId: createConversationMessage
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: string
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - message
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/MessageRequest"
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "204":
+          description: Successful operation
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments:
     get:
       tags:
@@ -2076,6 +2448,93 @@ paths:
                 errandAttachment:
                   type: string
                   format: binary
+        required: true
+      responses:
+        "201":
+          description: Successful operation
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/message-exchange-sync-config:
+    get:
+      tags:
+        - Configuration message-exchange sync
+      summary: Read message-exchange sync configs
+      description: Fetches message-exchange config for a municipality
+      operationId: getAllMessageExchangeByMunicipalityId
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageExchangeSync"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+        - Configuration message-exchange sync
+      summary: Create message-exchange sync config
+      description: Create message-exchange sync config that conversations from message-exchange
+        service
+      operationId: createMessageExchangeSyncConfig
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageExchangeSync"
         required: true
       responses:
         "201":
@@ -2871,6 +3330,7 @@ paths:
           description: Errand parameter key
           required: true
           schema:
+            minLength: 1
             type: string
           example: propertyInfo
       responses:
@@ -2937,6 +3397,7 @@ paths:
           description: Errand parameter key
           required: true
           schema:
+            minLength: 1
             type: string
           example: propertyInfo
       responses:
@@ -2997,6 +3458,7 @@ paths:
           description: Errand parameter key
           required: true
           schema:
+            minLength: 1
             type: string
           example: propertyInfo
       requestBody:
@@ -3223,6 +3685,139 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}:
+    get:
+      tags:
+        - Errand communication
+      summary: Get conversation
+      description: Get existing conversation
+      operationId: getConversation
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: string
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+        - Errand communication
+      summary: Update conversation
+      description: Update existing conversation
+      operationId: updateConversation
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: errandId
+          in: path
+          description: Errand ID
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: string
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -4248,8 +4843,8 @@ paths:
       tags:
         - Errand communication
       summary: Get a streamed communication attachment.
-      description: Fetches the communication attachment that matches the provided
-        id in a streamed manner
+      description: "Fetches the communication attachment that matches the provided\
+        \ ID, in a streamed manner"
       operationId: getMessageAttachment
       parameters:
         - name: namespace
@@ -4369,6 +4964,87 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  ? /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}/messages/{messageId}/attachments/{attachmentId}
+    : get:
+        tags:
+          - Errand communication
+        summary: Get a streamed conversation message attachment.
+        description: "Fetches the conversation message attachment that matches the provided\
+        \ ID, in a streamed manner"
+        operationId: getConversationMessageAttachment
+        parameters:
+          - name: namespace
+            in: path
+            description: Namespace
+            required: true
+            schema:
+              pattern: "[\\w|\\-]+"
+              type: string
+            example: MY_NAMESPACE
+          - name: municipalityId
+            in: path
+            description: Municipality ID
+            required: true
+            schema:
+              type: string
+            example: 2281
+          - name: errandId
+            in: path
+            description: Errand id
+            required: true
+            schema:
+              type: string
+            example: b82bd8ac-1507-4d9a-958d-369261eecc15
+          - name: conversationId
+            in: path
+            description: Conversation ID
+            required: true
+            schema:
+              type: string
+            example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+          - name: messageId
+            in: path
+            description: Message ID
+            required: true
+            schema:
+              type: string
+            example: be3a5c7b-0f39-4867-8065-6a286b36fcc3
+          - name: attachmentId
+            in: path
+            description: Conversation message attachment ID
+            required: true
+            schema:
+              type: string
+            example: b82bd8ac-1507-4d9a-958d-369261eecc15
+        responses:
+          "200":
+            description: Successful Operation
+          "404":
+            description: Not Found
+            content:
+              application/problem+json:
+                schema:
+                  $ref: "#/components/schemas/Problem"
+          "507":
+            description: Insufficient Storage
+            content:
+              application/problem+json:
+                schema:
+                  $ref: "#/components/schemas/Problem"
+          "400":
+            description: Bad request
+            content:
+              application/problem+json:
+                schema:
+                  oneOf:
+                    - $ref: "#/components/schemas/Problem"
+                    - $ref: "#/components/schemas/ConstraintViolationProblem"
+          "500":
+            description: Internal Server error
+            content:
+              application/problem+json:
+                schema:
+                  $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}:
     get:
       tags:
@@ -4484,6 +5160,58 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/count:
+    get:
+      tags:
+        - Errands
+      summary: Count errands
+      description: Counts errands based on the provided filters
+      operationId: countErrands
+      parameters:
+        - name: namespace
+          in: path
+          description: Namespace
+          required: true
+          schema:
+            pattern: "[\\w|\\-]+"
+            type: string
+          example: MY_NAMESPACE
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: filter
+          in: query
+          description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
+          required: false
+          schema:
+            type: string
+          example: categoryTag:'SUPPORT-CASE' and stakeholder.externalId:'81471222-5798-11e9-ae24-57fa13b361e1'
+            and externalTags.key:'caseId' and externalTags.value:'111' and created>'2022-09-08T12:00:00.000+02:00'
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CountResponse"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -4764,6 +5492,11 @@ components:
           type: string
           description: Prefix for errand numbers in this namespace
           example: KC
+        notificationTTLInDays:
+          type: integer
+          description: Time to live (in days) for notifications created in this namespace
+          format: int32
+          example: 40
         created:
           type: string
           description: Timestamp when the configuration was created
@@ -4784,6 +5517,7 @@ components:
       type: object
       properties:
         classification:
+          minLength: 1
           type: string
           description: Label classification
           example: subtype
@@ -4792,6 +5526,7 @@ components:
           description: Display name for the label
           example: Nyckelkort
         name:
+          minLength: 1
           type: string
           description: Name for the label
           example: keyCard
@@ -4888,12 +5623,45 @@ components:
           readOnly: true
           example: 2000-10-31T01:30:00+02:00
       description: Email integration config model
+    MessageExchangeSync:
+      required:
+        - active
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique id
+          format: int64
+          readOnly: true
+          example: 1
+        namespace:
+          type: string
+          description: Message exchange namespace to search in. Does not map to supporManagement
+            namespace.
+          example: support
+        latestSyncedSequenceNumber:
+          type: integer
+          description: Latest synced sequence number
+          format: int64
+          readOnly: true
+          example: 333
+        modified:
+          type: string
+          description: Timestamp when the configuration was last modified
+          format: date-time
+          readOnly: true
+          example: 2024-12-24T01:30:00+02:00
+        active:
+          type: boolean
+          description: If set to true conversations will be synced
+      description: Message-Exchange sync configuration
     Status:
       required:
         - name
       type: object
       properties:
         name:
+          minLength: 1
           type: string
           description: Name for the status
           example: statusName
@@ -4916,6 +5684,7 @@ components:
       type: object
       properties:
         name:
+          minLength: 1
           type: string
           description: Name for the role. Used as key
           example: roleName
@@ -4943,6 +5712,7 @@ components:
       type: object
       properties:
         name:
+          minLength: 1
           type: string
           description: Name for the external id type
           example: PRIVATE
@@ -4971,6 +5741,7 @@ components:
           readOnly: true
           example: 123
         reason:
+          minLength: 1
           type: string
           description: Reason for contact
           example: Segt internet
@@ -4988,8 +5759,6 @@ components:
           example: 2000-10-31T01:30:00+02:00
       description: Contact reason model
     Category:
-      required:
-        - name
       type: object
       properties:
         name:
@@ -5024,6 +5793,7 @@ components:
       type: object
       properties:
         name:
+          minLength: 1
           type: string
           description: Name for the type
           example: typename
@@ -5049,9 +5819,6 @@ components:
           example: 2000-10-31T01:30:00+02:00
       description: Type model
     Classification:
-      required:
-        - category
-        - type
       type: object
       properties:
         category:
@@ -5076,12 +5843,6 @@ components:
           example: arthur.dent@earth.com
       description: Contact channel model
     Errand:
-      required:
-        - classification
-        - priority
-        - reporterUserId
-        - status
-        - title
       type: object
       properties:
         id:
@@ -5210,19 +5971,17 @@ components:
       type: object
       properties:
         key:
+          minLength: 1
           type: string
           description: Key for external tag
           example: caseId
         value:
+          minLength: 1
           type: string
           description: Value for external tag
           example: 8849-2848
       description: External tag model
     Notification:
-      required:
-        - description
-        - ownerId
-        - type
       type: object
       properties:
         id:
@@ -5264,6 +6023,10 @@ components:
           type: string
           description: Type of the notification
           example: CREATE
+        subtype:
+          type: string
+          description: Subtype of the notification
+          example: ATTACHMENT
         description:
           type: string
           description: Description of the notification
@@ -5305,6 +6068,7 @@ components:
       type: object
       properties:
         key:
+          minLength: 1
           type: string
           description: Parameter key
         displayName:
@@ -5315,10 +6079,14 @@ components:
           description: Parameter group name
         values:
           type: array
-          description: Parameter values
+          description: Parameter values. Each value can have a maximum length of 2000
+            characters
           items:
+            maxLength: 2000
+            minLength: 0
             type: string
-            description: Parameter values
+            description: Parameter values. Each value can have a maximum length of
+              2000 characters
       description: Parameter model
     Priority:
       type: string
@@ -5436,6 +6204,7 @@ components:
           description: The note body
           example: This is a note
         createdBy:
+          minLength: 1
           type: string
           description: Created by
           example: John Doe
@@ -5447,6 +6216,7 @@ components:
       type: object
       properties:
         fileName:
+          minLength: 1
           type: string
           description: The attachment file name
           example: test.txt
@@ -5473,6 +6243,7 @@ components:
           example: true
           default: true
         message:
+          minLength: 1
           type: string
           description: Message in plain text
           example: Message in plain text
@@ -5504,6 +6275,7 @@ components:
           description: "Mobile number to recipient in format +467[02369]\\d{7}"
           example: "+46761234567"
         message:
+          minLength: 1
           type: string
           description: Message
         internal:
@@ -5518,6 +6290,7 @@ components:
       type: object
       properties:
         fileName:
+          minLength: 1
           type: string
           description: The attachment file name
           example: test.txt
@@ -5551,14 +6324,17 @@ components:
           description: Email address for recipient
           example: recipient@recipient.se
         subject:
+          minLength: 1
           type: string
           description: Subject
           example: Subject
         htmlMessage:
+          minLength: 1
           type: string
           description: Message in html (optionally in BASE64 encoded format)
           example: <html>HTML-formatted message</html>
         message:
+          minLength: 1
           type: string
           description: Message in plain text
           example: Message in plain text
@@ -5603,6 +6379,81 @@ components:
             type: string
             description: List with attachment ids
       description: EmailRequest model
+    ConversationRequest:
+      required:
+        - topic
+        - type
+      type: object
+      properties:
+        topic:
+          minLength: 1
+          type: string
+          description: The message-exchange topic
+          example: The conversation topic
+        type:
+          $ref: "#/components/schemas/ConversationType"
+        relationIds:
+          type: array
+          items:
+            type: string
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValues"
+      description: ConversationRequest model
+    ConversationType:
+      type: string
+      description: ConversationType model
+      enum:
+        - INTERNAL
+        - EXTERNAL
+    Identifier:
+      required:
+        - value
+      type: object
+      properties:
+        type:
+          pattern: ^(adAccount|partyId)$
+          type: string
+          description: The conversation identifier type
+          example: adAccount
+        value:
+          minLength: 1
+          type: string
+          description: The conversation identifier value
+          example: joe01doe
+      description: Identifier model
+    KeyValues:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key
+          example: key1
+        values:
+          type: array
+          items:
+            type: string
+      description: KeyValues model
+    MessageRequest:
+      required:
+        - content
+      type: object
+      properties:
+        inReplyToMessageId:
+          type: string
+          description: The ID of the replied message
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        content:
+          minLength: 1
+          type: string
+          description: The content of the message.
+          example: "Hello, how can I help you?"
+      description: Message body
     UpdateErrandNoteRequest:
       required:
         - body
@@ -5623,6 +6474,7 @@ components:
           description: The note body
           example: This is a note
         modifiedBy:
+          minLength: 1
           type: string
           description: Modified by
           example: John Doe
@@ -5679,6 +6531,32 @@ components:
           description: Modified timestamp
           format: date-time
       description: ErrandNote model
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Conversation ID
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        topic:
+          type: string
+          description: The message-exchange topic
+          example: The conversation topic
+        type:
+          $ref: "#/components/schemas/ConversationType"
+        relationIds:
+          type: array
+          items:
+            type: string
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValues"
+      description: Conversation model
     Labels:
       type: object
       properties:
@@ -5729,16 +6607,18 @@ components:
     PageErrand:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         first:
           type: boolean
         last:
           type: boolean
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         size:
           type: integer
           format: int32
@@ -5754,18 +6634,11 @@ components:
         numberOfElements:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: "#/components/schemas/SortObject"
         paged:
           type: boolean
         pageNumber:
@@ -5774,14 +6647,19 @@ components:
         pageSize:
           type: integer
           format: int32
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
         unpaged:
           type: boolean
     SortObject:
       type: object
       properties:
-        empty:
-          type: boolean
         sorted:
+          type: boolean
+        empty:
           type: boolean
         unsorted:
           type: boolean
@@ -5974,16 +6852,18 @@ components:
     PageEvent:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         first:
           type: boolean
         last:
           type: boolean
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         size:
           type: integer
           format: int32
@@ -5999,8 +6879,6 @@ components:
         numberOfElements:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     Communication:
@@ -6107,9 +6985,105 @@ components:
           description: The attachment MIME type
           example: text/plain
       description: List of communicationAttachments on the message
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Attachment ID
+          example: cb20c51f-fcf3-42c0-b613-de563634a8ec
+        fileName:
+          type: string
+          description: Name of the file
+          example: my-file.txt
+        fileSize:
+          type: integer
+          description: Size of the file in bytes
+          format: int32
+          example: 1024
+        mimeType:
+          type: string
+          description: Mime type of the file
+        created:
+          type: string
+          description: The attachment created date
+          format: date-time
+          example: 2023-01-01T00:00:00+01:00
+      description: Attachment model
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Message ID
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        inReplyToMessageId:
+          type: string
+          description: The ID of the replied message
+          example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+        created:
+          type: string
+          description: The timestamp when the message was created.
+          format: date-time
+        createdBy:
+          $ref: "#/components/schemas/Identifier"
+        content:
+          type: string
+          description: The content of the message.
+          example: "Hello, how can I help you?"
+        readBy:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadBy"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+      description: Message model
+    PageMessage:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        first:
+          type: boolean
+        last:
+          type: boolean
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    ReadBy:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+        readAt:
+          type: string
+          description: The timestamp when the message was read.
+          format: date-time
+          example: 2023-01-01T12:00:00+01:00
+      description: Readby model
     ErrandAttachment:
-      required:
-        - fileName
       type: object
       properties:
         id:
@@ -6125,4 +7099,16 @@ components:
           type: string
           description: Mime type of the file
           readOnly: true
+        created:
+          type: string
+          description: The attachment created date
+          format: date-time
+          example: 2023-01-01T00:00:00Z
       description: ErrandAttachment model
+    CountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+  securitySchemes: {}
