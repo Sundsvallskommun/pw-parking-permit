@@ -5,6 +5,7 @@ import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJEC
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Objects.isNull;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementMailingErrand;
@@ -62,10 +63,10 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			}
 			// If sending the decision message fails, or it's configured to not send digital mail, we will create support errands
 			if (isNull(messageId)) {
-				createSupportManagementMailingErrand(errand, municipalityId, namespace, pdf);
-				createSupportManagementCardErrand(errand, municipalityId, namespace);
+				createSupportManagementMailingErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE, pdf);
+				createSupportManagementCardErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE);
 			} else {
-				createSupportManagementCardErrand(errand, municipalityId, namespace);
+				createSupportManagementCardErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE);
 				externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
 				return;
 			}
