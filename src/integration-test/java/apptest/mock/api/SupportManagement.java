@@ -13,7 +13,7 @@ public class SupportManagement {
 
 	public static String mockSupportManagementPost(final String scenarioName, final String requiredScenarioState, final String newScenarioState, final ContentPattern<?> bodyPattern) {
 		final var smErrandId = UUID.randomUUID().toString();
-		return stubFor(post("/api-support-management/2260/SBK_PARKING_PERMIT/errands")
+		return stubFor(post("/api-support-management/2260/CONTACTANGE/errands")
 			.inScenario(scenarioName)
 			.whenScenarioStateIs(requiredScenarioState)
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
@@ -21,7 +21,7 @@ public class SupportManagement {
 			.willReturn(aResponse()
 				.withStatus(CREATED_201)
 				.withHeader("Content-Type", "application/json")
-				.withHeader("Location", String.format("/api-support-management/2260/SBK_PARKING_PERMIT/errands/%s", smErrandId)))
+				.withHeader("Location", String.format("/api-support-management/2260/CONTACTANGE/errands/%s", smErrandId)))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
