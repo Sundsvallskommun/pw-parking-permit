@@ -10,7 +10,6 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
@@ -68,8 +67,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.findAny()
 				.orElseGet(() -> createProcessEngineStakeholder(errand.getId(), municipalityId, namespace));
 
-			// TODO: Get template identifier from configuration
-			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, TEMPLATE_IDENTIFIER);
+			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts(municipalityId).getDescription())
 				.decidedBy(stakeholder)
 				.decidedAt(OffsetDateTime.now())

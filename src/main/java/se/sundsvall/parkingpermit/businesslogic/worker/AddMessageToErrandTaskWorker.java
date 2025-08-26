@@ -4,7 +4,6 @@ import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBO
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 
@@ -43,8 +42,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
-			// TODO: Get template identifier from configuration
-			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, TEMPLATE_IDENTIFIER);
+			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var attachment = toMessageAttachment(textProvider.getDenialTexts(municipalityId).getFilename(), APPLICATION_PDF_VALUE, pdf);
 			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)

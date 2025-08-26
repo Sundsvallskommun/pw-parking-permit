@@ -186,8 +186,7 @@ public class Denial {
 				                          } ]
 								},
 								"message": "Ärendet avskrivs",
-								"sendAsOwner" : false,
-				                "oepInstance" : "EXTERNAL",
+				                "oepInstance" : "external",
 								"attachments": [
 									{
 										"fileName": "beslut.pdf",
@@ -267,8 +266,7 @@ public class Denial {
 									} ]
 				      			},
 				      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
-				      			"sendAsOwner" : false,
-				                "oepInstance" : "EXTERNAL",
+				                "oepInstance" : "external",
 				      			"attachments" : [ ]
 				    		}
 				"""));

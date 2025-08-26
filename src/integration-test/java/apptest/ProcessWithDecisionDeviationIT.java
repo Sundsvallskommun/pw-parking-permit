@@ -310,7 +310,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			"decision_decision-handling-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
-								"identifier": "sbk.prh.decision.all.rejection.municipality",
+								"identifier": "sbk.rph.decision.driver.approval",
 								"metadata": [],
 								"parameters": {
 									"addressFirstname": "John",

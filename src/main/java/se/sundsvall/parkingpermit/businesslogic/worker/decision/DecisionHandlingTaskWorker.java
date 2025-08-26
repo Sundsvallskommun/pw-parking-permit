@@ -3,10 +3,11 @@ package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementMailingErrand;
 
@@ -32,12 +33,14 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @ExternalTaskSubscription("DecisionHandlingTask")
 public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 
+	private static final String CAPACITY_DRIVER = "DRIVER";
+	private static final String CAPACITY_PASSENGER = "PASSENGER";
 	private final TextProvider textProvider;
 	private final MessagingService messagingService;
 	private final SupportManagementService supportManagementService;
 
-	DecisionHandlingTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, TextProvider textProvider,
-		MessagingService messagingService, SupportManagementService supportManagementService) {
+	DecisionHandlingTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler,
+		final TextProvider textProvider, final MessagingService messagingService, final SupportManagementService supportManagementService) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.textProvider = textProvider;
 		this.messagingService = messagingService;
@@ -45,16 +48,16 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			logInfo("Execute Worker for DecisionHandlingAutomaticTask");
+			logInfo("Execute Worker for DecisionHandlingTask");
 			final String municipalityId = getMunicipalityId(externalTask);
 			final String namespace = getNamespace(externalTask);
 			final Long caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
-			// TODO: Get template identifier from configuration
-			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, TEMPLATE_IDENTIFIER);
+
+			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, getTemplateId(errand));
 			final boolean sendDigitalMail = textProvider.getCommonTexts(municipalityId).getSendDigitalMail();
 			String messageId = null;
 
@@ -78,7 +81,7 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private String sendDigitalMail(Errand errand, String municipalityId, RenderResponse pdf) {
+	private String sendDigitalMail(final Errand errand, final String municipalityId, final RenderResponse pdf) {
 		UUID messageId = null;
 		try {
 			messageId = messagingService.sendDecisionMessage(municipalityId, errand, pdf, isApproved(errand));
@@ -90,32 +93,53 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			.orElse(null);
 	}
 
-	private void createSupportManagementMailingErrand(Errand errand, String municipalityId, String namespace, RenderResponse pdf) {
+	private void createSupportManagementMailingErrand(final Errand errand, final String municipalityId, final String namespace, final RenderResponse pdf) {
 		final var mailingErrandId = supportManagementService.createErrand(municipalityId, namespace, toSupportManagementMailingErrand(errand));
 		mailingErrandId.ifPresent(errandId -> supportManagementService.createAttachment(municipalityId, namespace, errandId, getFilename(errand), pdf.getOutput()));
 	}
 
-	private void createSupportManagementCardErrand(Errand errand, String municipalityId, String namespace) {
+	private void createSupportManagementCardErrand(final Errand errand, final String municipalityId, final String namespace) {
 		if (isApproved(errand)) {
 			supportManagementService.createErrand(municipalityId, namespace, toSupportManagementCardManagementErrand(errand));
 		}
 	}
 
-	private boolean isApproved(Errand errand) {
+	private boolean isApproved(final Errand errand) {
 		final var decisionOutCome = Optional.ofNullable(getFinalDecision(errand))
 			.map(Decision::getDecisionOutcome)
 			.orElse(REJECTION);
 		return APPROVAL.equals(decisionOutCome);
 	}
 
-	private Decision getFinalDecision(Errand errand) {
+	private Decision getFinalDecision(final Errand errand) {
 		return errand.getDecisions().stream()
 			.filter(decision -> FINAL.equals(decision.getDecisionType()))
 			.findFirst()
 			.orElse(null);
 	}
 
-	private String getFilename(Errand errand) {
+	private String getFilename(final Errand errand) {
 		return isApproved(errand) ? textProvider.getApprovalTexts(errand.getMunicipalityId()).getFilename() : textProvider.getDenialTexts(errand.getMunicipalityId()).getFilename();
+	}
+
+	private String getTemplateId(final Errand errand) {
+		StringBuilder templateId = new StringBuilder("sbk.rph.decision");
+		final var capacity = Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList())
+			.stream()
+			.filter(param -> CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY.equals(param.getKey()))
+			.findFirst()
+			.map(generated.se.sundsvall.casedata.ExtraParameter::getValues)
+			.flatMap(values -> values.stream().findFirst())
+			.orElse(null);
+
+		if (CAPACITY_PASSENGER.equalsIgnoreCase(capacity)) {
+			templateId.append(".passenger");
+		} else if (CAPACITY_DRIVER.equalsIgnoreCase(capacity)) {
+			templateId.append(".driver");
+		} else {
+			templateId.append(".all");
+		}
+
+		return isApproved(errand) ? templateId.append(".approval").toString() : templateId.append(".rejection").toString();
 	}
 }

@@ -1,7 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 
 import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -12,16 +11,20 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.TextProvider;
 
 @Component
 @ExternalTaskSubscription("SendDenialDecisionTask")
 public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
+	private final TextProvider textProvider;
 
-	SendDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService) {
+	SendDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService,
+		TextProvider textProvider) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
+		this.textProvider = textProvider;
 	}
 
 	@Override
@@ -34,8 +37,7 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing delivery of decision message to applicant for errand with id {}", errand.getId());
 
-			// TODO: Get template identifier from configuration
-			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, TEMPLATE_IDENTIFIER);
+			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var messageId = messagingService.sendMessageToNonCitizen(municipalityId, errand, pdf).toString();
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));

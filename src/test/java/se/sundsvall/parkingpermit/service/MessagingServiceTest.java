@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
@@ -40,6 +39,7 @@ import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 class MessagingServiceTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 
 	@Mock
 	private MessagingClient messagingClientMock;
@@ -70,8 +70,7 @@ class MessagingServiceTest {
 		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(renderResponseMock);
 
 		// Act
-		// TODO: Replace with the correct template identifier when available
-		messagingService.renderPdfDecision(MUNICIPALITY_ID, errand, TEMPLATE_IDENTIFIER);
+		messagingService.renderPdfDecision(MUNICIPALITY_ID, errand, TEMPLATE_ID);
 
 		// Assert
 		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());

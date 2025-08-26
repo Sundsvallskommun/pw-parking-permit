@@ -12,6 +12,7 @@ public class DenialTextProperties {
 	private String lawSfs;
 	private String lawChapter;
 	private String lawArticle;
+	private String templateId;
 
 	public String getMessage() {
 		return message;
@@ -91,5 +92,13 @@ public class DenialTextProperties {
 
 	public void setLawArticle(String lawArticle) {
 		this.lawArticle = lawArticle;
+	}
+
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
 	}
 }

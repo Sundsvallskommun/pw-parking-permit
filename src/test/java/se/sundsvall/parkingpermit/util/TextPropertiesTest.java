@@ -44,6 +44,7 @@ class TextPropertiesTest {
 	private static final String DENIAL_LAW_CHAPTER = "13";
 	private static final String DENIAL_LAW_HEADING = "13 kap. 8§ Parkeringstillstånd för rörelsehindrade";
 	private static final String DENIAL_LAW_SFS = "Trafikförordningen (1998:1276)";
+	private static final String DENIAL_TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 	// Simplified service text properties
 	private static final String SIMPLIFIED_MESSAGE = "Kontrollmeddelande för förenklad delgivning";
 	private static final String SIMPLIFIED_SUBJECT = "Kontrollmeddelande för förenklad delgivning";
@@ -94,6 +95,7 @@ class TextPropertiesTest {
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getMessage()).isEqualTo(DENIAL_MESSAGE);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getPlainBody()).isEqualTo(DENIAL_PLAIN_BODY);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getSubject()).isEqualTo(DENIAL_SUBJECT);
+		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getTemplateId()).isEqualTo(DENIAL_TEMPLATE_ID);
 	}
 
 	@Test
