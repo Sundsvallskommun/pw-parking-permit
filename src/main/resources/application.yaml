@@ -211,6 +211,25 @@ texts:
       lawSfs: Trafikförordningen (1998:1276)
       lawChapter: 13
       lawArticle: 8
+      templateId: sbk.prh.decision.all.rejection.municipality
+    2260:
+      message: Ärendet avskrivs
+      filename: beslut.pdf
+      subject: Beslut från Ånge kommun
+      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
+      plainBody: |-
+        Hej
+        
+        Du har fått ett beslut från Ånge kommun.
+        
+        Med vänlig hälsning
+        Ånge kommun
+      description: Personen inte folkbokförd i Ånge kommun.
+      lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
+      lawSfs: Trafikförordningen (1998:1276)
+      lawChapter: 13
+      lawArticle: 8
+      templateId: sbk.rph.investigation.driver.rejection
   simplified-services:
     2281:
       delay: "P1D"
@@ -236,11 +255,11 @@ texts:
         <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
         <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
         <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
-        <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
+        <p><a href="mailto:ange@ange.se">ange@ange.se</a> eller telefon till 0690-25 01.</p>
       plainBody: |-
         Kontrollmeddelande för förenklad delgivning
         
         Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
         När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
         Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till
-        kontakt@sundsvall.se eller telefon till 060-19 10 00.
+        ange@ange.se eller telefon till 0690-25 01.

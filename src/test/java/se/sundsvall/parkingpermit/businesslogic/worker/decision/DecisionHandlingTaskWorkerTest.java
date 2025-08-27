@@ -19,18 +19,19 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 import static se.sundsvall.parkingpermit.Constants.SM_TYPE_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.TEMPLATE_IDENTIFIER;
 
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.supportmanagement.Classification;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
@@ -124,6 +125,8 @@ class DecisionHandlingTaskWorkerTest {
 		final var pdf = new RenderResponse();
 		final var messageUUID = UUID.randomUUID();
 		final var smErrandId = UUID.randomUUID().toString();
+		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("DRIVER")));
+		final var templateIdentifier = "sbk.rph.decision.driver.approval";
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -133,10 +136,10 @@ class DecisionHandlingTaskWorkerTest {
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
-		// TODO: Replace with actual template identifier when available
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER)).thenReturn(pdf);
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
 
@@ -151,8 +154,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		// TODO: Replace with actual template identifier when available
-		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER);
+		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
 		assertThat(supportManagementErrandCaptor.getValue())
 			.extracting(generated.se.sundsvall.supportmanagement.Errand::getStatus,
@@ -193,6 +195,8 @@ class DecisionHandlingTaskWorkerTest {
 		final var pdf = new RenderResponse().output("pdf");
 		final var smErrandId = UUID.randomUUID().toString();
 		final var fileName = "decision.pdf";
+		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
+		final var templateIdentifier = "sbk.rph.decision.passenger.approval";
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -206,8 +210,8 @@ class DecisionHandlingTaskWorkerTest {
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
 		when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
-		// TODO: Replace with actual template identifier when available
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER)).thenReturn(pdf);
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
 
 		// Act
@@ -234,6 +238,8 @@ class DecisionHandlingTaskWorkerTest {
 		final var pdf = new RenderResponse().output("pdf");
 		final var smErrandId = UUID.randomUUID().toString();
 		final var fileName = "decision.pdf";
+		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
+		final var templateIdentifier = "sbk.rph.decision.passenger.rejection";
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -248,9 +254,9 @@ class DecisionHandlingTaskWorkerTest {
 		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, false)).thenThrow(thrownException);
-		// TODO: Replace with actual template identifier when available
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER)).thenReturn(pdf);
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
 
 		// Act
@@ -277,6 +283,8 @@ class DecisionHandlingTaskWorkerTest {
 		final var pdf = new RenderResponse();
 		final var messageUUID = UUID.randomUUID();
 		final var smErrandId = UUID.randomUUID().toString();
+		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
+		final var templateIdentifier = "sbk.rph.decision.passenger.approval";
 
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
@@ -285,10 +293,10 @@ class DecisionHandlingTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
-		// TODO: Replace with actual template identifier when available
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER)).thenReturn(pdf);
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
 
@@ -304,8 +312,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
-		// TODO: Replace with actual template identifier when available
-		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_IDENTIFIER);
+		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);

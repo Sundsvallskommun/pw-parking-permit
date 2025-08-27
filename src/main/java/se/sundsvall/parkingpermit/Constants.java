@@ -123,8 +123,5 @@ public final class Constants {
 
 	public static final String SM_NAMESPACE_CONTACTANGE = "CONTACTANGE";
 
-	// TODO: Remove this and move to configuration
-	public static final String TEMPLATE_IDENTIFIER = "sbk.prh.decision.all.rejection.municipality";
-
 	private Constants() {}
 }
