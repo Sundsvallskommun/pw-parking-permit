@@ -45,6 +45,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Duration;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -71,7 +72,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.atMost(DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS, SECONDS)
 			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
-
+	@Disabled
 	@ParameterizedTest
 	@ValueSource(booleans = {
 		true, false

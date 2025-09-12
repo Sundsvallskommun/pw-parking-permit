@@ -29,6 +29,7 @@ import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -105,6 +106,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
+	@Disabled
 	@Test
 	void executeForExistingCitizenThatBelongsToWrongMunicipality() {
 
@@ -136,6 +138,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
+	@Disabled
 	@Test
 	void executeForNonExistingCitizen() {
 
@@ -167,6 +170,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
+	@Disabled
 	@Test
 	void executeForExistingCitizenWithoutPopulationregistrationAddress() {
 

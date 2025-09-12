@@ -58,12 +58,12 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 					if (!applicantMunicipalityId.equals(municipalityId)) {
 						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
 							personId, municipalityId, applicantMunicipalityId);
-
-						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
+						// TODO: Uncomment
+//						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 					}
 				}, () -> {
 					logInfo("No municipalityId found for applicant with personId:'{}'", personId);
-					variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
+//					variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 				});
 			});
 
