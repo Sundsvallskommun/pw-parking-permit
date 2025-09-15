@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.integration.supportmanagement.mapper;
 
+import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -30,6 +31,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("MAILING");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -73,6 +77,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("MAILING");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -116,6 +123,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("MAILING");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -159,6 +169,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("MAILING");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -202,6 +215,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("MAILING");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -252,6 +268,9 @@ class SupportManagementMapperTest {
 		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("PARKING_PERMIT"));
 		assertThat(errand.getLabels()).containsExactly("CARD_MANAGEMENT");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
+		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
+		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
+		assertThat(errand.getActiveNotifications()).isNull();
 		assertThat(errand.getStakeholders()).hasSize(1)
 			.extracting(Stakeholder::getExternalIdType,
 				Stakeholder::getExternalId,
@@ -292,7 +311,7 @@ class SupportManagementMapperTest {
 			.id(123L)
 			.errandNumber("errandNumber")
 			.municipalityId("municipalityId")
-			.stakeholders(List.of(createCaseDataApplicantStakeholder()))
+			.stakeholders(List.of(createCaseDataApplicantStakeholder(), createCaseDataAdministratorStakeholder()))
 			.namespace("namespace");
 	}
 
@@ -302,6 +321,17 @@ class SupportManagementMapperTest {
 			.firstName("Firstname")
 			.lastName("Lastname")
 			.roles(List.of("APPLICANT"))
+			.addresses(List.of(createCaseDataAddress()))
+			.contactInformation(List.of(createCaseDataContactInformationPhone(), createCaseDataContactInformationEmail()));
+	}
+
+	private generated.se.sundsvall.casedata.Stakeholder createCaseDataAdministratorStakeholder() {
+		return new generated.se.sundsvall.casedata.Stakeholder()
+			.personId("personId")
+			.firstName("Firstname")
+			.lastName("Lastname")
+			.roles(List.of("ADMINISTRATOR"))
+			.adAccount("adAccount")
 			.addresses(List.of(createCaseDataAddress()))
 			.contactInformation(List.of(createCaseDataContactInformationPhone(), createCaseDataContactInformationEmail()));
 	}
