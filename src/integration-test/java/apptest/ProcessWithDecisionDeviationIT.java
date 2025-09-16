@@ -326,21 +326,29 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			"decision_decision-handling-worker---api-messaging-digital-mail-post",
 			equalToJson("""
 				{
-				   "party" : {
-				     "partyIds" : [ "6b8928bb-9800-4d52-a9fa-20d88c81f1d6" ],
-				     "externalReferences" : [ ]
-				   },
-				   "sender" : {
-				     "supportInfo" : { }
-				   },
-				   "subject" : "Beslut från Ånge kommun",
-				   "contentType" : "text/html",
-				   "body" : "PHA+PHN0cm9uZz5IZWo8L3N0cm9uZz48L3A+PHA+RHUgaGFyIGYmYXJpbmc7dHQgZXR0IGJlc2x1dCBmciZhcmluZztuIMOFbmdlIGtvbW11bi48L3A+PHA+TWVkIHYmYXVtbDtubGlnIGgmYXVtbDtsc25pbmc8YnIgLz48c3Ryb25nPsOFbmdlIGtvbW11bjwvc3Ryb25nPjwvcD4=",
-				   "attachments" : [ {
-				     "contentType" : "application/pdf",
-				     "content" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
-				     "filename" : "beslut.pdf"
-				   } ]
+					"party" : {
+						"partyIds" : [ "6b8928bb-9800-4d52-a9fa-20d88c81f1d6" ],
+						"externalReferences" : [ ]
+					},
+					"sender" : {
+						"supportInfo" : {
+							"text" : "Kontakta oss via epost eller telefon.",
+							"emailAddress" : "ange@ange.se",
+							"phoneNumber" : "+46 690 250100",
+							"url" : "https://invanare.ange.se/"
+						}
+					},
+					"subject" : "Beslut från Ånge kommun",
+					"department" : "Ånge kommun",
+					"contentType" : "text/html",
+					"body" : "PHA+PHN0cm9uZz5IZWo8L3N0cm9uZz48L3A+PHA+RHUgaGFyIGYmYXJpbmc7dHQgZXR0IGJlc2x1dCBmciZhcmluZztuIMOFbmdlIGtvbW11bi48L3A+PHA+TWVkIHYmYXVtbDtubGlnIGgmYXVtbDtsc25pbmc8YnIgLz48c3Ryb25nPsOFbmdlIGtvbW11bjwvc3Ryb25nPjwvcD4=",
+					"attachments" : [ 
+						{
+							"contentType" : "application/pdf",
+							"content" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
+							"filename" : "beslut.pdf"
+				        } 
+				    ]
 				 }
 				"""));
 		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterDigitalMailPost, "decision_decision-handling-worker---api-support-management-post",
