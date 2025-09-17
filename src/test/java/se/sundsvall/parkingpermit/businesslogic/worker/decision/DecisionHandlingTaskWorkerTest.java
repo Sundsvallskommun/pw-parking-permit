@@ -20,6 +20,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
@@ -135,7 +136,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
-		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
@@ -208,7 +209,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(approvalTextPropertiesMock.getFilename()).thenReturn(fileName);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(false);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
-		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
 		when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
@@ -251,7 +252,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(denialTextPropertiesMock.getFilename()).thenReturn(fileName);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
-		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
@@ -292,7 +293,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
-		when(errandMock.getStakeholders()).thenReturn(createApplicantStakeholder());
+		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
@@ -326,7 +327,7 @@ class DecisionHandlingTaskWorkerTest {
 		return decision;
 	}
 
-	private List<Stakeholder> createApplicantStakeholder() {
+	private List<Stakeholder> createApplicantAndAdministratorStakeholder() {
 		return List.of(new Stakeholder()
 			.personId("personId")
 			.firstName("Kalle")
@@ -336,6 +337,17 @@ class DecisionHandlingTaskWorkerTest {
 			.contactInformation(List.of(new ContactInformation().value("kalle.anka@ange.se").contactType(ContactInformation.ContactTypeEnum.EMAIL),
 				new ContactInformation().value("0701234567").contactType(ContactInformation.ContactTypeEnum.PHONE)))
 			.type(PERSON)
-			.roles(List.of(ROLE_APPLICANT)));
+			.roles(List.of(ROLE_APPLICANT)),
+			new Stakeholder()
+				.personId("personId")
+				.firstName("Kajsa")
+				.lastName("Anka")
+				.addresses(List.of(new Address().street("Storgatan").houseNumber("1").postalCode("12345").city("Ankeborg").careOf("c/o Anka")
+					.country("Sverige")))
+				.contactInformation(List.of(new ContactInformation().value("kalle.anka@ange.se").contactType(ContactInformation.ContactTypeEnum.EMAIL),
+					new ContactInformation().value("0701234567").contactType(ContactInformation.ContactTypeEnum.PHONE)))
+				.type(PERSON)
+				.adAccount("adAccount")
+				.roles(List.of(ROLE_ADMINISTRATOR)));
 	}
 }

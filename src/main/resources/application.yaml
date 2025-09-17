@@ -187,11 +187,22 @@ texts:
       contact-info-phonenumber: +46 60 191000
       contact-info-text: Kontakta oss via epost eller telefon.
       contact-info-url: https://sundsvall.se/
+    2260:
+      department: Ånge kommun
+      contact-info-email: ange@ange.se
+      contact-info-phonenumber: +46 690 250100
+      contact-info-text: Kontakta oss via epost eller telefon.
+      contact-info-url: https://invanare.ange.se/
   approvals:
     2281:
       description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
       subject: Beslut från Sundsvalls kommun
       htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
+      filename: beslut.pdf
+    2260:
+      description: Personen är folkbokförd i Ånge kommun. Rekommenderat beslut är att godkänna ansökan.
+      subject: Beslut från Ånge kommun
+      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
       filename: beslut.pdf
   denials:
     2281:
@@ -255,11 +266,11 @@ texts:
         <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
         <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
         <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
-        <p><a href="mailto:ange@ange.se">ange@ange.se</a> eller telefon till 0690-25 01.</p>
+        <p><a href="mailto:ange@ange.se">ange@ange.se</a> eller telefon till 0690-25 01 00.</p>
       plainBody: |-
         Kontrollmeddelande för förenklad delgivning
         
         Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.
         När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.
         Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till
-        ange@ange.se eller telefon till 0690-25 01.
+        ange@ange.se eller telefon till 0690-25 01 00.

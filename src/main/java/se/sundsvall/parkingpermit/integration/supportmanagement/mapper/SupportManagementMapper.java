@@ -1,7 +1,9 @@
 package se.sundsvall.parkingpermit.integration.supportmanagement.mapper;
 
+import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_CONTACT_CHANNEL_TYPE_EMAIL;
@@ -29,6 +31,8 @@ import java.util.Optional;
 
 public final class SupportManagementMapper {
 
+	private static final String PROCESS_ENGINE_USER = "ProcessEngine";
+
 	private SupportManagementMapper() {
 		// Private constructor to prevent instantiation
 	}
@@ -37,16 +41,20 @@ public final class SupportManagementMapper {
 		if (caseDataErrand == null) {
 			return null;
 		}
+		final var administratorStakeholder = getStakeholder(caseDataErrand, ROLE_ADMINISTRATOR);
 
 		return new Errand()
 			.status(SM_STATUS_NEW)
 			.title(SM_SUBJECT_MAILING_PARKING_PERMIT)
+			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_MAILING_PARKING_PERMIT, caseDataErrand.getErrandNumber()))
 			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
 			.labels(List.of(SM_LABEL_MAILING))
 			// TODO: Check channel
 			.channel("ESERVICE")
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
+			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
+			.activeNotifications(null)
 			.businessRelated(false);
 	}
 
@@ -55,15 +63,20 @@ public final class SupportManagementMapper {
 			return null;
 		}
 
+		final var administratorStakeholder = getStakeholder(caseDataErrand, ROLE_ADMINISTRATOR);
+
 		return new Errand()
 			.status(SM_STATUS_NEW)
 			.title(SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT)
+			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_CARD_MANAGEMENT, caseDataErrand.getErrandNumber()))
 			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
 			.labels(List.of(SM_LABEL_CARD_MANAGEMENT))
 			// TODO: Check channel
 			.channel("ESERVICE")
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
+			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
+			.activeNotifications(null)
 			.businessRelated(false);
 	}
 
