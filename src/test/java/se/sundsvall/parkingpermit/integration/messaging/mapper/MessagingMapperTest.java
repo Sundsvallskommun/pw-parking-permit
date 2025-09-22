@@ -121,7 +121,7 @@ class MessagingMapperTest {
 			List.of(new ExternalReference().key(MESSAGING_KEY_FLOW_INSTANCE_ID).value(externalCaseId)));
 		assertThat(request.getOepInstance()).isEqualTo(EXTERNAL);
 		assertThat(request.getMessage()).isEqualTo(MESSAGE);
-		assertThat(request.getAttachments()).isEmpty();
+		assertThat(request.getAttachments()).isNull();
 
 		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(simplifiedServiceTextPropertiesMock).getPlainBody();
