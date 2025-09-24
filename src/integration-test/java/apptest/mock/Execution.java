@@ -135,7 +135,7 @@ public class Execution {
 				{
 					"itemData":
 						{
-					  		"Name": "${json-unit.any-string}",
+					  		"Name": "ParkingPermit",
 					  		"SpecificContent":{},
 					  		"Reference":"%s"
 						}

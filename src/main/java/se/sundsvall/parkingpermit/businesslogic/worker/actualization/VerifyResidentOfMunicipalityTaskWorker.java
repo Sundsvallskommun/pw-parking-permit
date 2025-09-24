@@ -12,6 +12,7 @@ import generated.se.sundsvall.citizen.CitizenAddress;
 import generated.se.sundsvall.citizen.CitizenExtended;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -94,6 +95,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 			.stream()
 			.filter(address -> MAIN_ADDRESS_TYPE.equals(address.getAddressType()))
 			.map(CitizenAddress::getMunicipality)
+			.filter(Objects::nonNull)
 			.findAny();
 	}
 }

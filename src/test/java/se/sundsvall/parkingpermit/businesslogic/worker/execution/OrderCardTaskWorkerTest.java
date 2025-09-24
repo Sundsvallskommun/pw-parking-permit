@@ -23,7 +23,6 @@ import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Status;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -31,8 +30,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -49,9 +47,7 @@ class OrderCardTaskWorkerTest {
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
-	private static final String QUEUE_NEW_CARD = "NyttKortNyPerson";
-	private static final String QUEUE_REPLACEMENT_CARD = "NyttKortBefintligPerson";
-	private static final String QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD = "StöldspärraSamtSkapaNyttKort";
+	private static final String QUEUE_PARKING_PERMIT = "ParkingPermit";
 	private static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
 
 	@Mock
@@ -76,8 +72,10 @@ class OrderCardTaskWorkerTest {
 	private OrderCardTaskWorker worker;
 
 	@ParameterizedTest
-	@MethodSource("orderCardTypeArguments")
-	void execute(String caseType, List<String> expectedQueueNames) {
+	@ValueSource(strings = {
+		CASE_TYPE_PARKING_PERMIT, CASE_TYPE_PARKING_PERMIT_RENEWAL, CASE_TYPE_LOST_PARKING_PERMIT
+	})
+	void execute(String caseType) {
 		// Arrange
 		final var errand = new Errand().id(ERRAND_ID).caseType(caseType).namespace(NAMESPACE);
 
@@ -95,7 +93,7 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(externalTaskMock, times(2)).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(rpaServiceMock).addQueueItems(expectedQueueNames, ERRAND_ID, MUNICIPALITY_ID);
+		verify(rpaServiceMock).addQueueItems(List.of(QUEUE_PARKING_PERMIT), ERRAND_ID, MUNICIPALITY_ID);
 		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
@@ -132,12 +130,5 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
-	}
-
-	private static Stream<Arguments> orderCardTypeArguments() {
-		return Stream.of(
-			Arguments.of(CASE_TYPE_PARKING_PERMIT, List.of(QUEUE_NEW_CARD)),
-			Arguments.of(CASE_TYPE_PARKING_PERMIT_RENEWAL, List.of(QUEUE_REPLACEMENT_CARD)),
-			Arguments.of(CASE_TYPE_LOST_PARKING_PERMIT, List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD)));
 	}
 }
