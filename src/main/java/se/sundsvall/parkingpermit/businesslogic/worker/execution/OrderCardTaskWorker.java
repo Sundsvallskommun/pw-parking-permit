@@ -28,9 +28,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 	private static final String NO_CASE_TYPE = "Errand has no CaseType";
 	private static final String UNSUPPORTED_CASE_TYPE = "CaseType '%s' is not supported";
-	private static final String QUEUE_NEW_CARD = "NyttKortNyPerson";
-	private static final String QUEUE_REPLACEMENT_CARD = "NyttKortBefintligPerson";
-	private static final String QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD = "StöldspärraSamtSkapaNyttKort";
+	private static final String QUEUE_PARKING_PERMIT = "ParkingPermit";
 
 	private final RpaService rpaService;
 
@@ -57,16 +55,19 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private List<String> getQueueNames(Errand errand) {
-		if (isNull(errand.getCaseType())) {
+	private List<String> getQueueNames(final Errand errand) {
+
+		final var caseType = errand.getCaseType();
+
+		if (isNull(caseType)) {
 			throw Problem.valueOf(INTERNAL_SERVER_ERROR, NO_CASE_TYPE);
 		}
 
-		return switch (errand.getCaseType()) {
-			case CASE_TYPE_PARKING_PERMIT -> List.of(QUEUE_NEW_CARD);
-			case CASE_TYPE_PARKING_PERMIT_RENEWAL -> List.of(QUEUE_REPLACEMENT_CARD);
-			case CASE_TYPE_LOST_PARKING_PERMIT -> List.of(QUEUE_ANTI_THEFT_AND_REPLACEMENT_CARD);
-			default -> throw Problem.valueOf(INTERNAL_SERVER_ERROR, UNSUPPORTED_CASE_TYPE.formatted(errand.getCaseType()));
-		};
+		if (CASE_TYPE_PARKING_PERMIT.equals(caseType) ||
+			CASE_TYPE_PARKING_PERMIT_RENEWAL.equals(caseType) ||
+			CASE_TYPE_LOST_PARKING_PERMIT.equals(caseType)) {
+			return List.of(QUEUE_PARKING_PERMIT);
+		}
+		throw Problem.valueOf(INTERNAL_SERVER_ERROR, UNSUPPORTED_CASE_TYPE.formatted(errand.getCaseType()));
 	}
 }
