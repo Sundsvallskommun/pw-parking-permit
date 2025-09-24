@@ -135,7 +135,7 @@ public class Execution {
 				{
 					"itemData":
 						{
-					  		"Name": "ParkingPermit",
+					  		"Name": "ParkingPermits",
 					  		"SpecificContent":{},
 					  		"Reference":"%s"
 						}

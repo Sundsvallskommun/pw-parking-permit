@@ -47,7 +47,7 @@ class OrderCardTaskWorkerTest {
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
-	private static final String QUEUE_PARKING_PERMIT = "ParkingPermit";
+	private static final String QUEUE_PARKING_PERMITS = "ParkingPermits";
 	private static final String CASEDATA_STATUS_DECISION_EXECUTED = "Beslut verkställt";
 
 	@Mock
@@ -93,7 +93,7 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(externalTaskMock, times(2)).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(rpaServiceMock).addQueueItems(List.of(QUEUE_PARKING_PERMIT), ERRAND_ID, MUNICIPALITY_ID);
+		verify(rpaServiceMock).addQueueItems(List.of(QUEUE_PARKING_PERMITS), ERRAND_ID, MUNICIPALITY_ID);
 		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_DECISION_EXECUTED);
