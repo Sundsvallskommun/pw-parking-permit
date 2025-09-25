@@ -28,7 +28,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 	private static final String NO_CASE_TYPE = "Errand has no CaseType";
 	private static final String UNSUPPORTED_CASE_TYPE = "CaseType '%s' is not supported";
-	private static final String QUEUE_PARKING_PERMIT = "ParkingPermit";
+	private static final String QUEUE_PARKING_PERMITS = "ParkingPermits";
 
 	private final RpaService rpaService;
 
@@ -66,7 +66,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 		if (CASE_TYPE_PARKING_PERMIT.equals(caseType) ||
 			CASE_TYPE_PARKING_PERMIT_RENEWAL.equals(caseType) ||
 			CASE_TYPE_LOST_PARKING_PERMIT.equals(caseType)) {
-			return List.of(QUEUE_PARKING_PERMIT);
+			return List.of(QUEUE_PARKING_PERMITS);
 		}
 		throw Problem.valueOf(INTERNAL_SERVER_ERROR, UNSUPPORTED_CASE_TYPE.formatted(errand.getCaseType()));
 	}
