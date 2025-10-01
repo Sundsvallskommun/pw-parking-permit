@@ -10,9 +10,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
@@ -60,12 +58,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 			validateResponse(ruleEngineResponse);
 
-			final var isAutomatic = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-				.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
-				.findFirst()
-				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
-				.filter(PHASE_ACTION_AUTOMATIC::equals)
-				.isPresent();
+			final var isAutomatic = isAutomatic(errand);
 
 			final var decision = ruleEngineResponse.getResults().stream()
 				.filter(result -> !NOT_APPLICABLE.equals(result.getValue()))

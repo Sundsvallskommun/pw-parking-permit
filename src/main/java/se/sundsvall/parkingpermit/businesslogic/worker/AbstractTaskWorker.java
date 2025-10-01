@@ -9,6 +9,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
@@ -82,6 +83,15 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.findFirst()
 			.map(extraParameters -> extraParameters.getValues().getFirst())
 			.filter(PHASE_ACTION_CANCEL::equals)
+			.isPresent();
+	}
+
+	protected boolean isAutomatic(Errand errand) {
+		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
+			.findFirst()
+			.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
+			.filter(PHASE_ACTION_AUTOMATIC::equals)
 			.isPresent();
 	}
 

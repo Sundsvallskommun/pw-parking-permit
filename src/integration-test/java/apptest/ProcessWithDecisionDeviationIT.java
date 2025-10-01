@@ -378,14 +378,13 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				    "parameters" : [ ],
 				    "classification" : {
 				      "category" : "URBAN_DEVELOPMENT",
-				      "type" : "PARKING_PERMIT"
+				      "type" : "URBAN_DEVELOPMENT.PARKING_PERMIT"
 				    },
 				    "status" : "NEW",
 				    "description" : "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: PRH-2022-000001",
-				    "channel" : "ESERVICE",
 				    "reporterUserId" : "ProcessEngine",
 				    "businessRelated" : false,
-				    "labels" : [ "CARD_MANAGEMENT" ]
+				    "labels" : [ "URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.CARD_MANAGEMENT" ]
 				  }
 				"""));
 

@@ -6,6 +6,7 @@ import static org.zalando.problem.Status.BAD_GATEWAY;
 
 import generated.se.sundsvall.supportmanagement.Errand;
 import java.io.ByteArrayInputStream;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,11 @@ public class SupportManagementService {
 
 	private final SupportManagementClient supportManagementClient;
 
-	SupportManagementService(SupportManagementClient supportManagementClient) {
+	SupportManagementService(final SupportManagementClient supportManagementClient) {
 		this.supportManagementClient = supportManagementClient;
 	}
 
-	public Optional<String> createErrand(String municipalityId, String namespace, Errand errand) {
+	public Optional<String> createErrand(final String municipalityId, final String namespace, final Errand errand) {
 		final var response = supportManagementClient.createErrand(municipalityId, namespace, errand);
 
 		if (response.getStatusCode().is2xxSuccessful()) {
@@ -32,9 +33,10 @@ public class SupportManagementService {
 		}
 	}
 
-	public void createAttachment(String municipalityId, String namespace, String errandId, String fileName, String content) {
+	public void createAttachment(final String municipalityId, final String namespace, final String errandId, final String fileName, final String content) {
 		if (isNotEmpty(fileName) && Objects.nonNull(content)) {
-			supportManagementClient.createAttachment(municipalityId, namespace, errandId, AttachmentMultiPartFile.create(fileName, new ByteArrayInputStream(content.getBytes())));
+			supportManagementClient.createAttachment(municipalityId, namespace, errandId,
+				AttachmentMultiPartFile.create(fileName, new ByteArrayInputStream(Base64.getDecoder().decode(content.getBytes()))));
 		} else {
 			throw Problem.valueOf(BAD_GATEWAY, "File name and content cannot be null or empty");
 		}

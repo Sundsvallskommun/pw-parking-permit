@@ -13,6 +13,8 @@ import static se.sundsvall.parkingpermit.Constants.SM_DESCRIPTION_MAILING_PARKIN
 import static se.sundsvall.parkingpermit.Constants.SM_EXTERNAL_ID_TYPE_PRIVATE;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_MAILING;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_ROLE_CONTACT_PERSON;
 import static se.sundsvall.parkingpermit.Constants.SM_STATUS_NEW;
 import static se.sundsvall.parkingpermit.Constants.SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT;
@@ -37,7 +39,7 @@ public final class SupportManagementMapper {
 		// Private constructor to prevent instantiation
 	}
 
-	public static Errand toSupportManagementMailingErrand(generated.se.sundsvall.casedata.Errand caseDataErrand) {
+	public static Errand toSupportManagementMailingErrand(final generated.se.sundsvall.casedata.Errand caseDataErrand, final boolean isAutomatic) {
 		if (caseDataErrand == null) {
 			return null;
 		}
@@ -49,16 +51,15 @@ public final class SupportManagementMapper {
 			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_MAILING_PARKING_PERMIT, caseDataErrand.getErrandNumber()))
 			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
-			.labels(List.of(SM_LABEL_MAILING))
-			// TODO: Check channel
-			.channel("ESERVICE")
+			.labels(List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_MAILING))
+			.channel(getChannel(isAutomatic))
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
 			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
 			.activeNotifications(null)
 			.businessRelated(false);
 	}
 
-	public static Errand toSupportManagementCardManagementErrand(generated.se.sundsvall.casedata.Errand caseDataErrand) {
+	public static Errand toSupportManagementCardManagementErrand(generated.se.sundsvall.casedata.Errand caseDataErrand, boolean isAutomatic) {
 		if (caseDataErrand == null) {
 			return null;
 		}
@@ -71,9 +72,8 @@ public final class SupportManagementMapper {
 			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_CARD_MANAGEMENT, caseDataErrand.getErrandNumber()))
 			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
-			.labels(List.of(SM_LABEL_CARD_MANAGEMENT))
-			// TODO: Check channel
-			.channel("ESERVICE")
+			.labels(List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT))
+			.channel(getChannel(isAutomatic))
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
 			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
 			.activeNotifications(null)
@@ -159,5 +159,9 @@ public final class SupportManagementMapper {
 		contactChannels.addAll(emails);
 		contactChannels.addAll(phones);
 		return contactChannels;
+	}
+
+	private static String getChannel(final boolean isAutomatic) {
+		return isAutomatic ? "ESERVICE" : null;
 	}
 }

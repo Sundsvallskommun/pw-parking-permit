@@ -94,13 +94,13 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	}
 
 	private void createSupportManagementMailingErrand(final Errand errand, final String municipalityId, final String namespace, final RenderResponse pdf) {
-		final var mailingErrandId = supportManagementService.createErrand(municipalityId, namespace, toSupportManagementMailingErrand(errand));
+		final var mailingErrandId = supportManagementService.createErrand(municipalityId, namespace, toSupportManagementMailingErrand(errand, isAutomatic(errand)));
 		mailingErrandId.ifPresent(errandId -> supportManagementService.createAttachment(municipalityId, namespace, errandId, getFilename(errand), pdf.getOutput()));
 	}
 
 	private void createSupportManagementCardErrand(final Errand errand, final String municipalityId, final String namespace) {
 		if (isApproved(errand)) {
-			supportManagementService.createErrand(municipalityId, namespace, toSupportManagementCardManagementErrand(errand));
+			supportManagementService.createErrand(municipalityId, namespace, toSupportManagementCardManagementErrand(errand, isAutomatic(errand)));
 		}
 	}
 
