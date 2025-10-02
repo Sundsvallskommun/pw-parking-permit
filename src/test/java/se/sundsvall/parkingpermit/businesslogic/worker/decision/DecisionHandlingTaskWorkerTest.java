@@ -24,6 +24,8 @@ import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 import static se.sundsvall.parkingpermit.Constants.SM_TYPE_PARKING_PERMIT;
 
@@ -169,8 +171,8 @@ class DecisionHandlingTaskWorkerTest {
 				"Korthantering av parkeringstillstånd",
 				"Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: " + ERRAND_NUMBER,
 				new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT),
-				List.of(SM_LABEL_CARD_MANAGEMENT),
-				"ESERVICE",
+				List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT),
+				null,
 				List.of(new generated.se.sundsvall.supportmanagement.Stakeholder()
 					.externalId("personId")
 					.externalIdType("PRIVATE")

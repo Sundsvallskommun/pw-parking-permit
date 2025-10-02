@@ -11,6 +11,7 @@ import static org.zalando.problem.Status.BAD_GATEWAY;
 
 import generated.se.sundsvall.supportmanagement.Errand;
 import java.net.URI;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -79,7 +80,7 @@ class SupportManagementServiceTest {
 		// Arrange
 		final var errandId = "errandId";
 		final var fileName = "file.txt";
-		final var content = "file content";
+		final var content = Base64.getEncoder().encodeToString("file content".getBytes());
 
 		// Act
 		supportManagementService.createAttachment(MUNICIPALITY_ID, NAMESPACE, errandId, fileName, content);
