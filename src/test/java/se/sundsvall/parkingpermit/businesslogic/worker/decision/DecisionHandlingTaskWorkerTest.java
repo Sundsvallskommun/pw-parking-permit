@@ -185,7 +185,7 @@ class DecisionHandlingTaskWorkerTest {
 					.zipCode("12345")
 					.country("Sverige")
 					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
-						new ContactChannel().type("Phone").value("0701234567")))));
+						new ContactChannel().type("Phone").value("0701740605")))));
 
 		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
 		verifyNoInteractions(failureHandlerMock);
@@ -337,7 +337,7 @@ class DecisionHandlingTaskWorkerTest {
 			.addresses(List.of(new Address().street("Storgatan").houseNumber("1").postalCode("12345").city("Ankeborg").careOf("c/o Anka")
 				.country("Sverige")))
 			.contactInformation(List.of(new ContactInformation().value("kalle.anka@ange.se").contactType(ContactInformation.ContactTypeEnum.EMAIL),
-				new ContactInformation().value("0701234567").contactType(ContactInformation.ContactTypeEnum.PHONE)))
+				new ContactInformation().value("0701740605").contactType(ContactInformation.ContactTypeEnum.PHONE)))
 			.type(PERSON)
 			.roles(List.of(ROLE_APPLICANT)),
 			new Stakeholder()
@@ -347,7 +347,7 @@ class DecisionHandlingTaskWorkerTest {
 				.addresses(List.of(new Address().street("Storgatan").houseNumber("1").postalCode("12345").city("Ankeborg").careOf("c/o Anka")
 					.country("Sverige")))
 				.contactInformation(List.of(new ContactInformation().value("kalle.anka@ange.se").contactType(ContactInformation.ContactTypeEnum.EMAIL),
-					new ContactInformation().value("0701234567").contactType(ContactInformation.ContactTypeEnum.PHONE)))
+					new ContactInformation().value("0701740605").contactType(ContactInformation.ContactTypeEnum.PHONE)))
 				.type(PERSON)
 				.adAccount("adAccount")
 				.roles(List.of(ROLE_ADMINISTRATOR)));
