@@ -66,7 +66,7 @@ class SupportManagementMapperTest {
 				"CareOf",
 				"SE",
 				List.of(new ContactChannel().type("Email").value("a.b@c.se"),
-					new ContactChannel().type("Phone").value("0701234567"))));
+					new ContactChannel().type("Phone").value("0701740605"))));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class SupportManagementMapperTest {
 				"CareOf",
 				"SE",
 				List.of(new ContactChannel().type("Email").value("a.b@c.se"),
-					new ContactChannel().type("Phone").value("0701234567"))));
+					new ContactChannel().type("Phone").value("0701740605"))));
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class SupportManagementMapperTest {
 				"CareOf",
 				"SE",
 				List.of(new ContactChannel().type("Email").value("a.b@c.se"),
-					new ContactChannel().type("Phone").value("0701234567"))));
+					new ContactChannel().type("Phone").value("0701740605"))));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ class SupportManagementMapperTest {
 				null,
 				null,
 				List.of(new ContactChannel().type("Email").value("a.b@c.se"),
-					new ContactChannel().type("Phone").value("0701234567"))));
+					new ContactChannel().type("Phone").value("0701740605"))));
 	}
 
 	@Test
@@ -310,7 +310,7 @@ class SupportManagementMapperTest {
 				"CareOf",
 				"SE",
 				List.of(new ContactChannel().type("Email").value("a.b@c.se"),
-					new ContactChannel().type("Phone").value("0701234567"))));
+					new ContactChannel().type("Phone").value("0701740605"))));
 	}
 
 	@Test
@@ -365,7 +365,7 @@ class SupportManagementMapperTest {
 	private ContactInformation createCaseDataContactInformationPhone() {
 		return new ContactInformation()
 			.contactType(ContactInformation.ContactTypeEnum.PHONE)
-			.value("0701234567");
+			.value("0701740605");
 	}
 
 	private ContactInformation createCaseDataContactInformationEmail() {

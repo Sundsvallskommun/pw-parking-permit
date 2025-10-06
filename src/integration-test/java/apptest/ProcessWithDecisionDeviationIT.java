@@ -370,7 +370,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				        "value" : "john.doe@example.com"
 				      }, {
 				        "type" : "Phone",
-				        "value" : "070-1234567"
+				        "value" : "070-1740605"
 				      } ],
 				      "parameters" : [ ]
 				    } ],
