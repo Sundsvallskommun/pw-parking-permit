@@ -240,7 +240,7 @@ texts:
       lawSfs: Trafikförordningen (1998:1276)
       lawChapter: 13
       lawArticle: 8
-      templateId: sbk.rph.investigation.driver.rejection
+      templateId: sbk.rph.decision.all.rejection.municipality
   simplified-services:
     2281:
       delay: "P1D"

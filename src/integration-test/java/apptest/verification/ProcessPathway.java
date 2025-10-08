@@ -115,6 +115,7 @@ public class ProcessPathway {
 	public static Tuples denialPathway() {
 		return Tuples.create()
 			.with(tuple("Start automatic denial phase", "start_automatic_denial_phase"))
+			.with(tuple("Gateway is citizen", "gateway_automatic_denial_is_citizen"))
 			.with(tuple("Update phase on errand", "external_task_update_errand_phase"))
 			.with(tuple("Add decision for denial to errand", "external_task_add_denial_decision"))
 			.with(tuple("Update errand status", "external_task_update_errand_status"))
