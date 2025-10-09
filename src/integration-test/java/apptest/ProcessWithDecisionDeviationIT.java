@@ -6,6 +6,7 @@ import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
 import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
+import static apptest.mock.Denial.mockSendSimplifiedService;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
@@ -235,8 +236,9 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				"displayPhaseParameter", "Beslut",
 				"statusTypeParameter", "Beslutad"),
 			"REJECTION");
+		final var stateAfterSendingSimplifiedServiceMessage = mockSendSimplifiedService(caseId, scenarioName, stateAfterCheckDecision);
 		// Normal mocks
-		mockFollowUp(caseId, scenarioName, stateAfterCheckDecision, isAutomatic);
+		mockFollowUp(caseId, scenarioName, stateAfterSendingSimplifiedServiceMessage, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -262,6 +264,12 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(investigationPathway())
 			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
 			.with(decisionPathway())
+			.with(tuple("Start automatic denial phase", "start_automatic_denial_phase"))
+			.with(tuple("Gateway is citizen", "gateway_automatic_denial_is_citizen"))
+			.with(tuple("Wait to send message", "timer_denial_wait_to_send_message"))
+			.with(tuple("Send simplified service message", "external_task_send_simplified_service"))
+			.with(tuple("End automatic denial phase", "end_automatic_denial_phase"))
+			.with(tuple("Automatic denial", "subprocess_automatic_denial"))
 			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
