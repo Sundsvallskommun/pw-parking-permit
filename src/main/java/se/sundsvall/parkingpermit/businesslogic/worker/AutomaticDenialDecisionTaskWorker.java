@@ -9,6 +9,10 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
+import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
+import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
+import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
@@ -71,8 +75,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts(municipalityId).getDescription())
 				.decidedBy(stakeholder)
 				.decidedAt(OffsetDateTime.now())
-				.addLawItem(toLaw(textProvider.getDenialTexts(municipalityId).getLawHeading(), textProvider.getDenialTexts(municipalityId).getLawSfs(),
-					textProvider.getDenialTexts(municipalityId).getLawChapter(), textProvider.getDenialTexts(municipalityId).getLawArticle()))
+				.addLawItem(toLaw(LAW_HEADING, LAW_SFS, LAW_CHAPTER, LAW_ARTICLE))
 				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts(municipalityId).getFilename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
 			caseDataClient.patchNewDecision(municipalityId, namespace, errand.getId(), decision);

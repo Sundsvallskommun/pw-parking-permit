@@ -218,10 +218,6 @@ texts:
         Med vänlig hälsning
         Sundsvalls kommun
       description: Personen inte folkbokförd i Sundsvalls kommun.
-      lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
-      lawSfs: Trafikförordningen (1998:1276)
-      lawChapter: 13
-      lawArticle: 8
       templateId: sbk.prh.decision.all.rejection.municipality
     2260:
       message: Ärendet avskrivs
@@ -236,10 +232,6 @@ texts:
         Med vänlig hälsning
         Ånge kommun
       description: Personen inte folkbokförd i Ånge kommun.
-      lawHeading: 13 kap. 8§ Parkeringstillstånd för rörelsehindrade
-      lawSfs: Trafikförordningen (1998:1276)
-      lawChapter: 13
-      lawArticle: 8
       templateId: sbk.rph.decision.all.rejection.municipality
   simplified-services:
     2281:

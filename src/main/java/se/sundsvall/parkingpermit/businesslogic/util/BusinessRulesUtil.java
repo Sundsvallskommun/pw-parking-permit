@@ -41,7 +41,7 @@ public final class BusinessRulesUtil {
 		var decisionOutcome = isApproved ? APPROVAL : REJECTION;
 		String prefix = getDescriptionPrefix(isAutomatic, isApproved);
 
-		return createDecision(decisionType, decisionOutcome, prefix.formatted(concatDescriptions(toDetails(resultFromRuleEngine))));
+		return createDecision(decisionType, decisionOutcome, prefix.formatted(concatDescriptions(toDetails(resultFromRuleEngine))), isAutomatic);
 	}
 
 	private static String getDescriptionPrefix(boolean isAutomatic, boolean isApproved) {
@@ -52,12 +52,17 @@ public final class BusinessRulesUtil {
 		}
 	}
 
-	private static Decision createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description) {
-		return new Decision()
+	private static Decision createDecision(DecisionTypeEnum decisionType, DecisionOutcomeEnum decisionOutcomeEnum, String description, boolean isAutomatic) {
+		final var decisison = new Decision()
 			.decisionType(decisionType)
 			.decisionOutcome(decisionOutcomeEnum)
 			.description(description)
 			.created(toOffsetDateTimeWithLocalOffset(OffsetDateTime.now(ZoneId.systemDefault())));
+
+		if (FINAL.equals(decisionType) && isAutomatic) {
+			decisison.setDecidedAt(OffsetDateTime.now());
+		}
+		return decisison;
 	}
 
 	private static String concatDescriptions(List<ResultDetail> detailsFromRuleEngine) {

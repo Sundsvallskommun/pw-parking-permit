@@ -8,10 +8,6 @@ public class DenialTextProperties {
 	private String htmlBody;
 	private String plainBody;
 	private String description;
-	private String lawHeading;
-	private String lawSfs;
-	private String lawChapter;
-	private String lawArticle;
 	private String templateId;
 
 	public String getMessage() {
@@ -60,38 +56,6 @@ public class DenialTextProperties {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getLawHeading() {
-		return lawHeading;
-	}
-
-	public void setLawHeading(String lawHeading) {
-		this.lawHeading = lawHeading;
-	}
-
-	public String getLawSfs() {
-		return lawSfs;
-	}
-
-	public void setLawSfs(String lawSfs) {
-		this.lawSfs = lawSfs;
-	}
-
-	public String getLawChapter() {
-		return lawChapter;
-	}
-
-	public void setLawChapter(String lawChapter) {
-		this.lawChapter = lawChapter;
-	}
-
-	public String getLawArticle() {
-		return lawArticle;
-	}
-
-	public void setLawArticle(String lawArticle) {
-		this.lawArticle = lawArticle;
 	}
 
 	public String getTemplateId() {

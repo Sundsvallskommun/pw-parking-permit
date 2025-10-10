@@ -2,10 +2,11 @@ package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAPACITY_DRIVER;
+import static se.sundsvall.parkingpermit.Constants.CAPACITY_PASSENGER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
@@ -33,8 +34,6 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 @ExternalTaskSubscription("DecisionHandlingTask")
 public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 
-	private static final String CAPACITY_DRIVER = "DRIVER";
-	private static final String CAPACITY_PASSENGER = "PASSENGER";
 	private final TextProvider textProvider;
 	private final MessagingService messagingService;
 	private final SupportManagementService supportManagementService;
@@ -104,20 +103,6 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private boolean isApproved(final Errand errand) {
-		final var decisionOutCome = Optional.ofNullable(getFinalDecision(errand))
-			.map(Decision::getDecisionOutcome)
-			.orElse(REJECTION);
-		return APPROVAL.equals(decisionOutCome);
-	}
-
-	private Decision getFinalDecision(final Errand errand) {
-		return errand.getDecisions().stream()
-			.filter(decision -> FINAL.equals(decision.getDecisionType()))
-			.findFirst()
-			.orElse(null);
-	}
-
 	private String getFilename(final Errand errand) {
 		return isApproved(errand) ? textProvider.getApprovalTexts(errand.getMunicipalityId()).getFilename() : textProvider.getDenialTexts(errand.getMunicipalityId()).getFilename();
 	}
@@ -141,5 +126,12 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 		}
 
 		return isApproved(errand) ? templateId.append(".approval").toString() : templateId.append(".rejection").toString();
+	}
+
+	private boolean isApproved(final Errand errand) {
+		final var decisionOutCome = Optional.ofNullable(getFinalDecision(errand))
+			.map(Decision::getDecisionOutcome)
+			.orElse(REJECTION);
+		return APPROVAL.equals(decisionOutCome);
 	}
 }
