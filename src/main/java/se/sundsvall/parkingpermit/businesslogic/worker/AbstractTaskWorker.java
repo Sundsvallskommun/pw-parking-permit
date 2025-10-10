@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
@@ -14,6 +15,7 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.Attachment;
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import java.util.List;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -105,5 +107,12 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
 	protected Long getCaseNumber(ExternalTask externalTask) {
 		return externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+	}
+
+	protected Decision getFinalDecision(final Errand errand) {
+		return errand.getDecisions().stream()
+			.filter(decision -> FINAL.equals(decision.getDecisionType()))
+			.findFirst()
+			.orElse(null);
 	}
 }

@@ -118,10 +118,6 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		// Setup
 		final var filename = "filename";
 		final var description = "description";
-		final var lawHeading = "lawHeading";
-		final var lawSfs = "lawSfs";
-		final var lawChapter = "lawChapter";
-		final var lawArticle = "lawArticle";
 		final var stakeholderId = new Random().nextLong();
 		final var stakeholder = new Stakeholder().id(stakeholderId);
 		final var output = "output";
@@ -139,10 +135,6 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
 		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
 		when(denialTextPropertiesMock.getDescription()).thenReturn(description);
-		when(denialTextPropertiesMock.getLawHeading()).thenReturn(lawHeading);
-		when(denialTextPropertiesMock.getLawSfs()).thenReturn(lawSfs);
-		when(denialTextPropertiesMock.getLawChapter()).thenReturn(lawChapter);
-		when(denialTextPropertiesMock.getLawArticle()).thenReturn(lawArticle);
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(TEMPLATE_ID);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
@@ -158,7 +150,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), stakeholderCaptor.capture());
 		verify(caseDataClientMock).getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId);
-		verify(textProviderMock, times(7)).getDenialTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(3)).getDenialTexts(MUNICIPALITY_ID);
 		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
@@ -185,10 +177,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				Law::getHeading,
 				Law::getSfs)
 			.containsExactly(tuple(
-				lawArticle,
-				lawChapter,
-				lawHeading,
-				lawSfs));
+				"8",
+				"13",
+				"13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
+				"Trafikförordningen (1998:1276)"));
 		assertThat(decisionCaptor.getValue().getAttachments())
 			.extracting(
 				Attachment::getCategory,
@@ -209,10 +201,6 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		// Setup
 		final var filename = "filename";
 		final var description = "description";
-		final var lawHeading = "lawHeading";
-		final var lawSfs = "lawSfs";
-		final var lawChapter = "lawChapter";
-		final var lawArticle = "lawArticle";
 		final var stakeholderId = new Random().nextLong();
 		final var processEngineStakeholder = createStakeholder(stakeholderId, ROLE_ADMINISTRATOR, "Process", "Engine");
 		final var output = "output";
@@ -234,10 +222,6 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
 		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
 		when(denialTextPropertiesMock.getDescription()).thenReturn(description);
-		when(denialTextPropertiesMock.getLawHeading()).thenReturn(lawHeading);
-		when(denialTextPropertiesMock.getLawSfs()).thenReturn(lawSfs);
-		when(denialTextPropertiesMock.getLawChapter()).thenReturn(lawChapter);
-		when(denialTextPropertiesMock.getLawArticle()).thenReturn(lawArticle);
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(TEMPLATE_ID);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
@@ -252,7 +236,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock, never()).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
-		verify(textProviderMock, times(7)).getDenialTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(3)).getDenialTexts(MUNICIPALITY_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
 		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(simplifiedServiceTextPropertiesMock).getDelay();
@@ -274,10 +258,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				Law::getHeading,
 				Law::getSfs)
 			.containsExactly(tuple(
-				lawArticle,
-				lawChapter,
-				lawHeading,
-				lawSfs));
+				"8",
+				"13",
+				"13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
+				"Trafikförordningen (1998:1276)"));
 		assertThat(decisionCaptor.getValue().getAttachments())
 			.extracting(
 				Attachment::getCategory,

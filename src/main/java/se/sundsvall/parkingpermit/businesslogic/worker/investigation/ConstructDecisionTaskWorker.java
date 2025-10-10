@@ -11,10 +11,21 @@ import static org.zalando.problem.Status.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
+import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
+import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
+import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.templating.RenderResponse;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.util.Comparator;
@@ -30,19 +41,22 @@ import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")
 public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 	private static final Period VALIDITY_PERIOD_ONE_YEAR = Period.parse("P1Y");
+	private final MessagingService messagingService;
 
-	ConstructDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+	ConstructDecisionTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
 		super(camundaClient, caseDataClient, failureHandler);
+		this.messagingService = messagingService;
 	}
 
 	@Override
-	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	protected void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for ConstructDecisionTaskWorker");
 			final String municipalityId = getMunicipalityId(externalTask);
@@ -50,33 +64,22 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			final Long caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
-
 			final var latestDecision = errand.getDecisions().stream()
 				.max(Comparator.comparingInt(Decision::getVersion)).orElse(null);
 
 			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
-
 			validateResponse(ruleEngineResponse);
 
 			final var isAutomatic = isAutomatic(errand);
 
-			final var decision = ruleEngineResponse.getResults().stream()
+			var decision = ruleEngineResponse.getResults().stream()
 				.filter(result -> !NOT_APPLICABLE.equals(result.getValue()))
 				.findFirst()
 				.map(result -> BusinessRulesUtil.constructDecision(result, isAutomatic))
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
-			if (isAutomatic && APPROVAL.equals(decision.getDecisionOutcome())) {
-				decision.setValidFrom(OffsetDateTime.now());
-
-				final var disabilityDuration = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-					.filter(extraParameters -> CASEDATA_KEY_DISABILITY_DURATION.equals(extraParameters.getKey()))
-					.findFirst()
-					.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
-					.map(Period::parse)
-					.orElseThrow(() -> Problem.valueOf(CONFLICT, "No disability duration found in errand"));
-
-				decision.setValidTo(getValidTo(disabilityDuration));
+			if (isAutomatic) {
+				decision = decorateDecisionForAutomatic(errand, decision);
 			}
 
 			if (isDecisionsNotEqual(latestDecision, decision)) {
@@ -134,5 +137,51 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		// A disability duration cannot be shorter than 1 year if automatic decision. If it's zero means that the
 		// disability is permanent.
 		return VALIDITY_PERIOD_ONE_YEAR.getYears() <= disabilityDuration.getYears() || disabilityDuration.isZero();
+	}
+
+	private Decision decorateDecisionForAutomatic(Errand errand, Decision decision) {
+
+		if (APPROVAL.equals(decision.getDecisionOutcome())) {
+			decision.setValidFrom(OffsetDateTime.now());
+
+			final var disabilityDuration = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+				.filter(extraParameters -> CASEDATA_KEY_DISABILITY_DURATION.equals(extraParameters.getKey()))
+				.findFirst()
+				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
+				.map(Period::parse)
+				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No disability duration found in errand"));
+
+			decision.setValidTo(getValidTo(disabilityDuration));
+		}
+
+		final RenderResponse pdf = messagingService.renderPdfDecision(errand.getMunicipalityId(), errand, getTemplateId(errand, decision));
+
+		return decision
+			.decidedBy(getStakeholder(errand, ROLE_ADMINISTRATOR))
+			.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, "beslut.pdf", "pdf", "application/pdf", pdf))
+			.addLawItem(toLaw(LAW_HEADING, LAW_SFS, LAW_CHAPTER, LAW_ARTICLE));
+	}
+
+	private String getTemplateId(final Errand errand, final Decision decision) {
+		StringBuilder templateId = new StringBuilder("sbk.rph.decision");
+		final var capacity = Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList())
+			.stream()
+			.filter(param -> "application.applicant.capacity".equals(param.getKey()))
+			.findFirst()
+			.map(generated.se.sundsvall.casedata.ExtraParameter::getValues)
+			.flatMap(values -> values.stream().findFirst())
+			.orElse(null);
+
+		if ("passenger".equalsIgnoreCase(capacity)) {
+			templateId.append(".passenger");
+		} else if ("driver".equalsIgnoreCase(capacity)) {
+			templateId.append(".driver");
+		} else {
+			templateId.append(".all");
+		}
+
+		return APPROVAL.equals(ofNullable(decision).map(Decision::getDecisionOutcome).orElse(null))
+			? templateId.append(".approval").toString()
+			: templateId.append(".rejection").toString();
 	}
 }

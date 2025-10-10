@@ -109,11 +109,4 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		return errand.getDecisions().stream()
 			.anyMatch(decision -> FINAL.equals(decision.getDecisionType()));
 	}
-
-	private Decision getFinalDecision(Errand errand) {
-		return errand.getDecisions().stream()
-			.filter(decision -> FINAL.equals(decision.getDecisionType()))
-			.findFirst()
-			.orElse(null);
-	}
 }

@@ -11,6 +11,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -35,7 +36,9 @@ import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Status;
+import generated.se.sundsvall.templating.RenderResponse;
 import java.util.List;
 import java.util.stream.Stream;
 import org.camunda.bpm.client.exception.EngineException;
@@ -54,6 +57,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.MessagingService;
 
 @ExtendWith(MockitoExtension.class)
 class ConstructDecisionTaskWorkerTest {
@@ -73,6 +77,8 @@ class ConstructDecisionTaskWorkerTest {
 	private Errand errandMock;
 	@Mock
 	private FailureHandler failureHandlerMock;
+	@Mock
+	private MessagingService messagingServiceMock;
 
 	@Captor
 	private ArgumentCaptor<Decision> decisionArgumentCaptor;
@@ -155,7 +161,8 @@ class ConstructDecisionTaskWorkerTest {
 		if (isAutomatic) {
 			when(errandMock.getId()).thenReturn(ERRAND_ID);
 			when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
-
+			when(messagingServiceMock.renderPdfDecision(eq(MUNICIPALITY_ID), eq(errandMock), anyString())).thenReturn(new RenderResponse());
+			when(errandMock.getStakeholders()).thenReturn(List.of(new Stakeholder().roles(List.of("ADMINISTRATOR"))));
 		}
 
 		// Act

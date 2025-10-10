@@ -125,5 +125,13 @@ public final class Constants {
 
 	public static final String SM_NAMESPACE_CONTACTANGE = "CONTACTANGE";
 
+	public static final String LAW_HEADING = "13 kap. 8§ Parkeringstillstånd för rörelsehindrade";
+	public static final String LAW_SFS = "Trafikförordningen (1998:1276)";
+	public static final String LAW_CHAPTER = "13";
+	public static final String LAW_ARTICLE = "8";
+
+	public static final String CAPACITY_DRIVER = "DRIVER";
+	public static final String CAPACITY_PASSENGER = "PASSENGER";
+
 	private Constants() {}
 }

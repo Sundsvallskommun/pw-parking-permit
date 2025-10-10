@@ -40,10 +40,6 @@ class TextPropertiesTest {
 		Med vänlig hälsning
 		Sundsvalls kommun""";
 	private static final String DENIAL_DESCRIPTION = "Personen inte folkbokförd i Sundsvalls kommun.";
-	private static final String DENIAL_LAW_ARTICLE = "8";
-	private static final String DENIAL_LAW_CHAPTER = "13";
-	private static final String DENIAL_LAW_HEADING = "13 kap. 8§ Parkeringstillstånd för rörelsehindrade";
-	private static final String DENIAL_LAW_SFS = "Trafikförordningen (1998:1276)";
 	private static final String DENIAL_TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 	// Simplified service text properties
 	private static final String SIMPLIFIED_MESSAGE = "Kontrollmeddelande för förenklad delgivning";
@@ -88,10 +84,6 @@ class TextPropertiesTest {
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getDescription()).isEqualTo(DENIAL_DESCRIPTION);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getFilename()).isEqualTo(DENIAL_FILE_NAME);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getHtmlBody()).isEqualTo(DENIAL_HTML_BODY);
-		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getLawArticle()).isEqualTo(DENIAL_LAW_ARTICLE);
-		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getLawChapter()).isEqualTo(DENIAL_LAW_CHAPTER);
-		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getLawHeading()).isEqualTo(DENIAL_LAW_HEADING);
-		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getLawSfs()).isEqualTo(DENIAL_LAW_SFS);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getMessage()).isEqualTo(DENIAL_MESSAGE);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getPlainBody()).isEqualTo(DENIAL_PLAIN_BODY);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getSubject()).isEqualTo(DENIAL_SUBJECT);
