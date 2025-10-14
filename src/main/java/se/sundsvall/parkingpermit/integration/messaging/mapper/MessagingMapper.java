@@ -7,6 +7,7 @@ import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum
 import static java.nio.charset.Charset.defaultCharset;
 import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
 
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.messaging.DigitalMailAttachment;
 import generated.se.sundsvall.messaging.DigitalMailParty;
 import generated.se.sundsvall.messaging.DigitalMailRequest;
@@ -46,6 +47,16 @@ public class MessagingMapper {
 				.addExternalReferencesItem(new ExternalReference().key(MESSAGING_KEY_FLOW_INSTANCE_ID).value(externalCaseId)));
 	}
 
+	public WebMessageRequest toWebMessageRequestDecision(RenderResponse renderResponse, String partyId, String externalCaseId, String municipalityId, Decision decision) {
+		return new WebMessageRequest()
+			.addAttachmentsItem(toWebMessageAttachment(renderResponse, municipalityId))
+			.message(decision.getDescription())
+			.oepInstance(EXTERNAL)
+			.party(new WebMessageParty()
+				.partyId(UUID.fromString(partyId))
+				.addExternalReferencesItem(new ExternalReference().key(MESSAGING_KEY_FLOW_INSTANCE_ID).value(externalCaseId)));
+	}
+
 	public WebMessageRequest toWebMessageRequestSimplifiedService(String partyId, String externalCaseId, String municipalityId) {
 		return new WebMessageRequest()
 			.message(textProvider.getSimplifiedServiceTexts(municipalityId).getPlainBody())
@@ -59,7 +70,7 @@ public class MessagingMapper {
 	private WebMessageAttachment toWebMessageAttachment(RenderResponse renderResponse, String municipalityId) {
 		return new WebMessageAttachment()
 			.base64Data(renderResponse.getOutput())
-			.fileName(textProvider.getDenialTexts(municipalityId).getFilename())
+			.fileName(textProvider.getCommonTexts(municipalityId).getFilename())
 			.mimeType(APPLICATION_PDF.getValue());
 	}
 
@@ -91,9 +102,7 @@ public class MessagingMapper {
 		final var subject = isApproval
 			? textProvider.getApprovalTexts(municipalityId).getSubject()
 			: textProvider.getDenialTexts(municipalityId).getSubject();
-		final var filename = isApproval
-			? textProvider.getApprovalTexts(municipalityId).getFilename()
-			: textProvider.getDenialTexts(municipalityId).getFilename();
+		final var filename = textProvider.getCommonTexts(municipalityId).getFilename();
 
 		return new DigitalMailRequest()
 			.addAttachmentsItem(toDigitalMailAttachment(renderResponse, filename))
@@ -131,7 +140,7 @@ public class MessagingMapper {
 			.content(renderResponse.getOutput())
 			.contentType(APPLICATION_PDF)
 			.deliveryMode(ANY)
-			.filename(textProvider.getDenialTexts(municipalityId).getFilename());
+			.filename(textProvider.getCommonTexts(municipalityId).getFilename());
 	}
 
 	private DigitalMailAttachment toDigitalMailAttachment(RenderResponse renderResponse, String filename) {

@@ -4,6 +4,7 @@ import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPRO
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAPACITY_DRIVER;
 import static se.sundsvall.parkingpermit.Constants.CAPACITY_PASSENGER;
@@ -60,10 +61,18 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			final boolean sendDigitalMail = textProvider.getCommonTexts(municipalityId).getSendDigitalMail();
 			String messageId = null;
 
-			if (sendDigitalMail) {
+			if (isNotEmpty(errand.getExternalCaseId())) {
+				// If the errand has an externalCaseId we will try to send a web message
+				messageId = Optional.ofNullable(messagingService.sendDecisionWebMessage(municipalityId, errand, pdf, getFinalDecision(errand)))
+					.map(UUID::toString)
+					.orElse(null);
+			}
+			if (sendDigitalMail && isNull(messageId)) {
+				// Try to send digital mail if configured to do so and if the errand does not have an externalCaseId
 				messageId = sendDigitalMail(errand, municipalityId, pdf);
 			}
-			// If sending the decision message fails, or it's configured to not send digital mail, we will create support errands
+			// If messageId is null here we have failed to send both web message and digital mail, and will create a support
+			// management errand instead
 			if (isNull(messageId)) {
 				createSupportManagementMailingErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE, pdf);
 				createSupportManagementCardErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE);
@@ -104,7 +113,7 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	}
 
 	private String getFilename(final Errand errand) {
-		return isApproved(errand) ? textProvider.getApprovalTexts(errand.getMunicipalityId()).getFilename() : textProvider.getDenialTexts(errand.getMunicipalityId()).getFilename();
+		return textProvider.getCommonTexts(errand.getMunicipalityId()).getFilename();
 	}
 
 	private String getTemplateId(final Errand errand) {

@@ -1,5 +1,7 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
 import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
 import static java.nio.charset.Charset.defaultCharset;
@@ -8,10 +10,12 @@ import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
 
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.messaging.DigitalMailAttachment;
 import generated.se.sundsvall.messaging.DigitalMailParty;
 import generated.se.sundsvall.messaging.DigitalMailRequest;
@@ -80,7 +84,8 @@ class MessagingMapperTest {
 		final var externalCaseId = "externalCaseId";
 
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.getFilename()).thenReturn(FILENAME);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(FILENAME);
 		when(denialTextPropertiesMock.getMessage()).thenReturn(MESSAGE);
 
 		final var request = messagingMapper.toWebMessageRequestDenial(RENDER_RESPONSE, PARTY_ID.toString(), externalCaseId,
@@ -101,10 +106,41 @@ class MessagingMapperTest {
 				FILENAME,
 				APPLICATION_PDF.getValue()));
 
-		verify(textProviderMock, times(2)).getDenialTexts(MUNICIPALITY_ID);
-		verify(denialTextPropertiesMock).getFilename();
+		verify(textProviderMock).getDenialTexts(MUNICIPALITY_ID);
+		verify(textProviderMock).getCommonTexts(MUNICIPALITY_ID);
+		verify(commonTextPropertiesMock).getFilename();
 		verify(denialTextPropertiesMock).getMessage();
 		verifyNoMoreInteractions(commonTextPropertiesMock);
+	}
+
+	@Test
+	void toWebMessageRequestDecision() {
+		final var externalCaseId = "externalCaseId";
+		final var decisionDescription = "decisionDescription";
+		final var decision = new Decision().decisionType(FINAL).decisionOutcome(APPROVAL).description(decisionDescription);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(FILENAME);
+
+		final var request = messagingMapper.toWebMessageRequestDecision(RENDER_RESPONSE, PARTY_ID.toString(), externalCaseId,
+			MUNICIPALITY_ID, decision);
+
+		assertThat(request.getParty()).isNotNull().extracting(WebMessageParty::getPartyId, WebMessageParty::getExternalReferences).containsExactly(
+			PARTY_ID,
+			List.of(new ExternalReference().key(MESSAGING_KEY_FLOW_INSTANCE_ID).value(externalCaseId)));
+		assertThat(request.getOepInstance()).isEqualTo(EXTERNAL);
+		assertThat(request.getMessage()).isEqualTo(decisionDescription);
+		assertThat(request.getAttachments()).hasSize(1)
+			.extracting(
+				WebMessageAttachment::getBase64Data,
+				WebMessageAttachment::getFileName,
+				WebMessageAttachment::getMimeType)
+			.containsExactly(tuple(
+				OUTPUT,
+				FILENAME,
+				APPLICATION_PDF.getValue()));
+
+		verify(commonTextPropertiesMock).getFilename();
+		verifyNoInteractions(approvalTextPropertiesMock, simplifiedServiceTextPropertiesMock);
 	}
 
 	@Test
@@ -139,7 +175,7 @@ class MessagingMapperTest {
 		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
 		when(denialTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
 		when(denialTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
-		when(denialTextPropertiesMock.getFilename()).thenReturn(FILENAME);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(FILENAME);
 
 		final var request = messagingMapper.toLetterRequestDenial(RENDER_RESPONSE, PARTY_ID.toString(), MUNICIPALITY_ID);
 
@@ -172,15 +208,15 @@ class MessagingMapperTest {
 				DeliveryModeEnum.ANY,
 				FILENAME));
 
-		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
-		verify(textProviderMock, times(3)).getDenialTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(6)).getCommonTexts(MUNICIPALITY_ID);
+		verify(textProviderMock, times(2)).getDenialTexts(MUNICIPALITY_ID);
 		verify(commonTextPropertiesMock).getContactInfoEmail();
 		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
 		verify(commonTextPropertiesMock).getContactInfoText();
 		verify(commonTextPropertiesMock).getContactInfoUrl();
 		verify(commonTextPropertiesMock).getDepartment();
 		verify(denialTextPropertiesMock).getHtmlBody();
-		verify(denialTextPropertiesMock).getFilename();
+		verify(commonTextPropertiesMock).getFilename();
 		verify(denialTextPropertiesMock).getSubject();
 	}
 
@@ -234,13 +270,14 @@ class MessagingMapperTest {
 		when(textProviderMock.getApprovalTexts(MUNICIPALITY_ID)).thenReturn(approvalTextPropertiesMock);
 		when(approvalTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
 		when(approvalTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
-		when(approvalTextPropertiesMock.getFilename()).thenReturn(FILENAME);
+
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
 		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
 		when(commonTextPropertiesMock.getContactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
 		when(commonTextPropertiesMock.getContactInfoText()).thenReturn(CONTACTINFO_TEXT);
 		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(FILENAME);
 
 		// Act
 		final var request = messagingMapper.toDigitalMailRequest(RENDER_RESPONSE, PARTY_ID.toString(), MUNICIPALITY_ID, true);

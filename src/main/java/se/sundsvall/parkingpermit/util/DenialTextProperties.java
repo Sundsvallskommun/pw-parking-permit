@@ -3,7 +3,6 @@ package se.sundsvall.parkingpermit.util;
 public class DenialTextProperties {
 
 	private String message;
-	private String filename;
 	private String subject;
 	private String htmlBody;
 	private String plainBody;
@@ -16,14 +15,6 @@ public class DenialTextProperties {
 
 	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
 	}
 
 	public String getSubject() {

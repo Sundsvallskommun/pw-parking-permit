@@ -9,6 +9,7 @@ import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderDecisionRequest;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.messaging.MessageResult;
 import generated.se.sundsvall.templating.RenderResponse;
@@ -58,6 +59,13 @@ public class MessagingService {
 		final var messageResult = messagingClient.sendDigitalMail(municipalityId, messagingMapper.toDigitalMailRequest(pdf, partyId, municipalityId, isApproved));
 
 		return extractId(messageResult.getMessages());
+	}
+
+	public UUID sendDecisionWebMessage(String municipalityId, Errand errand, RenderResponse pdf, Decision decision) {
+		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
+		final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequestDecision(pdf, partyId, errand.getExternalCaseId(),
+			municipalityId, decision));
+		return extractId(List.of(messageResult));
 	}
 
 	public UUID sendMessageSimplifiedService(String municipalityId, Errand errand) {

@@ -38,6 +38,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
@@ -75,6 +76,9 @@ class AddMessageToErrandTaskWorkerTest {
 	private DenialTextProperties denialTextPropertiesMock;
 
 	@Mock
+	private CommonTextProperties commonTextPropertiesMock;
+
+	@Mock
 	private Errand errandMock;
 
 	@InjectMocks
@@ -107,8 +111,9 @@ class AddMessageToErrandTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID)).thenReturn(new RenderResponse());
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(TEMPLATE_ID);
-		when(denialTextPropertiesMock.getFilename()).thenReturn(filename);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(filename);
 		when(denialTextPropertiesMock.getSubject()).thenReturn(subject);
 		when(denialTextPropertiesMock.getPlainBody()).thenReturn(plainBody);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID)).thenReturn(messageId);
@@ -123,7 +128,7 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
-		verify(denialTextPropertiesMock).getFilename();
+		verify(commonTextPropertiesMock).getFilename();
 		verify(denialTextPropertiesMock).getSubject();
 		verify(denialTextPropertiesMock).getPlainBody();
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
@@ -152,7 +157,9 @@ class AddMessageToErrandTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateId)).thenReturn(new RenderResponse());
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(templateId);
+		when(commonTextPropertiesMock.getFilename()).thenReturn("filename");
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -164,7 +171,7 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateId);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MESSAGE_ID);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Internal Server Error: Id of sent message could not be retreived from stored process variables");
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Internal Server Error: Id of sent message could not be retrieved from stored process variables");
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(caseDataClientMock, never()).addMessage(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
