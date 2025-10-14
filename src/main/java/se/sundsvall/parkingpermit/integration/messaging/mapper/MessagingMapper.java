@@ -92,7 +92,8 @@ public class MessagingMapper {
 			.department(textProvider.getCommonTexts(municipalityId).getDepartment())
 			.party(new LetterParty().addPartyIdsItem(UUID.fromString(partyId)))
 			.sender(toLetterSender(municipalityId))
-			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject());
+			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject())
+			.attachments(null);
 	}
 
 	public DigitalMailRequest toDigitalMailRequest(RenderResponse renderResponse, String partyId, String municipalityId, boolean isApproval) {
