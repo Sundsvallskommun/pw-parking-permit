@@ -76,7 +76,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				.decidedBy(stakeholder)
 				.decidedAt(OffsetDateTime.now())
 				.addLawItem(toLaw(LAW_HEADING, LAW_SFS, LAW_CHAPTER, LAW_ARTICLE))
-				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getDenialTexts(municipalityId).getFilename(), "pdf", APPLICATION_PDF_VALUE, pdf));
+				.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, textProvider.getCommonTexts(municipalityId).getFilename(), "pdf", APPLICATION_PDF_VALUE, pdf));
 
 			caseDataClient.patchNewDecision(municipalityId, namespace, errand.getId(), decision);
 

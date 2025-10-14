@@ -374,7 +374,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", PHASE_ACTION_AUTOMATIC,
 				"displayPhaseParameter", "Utredning"));
 
-		final var stateAfterRenderPdf = mockRenderPdf(scenarioName, stateAfterConstructDecisionGet, "investigation_construct-recommended-decision_task-worker---api-templating-render-pdf",
+		final var stateAfterRenderPdf = mockRenderPdf(scenarioName, stateAfterConstructDecisionGet, "investigation_construct-decision_task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
 				                "identifier" : "sbk.rph.decision.driver.rejection",
@@ -384,7 +384,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				                    "caseNumber" : "PRH-2022-000001",
 				                    "addressLastname" : "Doe",
 				                    "creationDate" : "2022-12-02",
-				                    "decisionDate" : "2025-10-10"
+				                    "decisionDate" : "${json-unit.any-string}"
 				                }
 				            }
 				"""));

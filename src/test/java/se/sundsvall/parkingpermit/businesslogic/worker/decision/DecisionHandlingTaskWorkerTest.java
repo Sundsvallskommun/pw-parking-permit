@@ -192,7 +192,80 @@ class DecisionHandlingTaskWorkerTest {
 	}
 
 	@Test
-	void executeWhenDecisionIsApprovedAndNotSendDigital() {
+	void executeWhenDecisionIsApprovedAndSendWebMessage() {
+
+		// Arrange
+		final var pdf = new RenderResponse();
+		final var messageUUID = UUID.randomUUID();
+		final var smErrandId = UUID.randomUUID().toString();
+		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("DRIVER")));
+		final var templateIdentifier = "sbk.rph.decision.driver.approval";
+		final var externalErrandId = "externalErrandId";
+		final var decision = createFinalDecision(APPROVAL);
+
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
+		when(errandMock.getExternalCaseId()).thenReturn(externalErrandId);
+		when(errandMock.getDecisions()).thenReturn(List.of(decision));
+		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
+		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
+		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
+		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
+		when(messagingServiceMock.sendDecisionWebMessage(MUNICIPALITY_ID, errandMock, pdf, decision)).thenReturn(messageUUID);
+		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
+		assertThat(mapCaptor.getValue()).containsEntry(CAMUNDA_VARIABLE_MESSAGE_ID, messageUUID.toString());
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
+		verify(messagingServiceMock).sendDecisionWebMessage(MUNICIPALITY_ID, errandMock, pdf, decision);
+		assertThat(supportManagementErrandCaptor.getValue())
+			.extracting(generated.se.sundsvall.supportmanagement.Errand::getStatus,
+				generated.se.sundsvall.supportmanagement.Errand::getTitle,
+				generated.se.sundsvall.supportmanagement.Errand::getDescription,
+				generated.se.sundsvall.supportmanagement.Errand::getClassification,
+				generated.se.sundsvall.supportmanagement.Errand::getLabels,
+				generated.se.sundsvall.supportmanagement.Errand::getChannel,
+				generated.se.sundsvall.supportmanagement.Errand::getStakeholders)
+			.containsExactly("NEW",
+				"Korthantering av parkeringstillstånd",
+				"Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: " + ERRAND_NUMBER,
+				new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT),
+				List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT),
+				null,
+				List.of(new generated.se.sundsvall.supportmanagement.Stakeholder()
+					.externalId("personId")
+					.externalIdType("PRIVATE")
+					.role("CONTACT")
+					.city("Ankeborg")
+					.firstName("Kalle")
+					.lastName("Anka")
+					.address("Storgatan 1")
+					.careOf("c/o Anka")
+					.zipCode("12345")
+					.country("Sverige")
+					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
+						new ContactChannel().type("Phone").value("0701740605")))));
+
+		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
+		verifyNoInteractions(failureHandlerMock);
+	}
+
+	@Test
+	void executeWhenDecisionIsApprovedAndNotSendDigitalAndNoExternalErrandId() {
 
 		// Arrange
 		final var pdf = new RenderResponse().output("pdf");
@@ -207,8 +280,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getApprovalTexts(MUNICIPALITY_ID)).thenReturn(approvalTextPropertiesMock);
-		when(approvalTextPropertiesMock.getFilename()).thenReturn(fileName);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(fileName);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(false);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
@@ -250,8 +322,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
-		when(denialTextPropertiesMock.getFilename()).thenReturn(fileName);
+		when(commonTextPropertiesMock.getFilename()).thenReturn(fileName);
 		when(commonTextPropertiesMock.getSendDigitalMail()).thenReturn(true);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(REJECTION)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());

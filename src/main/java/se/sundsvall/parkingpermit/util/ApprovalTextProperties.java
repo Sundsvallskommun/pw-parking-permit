@@ -3,7 +3,6 @@ package se.sundsvall.parkingpermit.util;
 public class ApprovalTextProperties {
 
 	private String description;
-	private String filename;
 	private String subject;
 	private String htmlBody;
 
@@ -13,14 +12,6 @@ public class ApprovalTextProperties {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
 	}
 
 	public String getSubject() {

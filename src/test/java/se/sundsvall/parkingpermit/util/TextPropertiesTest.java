@@ -17,7 +17,6 @@ class TextPropertiesTest {
 	static final String MUNICIPALITY_ID_ANGE = "2260";
 	// Approval text properties
 	private static final String APPROVAL_DESCRIPTION = "Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.";
-	private static final String APPROVAL_FILE_NAME = "beslut.pdf";
 	private static final String APPROVAL_SUBJECT = "Beslut från Sundsvalls kommun";
 	private static final String APPROVAL_HTML_BODY = "<p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>";
 
@@ -27,8 +26,8 @@ class TextPropertiesTest {
 	private static final String COMMON_CONTACTINFO_PHONENUMBER = "+46 60 191000";
 	private static final String COMMON_CONTACTINFO_TEXT = "Kontakta oss via epost eller telefon.";
 	private static final String COMMON_CONTACTINFO_URL = "https://sundsvall.se/";
+	private static final String COMMON_FILE_NAME = "beslut.pdf";
 	// Denial text properties
-	private static final String DENIAL_FILE_NAME = "beslut.pdf";
 	private static final String DENIAL_MESSAGE = "Ärendet avskrivs";
 	private static final String DENIAL_SUBJECT = "Beslut från Sundsvalls kommun";
 	private static final String DENIAL_HTML_BODY = "<p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>";
@@ -63,7 +62,6 @@ class TextPropertiesTest {
 	@Test
 	void approvalText() {
 		assertThat(textProperties.getApprovals().get(MUNICIPALITY_ID).getDescription()).isEqualTo(APPROVAL_DESCRIPTION);
-		assertThat(textProperties.getApprovals().get(MUNICIPALITY_ID).getFilename()).isEqualTo(APPROVAL_FILE_NAME);
 		assertThat(textProperties.getApprovals().get(MUNICIPALITY_ID).getHtmlBody()).isEqualTo(APPROVAL_HTML_BODY);
 		assertThat(textProperties.getApprovals().get(MUNICIPALITY_ID).getSubject()).isEqualTo(APPROVAL_SUBJECT);
 	}
@@ -77,12 +75,12 @@ class TextPropertiesTest {
 		assertThat(textProperties.getCommons().get(MUNICIPALITY_ID).getContactInfoUrl()).isEqualTo(COMMON_CONTACTINFO_URL);
 		assertThat(textProperties.getCommons().get(MUNICIPALITY_ID).getSendDigitalMail()).isTrue();
 		assertThat(textProperties.getCommons().get(MUNICIPALITY_ID_ANGE).getSendDigitalMail()).isFalse();
+		assertThat(textProperties.getCommons().get(MUNICIPALITY_ID).getFilename()).isEqualTo(COMMON_FILE_NAME);
 	}
 
 	@Test
 	void denialTexts() {
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getDescription()).isEqualTo(DENIAL_DESCRIPTION);
-		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getFilename()).isEqualTo(DENIAL_FILE_NAME);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getHtmlBody()).isEqualTo(DENIAL_HTML_BODY);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getMessage()).isEqualTo(DENIAL_MESSAGE);
 		assertThat(textProperties.getDenials().get(MUNICIPALITY_ID).getPlainBody()).isEqualTo(DENIAL_PLAIN_BODY);

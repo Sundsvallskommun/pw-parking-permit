@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.service;
 
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,6 +14,7 @@ import static org.zalando.problem.Status.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
+import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.messaging.DigitalMailRequest;
@@ -272,6 +274,28 @@ class MessagingServiceTest {
 		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
 		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, digitalMailRequest);
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void sendDecisionWebMessage() {
+
+		// Arrange
+		final var errand = createErrand(false);
+		final var renderResponse = new RenderResponse();
+		final var webMessageRequest = new WebMessageRequest();
+		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+		final var decision = new Decision().decisionType(FINAL).decisionOutcome(Decision.DecisionOutcomeEnum.APPROVAL);
+
+		when(messagingMapperMock.toWebMessageRequestDecision(any(), any(), any(), eq(MUNICIPALITY_ID), any())).thenReturn(webMessageRequest);
+		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+
+		// Act
+		final var uuid = messagingService.sendDecisionWebMessage(MUNICIPALITY_ID, errand, renderResponse, decision);
+
+		// Assert
+		assertThat(uuid).isEqualTo(messageResult.getMessageId());
+		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
 		verifyNoInteractions(templatingClientMock);
 	}
 

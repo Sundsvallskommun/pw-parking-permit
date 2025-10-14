@@ -14,7 +14,7 @@ import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
-import static apptest.mock.api.Messaging.mockMessagingDigitalMailPost;
+import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.SupportManagement.mockSupportManagementPost;
 import static apptest.mock.api.Templating.mockRenderPdf;
 import static apptest.verification.ProcessPathway.actualizationPathway;
@@ -330,36 +330,28 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 							}
 				"""));
 
-		final var stateAfterDigitalMailPost = mockMessagingDigitalMailPost(municipalityIdAnge, scenarioName, stateAfterDecisionHandlingRenderPdf,
-			"decision_decision-handling-worker---api-messaging-digital-mail-post",
+		final var stateAfterWebmessagePost = mockMessagingWebMessagePost(municipalityIdAnge, scenarioName, stateAfterDecisionHandlingRenderPdf,
+			"decision_decision-handling-worker---api-messaging-web-message-post",
 			equalToJson("""
 				{
-					"party" : {
-						"partyIds" : [ "6b8928bb-9800-4d52-a9fa-20d88c81f1d6" ],
-						"externalReferences" : [ ]
-					},
-					"sender" : {
-						"supportInfo" : {
-							"text" : "Kontakta oss via epost eller telefon.",
-							"emailAddress" : "ange@ange.se",
-							"phoneNumber" : "+46 690 250100",
-							"url" : "https://invanare.ange.se/"
-						}
-					},
-					"subject" : "Beslut från Ånge kommun",
-					"department" : "Ånge kommun",
-					"contentType" : "text/html",
-					"body" : "PHA+PHN0cm9uZz5IZWo8L3N0cm9uZz48L3A+PHA+RHUgaGFyIGYmYXJpbmc7dHQgZXR0IGJlc2x1dCBmciZhcmluZztuIMOFbmdlIGtvbW11bi48L3A+PHA+TWVkIHYmYXVtbDtubGlnIGgmYXVtbDtsc25pbmc8YnIgLz48c3Ryb25nPsOFbmdlIGtvbW11bjwvc3Ryb25nPjwvcD4=",
-					"attachments" : [ 
-						{
-							"contentType" : "application/pdf",
-							"content" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
-							"filename" : "beslut.pdf"
-				        } 
-				    ]
-				 }
+				    "party" : {
+				      "partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+				      "externalReferences" : [ {
+				        "key" : "flowInstanceId",
+				        "value" : "2971"
+				      } ]
+				    },
+				    "message" : "Beskrivning",
+				    "sendAsOwner" : false,
+				    "oepInstance" : "EXTERNAL",
+				    "attachments" : [ {
+				      "fileName" : "beslut.pdf",
+				      "mimeType" : "application/pdf",
+				      "base64Data" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
+				    } ]
+				  }
 				"""));
-		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterDigitalMailPost, "decision_decision-handling-worker---api-support-management-post",
+		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterWebmessagePost, "decision_decision-handling-worker---api-support-management-post",
 			equalToJson("""
 				{
 				    "title" : "Korthantering av parkeringstillstånd",
@@ -451,5 +443,4 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
-
 }

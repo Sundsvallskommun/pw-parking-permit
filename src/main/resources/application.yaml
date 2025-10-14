@@ -187,27 +187,26 @@ texts:
       contact-info-phonenumber: +46 60 191000
       contact-info-text: Kontakta oss via epost eller telefon.
       contact-info-url: https://sundsvall.se/
+      filename: beslut.pdf
     2260:
       department: Ånge kommun
       contact-info-email: ange@ange.se
       contact-info-phonenumber: +46 690 250100
       contact-info-text: Kontakta oss via epost eller telefon.
       contact-info-url: https://invanare.ange.se/
+      filename: beslut.pdf
   approvals:
     2281:
       description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
       subject: Beslut från Sundsvalls kommun
       htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
-      filename: beslut.pdf
     2260:
       description: Personen är folkbokförd i Ånge kommun. Rekommenderat beslut är att godkänna ansökan.
       subject: Beslut från Ånge kommun
       htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
-      filename: beslut.pdf
   denials:
     2281:
       message: Ärendet avskrivs
-      filename: beslut.pdf
       subject: Beslut från Sundsvalls kommun
       htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
       plainBody: |-
@@ -221,7 +220,6 @@ texts:
       templateId: sbk.prh.decision.all.rejection.municipality
     2260:
       message: Ärendet avskrivs
-      filename: beslut.pdf
       subject: Beslut från Ånge kommun
       htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
       plainBody: |-
