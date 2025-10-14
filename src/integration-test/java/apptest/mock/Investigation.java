@@ -167,7 +167,7 @@ public class Investigation {
 			state = mockRenderPdf(scenarioName, state, "investigation_construct-recommended-decision_task-worker---api-templating-render-pdf",
 				equalToJson("""
 							{
-								"identifier": "sbk.rph.decision.driver.approval",
+								"identifier": "sbk.rph.decision.driver.approval.automatic",
 								"metadata": [],
 								"parameters": {
 									"addressFirstname": "John",

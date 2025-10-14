@@ -377,7 +377,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var stateAfterRenderPdf = mockRenderPdf(scenarioName, stateAfterConstructDecisionGet, "investigation_construct-decision_task-worker---api-templating-render-pdf",
 			equalToJson("""
 							{
-				                "identifier" : "sbk.rph.decision.driver.rejection",
+				                "identifier" : "sbk.rph.decision.driver.rejection.automatic",
 				                "metadata" : [ ],
 				                "parameters" : {
 				                    "addressFirstname" : "John",

@@ -181,7 +181,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 		}
 
 		return APPROVAL.equals(ofNullable(decision).map(Decision::getDecisionOutcome).orElse(null))
-			? templateId.append(".approval").toString()
-			: templateId.append(".rejection").toString();
+			? templateId.append(".approval.automatic").toString()
+			: templateId.append(".rejection.automatic").toString();
 	}
 }
