@@ -134,7 +134,17 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 			templateId.append(".all");
 		}
 
-		return isApproved(errand) ? templateId.append(".approval").toString() : templateId.append(".rejection").toString();
+		if (isApproved(errand)) {
+			templateId.append(".approval");
+		} else {
+			templateId.append(".rejection");
+		}
+
+		if (isAutomatic(errand)) {
+			templateId.append(".automatic");
+		}
+
+		return templateId.toString();
 	}
 
 	private boolean isApproved(final Errand errand) {

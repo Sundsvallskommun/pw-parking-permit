@@ -251,7 +251,7 @@ class MessagingMapperTest {
 				CONTACTINFO_URL);
 		assertThat(request.getParty()).isNotNull().extracting(LetterParty::getPartyIds).asInstanceOf(LIST).containsExactly(PARTY_ID);
 		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
-		assertThat(request.getAttachments()).isEmpty();
+		assertThat(request.getAttachments()).isNull();
 
 		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
 		verify(textProviderMock, times(2)).getSimplifiedServiceTexts(MUNICIPALITY_ID);
