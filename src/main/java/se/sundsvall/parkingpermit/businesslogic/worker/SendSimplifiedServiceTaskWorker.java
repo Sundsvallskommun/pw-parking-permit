@@ -1,7 +1,10 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.MUNICIPALITY_ID_ANGE;
 
+import generated.se.sundsvall.casedata.Errand;
 import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -33,6 +36,11 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing delivery of simplified service message to applicant for errand with id {}", errand.getId());
 
+			if (shouldNotSendMessage(municipalityId, errand)) {
+				externalTaskService.complete(externalTask);
+				return;
+			}
+
 			final var messageId = messagingService.sendMessageSimplifiedService(municipalityId, errand).toString();
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
@@ -40,5 +48,9 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());
 		}
+	}
+
+	private boolean shouldNotSendMessage(String municipalityId, Errand errand) {
+		return MUNICIPALITY_ID_ANGE.equals(municipalityId) && isBlank(errand.getExternalCaseId());
 	}
 }

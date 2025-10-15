@@ -21,6 +21,8 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,6 +39,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String MUNICIPALITY_ID_ANGE = "2260";
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 
 	@Mock
@@ -96,9 +99,32 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 
+	@ParameterizedTest
+	@NullAndEmptySource
+	void executeWhenAngeAndManual(String externalCaseId) {
+		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID_ANGE);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID_ANGE, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getExternalCaseId()).thenReturn(externalCaseId);
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify and assert
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID_ANGE, NAMESPACE, ERRAND_ID);
+		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoInteractions(messagingServiceMock, camundaClientMock, failureHandlerMock);
+	}
+
 	@Test
 	void executeThrowsException() {
-
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
