@@ -133,5 +133,7 @@ public final class Constants {
 	public static final String CAPACITY_DRIVER = "DRIVER";
 	public static final String CAPACITY_PASSENGER = "PASSENGER";
 
+	public static final String MUNICIPALITY_ID_ANGE = "2260";
+
 	private Constants() {}
 }
