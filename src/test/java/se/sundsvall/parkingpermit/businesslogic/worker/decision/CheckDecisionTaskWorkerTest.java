@@ -68,6 +68,7 @@ class CheckDecisionTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final long ERRAND_ID = 123L;
+	private static final String EXTERNAL_CASE_ID = "externalCaseId";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String PROCESS_INSTANCE_ID = "processInstanceId";
@@ -102,6 +103,9 @@ class CheckDecisionTaskWorkerTest {
 
 	@Captor
 	private ArgumentCaptor<PatchErrand> patchErrandCaptor;
+
+	@Captor
+	private ArgumentCaptor<List<ExtraParameter>> patchExtraParameterCaptor;
 
 	@Captor
 	private ArgumentCaptor<Map<String, Object>> mapCaptor;
@@ -200,6 +204,7 @@ class CheckDecisionTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(errandMock.getExternalCaseId()).thenReturn(EXTERNAL_CASE_ID);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem(phaseActionCancel)));
@@ -216,9 +221,15 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
+		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
 				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
@@ -239,6 +250,7 @@ class CheckDecisionTaskWorkerTest {
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(errandMock.getExternalCaseId()).thenReturn(EXTERNAL_CASE_ID);
 		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
@@ -254,11 +266,17 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
+		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
-				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
 				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
 	}
@@ -278,6 +296,7 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getDecisions()).thenReturn(null);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
+		when(errandMock.getExternalCaseId()).thenReturn(EXTERNAL_CASE_ID);
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 
 		// Act
@@ -292,9 +311,15 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue().getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
+		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
+		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),

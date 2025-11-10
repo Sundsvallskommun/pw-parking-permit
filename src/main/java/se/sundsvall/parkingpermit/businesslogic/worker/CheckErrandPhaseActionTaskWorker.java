@@ -13,6 +13,7 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 
 import generated.se.sundsvall.casedata.Errand;
@@ -38,38 +39,32 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			clearUpdateAvailable(externalTask);
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Check phase action for errand with id {}", errand.getId());
 
-			final var phaseAction = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-				.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
-				.findFirst()
-				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
-				.orElse(PHASE_ACTION_UNKNOWN);
-
-			final var displayPhase = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-				.filter(extraParameters -> CASEDATA_KEY_DISPLAY_PHASE.equals(extraParameters.getKey()))
-				.findFirst()
-				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
-				.orElse(null);
+			final var phaseAction = find(errand, CASEDATA_KEY_PHASE_ACTION).orElse(PHASE_ACTION_UNKNOWN);
+			final var displayPhase = find(errand, CASEDATA_KEY_DISPLAY_PHASE).orElse(null);
 
 			switch (phaseAction) {
 				case PHASE_ACTION_COMPLETE, PHASE_ACTION_AUTOMATIC -> {
 					logInfo("Phase action is complete. Setting phase status to {}", PHASE_STATUS_COMPLETED);
-					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_COMPLETED, phaseAction, displayPhase, errand.getExtraParameters()));
+					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
+					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_COMPLETED, phaseAction, displayPhase));
 				}
 				case PHASE_ACTION_CANCEL -> {
 					logInfo("Phase action is cancel. Setting phase status to {}", PHASE_STATUS_CANCELED);
-					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, phaseAction, displayPhase, errand.getExtraParameters()));
+					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
+					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_CANCELED, phaseAction, displayPhase));
 				}
 				default -> {
-					logInfo("Phase action is unknown. Setting phase status to {}", PHASE_STATUS_WAITING);
 					if (isPhaseStatusNotWaiting(errand)) {
-						caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, phaseAction, displayPhase, errand.getExtraParameters()));
+						logInfo("Phase action is unknown. Setting phase status to {}", PHASE_STATUS_WAITING);
+						caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
+						caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, phaseAction, displayPhase));
 					}
 				}
 			}
@@ -90,5 +85,12 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 			.findFirst()
 			.map(extraParameters -> extraParameters.getValues().getFirst())
 			.orElse(null));
+	}
+
+	private Optional<String> find(Errand errand, String key) {
+		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+			.filter(extraParameters -> key.equals(extraParameters.getKey()))
+			.findFirst()
+			.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst());
 	}
 }

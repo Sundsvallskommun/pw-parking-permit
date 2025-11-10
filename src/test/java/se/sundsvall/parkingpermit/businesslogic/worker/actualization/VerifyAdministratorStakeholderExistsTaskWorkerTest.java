@@ -29,7 +29,6 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.PatchErrand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 	private VerifyAdministratorStakeholderExistsTaskWorker worker;
 
 	@Captor
-	private ArgumentCaptor<PatchErrand> patchCaptor;
+	private ArgumentCaptor<List<ExtraParameter>> patchCaptor;
 
 	@Captor
 	private ArgumentCaptor<Map<String, Object>> variablesCaptor;
@@ -105,7 +104,6 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 	@Test
 	void executeWhenErrandHasAdministratorAssigned() {
 		// Arrange
-		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE)));
 		when(stakeholderMock.getRoles()).thenReturn(List.of("ADMINISTRATOR"));
 
 		// Act
@@ -131,13 +129,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenErrandHasNoAdministratorAssigned() {
-		// Arrange
-		final var externalCaseId = UUID.randomUUID().toString();
-		final var phase = "phase";
-
-		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE)));
-		when(errandMock.getExternalCaseId()).thenReturn(externalCaseId);
-		when(errandMock.getPhase()).thenReturn(phase);
+		UUID.randomUUID().toString();
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -151,20 +143,15 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
 		verify(errandMock, times(2)).getId();
-		verify(errandMock, times(2)).getExtraParameters();
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
+		verify(errandMock).getExtraParameters();
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities").satisfies(patch -> {
-			assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
-			assertThat(patch.getPhase()).isEqualTo(phase);
-			assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
-				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
-				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
-		});
+		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
 			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, false,
@@ -173,14 +160,9 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenCanceled() {
-		// Arrange
-		final var externalCaseId = UUID.randomUUID().toString();
-		final var phase = "phase";
-
+		UUID.randomUUID().toString();
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE),
 			new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL)));
-		when(errandMock.getExternalCaseId()).thenReturn(externalCaseId);
-		when(errandMock.getPhase()).thenReturn(phase);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -194,20 +176,15 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
 		verify(errandMock, times(3)).getId();
-		verify(errandMock, times(2)).getExtraParameters();
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
+		verify(errandMock).getExtraParameters();
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase", "extraParameters", "relatesTo", "labels", "facilities").satisfies(patch -> {
-			assertThat(patch.getExternalCaseId()).isEqualTo(externalCaseId);
-			assertThat(patch.getPhase()).isEqualTo(phase);
-			assertThat(patch.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
-				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(DISPLAY_PHASE)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_CANCELED)),
-				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)));
-		});
+		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_CANCELED)),
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(Map.of(
 			CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, false,

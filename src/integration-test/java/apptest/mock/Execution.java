@@ -2,9 +2,11 @@ package apptest.mock;
 
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchBodyWhenLostCard;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataAddNotePatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
@@ -51,7 +53,7 @@ public class Execution {
 
 	public static String mockExecutionUpdatePhase(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 
-		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
@@ -59,9 +61,16 @@ public class Execution {
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
 
-		return mockCaseDataPatch(caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Verkställa", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Verkställa")));
+			equalToJson(createPatchBody("Verkställa")));
+
+		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"execution_update-phase-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Verkställa")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Verkställa"));
 	}
 
 	public static String mockExecutionHandleLostCard(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
@@ -78,7 +87,7 @@ public class Execution {
 
 	public static String mockExecutionHandleLostCardWhenLost(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 
-		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_handle-lost-card-worker-when-lost---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
@@ -87,10 +96,10 @@ public class Execution {
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
 
-		final var stateAfterGetAssets = mockPartyAssetsGetByPartyIdAndStatus(scenarioName, stateAfterGetErrand,
+		state = mockPartyAssetsGetByPartyIdAndStatus(scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-party-assets-get-assets", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
 
-		final var stateAfterPutAsset = mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, stateAfterGetAssets,
+		state = mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
@@ -101,11 +110,11 @@ public class Execution {
 				}
 				"""));
 
-		final var stateAfterPatchErrand = mockCaseDataPatch(caseId, scenarioName, stateAfterPutAsset,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-casedata-patch-errand",
 			equalToJson(createPatchBodyWhenLostCard(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "", "Beslut", "12345")));
 
-		return mockCaseDataAddNotePatch(caseId, scenarioName, stateAfterPatchErrand,
+		return mockCaseDataAddNotePatch(caseId, scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-casedata-add-note",
 			equalToJson("""
 				{
@@ -120,7 +129,7 @@ public class Execution {
 	}
 
 	public static String mockExecutionOrderCard(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
-		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"caseTypeParameter", "PARKING_PERMIT",
@@ -129,7 +138,7 @@ public class Execution {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa"));
 
-		final var stateAfterOrderCard = mockRpaAddQueueItems(scenarioName, stateAfterGetErrand,
+		state = mockRpaAddQueueItems(scenarioName, state,
 			"execution_order-card-task-worker---api-rpa-post-queue-item",
 			equalToJson("""
 				{
@@ -142,7 +151,7 @@ public class Execution {
 				}
 				""".formatted(caseId)));
 
-		return mockCaseDataPatchStatus(caseId, scenarioName, stateAfterOrderCard,
+		return mockCaseDataPatchStatus(caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-status",
 			equalToJson("""
 					{
@@ -184,7 +193,7 @@ public class Execution {
 	}
 
 	public static String mockExecutionUpdateAsset(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
-		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"execution_update-asset-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -193,7 +202,7 @@ public class Execution {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		final var stateAfterGetAppealedErrand = mockCaseDataGet("456", scenarioName, stateAfterGetErrand,
+		state = mockCaseDataGet("456", scenarioName, state,
 			"execution_update-asset-task-worker---api-casedata-get-appealed_errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -202,10 +211,10 @@ public class Execution {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		final var stateAfterGetAssets = mockPartyAssetsGet(scenarioName, stateAfterGetAppealedErrand,
+		state = mockPartyAssetsGet(scenarioName, state,
 			"execution_update-asset-task-worker---api-party-assets-get-errand", "12345", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
 
-		return mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, stateAfterGetAssets,
+		return mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, state,
 			"execution_update-asset-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
@@ -240,20 +249,21 @@ public class Execution {
 				"displayPhaseParameter", "Beslut"));
 
 		mockMessagingWebMessagePost(
-			equalToJson("""
-							{
-								"party" : {
-									"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-									"externalReferences" : [ {
-										"key" : "flowInstanceId",
-										"value" : "2971"
-									} ]
-				      			},
-				      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
-				      			"sendAsOwner" : false,
-				                "oepInstance" : "EXTERNAL"
-				    		}
-				"""));
+			equalToJson(
+				"""
+								{
+									"party" : {
+										"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+										"externalReferences" : [ {
+											"key" : "flowInstanceId",
+											"value" : "2971"
+										} ]
+					      			},
+					      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
+					      			"sendAsOwner" : false,
+					                "oepInstance" : "EXTERNAL"
+					    		}
+					"""));
 		return state;
 	}
 }

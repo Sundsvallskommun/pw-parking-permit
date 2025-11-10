@@ -1,17 +1,5 @@
 package apptest;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
-import java.time.Duration;
-import java.util.Map;
-
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecision;
@@ -24,8 +12,10 @@ import static apptest.mock.FollowUp.mockFollowUpUpdateStatus;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -44,6 +34,20 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+
+import java.time.Duration;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import apptest.verification.Tuples;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -76,26 +80,30 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 		mockActualization(caseId, scenarioName, false);
 		mockInvestigation(caseId, scenarioName, false);
 		mockDecision(caseId, scenarioName, false);
-		final var stateAfterExcecution = mockExecution(caseId, scenarioName, false);
+		var state = mockExecution(caseId, scenarioName, false);
 
-		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, stateAfterExcecution, false);
-
-		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdatePhase,
+		state = mockFollowUpUpdatePhaseAtStart(caseId, scenarioName, state, false);
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"follow_up_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Uppföljning",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Uppföljning"));
-
-		final var stateAfterPatchNonComplete = mockCaseDataPatch(caseId, scenarioName, stateAfterGetErrandNonComplete,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"follow_up_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
-			equalToJson(createPatchBody("Uppföljning", "UNKNOWN", "WAITING", "Uppföljning"), true, false));
+			equalToJson(createPatchBody("Uppföljning"), true, false));
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"follow_up_check-phase-action_task-worker---api-casedata-patch-extraparameters-non-complete",
+			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING", "Uppföljning")),
+			Map.of("phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "WAITING",
+				"displayPhaseParameter", "Uppföljning"));
+		state = mockFollowUpCheckPhaseAction(caseId, scenarioName, state, false);
+		state = mockFollowUpCleanUpNotes(caseId, scenarioName, state);
+		state = mockFollowUpUpdateStatus(caseId, scenarioName, state, false);
 
-		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete, false);
-		final var stateAfterCleanup = mockFollowUpCleanUpNotes(caseId, scenarioName, stateAfterCheckPhaseAction);
-		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(caseId, scenarioName, stateAfterCleanup, false);
-		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, stateAfterUpdateStatus, false);
+		mockFollowUpUpdatePhaseAtEnd(caseId, scenarioName, state, false);
 
 		// Start process
 		final var startResponse = setupCall()

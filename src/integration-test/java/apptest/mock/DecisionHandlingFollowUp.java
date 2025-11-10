@@ -1,10 +1,12 @@
 package apptest.mock;
 
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataNotesDelete;
 import static apptest.mock.api.CaseData.mockCaseDataNotesGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
@@ -33,9 +35,16 @@ public class DecisionHandlingFollowUp {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
 				"displayPhaseParameter", "Uppföljning"));
 
-		return mockCaseDataPatch(municipalityId, caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(municipalityId, caseId, scenarioName, state,
 			"follow_up_check-phase-action_task-worker---api-casedata-patch-errand-start",
-			equalToJson(createPatchBody("Uppföljning", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE, "COMPLETED", "Uppföljning")));
+			equalToJson(createPatchBody("Uppföljning")));
+
+		return mockCaseDataPatchExtraParameters(municipalityId, caseId, scenarioName, state,
+			"follow_up_check-phase-action_task-worker---api-casedata-patch-extraparameters-start",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE, "COMPLETED", "Uppföljning")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
+				"phaseStatusParameter", "COMPLETED",
+				"displayPhaseParameter", "Uppföljning"));
 	}
 
 	public static String mockFollowUpUpdatePhaseAtStart(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
@@ -49,9 +58,16 @@ public class DecisionHandlingFollowUp {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Beslut"));
 
-		return mockCaseDataPatch(municipalityId, caseId, scenarioName, state,
-			"follow_up_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Uppföljning", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Uppföljning")));
+		state = mockCaseDataPatchErrand(municipalityId, caseId, scenarioName, state,
+			"follow_up_update-phase-task-worker---api-casedata-patch-errand-start",
+			equalToJson(createPatchBody("Uppföljning")));
+
+		return mockCaseDataPatchExtraParameters(municipalityId, caseId, scenarioName, state,
+			"follow_up_update-phase-task-worker---api-casedata-patch-extraparameters-start",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Uppföljning")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Uppföljning"));
 	}
 
 	public static String mockFollowUpUpdatePhaseAtEnd(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
@@ -65,13 +81,20 @@ public class DecisionHandlingFollowUp {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Uppföljning"));
 
-		return mockCaseDataPatch(municipalityId, caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(municipalityId, caseId, scenarioName, state,
 			"follow_up_update-phase-task-worker---api-casedata-patch-errand-end",
-			equalToJson(createPatchBody("Uppföljning", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "COMPLETED", "Uppföljning")));
+			equalToJson(createPatchBody("Uppföljning")));
+
+		return mockCaseDataPatchExtraParameters(municipalityId, caseId, scenarioName, state,
+			"follow_up_update-phase-task-worker---api-casedata-patch-extraparameters-end",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "COMPLETED", "Uppföljning")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
+				"phaseStatusParameter", "COMPLETED",
+				"displayPhaseParameter", "Uppföljning"));
 	}
 
 	public static String mockFollowUpCleanUpNotes(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState) {
-		var state = mockCaseDataNotesGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataNotesGet(municipalityId, caseId, scenarioName, requiredScenarioState,
 			"follow_up_update-phase-task-worker---api-casedata-get-notes", "INTERNAL");
 
 		return mockCaseDataNotesDelete(municipalityId, caseId, "128", scenarioName, state,
@@ -80,7 +103,7 @@ public class DecisionHandlingFollowUp {
 	}
 
 	public static String mockFollowUpUpdateStatus(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
-		var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
 			"follow_up_update-phase-task-worker---api-casedata-get-errand-update-status",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Uppföljning",

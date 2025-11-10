@@ -6,6 +6,7 @@ import static se.sundsvall.parkingpermit.integration.casedata.configuration.Case
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.Note;
 import generated.se.sundsvall.casedata.PageErrand;
@@ -200,4 +201,20 @@ public interface CaseDataClient {
 		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") Long errandId,
 		@PathVariable(name = "noteId") Long noteId);
+
+	/**
+	 * Adds new extra parameters to errand or updates value of existing ones.
+	 *
+	 * @param  municipalityId                       municipality id of the municipality that owns the errand
+	 * @param  namespace                            namespace in which the errand resides
+	 * @param  errandId                             id of the errand to update
+	 * @param  extraParameters                      list of extra parameters to add or update errand with
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/extraparameters", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	List<ExtraParameter> patchErrandExtraParameters(
+		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace,
+		@PathVariable(name = "errandId") Long errandId,
+		@RequestBody List<ExtraParameter> extraParameters);
 }

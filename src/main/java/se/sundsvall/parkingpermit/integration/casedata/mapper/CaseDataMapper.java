@@ -27,43 +27,43 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
-	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final String displayPhase, final List<ExtraParameter> extraParameters) {
-		final var patchErrand = toPatchErrand(externalCaseId, phase, phaseStatus, phaseAction, extraParameters);
+	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction, final String nullableDisplayPhase) {
+		final var extraParameters = toExtraParameterList(nullablePhaseStatus, nullablePhaseAction);
 
-		var result = patchErrand.getExtraParameters().stream()
-			.filter(extraParameter -> !CASEDATA_KEY_DISPLAY_PHASE.equals(extraParameter.getKey()))
-			.collect(Collectors.toCollection(ArrayList::new));
+		// DisplayStatus is set if provided, or to an empty list if absent
+		ofNullable(nullableDisplayPhase).ifPresentOrElse(
+			displayPhase -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(List.of(displayPhase))),
+			() -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(emptyList())));
 
-		Optional.ofNullable(displayPhase).ifPresentOrElse(display -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(List.of(display))),
-			() -> result.add(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).values(emptyList())));
-
-		return patchErrand.extraParameters(result);
+		return extraParameters;
 	}
 
-	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase, final String phaseStatus, final String phaseAction, final List<ExtraParameter> extraParameters) {
-		final var patchErrand = new PatchErrand()
-			.externalCaseId(externalCaseId)
-			.phase(phase);
+	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction) {
+		final var extraParameters = new ArrayList<ExtraParameter>();
 
-		var result = Optional.ofNullable(extraParameters).orElse(emptyList()).stream()
-			.filter(extraParameter -> !CASEDATA_KEY_PHASE_STATUS.equals(extraParameter.getKey()) && !CASEDATA_KEY_PHASE_ACTION.equals(extraParameter.getKey()))
-			.collect(Collectors.toCollection(ArrayList::new));
+		// PhaseStatus is set if provided, or to an empty list if absent
+		ofNullable(nullablePhaseStatus).ifPresentOrElse(
+			phaseStatus -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(List.of(phaseStatus))),
+			() -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(emptyList())));
 
-		Optional.ofNullable(phaseStatus).ifPresentOrElse(status -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(List.of(status))),
-			() -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).values(emptyList())));
-
-		// Cannot be null since that could erase action when it is "AUTOMATIC"
-		Optional.ofNullable(phaseAction).ifPresentOrElse(action -> result.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(action))),
+		// PhaseAction cannot be null since that could erase action when it is "AUTOMATIC"
+		ofNullable(nullablePhaseAction).ifPresentOrElse(phaseAction -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(phaseAction))),
 			() -> { throw new IllegalArgumentException("phaseAction cannot be null"); });
 
-		return patchErrand.extraParameters(result);
+		return extraParameters;
+	}
+
+	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase) {
+		return new PatchErrand()
+			.externalCaseId(externalCaseId)
+			.labels(null) // Set this explicitly to null to not update labels to empty list when patching errand
+			.extraParameters(null) // Set this explicitly to null to not update extra parameters when patching errand
+			.phase(phase);
 	}
 
 	public static Stakeholder toStakeholder(final String role, final TypeEnum type, final String firstName, final String lastName) {

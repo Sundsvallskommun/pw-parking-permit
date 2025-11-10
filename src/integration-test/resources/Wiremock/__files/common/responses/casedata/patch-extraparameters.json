@@ -1,0 +1,122 @@
+[
+	{
+		"id": "0bc7928f-fd22-4ab0-877b-3f07d0b2127c",
+		"key": "disability.walkingAbility",
+		"values": [
+			"false"
+		]
+	},
+	{
+		"id": "4096d964-bac4-4fdf-abae-9da891061520",
+		"key": "application.applicant.testimonial",
+		"values": [
+			"true"
+		]
+	},
+	{
+		"id": "94bc6f7e-71dd-4f1f-b88b-0a30af4834a2",
+		"key": "consent.view.transportationServiceDetails",
+		"values": [
+			"false"
+		]
+	},
+	{
+		"id": "3e351b1c-7e78-4b9d-ad8b-cc4ed0facffa",
+		"key": "disability.aid",
+		"values": [
+			"Inget"
+		]
+	},
+	{
+		"id": "b8367cdf-4610-4a97-b265-d2cc2c2b1e5f",
+		"key": "disability.canBeAloneWhileParking",
+		"values": [
+			"true"
+		]
+	},
+	{
+		"id": "3b7c4701-bf2a-4a40-99a3-d695d4e6eaf7",
+		"key": "application.role",
+		"values": [
+			"SELF"
+		]
+	},
+	{
+		"id": "7c7b7211-d291-4e75-b316-7a5f71076385",
+		"key": "application.applicant.capacity",
+		"values": [
+			"DRIVER"
+		]
+	},
+	{
+		"id": "f828e1bb-f938-4eb6-934f-15255c2fb60d",
+		"key": "application.applicant.signingAbility",
+		"values": [
+			"false"
+		]
+	},
+	{
+		"id": "e043a28d-9e7f-43d3-9077-c45369382773",
+		"key": "disability.walkingDistance.max",
+		"values": []
+	},
+	{
+		"id": "d6bfe511-dd46-460d-a19d-5fefcafde2cc",
+		"key": "disability.walkingDistance.beforeRest",
+		"values": []
+	},
+	{
+		"id": "d5d6a670-2339-408c-b444-7679ec66d1a3",
+		"key": "consent.contact.doctor",
+		"values": [
+			"false"
+		]
+	},
+	{
+		"id": "fe318f8d-462d-4b3e-8c99-e06bdb1bb6fc",
+		"key": "application.reason",
+		"values": [
+			""
+		]
+	},
+	{
+		"id": "c0538aaa-8972-41ed-98d1-c15943875e1f",
+		"key": "disability.canBeAloneWhileParking.note",
+		"values": []
+	},
+	{
+		"id": "4fce78c5-9df9-437d-b4a8-98fd0efadc7b",
+		"key": "disability.duration",
+		"values": [
+			"P1Y"
+		]
+	},
+	{
+		"id": "59442320-fc8b-4729-9a10-b71c36e02e82",
+		"key": "artefact.permit.number",
+		"values": [
+			"{{parameters.permitNumberParameter}}"
+		]
+	},
+	{
+		"id": "49b5498c-f21c-4886-bacf-e6a24dddd224",
+		"key": "process.phaseAction",
+		"values": [
+			"{{parameters.phaseActionParameter}}"
+		]
+	},
+	{
+		"id": "d0754cf7-dcbb-4f48-bb3e-8b5f16d292e4",
+		"key": "process.displayPhase",
+		"values": [
+			"{{parameters.displayPhaseParameter}}"
+		]
+	},
+	{
+		"id": "861e6f56-ca71-42c7-a8cf-b3bd784d8034",
+		"key": "process.phaseStatus",
+		"values": [
+			"{{parameters.phaseStatusParameter}}"
+		]
+	}
+]

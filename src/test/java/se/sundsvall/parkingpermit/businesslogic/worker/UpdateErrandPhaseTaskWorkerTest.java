@@ -7,8 +7,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
@@ -34,6 +36,7 @@ import java.util.stream.Stream;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -83,6 +86,14 @@ class UpdateErrandPhaseTaskWorkerTest {
 	@Captor
 	private ArgumentCaptor<PatchErrand> patchErrandCaptor;
 
+	@Captor
+	private ArgumentCaptor<List<ExtraParameter>> patchExtraParameterCaptor;
+
+	@AfterEach
+	void tearDown() {
+		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, externalTaskMock, externalTaskServiceMock, failureHandlerMock);
+	}
+
 	@Test
 	void verifyAnnotations() {
 		assertThat(worker.getClass()).hasAnnotations(Component.class, ExternalTaskSubscription.class);
@@ -105,7 +116,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		// Setup
 		final var externalCaseId = "externalCaseId";
 		// Sets phase action to unknown or automatic in UpdateErrandPhaseTaskWorker because it is the beginning of the phase
-		var phaseActionPersist = PHASE_ACTION_AUTOMATIC.equals(phaseAction) ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN;
+		final var phaseActionPersist = PHASE_ACTION_AUTOMATIC.equals(phaseAction) ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN;
 		final var variables = new HashMap<String, Object>();
 		variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, phaseActionPersist);
 
@@ -130,20 +141,27 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_PHASE);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 
 		final var patchErrand = patchErrandCaptor.getValue();
+
+		assertThat(patchErrand).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
 		assertThat(patchErrand.getExternalCaseId()).isEqualTo(externalCaseId);
+		assertThat(patchErrand.getFacilities()).isEmpty();
 		assertThat(patchErrand.getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
+		assertThat(patchErrand.getRelatesTo()).isEmpty();
 
 		final var phaseStatus = CASEDATA_STATUS_CASE_FINALIZED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
-		assertThat(patchErrand.getExtraParameters()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(phaseActionPersist)),
-			tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(phaseStatus)));
+		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
+			.containsExactlyInAnyOrder(
+				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(phaseActionPersist)),
+				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(phaseStatus)));
 	}
 
 	@Test
@@ -169,6 +187,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE);
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
 		verify(externalTaskMock).getId();

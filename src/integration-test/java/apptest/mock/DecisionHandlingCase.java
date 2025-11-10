@@ -1,8 +1,10 @@
 package apptest.mock;
 
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
@@ -27,8 +29,7 @@ public class DecisionHandlingCase {
 	}
 
 	public static String mockExecutionUpdatePhase(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
-
-		final var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
 			"execution_update-phase-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Beslut",
@@ -37,13 +38,19 @@ public class DecisionHandlingCase {
 				"displayPhaseParameter", "Beslut",
 				"statusTypeParameter", "Beslutad"));
 
-		return mockCaseDataPatch(municipalityId, caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(municipalityId, caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Verkställa", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Verkställa")));
+			equalToJson(createPatchBody("Verkställa")));
+
+		return mockCaseDataPatchExtraParameters(municipalityId, caseId, scenarioName, state,
+			"execution_update-phase-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN, "ONGOING", "Verkställa")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Verkställa"));
 	}
 
 	public static String mockExecutionHandleLostCard(final String muncipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
-
 		return mockCaseDataGet(muncipalityId, caseId, scenarioName, requiredScenarioState,
 			"execution_handle-lost-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
@@ -56,7 +63,7 @@ public class DecisionHandlingCase {
 	}
 
 	public static String mockExecutionOrderCard(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
-		final var stateAfterGetErrand = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
 			"execution_order-card-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"caseTypeParameter", "PARKING_PERMIT",
@@ -65,7 +72,7 @@ public class DecisionHandlingCase {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa"));
 
-		final var stateAfterOrderCard = mockRpaAddQueueItems(scenarioName, stateAfterGetErrand,
+		state = mockRpaAddQueueItems(scenarioName, state,
 			"execution_order-card-task-worker---api-rpa-post-queue-item",
 			equalToJson("""
 				{
@@ -78,7 +85,7 @@ public class DecisionHandlingCase {
 				}f
 				""".formatted(caseId)));
 
-		return mockCaseDataPatchStatus(municipalityId, caseId, scenarioName, stateAfterOrderCard,
+		return mockCaseDataPatchStatus(municipalityId, caseId, scenarioName, state,
 			"execution_update-phase-task-worker---api-casedata-patch-status",
 			equalToJson("""
 					{
@@ -140,20 +147,21 @@ public class DecisionHandlingCase {
 				"displayPhaseParameter", "Beslut"));
 
 		mockMessagingWebMessagePost(municipalityId,
-			equalToJson("""
-							{
-								"party" : {
-									"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-									"externalReferences" : [ {
-										"key" : "flowInstanceId",
-										"value" : "2971"
-									} ]
-				      			},
-				      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nange@ange.se eller telefon till 0690-25 01 00.",
-				      			"sendAsOwner" : false,
-				                "oepInstance" : "EXTERNAL"
-				    		}
-				"""));
+			equalToJson(
+				"""
+								{
+									"party" : {
+										"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+										"externalReferences" : [ {
+											"key" : "flowInstanceId",
+											"value" : "2971"
+										} ]
+					      			},
+					      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nange@ange.se eller telefon till 0690-25 01 00.",
+					      			"sendAsOwner" : false,
+					                "oepInstance" : "EXTERNAL"
+					    		}
+					"""));
 		return state;
 	}
 }

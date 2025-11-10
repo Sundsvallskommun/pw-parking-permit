@@ -15,8 +15,10 @@ import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.verification.ProcessPathway.canceledPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.denialPathway;
@@ -40,15 +42,18 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Duration;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
@@ -138,14 +143,14 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		// Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", isAutomatic);
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident, isAutomatic);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, isAutomatic);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, isAutomatic);
+		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
+		state = mockActualizationUpdatePhase(caseId, scenarioName, state, isAutomatic);
+		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", isAutomatic);
+		state = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, state, isAutomatic);
+		state = mockActualizationUpdateDisplayPhase(caseId, scenarioName, state, isAutomatic);
+		state = mockActualizationUpdateStatus(caseId, scenarioName, state, isAutomatic);
 
-		final var stateAfterGetErrand = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"actualization_check-phase-action_task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
@@ -153,11 +158,18 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "CANCEL",
 				"displayPhaseParameter", "Granskning"));
 
-		final var stateAfterPatchErrand = mockCaseDataPatch(caseId, scenarioName, stateAfterGetErrand,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Granskning"), true, false));
+			equalToJson(createPatchBody("Aktualisering"), true, false));
 
-		mockCanceled(caseId, scenarioName, stateAfterPatchErrand);
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_check-phase-action_task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody("CANCEL", "CANCELED", "Granskning")),
+			Map.of("phaseActionParameter", "CANCEL",
+				"phaseStatusParameter", "CANCELED",
+				"displayPhaseParameter", "Granskning"));
+
+		mockCanceled(caseId, scenarioName, state);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -205,14 +217,14 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		// Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, false);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", false);
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterVerifyResident, false);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, false);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, false);
+		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
+		state = mockActualizationUpdatePhase(caseId, scenarioName, state, false);
+		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", false);
+		state = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, state, false);
+		state = mockActualizationUpdateDisplayPhase(caseId, scenarioName, state, false);
+		state = mockActualizationUpdateStatus(caseId, scenarioName, state, false);
 
-		final var stateAfterGetErrandNonComplete = mockCaseDataGet(caseId, scenarioName, stateAfterUpdateStatus,
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"actualization_check-phase-action_task-worker---api-casedata-get-errand-non-complete",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
@@ -220,11 +232,18 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Granskning"));
 
-		final var stateAfterPatchNonComplete = mockCaseDataPatch(caseId, scenarioName, stateAfterGetErrandNonComplete,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand-non-complete",
-			equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "WAITING", "Granskning"), true, false));
+			equalToJson(createPatchBody("Aktualisering"), true, false));
 
-		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterPatchNonComplete, false);
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_check-phase-action_task-worker---api-casedata-patch-extraparameters-non-complete",
+			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING", "Granskning")),
+			Map.of("phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "WAITING",
+				"displayPhaseParameter", "Granskning"));
+
+		mockActualizationCheckPhaseAction(caseId, scenarioName, state, false);
 
 		// Normal mock
 		mockInvestigation(caseId, scenarioName, false);
@@ -304,22 +323,23 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		// Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", isAutomatic);
-		final var stateAfterGetCancelInVerifyStakeholder = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
+		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
+		state = mockActualizationUpdatePhase(caseId, scenarioName, state, isAutomatic);
+		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", isAutomatic);
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"actualization_verify-administrator-stakeholder--api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "CANCEL",
 				"displayPhaseParameter", "Registrerad"));
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody("CANCEL", "CANCELED")),
+			Map.of("phaseActionParameter", "CANCEL",
+				"phaseStatusParameter", "CANCELED"));
 
-		final var stateAfterPatchErrand = mockCaseDataPatch(caseId, scenarioName, stateAfterGetCancelInVerifyStakeholder,
-			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand",
-			equalToJson(createPatchBody("Aktualisering", "CANCEL", "CANCELED", "Registrerad"), true, false));
-
-		mockCanceled(caseId, scenarioName, stateAfterPatchErrand);
+		mockCanceled(caseId, scenarioName, state);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -363,10 +383,11 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 
 		// Setup mocks
 		mockApiGatewayToken();
-		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
-		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, false);
-		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "2281", false);
-		final var stateAfterVerifyStakeholderNoAdministrator = mockCaseDataGet(caseId, scenarioName, stateAfterVerifyResident,
+		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
+		state = mockActualizationUpdatePhase(caseId, scenarioName, state, false);
+		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", false);
+
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"actualization_verify-administrator-stakeholder---api-casedata-get-errand-no-administrator",
 			Map.of("decisionTypeParameter", "PROPOSED",
 				"phaseParameter", "Aktualisering",
@@ -374,15 +395,17 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Registrerad"), "APPROVAL", "DOCTOR");
 
-		final var stateAfterPatchNoAdministrator = mockCaseDataPatch(caseId, scenarioName, stateAfterVerifyStakeholderNoAdministrator,
-			"actualization_verify-administrator-stakeholder--api-casedata-patch-errand-no-administrator",
-			equalToJson(createPatchBody("Aktualisering", "UNKNOWN", "WAITING", "Registrerad"), true, false));
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING")),
+			Map.of("phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "WAITING"));
 
-		final var stateAfterVerifyStakeholder = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, stateAfterPatchNoAdministrator, false);
-		final var stateAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, stateAfterVerifyStakeholder, false);
-		final var stateAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, stateAfterUpdateDisplayPhase, false);
+		state = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, state, false);
+		state = mockActualizationUpdateDisplayPhase(caseId, scenarioName, state, false);
+		state = mockActualizationUpdateStatus(caseId, scenarioName, state, false);
 
-		mockActualizationCheckPhaseAction(caseId, scenarioName, stateAfterUpdateStatus, false);
+		mockActualizationCheckPhaseAction(caseId, scenarioName, state, false);
 
 		// Normal mock
 		mockInvestigation(caseId, scenarioName, false);
@@ -448,5 +471,4 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
-
 }
