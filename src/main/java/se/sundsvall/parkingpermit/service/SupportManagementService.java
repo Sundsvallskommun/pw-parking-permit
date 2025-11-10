@@ -3,10 +3,13 @@ package se.sundsvall.parkingpermit.service;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.Label;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,16 @@ public class SupportManagementService {
 				AttachmentMultiPartFile.create(fileName, new ByteArrayInputStream(Base64.getDecoder().decode(content.getBytes()))));
 		} else {
 			throw Problem.valueOf(BAD_GATEWAY, "File name and content cannot be null or empty");
+		}
+	}
+
+	public List<Label> getMetadataLabels(final String municipalityId, final String namespace) {
+		final var response = supportManagementClient.getLabels(municipalityId, namespace);
+
+		if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+			return response.getBody().getLabelStructure();
+		} else {
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Failed to get metadata labels from support-management");
 		}
 	}
 

@@ -6,9 +6,11 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.configuration.SupportManagementConfiguration.CLIENT_ID;
 
 import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.Labels;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +42,10 @@ public interface SupportManagementClient {
 		@PathVariable(name = "namespace") String namespace,
 		@PathVariable(name = "errandId") String errandId,
 		@RequestPart(name = "errandAttachment") MultipartFile file);
+
+	@GetMapping(path = "/{municipalityId}/{namespace}/metadata/labels", produces = APPLICATION_JSON_VALUE)
+	ResponseEntity<Labels> getLabels(
+		@PathVariable(name = "municipalityId") String municipalityId,
+		@PathVariable(name = "namespace") String namespace);
 
 }

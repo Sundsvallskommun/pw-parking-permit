@@ -5,7 +5,6 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_CONTACT_CHANNEL_TYPE_EMAIL;
 import static se.sundsvall.parkingpermit.Constants.SM_CONTACT_CHANNEL_TYPE_PHONE;
 import static se.sundsvall.parkingpermit.Constants.SM_DESCRIPTION_CARD_MANAGEMENT;
@@ -19,17 +18,20 @@ import static se.sundsvall.parkingpermit.Constants.SM_ROLE_CONTACT_PERSON;
 import static se.sundsvall.parkingpermit.Constants.SM_STATUS_NEW;
 import static se.sundsvall.parkingpermit.Constants.SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.SM_SUBJECT_MAILING_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.SM_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 import generated.se.sundsvall.casedata.ContactInformation;
-import generated.se.sundsvall.supportmanagement.Classification;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
 import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.ErrandLabel;
+import generated.se.sundsvall.supportmanagement.Label;
 import generated.se.sundsvall.supportmanagement.Stakeholder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class SupportManagementMapper {
 
@@ -39,7 +41,7 @@ public final class SupportManagementMapper {
 		// Private constructor to prevent instantiation
 	}
 
-	public static Errand toSupportManagementMailingErrand(final generated.se.sundsvall.casedata.Errand caseDataErrand, final boolean isAutomatic) {
+	public static Errand toSupportManagementMailingErrand(final generated.se.sundsvall.casedata.Errand caseDataErrand, final boolean isAutomatic, final List<Label> labels) {
 		if (caseDataErrand == null) {
 			return null;
 		}
@@ -50,8 +52,7 @@ public final class SupportManagementMapper {
 			.title(SM_SUBJECT_MAILING_PARKING_PERMIT)
 			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_MAILING_PARKING_PERMIT, caseDataErrand.getErrandNumber()))
-			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
-			.labels(List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_MAILING))
+			.labels(mapLabels(labels, List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_MAILING)))
 			.channel(getChannel(isAutomatic))
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
 			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
@@ -59,7 +60,7 @@ public final class SupportManagementMapper {
 			.businessRelated(false);
 	}
 
-	public static Errand toSupportManagementCardManagementErrand(generated.se.sundsvall.casedata.Errand caseDataErrand, boolean isAutomatic) {
+	public static Errand toSupportManagementCardManagementErrand(generated.se.sundsvall.casedata.Errand caseDataErrand, boolean isAutomatic, final List<Label> labels) {
 		if (caseDataErrand == null) {
 			return null;
 		}
@@ -71,13 +72,30 @@ public final class SupportManagementMapper {
 			.title(SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT)
 			.priority(MEDIUM)
 			.description(String.format(SM_DESCRIPTION_CARD_MANAGEMENT, caseDataErrand.getErrandNumber()))
-			.classification(new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT))
-			.labels(List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT))
+			.labels(mapLabels(labels, List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT)))
 			.channel(getChannel(isAutomatic))
 			.stakeholders(List.of(getContactStakeholderFromApplicant(caseDataErrand)))
 			.reporterUserId(Optional.ofNullable(administratorStakeholder.getAdAccount()).orElse(PROCESS_ENGINE_USER))
 			.activeNotifications(null)
 			.businessRelated(false);
+	}
+
+	private static List<ErrandLabel> mapLabels(final List<Label> labels, final List<String> labelResources) {
+		if (labels == null || labels.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		Stream<ErrandLabel> currentLevelStream = labels.stream()
+			.filter(label -> labelResources.contains(label.getResourcePath()))
+			.map(label -> new ErrandLabel().id(label.getId()));
+
+		Stream<ErrandLabel> subLabelsStream = labels.stream()
+			.map(Label::getLabels)
+			.map(subLabels -> mapLabels(subLabels, labelResources))
+			.flatMap(List::stream);
+
+		return Stream.concat(currentLevelStream, subLabelsStream)
+			.collect(Collectors.toList());
 	}
 
 	private static Stakeholder getContactStakeholderFromApplicant(generated.se.sundsvall.casedata.Errand caseDataErrand) {

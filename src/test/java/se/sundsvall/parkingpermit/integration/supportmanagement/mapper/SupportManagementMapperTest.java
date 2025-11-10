@@ -7,8 +7,10 @@ import static org.assertj.core.groups.Tuple.tuple;
 
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
-import generated.se.sundsvall.supportmanagement.Classification;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
+import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.ErrandLabel;
+import generated.se.sundsvall.supportmanagement.Label;
 import generated.se.sundsvall.supportmanagement.Stakeholder;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -26,15 +28,15 @@ class SupportManagementMapperTest {
 		final var caseDataErrand = createCaseDataErrand();
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, isAutomatic);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, isAutomatic, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Utskick av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID");
 		if (isAutomatic) {
 			assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		} else {
@@ -76,15 +78,15 @@ class SupportManagementMapperTest {
 		caseDataErrand.getStakeholders().getFirst().getAddresses().getFirst().street(null);
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Utskick av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
 		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
@@ -122,15 +124,15 @@ class SupportManagementMapperTest {
 		caseDataErrand.getStakeholders().getFirst().getAddresses().getFirst().houseNumber(null);
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Utskick av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
 		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
@@ -168,15 +170,15 @@ class SupportManagementMapperTest {
 		caseDataErrand.getStakeholders().getFirst().addresses(emptyList());
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Utskick av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
 		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
@@ -214,15 +216,15 @@ class SupportManagementMapperTest {
 		caseDataErrand.getStakeholders().getFirst().contactInformation(emptyList());
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(caseDataErrand, true, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Utskick av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID");
 		assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		assertThat(errand.getPriority()).isEqualTo(MEDIUM);
 		assertThat(errand.getReporterUserId()).isEqualTo("adAccount");
@@ -255,7 +257,7 @@ class SupportManagementMapperTest {
 	@Test
 	void toSupportManagementMailingErrandWhenNull() {
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(null, false);
+		final var errand = SupportManagementMapper.toSupportManagementMailingErrand(null, false, null);
 
 		// Assert
 		assertThat(errand).isNull();
@@ -270,15 +272,15 @@ class SupportManagementMapperTest {
 		final var caseDataErrand = createCaseDataErrand();
 
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementCardManagementErrand(caseDataErrand, isAutomatic);
+		final var errand = SupportManagementMapper.toSupportManagementCardManagementErrand(caseDataErrand, isAutomatic, createLabels());
 
 		// Assert
 		assertThat(errand.getBusinessRelated()).isFalse();
 		assertThat(errand.getStatus()).isEqualTo("NEW");
 		assertThat(errand.getTitle()).isEqualTo("Korthantering av parkeringstillstånd");
 		assertThat(errand.getDescription()).isEqualTo("Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: errandNumber");
-		assertThat(errand.getClassification()).isEqualTo(new Classification().category("URBAN_DEVELOPMENT").type("URBAN_DEVELOPMENT.PARKING_PERMIT"));
-		assertThat(errand.getLabels()).containsExactly("URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.CARD_MANAGEMENT");
+		assertThat(errand.getClassification()).isNull();
+		assertThat(errand.getLabels()).extracting(ErrandLabel::getId).containsExactly("URBAN_DEVELOPMENT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT_ID", "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID");
 		if (isAutomatic) {
 			assertThat(errand.getChannel()).isEqualTo("ESERVICE");
 		} else {
@@ -316,7 +318,7 @@ class SupportManagementMapperTest {
 	@Test
 	void toSupportManagementCardManagementErrandWhenNull() {
 		// Act
-		final var errand = SupportManagementMapper.toSupportManagementCardManagementErrand(null, true);
+		final var errand = SupportManagementMapper.toSupportManagementCardManagementErrand(null, true, null);
 
 		// Assert
 		assertThat(errand).isNull();
@@ -372,5 +374,15 @@ class SupportManagementMapperTest {
 		return new ContactInformation()
 			.contactType(ContactInformation.ContactTypeEnum.EMAIL)
 			.value("a.b@c.se");
+	}
+
+	private List<Label> createLabels() {
+		return List.of(
+			new Label().resourcePath("URBAN_DEVELOPMENT").id("URBAN_DEVELOPMENT_ID")
+				.labels(List.of(
+					new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT").id("URBAN_DEVELOPMENT/PARKING_PERMIT_ID")
+						.labels(List.of(
+							new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING").id("URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID"),
+							new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT").id("URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID"))))));
 	}
 }

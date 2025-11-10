@@ -15,6 +15,7 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatch;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
+import static apptest.mock.api.SupportManagement.mockSupportManagementGet;
 import static apptest.mock.api.SupportManagement.mockSupportManagementPost;
 import static apptest.mock.api.Templating.mockRenderPdf;
 import static apptest.verification.ProcessPathway.actualizationPathway;
@@ -44,8 +45,10 @@ import apptest.mock.DecisionHandlingCase;
 import apptest.mock.DecisionHandlingFollowUp;
 import apptest.verification.Tuples;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.time.Duration;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -351,7 +354,8 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				    } ]
 				  }
 				"""));
-		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterWebmessagePost, "decision_decision-handling-worker---api-support-management-post",
+		final var stateAfterGetSMMetadata = mockSupportManagementGet(scenarioName, stateAfterWebmessagePost, "decision_decision-handling-worker---api-support-management-get");
+		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterGetSMMetadata, "decision_decision-handling-worker---api-support-management-post",
 			equalToJson("""
 				{
 				    "title" : "Korthantering av parkeringstillstånd",
@@ -376,15 +380,21 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 				    } ],
 				    "externalTags" : [ ],
 				    "parameters" : [ ],
-				    "classification" : {
-				      "category" : "URBAN_DEVELOPMENT",
-				      "type" : "URBAN_DEVELOPMENT.PARKING_PERMIT"
-				    },
 				    "status" : "NEW",
 				    "description" : "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: PRH-2022-000001",
 				    "reporterUserId" : "ProcessEngine",
 				    "businessRelated" : false,
-				    "labels" : [ "URBAN_DEVELOPMENT", "URBAN_DEVELOPMENT.PARKING_PERMIT", "URBAN_DEVELOPMENT.PARKING_PERMIT.CARD_MANAGEMENT" ]
+				    "labels" : [
+				      {
+				        "id" : "URBAN_DEVELOPMENT_ID"
+				      },
+				      {
+				        "id" : "URBAN_DEVELOPMENT/PARKING_PERMIT_ID"
+				      },
+				      {
+				        "id" : "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID"
+				      }
+				    ]
 				  }
 				"""));
 
