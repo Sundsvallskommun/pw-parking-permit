@@ -144,7 +144,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
-		when(supportManagementServiceMock.getMetadataLabels(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE))).thenReturn(createLabels());
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -221,7 +221,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionWebMessage(MUNICIPALITY_ID, errandMock, pdf, decision)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
-		when(supportManagementServiceMock.getMetadataLabels(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE))).thenReturn(createLabels());
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);

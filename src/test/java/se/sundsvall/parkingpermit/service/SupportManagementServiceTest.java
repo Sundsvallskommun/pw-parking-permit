@@ -126,7 +126,6 @@ class SupportManagementServiceTest {
 	@Test
 	void getMetadataLabelsError() {
 		// Arrange
-		var label = new Label().id("x");
 		when(supportManagementClientMock.getLabels(any(), any())).thenReturn(ResponseEntity.badRequest().build());
 
 		// Act
