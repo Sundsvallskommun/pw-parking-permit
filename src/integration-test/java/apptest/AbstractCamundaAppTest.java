@@ -110,7 +110,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		}
 	}
 
-	void printMockPathsToSystemErr() {
+	void logMockInformation() {
 		final var fixedColumnWidthFormat = "%-100s"; // Fixed 100 char long colum width
 
 		wiremock.getAllScenarios().getScenarios().stream().forEach(scenario -> {
