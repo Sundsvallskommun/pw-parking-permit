@@ -43,11 +43,6 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
-import apptest.mock.DecisionHandlingCase;
-import apptest.mock.DecisionHandlingFollowUp;
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.time.Duration;
 import java.util.Map;
 
@@ -439,7 +434,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
-			.andReturnBody(StartProcessResponse.class); 
+			.andReturnBody(StartProcessResponse.class);
 
 		// Wait for process to be waiting for update of errand
 		awaitProcessState("decision_is_case_update_available", 999);
