@@ -44,12 +44,12 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 
 	private final Logger logger;
 
+	@Autowired
+	protected CamundaClient camundaClient;
+
 	AbstractCamundaAppTest() {
 		this.logger = LoggerFactory.getLogger(getClass());
 	}
-
-	@Autowired
-	protected CamundaClient camundaClient;
 
 	@SuppressWarnings("resource")
 	@Container
@@ -110,7 +110,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		}
 	}
 
-	void logMockInformation() {
+	protected void logMockInformation() {
 		final var fixedColumnWidthFormat = "%-100s"; // Fixed 100 char long colum width
 
 		wiremock.getAllScenarios().getScenarios().stream().forEach(scenario -> {
@@ -122,7 +122,7 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 				.sorted(reverseOrder((stub1, stub2) -> Long.compare(stub2.getInsertionIndex(), stub1.getInsertionIndex()))) // Reverse to get start of flow at top
 				.forEach(mapping -> logger.info(String.format(fixedColumnWidthFormat, mapping.getRequiredScenarioState()) +
 					String.format(fixedColumnWidthFormat, mapping.getNewScenarioState()) +
-					mapping.getRequest().getMethod() + " " + mapping.getRequest().getUrl()));
+					mapping.getRequest().getMethod() + " " + mapping.getRequest().getUrl() + " " + mapping.getRequest().getBodyPatterns()));
 		});
 	}
 }

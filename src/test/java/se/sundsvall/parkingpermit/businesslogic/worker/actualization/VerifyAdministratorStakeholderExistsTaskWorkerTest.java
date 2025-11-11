@@ -129,8 +129,6 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenErrandHasNoAdministratorAssigned() {
-		UUID.randomUUID().toString();
-
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
@@ -160,7 +158,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 	@Test
 	void executeWhenCanceled() {
-		UUID.randomUUID().toString();
+		// Arrange
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE),
 			new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL)));
 

@@ -24,5 +24,5 @@ public interface BusinessRulesClient {
 	 * @throws org.zalando.problem.ThrowableProblem when called service responds with error code.
 	 */
 	@PostMapping(path = "/{municipalityId}/engine", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	RuleEngineResponse runRuleEngine(@PathVariable("municipalityId") String municipalityId, RuleEngineRequest ruleEngineRequest);
+	RuleEngineResponse runRuleEngine(@PathVariable String municipalityId, RuleEngineRequest ruleEngineRequest);
 }

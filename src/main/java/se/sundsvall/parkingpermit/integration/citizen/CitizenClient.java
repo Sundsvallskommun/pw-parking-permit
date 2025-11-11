@@ -25,6 +25,6 @@ public interface CitizenClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{personId}", produces = APPLICATION_JSON_VALUE)
 	Optional<CitizenExtended> getCitizen(
-		@PathVariable("municipalityId") String municipalityId,
-		@PathVariable("personId") String personId);
+		@PathVariable String municipalityId,
+		@PathVariable String personId);
 }
