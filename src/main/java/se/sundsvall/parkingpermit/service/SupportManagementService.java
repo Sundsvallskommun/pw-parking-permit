@@ -2,7 +2,6 @@ package se.sundsvall.parkingpermit.service;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.zalando.problem.Status.BAD_GATEWAY;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import generated.se.sundsvall.supportmanagement.Errand;
@@ -32,7 +31,7 @@ public class SupportManagementService {
 		if (response.getStatusCode().is2xxSuccessful()) {
 			return Optional.of(extractErrandIdFromLocation(response));
 		} else {
-			throw Problem.valueOf(BAD_GATEWAY, "Failed to create errand in support-management");
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Failed to create errand in support-management");
 		}
 	}
 
@@ -41,7 +40,7 @@ public class SupportManagementService {
 			supportManagementClient.createAttachment(municipalityId, namespace, errandId,
 				AttachmentMultiPartFile.create(fileName, new ByteArrayInputStream(Base64.getDecoder().decode(content.getBytes()))));
 		} else {
-			throw Problem.valueOf(BAD_GATEWAY, "File name and content cannot be null or empty");
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "File name and content cannot be null or empty");
 		}
 	}
 
@@ -58,7 +57,7 @@ public class SupportManagementService {
 	private String extractErrandIdFromLocation(ResponseEntity<Void> response) {
 		final var location = String.valueOf(response.getHeaders().getFirst(LOCATION));
 		if (location == null || !location.contains("/errands/")) {
-			throw Problem.valueOf(BAD_GATEWAY, "Invalid location header in response from support-management");
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Invalid location header in response from support-management");
 		}
 		return location.substring(location.lastIndexOf("/") + 1);
 	}

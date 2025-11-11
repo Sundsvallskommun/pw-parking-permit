@@ -3,6 +3,7 @@ package se.sundsvall.parkingpermit.integration.supportmanagement.mapper;
 import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_CONTACT_CHANNEL_TYPE_EMAIL;
@@ -32,9 +33,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zalando.problem.Problem;
 
 public final class SupportManagementMapper {
 
+	private static final Logger logger = LoggerFactory.getLogger(SupportManagementMapper.class);
 	private static final String PROCESS_ENGINE_USER = "ProcessEngine";
 
 	private SupportManagementMapper() {
@@ -81,17 +86,27 @@ public final class SupportManagementMapper {
 	}
 
 	private static List<ErrandLabel> mapLabels(final List<Label> labels, final List<String> labelResources) {
+		var mappedLabels = labelsToErrandLabels(labels, labelResources);
+		if (mappedLabels.size() != labelResources.size()) {
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "Unable to find all labels");
+		}
+
+		return mappedLabels;
+	}
+
+	private static List<ErrandLabel> labelsToErrandLabels(final List<Label> labels, final List<String> labelResources) {
 		if (labels == null || labels.isEmpty()) {
 			return Collections.emptyList();
 		}
 
 		Stream<ErrandLabel> currentLevelStream = labels.stream()
 			.filter(label -> labelResources.contains(label.getResourcePath()))
+			.peek(label -> logger.info("Matched label with resource path '{}'", label.getResourcePath()))
 			.map(label -> new ErrandLabel().id(label.getId()));
 
 		Stream<ErrandLabel> subLabelsStream = labels.stream()
 			.map(Label::getLabels)
-			.map(subLabels -> mapLabels(subLabels, labelResources))
+			.map(subLabels -> labelsToErrandLabels(subLabels, labelResources))
 			.flatMap(List::stream);
 
 		return Stream.concat(currentLevelStream, subLabelsStream)

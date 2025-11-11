@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import generated.se.sundsvall.supportmanagement.Errand;
@@ -60,8 +59,8 @@ class SupportManagementServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> supportManagementService.createErrand(MUNICIPALITY_ID, NAMESPACE, errand));
 		// Assert
 		verify(supportManagementClientMock).createErrand(MUNICIPALITY_ID, NAMESPACE, errand);
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: Failed to create errand in support-management");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Failed to create errand in support-management");
 	}
 
 	@Test
@@ -75,8 +74,8 @@ class SupportManagementServiceTest {
 
 		// Assert
 		verify(supportManagementClientMock).createErrand(MUNICIPALITY_ID, NAMESPACE, errand);
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: Invalid location header in response from support-management");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Invalid location header in response from support-management");
 	}
 
 	@Test
@@ -103,8 +102,8 @@ class SupportManagementServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> supportManagementService.createAttachment(MUNICIPALITY_ID, NAMESPACE, errandId, null, content));
 
 		// Assert
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: File name and content cannot be null or empty");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: File name and content cannot be null or empty");
 		verifyNoInteractions(supportManagementClientMock);
 	}
 
