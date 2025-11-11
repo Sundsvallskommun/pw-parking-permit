@@ -111,9 +111,9 @@ public final class Constants {
 	public static final String SM_CATEGORY_URBAN_DEVELOPMENT = "URBAN_DEVELOPMENT";
 	public static final String SM_TYPE_PARKING_PERMIT = "URBAN_DEVELOPMENT.PARKING_PERMIT";
 	public static final String SM_LABEL_URBAN_DEVELOPMENT = "URBAN_DEVELOPMENT";
-	public static final String SM_LABEL_PARKING_PERMIT = "URBAN_DEVELOPMENT.PARKING_PERMIT";
-	public static final String SM_LABEL_MAILING = "URBAN_DEVELOPMENT.PARKING_PERMIT.MAILING";
-	public static final String SM_LABEL_CARD_MANAGEMENT = "URBAN_DEVELOPMENT.PARKING_PERMIT.CARD_MANAGEMENT";
+	public static final String SM_LABEL_PARKING_PERMIT = "URBAN_DEVELOPMENT/PARKING_PERMIT";
+	public static final String SM_LABEL_MAILING = "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING";
+	public static final String SM_LABEL_CARD_MANAGEMENT = "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT";
 	public static final String SM_SUBJECT_MAILING_PARKING_PERMIT = "Utskick av parkeringstillstånd";
 	public static final String SM_DESCRIPTION_MAILING_PARKING_PERMIT = "Utskick av bifogat beslut om parkeringstillstånd ska ske via post av kontaktcenter. Gäller ärende: %s";
 	public static final String SM_DESCRIPTION_CARD_MANAGEMENT = "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: %s";

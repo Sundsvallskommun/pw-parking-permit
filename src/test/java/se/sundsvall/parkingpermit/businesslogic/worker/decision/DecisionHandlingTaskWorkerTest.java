@@ -22,12 +22,10 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.Constants.SM_CATEGORY_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_URBAN_DEVELOPMENT;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
-import static se.sundsvall.parkingpermit.Constants.SM_TYPE_PARKING_PERMIT;
 
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
@@ -36,8 +34,9 @@ import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.supportmanagement.Classification;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
+import generated.se.sundsvall.supportmanagement.ErrandLabel;
+import generated.se.sundsvall.supportmanagement.Label;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +144,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -170,8 +170,11 @@ class DecisionHandlingTaskWorkerTest {
 			.containsExactly("NEW",
 				"Korthantering av parkeringstillstånd",
 				"Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: " + ERRAND_NUMBER,
-				new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT),
-				List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT),
+				null,
+				List.of(
+					new ErrandLabel().id(SM_LABEL_URBAN_DEVELOPMENT + "_ID"),
+					new ErrandLabel().id(SM_LABEL_PARKING_PERMIT + "_ID"),
+					new ErrandLabel().id(SM_LABEL_CARD_MANAGEMENT + "_ID")),
 				null,
 				List.of(new generated.se.sundsvall.supportmanagement.Stakeholder()
 					.externalId("personId")
@@ -218,6 +221,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionWebMessage(MUNICIPALITY_ID, errandMock, pdf, decision)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), supportManagementErrandCaptor.capture())).thenReturn(Optional.of(smErrandId));
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -243,8 +247,11 @@ class DecisionHandlingTaskWorkerTest {
 			.containsExactly("NEW",
 				"Korthantering av parkeringstillstånd",
 				"Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: " + ERRAND_NUMBER,
-				new Classification().category(SM_CATEGORY_URBAN_DEVELOPMENT).type(SM_TYPE_PARKING_PERMIT),
-				List.of(SM_LABEL_URBAN_DEVELOPMENT, SM_LABEL_PARKING_PERMIT, SM_LABEL_CARD_MANAGEMENT),
+				null,
+				List.of(
+					new ErrandLabel().id(SM_LABEL_URBAN_DEVELOPMENT + "_ID"),
+					new ErrandLabel().id(SM_LABEL_PARKING_PERMIT + "_ID"),
+					new ErrandLabel().id(SM_LABEL_CARD_MANAGEMENT + "_ID")),
 				null,
 				List.of(new generated.se.sundsvall.supportmanagement.Stakeholder()
 					.externalId("personId")
@@ -288,6 +295,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -300,6 +308,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(supportManagementServiceMock, times(2)).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
+		verify(supportManagementServiceMock, times(2)).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
 		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
@@ -332,6 +341,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, false)).thenThrow(thrownException);
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -344,6 +354,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(supportManagementServiceMock).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
+		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
 		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
@@ -373,6 +384,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier)).thenReturn(pdf);
 		when(messagingServiceMock.sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true)).thenReturn(messageUUID);
 		when(supportManagementServiceMock.createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any())).thenReturn(Optional.of(smErrandId));
+		when(supportManagementServiceMock.getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE)).thenReturn(createLabels());
 
 		doThrow(thrownException).when(externalTaskServiceMock).complete(any(), anyMap());
 
@@ -389,6 +401,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
+		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
 	}
 
@@ -422,5 +435,15 @@ class DecisionHandlingTaskWorkerTest {
 				.type(PERSON)
 				.adAccount("adAccount")
 				.roles(List.of(ROLE_ADMINISTRATOR)));
+	}
+
+	private List<Label> createLabels() {
+		return List.of(
+			new Label().resourcePath("URBAN_DEVELOPMENT").id("URBAN_DEVELOPMENT_ID")
+				.labels(List.of(
+					new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT").id("URBAN_DEVELOPMENT/PARKING_PERMIT_ID")
+						.labels(List.of(
+							new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING").id("URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID"),
+							new Label().resourcePath("URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT").id("URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID"))))));
 	}
 }

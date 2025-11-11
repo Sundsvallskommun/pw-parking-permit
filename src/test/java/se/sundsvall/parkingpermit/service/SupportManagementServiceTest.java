@@ -7,11 +7,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.Label;
+import generated.se.sundsvall.supportmanagement.Labels;
 import java.net.URI;
 import java.util.Base64;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,8 +59,8 @@ class SupportManagementServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> supportManagementService.createErrand(MUNICIPALITY_ID, NAMESPACE, errand));
 		// Assert
 		verify(supportManagementClientMock).createErrand(MUNICIPALITY_ID, NAMESPACE, errand);
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: Failed to create errand in support-management");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Failed to create errand in support-management");
 	}
 
 	@Test
@@ -71,8 +74,8 @@ class SupportManagementServiceTest {
 
 		// Assert
 		verify(supportManagementClientMock).createErrand(MUNICIPALITY_ID, NAMESPACE, errand);
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: Invalid location header in response from support-management");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Invalid location header in response from support-management");
 	}
 
 	@Test
@@ -99,8 +102,37 @@ class SupportManagementServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> supportManagementService.createAttachment(MUNICIPALITY_ID, NAMESPACE, errandId, null, content));
 
 		// Assert
-		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: File name and content cannot be null or empty");
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: File name and content cannot be null or empty");
 		verifyNoInteractions(supportManagementClientMock);
+	}
+
+	@Test
+	void getMetadataLabels() {
+		// Arrange
+		var label = new Label().id("x");
+		when(supportManagementClientMock.getLabels(any(), any())).thenReturn(ResponseEntity.ok().body(new Labels().labelStructure(List.of(label))));
+
+		// Act
+
+		var result = supportManagementService.getMetadataLabels(MUNICIPALITY_ID, NAMESPACE);
+
+		// Assert
+		assertThat(result).hasSize(1).containsExactly(label);
+		verify(supportManagementClientMock).getLabels(MUNICIPALITY_ID, NAMESPACE);
+	}
+
+	@Test
+	void getMetadataLabelsError() {
+		// Arrange
+		when(supportManagementClientMock.getLabels(any(), any())).thenReturn(ResponseEntity.badRequest().build());
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class, () -> supportManagementService.getMetadataLabels(MUNICIPALITY_ID, NAMESPACE));
+
+		// Assert
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getMessage()).isEqualTo("Internal Server Error: Failed to get metadata labels from support-management");
+		verify(supportManagementClientMock).getLabels(MUNICIPALITY_ID, NAMESPACE);
 	}
 }

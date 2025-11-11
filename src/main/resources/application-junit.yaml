@@ -7,12 +7,14 @@
 spring:
   main:
     banner-mode: "off"
-    
+
 #----------------------------------------
 # Camunda settings
 #----------------------------------------
 camunda:
   bpm:
+    client:
+      disable-auto-fetching: true
     deployment:
       autoDeployEnabled: false
       processes:
@@ -33,8 +35,8 @@ camunda:
 integration:
   rpa:
     folderIds:
-        2281: 50
-        2260: 60
+      2281: 50
+      2260: 60
 #----------------------------------------
 # Integration settings
 #----------------------------------------

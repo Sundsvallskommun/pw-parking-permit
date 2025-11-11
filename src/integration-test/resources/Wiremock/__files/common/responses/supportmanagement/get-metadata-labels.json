@@ -1,0 +1,28 @@
+{
+	"labelStructure": [
+		{
+			"id": "URBAN_DEVELOPMENT_ID",
+			"resourcePath": "URBAN_DEVELOPMENT",
+			"resourceName": "URBAN_DEVELOPMENT",
+			"labels": [
+				{
+					"id": "URBAN_DEVELOPMENT/PARKING_PERMIT_ID",
+					"resourcePath": "URBAN_DEVELOPMENT/PARKING_PERMIT",
+					"resourceName": "PARKING_PERMIT",
+					"labels": [
+						{
+							"id": "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING_ID",
+							"resourcePath": "URBAN_DEVELOPMENT/PARKING_PERMIT/MAILING",
+							"resourceName": "MAILING"
+						},
+						{
+							"id": "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID",
+							"resourcePath": "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT",
+							"resourceName": "CARD_MANAGEMENT"
+						}
+					]
+				}
+			]
+		}
+	]
+}
