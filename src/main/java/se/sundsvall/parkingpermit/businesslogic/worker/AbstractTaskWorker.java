@@ -19,6 +19,7 @@ import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -85,6 +86,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
 			.findFirst()
 			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
 			.map(List::getFirst)
 			.filter(PHASE_ACTION_CANCEL::equals)
 			.isPresent();
@@ -95,6 +97,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
 			.findFirst()
 			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
 			.map(List::getFirst)
 			.filter(PHASE_ACTION_AUTOMATIC::equals)
 			.isPresent();

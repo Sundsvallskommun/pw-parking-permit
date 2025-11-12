@@ -111,7 +111,7 @@ public final class BusinessRulesMapper {
 
 	private static String getApplicantPersonId(Errand errand) {
 		return Optional.ofNullable(errand.getStakeholders()).orElse(emptyList()).stream()
-			.filter(stakeholder -> stakeholder.getRoles().stream().anyMatch(ROLE_APPLICANT::equals))
+			.filter(stakeholder -> ofNullable(stakeholder.getRoles()).orElse(emptyList()).stream().anyMatch(ROLE_APPLICANT::equals))
 			.findFirst()
 			.map(Stakeholder::getPersonId)
 			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, "No applicant found in errand: " + errand.getErrandNumber()));

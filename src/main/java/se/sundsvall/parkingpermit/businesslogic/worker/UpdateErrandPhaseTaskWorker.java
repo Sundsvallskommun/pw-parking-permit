@@ -19,6 +19,7 @@ import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.collections4.CollectionUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -52,6 +53,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 				.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
 				.findFirst()
 				.map(ExtraParameter::getValues)
+				.filter(CollectionUtils::isNotEmpty)
 				.map(List::getFirst)
 				.filter(PHASE_ACTION_AUTOMATIC::equals)
 				.orElse(PHASE_ACTION_UNKNOWN);

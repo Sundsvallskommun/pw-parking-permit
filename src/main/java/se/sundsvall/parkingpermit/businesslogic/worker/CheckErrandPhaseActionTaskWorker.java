@@ -87,6 +87,7 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_STATUS.equals(extraParameters.getKey()))
 			.findFirst()
 			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
 			.map(List::getFirst)
 			.orElse(null));
 	}
