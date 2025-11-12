@@ -122,8 +122,7 @@ public class Execution {
 				   "namespace" : "SBK_PARKING_PERMIT",
 				   "title" : "Asset blocked",
 				   "text" : "The asset with ID 1c8f38a6-b492-4037-b7dc-de5bc6c629f0 has been blocked.",
-				   "noteType" : "PUBLIC",
-				   "extraParameters" : { }
+				   "noteType" : "PUBLIC"
 				 }
 				"""));
 	}

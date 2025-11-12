@@ -78,10 +78,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_002_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_001_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1213";
-		final var scenarioName = "test_investigation_002_createProcessForPhaseActionNotComplete";
+		final var scenarioName = "test_investigation_001_createProcessForPhaseActionNotComplete";
 
 		// Setup mocks
 		mockApiGatewayToken();
@@ -181,10 +181,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_investigation_003_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_002_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1314";
-		var scenarioName = "test_investigation_003_createProcessForCancelInInvestigation";
+		var scenarioName = "test_investigation_002_createProcessForCancelInInvestigation";
 		if (isAutomatic) {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
@@ -259,10 +259,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_004_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_003_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1617";
-		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
+		final var scenarioName = "test_investigation_003_createProcessValidationErrorInBRToComplete";
 
 		// Setup mocks
 		mockApiGatewayToken();
@@ -289,10 +289,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				    "created": "${json-unit.any-string}",
 				    "decisionType": "RECOMMENDED",
 				    "decisionOutcome": "REJECTION",
-				    "description": "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande).",
-				    "law": [],
-				    "attachments": [],
-				    "extraParameters": {}
+				    "description": "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande)."
 				}
 				"""));
 		// Will loop back and wait for update
@@ -381,10 +378,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_005_createProcessValidationErrorInBRAutomatic() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_004_createProcessValidationErrorInBRAutomatic() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1617";
-		final var scenarioName = "test_investigation_005_createProcessValidationErrorInBRAutomatic";
+		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRAutomatic";
 
 		// Setup mocks
 		mockApiGatewayToken();
@@ -461,10 +458,8 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				     "name" : "beslut.pdf",
 				     "extension" : "pdf",
 				     "mimeType" : "application/pdf",
-				     "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
-				     "extraParameters" : { }
+				     "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
 				   } ],
-				   "extraParameters" : { },
 				   "created" : "${json-unit.any-string}"
 				 }
 				"""));

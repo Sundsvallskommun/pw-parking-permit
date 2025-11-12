@@ -141,10 +141,8 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "relatesTo");
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId");
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
-		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
@@ -228,10 +226,8 @@ class CheckErrandPhaseActionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(externalTaskMock, variables);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "relatesTo");
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId");
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
-		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
 		assertThat(patchExtraParameterCaptor.getValue()).hasSameElementsAs(expectedExtraParameters);
 	}
 
@@ -268,10 +264,6 @@ class CheckErrandPhaseActionTaskWorkerTest {
 			Arguments.of("phaseAction", List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem("phaseAction"),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_WAITING),
-				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
-			Arguments.of(PHASE_ACTION_CANCEL, List.of(
-				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL),
-				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_CANCELED),
 				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
 			Arguments.of(PHASE_ACTION_CANCEL, List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL),

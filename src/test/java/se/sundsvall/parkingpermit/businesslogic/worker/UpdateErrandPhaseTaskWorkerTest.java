@@ -150,11 +150,9 @@ class UpdateErrandPhaseTaskWorkerTest {
 
 		final var patchErrand = patchErrandCaptor.getValue();
 
-		assertThat(patchErrand).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrand).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase");
 		assertThat(patchErrand.getExternalCaseId()).isEqualTo(externalCaseId);
-		assertThat(patchErrand.getFacilities()).isEmpty();
 		assertThat(patchErrand.getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
-		assertThat(patchErrand.getRelatesTo()).isEmpty();
 
 		final var phaseStatus = CASEDATA_STATUS_CASE_FINALIZED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)

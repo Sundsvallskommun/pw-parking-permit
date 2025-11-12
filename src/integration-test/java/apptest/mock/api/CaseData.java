@@ -280,16 +280,13 @@ public class CaseData {
 		return String.format("""
 			{
 				"externalCaseId" : "2971",
-				"phase" : "%s",
-				"facilities" : [],
-				"relatesTo" : []
+				"phase" : "%s"
 			}""", phase);
 	}
 
 	public static String createPatchBodyWhenLostCard(String phaseAction, String phaseStatus, String displayPhase, String assetId) {
 		return String.format("""
 			{
-				"facilities" : [],
 				"extraParameters" : [ {
 						"key" : "disability.walkingAbility",
 						"values" : [ "false" ]
@@ -347,9 +344,7 @@ public class CaseData {
 					}, {
 			            "key" : "artefact.lost.permit.number",
 			            "values" : [ "%s" ]
-			        } ],
-					"relatesTo" : [ ],
-			        "labels" : [ ]
+			        } ]
 					}""", phaseAction, displayPhase, phaseStatus, assetId);
 	}
 

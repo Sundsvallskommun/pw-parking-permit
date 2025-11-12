@@ -61,8 +61,6 @@ public class CaseDataMapper {
 	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase) {
 		return new PatchErrand()
 			.externalCaseId(externalCaseId)
-			.labels(null) // Set this explicitly to null to not update labels to empty list when patching errand
-			.extraParameters(null) // Set this explicitly to null to not update extra parameters when patching errand
 			.phase(phase);
 	}
 

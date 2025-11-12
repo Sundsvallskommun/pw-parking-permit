@@ -224,10 +224,8 @@ class CheckDecisionTaskWorkerTest {
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase");
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
-		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
 		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
@@ -269,10 +267,8 @@ class CheckDecisionTaskWorkerTest {
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
+		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase");
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
-		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
 		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
@@ -316,8 +312,8 @@ class CheckDecisionTaskWorkerTest {
 
 		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "facilities", "phase", "relatesTo");
 		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-		assertThat(patchErrandCaptor.getValue().getFacilities()).isEmpty();
-		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isEmpty();
+		assertThat(patchErrandCaptor.getValue().getFacilities()).isNull();
+		assertThat(patchErrandCaptor.getValue().getRelatesTo()).isNull();
 		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(

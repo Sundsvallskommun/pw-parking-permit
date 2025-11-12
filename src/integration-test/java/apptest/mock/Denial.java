@@ -68,10 +68,7 @@ public class Denial {
 						"lastName": "Engine",
 						"roles": [
 							"ADMINISTRATOR"
-						],
-						"addresses": [],
-						"contactInformation": [],
-						"extraParameters": {}
+						]
 					}
 				"""));
 
@@ -132,11 +129,9 @@ public class Denial {
 											"name": "beslut.pdf",
 											"extension": "pdf",
 											"mimeType": "application/pdf",
-											"extraParameters": {},
 											"file": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
 										}
-									],
-									"extraParameters": {}
+									]
 								}
 					"""));
 	}
@@ -246,15 +241,13 @@ public class Denial {
 									"sent": "${json-unit.any-string}",
 									"subject": "Beslut från Sundsvalls kommun",
 									"username": "ProcessEngine",
-									"recipients" : [ ],
 									"attachments": [
 										{
 											"content": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
 											"name": "beslut.pdf",
 											"contentType": "application/pdf"
 										}
-									],
-									"emailHeaders": []
+									]
 								}
 					"""));
 	}

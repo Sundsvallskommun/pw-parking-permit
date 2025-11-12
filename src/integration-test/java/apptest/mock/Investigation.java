@@ -234,10 +234,8 @@ public class Investigation {
 								"name" : "beslut.pdf",
 								"extension" : "pdf",
 						        "mimeType" : "application/pdf",
-						        "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
-						        "extraParameters" : { }
-							} ],
-							"extraParameters" : { }
+						        "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
+							} ]
 						}
 					"""));
 		} else {
@@ -248,10 +246,7 @@ public class Investigation {
 					    "created": "${json-unit.any-string}",
 					    "decisionType": "RECOMMENDED",
 					    "decisionOutcome": "APPROVAL",
-					    "description": "Rekommenderat beslut är bevilja. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd.",
-					    "law": [],
-					    "attachments": [],
-					    "extraParameters": {}
+					    "description": "Rekommenderat beslut är bevilja. Den sökande är helt rullstolsburen, funktionsnedsättningens varaktighet är 6 månader eller längre och den sökande har inga aktiva parkeringstillstånd."
 					}
 					"""));
 		}

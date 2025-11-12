@@ -28,10 +28,12 @@ import generated.se.sundsvall.businessrules.Fact;
 import generated.se.sundsvall.businessrules.RuleEngineRequest;
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.apache.commons.collections4.CollectionUtils;
 import org.zalando.problem.Problem;
 
 public final class BusinessRulesMapper {
@@ -99,9 +101,11 @@ public final class BusinessRulesMapper {
 
 	private static String getExtraParameterValue(Errand errand, String key) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameter -> key.equals(extraParameter.getKey()))
+			.filter(extraParameters -> key.equals(extraParameters.getKey()))
 			.findFirst()
-			.flatMap(extraParameter -> extraParameter.getValues().stream().filter(Objects::nonNull).findFirst())
+			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
+			.map(List::getFirst)
 			.orElse(null);
 	}
 

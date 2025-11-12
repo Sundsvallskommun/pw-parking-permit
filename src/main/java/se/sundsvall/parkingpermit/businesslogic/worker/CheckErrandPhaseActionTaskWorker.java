@@ -17,8 +17,11 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import org.apache.commons.collections4.CollectionUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -91,6 +94,8 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameters -> key.equals(extraParameters.getKey()))
 			.findFirst()
-			.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst());
+			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
+			.map(List::getFirst);
 	}
 }
