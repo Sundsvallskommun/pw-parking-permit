@@ -86,7 +86,8 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 		return !PHASE_STATUS_WAITING.equals(Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_STATUS.equals(extraParameters.getKey()))
 			.findFirst()
-			.map(extraParameters -> extraParameters.getValues().getFirst())
+			.map(ExtraParameter::getValues)
+			.map(List::getFirst)
 			.orElse(null));
 	}
 
