@@ -8,7 +8,6 @@ import static org.assertj.core.groups.Tuple.tuple;
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
-import generated.se.sundsvall.supportmanagement.Errand;
 import generated.se.sundsvall.supportmanagement.ErrandLabel;
 import generated.se.sundsvall.supportmanagement.Label;
 import generated.se.sundsvall.supportmanagement.Stakeholder;

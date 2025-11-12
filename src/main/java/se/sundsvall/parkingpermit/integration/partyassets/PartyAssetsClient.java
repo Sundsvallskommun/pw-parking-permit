@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration;
 
@@ -28,7 +29,7 @@ public interface PartyAssetsClient {
 	 * @param assetCreateRequest request containing asset information.
 	 */
 	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> createAsset(@PathVariable("municipalityId") final String municipalityId, final AssetCreateRequest assetCreateRequest);
+	ResponseEntity<Void> createAsset(@PathVariable final String municipalityId, final @RequestBody AssetCreateRequest assetCreateRequest);
 
 	/**
 	 * Get asset for party.
@@ -39,8 +40,8 @@ public interface PartyAssetsClient {
 	 * @param status         the status of assets.
 	 */
 	@GetMapping(path = "/{municipalityId}/assets", produces = APPLICATION_JSON_VALUE)
-	ResponseEntity<List<Asset>> getAssets(@PathVariable("municipalityId") final String municipalityId, @RequestParam("assetId") final String assetId,
-		@RequestParam("partyId") final String partyId, @RequestParam("status") final String status);
+	ResponseEntity<List<Asset>> getAssets(@PathVariable final String municipalityId, @RequestParam final String assetId,
+		@RequestParam final String partyId, @RequestParam final String status);
 
 	/**
 	 * Get asset for party.
@@ -50,8 +51,8 @@ public interface PartyAssetsClient {
 	 * @param status         the status of assets.
 	 */
 	@GetMapping(path = "/{municipalityId}/assets", produces = APPLICATION_JSON_VALUE)
-	ResponseEntity<List<Asset>> getAssets(@PathVariable("municipalityId") final String municipalityId,
-		@RequestParam("partyId") final String partyId, @RequestParam("status") final String status);
+	ResponseEntity<List<Asset>> getAssets(@PathVariable final String municipalityId,
+		@RequestParam final String partyId, @RequestParam final String status);
 
 	/**
 	 * Update asset.
@@ -61,6 +62,6 @@ public interface PartyAssetsClient {
 	 * @param assetUpdateRequest request containing asset information.
 	 */
 	@PutMapping(path = "/{municipalityId}/assets/{id}", consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> updateAsset(@PathVariable("municipalityId") final String municipalityId, @PathVariable("id") final String id,
-		final AssetUpdateRequest assetUpdateRequest);
+	ResponseEntity<Void> updateAsset(@PathVariable final String municipalityId, @PathVariable final String id,
+		final @RequestBody AssetUpdateRequest assetUpdateRequest);
 }

@@ -9,7 +9,7 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
@@ -37,9 +37,9 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
 			logInfo("Execute task for evaluating if stakeholder with role 'ADMINISTRATOR' is present.");
 			clearUpdateAvailable(externalTask);
 
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
 			final var administratorIsAssigned = isAdministratorAssigned(errand);
@@ -49,12 +49,12 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
 			if (isCancel(errand)) {
 				logInfo("Cancel has been requested for errand with id {}", errand.getId());
 
-				caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL, errand.getExtraParameters()));
+				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_CANCELED, PHASE_ACTION_CANCEL));
 				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
 				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 
 			} else if (!administratorIsAssigned) {
-				caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase(), PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, errand.getExtraParameters()));
+				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
 				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
 			}
 

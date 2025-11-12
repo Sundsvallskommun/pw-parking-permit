@@ -25,10 +25,11 @@ import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.templating.RenderResponse;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -147,14 +148,15 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			final var disabilityDuration = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 				.filter(extraParameters -> CASEDATA_KEY_DISABILITY_DURATION.equals(extraParameters.getKey()))
 				.findFirst()
-				.flatMap(extraParameters -> extraParameters.getValues().stream().findFirst())
+				.map(ExtraParameter::getValues)
+				.map(List::getFirst)
 				.map(Period::parse)
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No disability duration found in errand"));
 
 			decision.setValidTo(getValidTo(disabilityDuration));
 		}
 
-		final RenderResponse pdf = messagingService.renderPdfDecision(errand.getMunicipalityId(), errand, getTemplateId(errand, decision));
+		final var pdf = messagingService.renderPdfDecision(errand.getMunicipalityId(), errand, getTemplateId(errand, decision));
 
 		return decision
 			.decidedBy(getStakeholder(errand, ROLE_ADMINISTRATOR))
@@ -163,7 +165,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	}
 
 	private String getTemplateId(final Errand errand, final Decision decision) {
-		StringBuilder templateId = new StringBuilder("sbk.rph.decision");
+		final var templateId = new StringBuilder("sbk.rph.decision");
 		final var capacity = Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList())
 			.stream()
 			.filter(param -> "application.applicant.capacity".equals(param.getKey()))

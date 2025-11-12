@@ -9,9 +9,11 @@ import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.RelatedErrand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -38,9 +40,9 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for UpdateAssetTask");
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
@@ -79,7 +81,8 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 		return Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameter -> CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER.equals(extraParameter.getKey()))
 			.findFirst()
-			.map(extraParameter -> Optional.ofNullable(extraParameter.getValues()).orElse(emptyList()).getFirst())
+			.map(ExtraParameter::getValues)
+			.map(List::getFirst)
 			.orElse(null);
 	}
 

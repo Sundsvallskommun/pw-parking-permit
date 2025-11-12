@@ -29,8 +29,8 @@ public interface SupportManagementClient {
 	 */
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> createErrand(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
 		@RequestBody Errand errand);
 
 	/**
@@ -38,14 +38,14 @@ public interface SupportManagementClient {
 	 */
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> createAttachment(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") String errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable String errandId,
 		@RequestPart(name = "errandAttachment") MultipartFile file);
 
 	@GetMapping(path = "/{municipalityId}/{namespace}/metadata/labels", produces = APPLICATION_JSON_VALUE)
 	ResponseEntity<Labels> getLabels(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace);
 
 }

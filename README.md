@@ -128,4 +128,4 @@
 
 ## 
 
-Copyright (c) 2023 Sundsvalls kommun
+Copyright &copy; 2023 Sundsvalls kommun

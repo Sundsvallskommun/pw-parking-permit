@@ -28,7 +28,7 @@ public interface MessagingClient {
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/webmessage", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	MessageResult sendWebMessage(@PathVariable("municipalityId") final String municipalityId,
+	MessageResult sendWebMessage(@PathVariable final String municipalityId,
 		@RequestBody final WebMessageRequest webMessageRequest);
 
 	/**
@@ -40,7 +40,7 @@ public interface MessagingClient {
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/letter", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	MessageBatchResult sendLetter(@PathVariable("municipalityId") final String municipalityId,
+	MessageBatchResult sendLetter(@PathVariable final String municipalityId,
 		@RequestBody final LetterRequest letterRequest);
 
 	/**
@@ -52,6 +52,6 @@ public interface MessagingClient {
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/digital-mail", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	MessageBatchResult sendDigitalMail(@PathVariable("municipalityId") final String municipalityId,
+	MessageBatchResult sendDigitalMail(@PathVariable final String municipalityId,
 		@RequestBody final DigitalMailRequest digitalMailRequest);
 }

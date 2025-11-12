@@ -155,6 +155,7 @@
 								<useSwaggerAnnotations>false</useSwaggerAnnotations>
 								<interfaceOnly>true</interfaceOnly>
 								<useSpringBoot3>true</useSpringBoot3>
+								<containerDefaultToNull>true</containerDefaultToNull>
 							</configOptions>
 						</configuration>
 					</execution>
