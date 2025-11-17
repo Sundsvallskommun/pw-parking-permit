@@ -1,10 +1,10 @@
 package apptest.mock;
 
-import java.util.Map;
-
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Citizen.mockGetCitizen;
 import static apptest.mock.api.Citizen.mockGetCitizenNoContent;
@@ -13,16 +13,18 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
+import java.util.Map;
+
 public class Actualization {
 
 	private static final String MUNICIPALITY_ID = "2281";
 
 	public static String mockActualization(String caseId, String scenarioName, boolean isAutomatic) {
-		var scenarioAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, "check_appeal_check-appeal-task-worker---api-casedata-get-errand", isAutomatic);
-		var scenarioAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, scenarioAfterUpdatePhase, "2281", isAutomatic);
-		var scenarioAfterVerifyAdministrator = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, scenarioAfterVerifyResident, isAutomatic);
-		var scenarioAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, scenarioAfterVerifyAdministrator, isAutomatic);
-		var scenarioAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, scenarioAfterUpdateDisplayPhase, isAutomatic);
+		final var scenarioAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, "check_appeal_check-appeal-task-worker---api-casedata-get-errand", isAutomatic);
+		final var scenarioAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, scenarioAfterUpdatePhase, "2281", isAutomatic);
+		final var scenarioAfterVerifyAdministrator = mockActualizationVerifyAdministratorStakeholder(caseId, scenarioName, scenarioAfterVerifyResident, isAutomatic);
+		final var scenarioAfterUpdateDisplayPhase = mockActualizationUpdateDisplayPhase(caseId, scenarioName, scenarioAfterVerifyAdministrator, isAutomatic);
+		final var scenarioAfterUpdateStatus = mockActualizationUpdateStatus(caseId, scenarioName, scenarioAfterUpdateDisplayPhase, isAutomatic);
 		return mockActualizationCheckPhaseAction(caseId, scenarioName, scenarioAfterUpdateStatus, isAutomatic);
 	}
 
@@ -35,13 +37,20 @@ public class Actualization {
 				"displayPhaseParameter", "Aktualisering",
 				"phaseActionParameter", phaseAction(isAutomatic)));
 
-		return mockCaseDataPatch(caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"actualization_update-phase-task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Aktualisering", phaseAction(isAutomatic), "ONGOING", "Registrerad")));
+			equalToJson(createPatchBody("Aktualisering")));
+
+		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_update_phase-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(phaseAction(isAutomatic), "ONGOING", "Registrerad")),
+			Map.of("phaseActionParameter", phaseAction(isAutomatic),
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Registrerad"));
 	}
 
 	public static String mockActualizationVerifyResident(String caseId, String scenarioName, String requiredScenarioState, String municipalityId, boolean isAutomatic) {
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"verify-resident-of-municipality-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
@@ -81,13 +90,20 @@ public class Actualization {
 				"phaseActionParameter", phaseAction(isAutomatic),
 				"displayPhaseParameter", "Registrerad"));
 
-		return mockCaseDataPatch(caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"actualization_update-display-phase---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Aktualisering", phaseAction(isAutomatic), "ONGOING", "Granskning")));
+			equalToJson(createPatchBody("Aktualisering")));
+
+		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_update-display-phase---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(phaseAction(isAutomatic), "ONGOING", "Granskning")),
+			Map.of("phaseActionParameter", phaseAction(isAutomatic),
+				"phaseStatusParameter", "ONGOING",
+				"displayPhaseParameter", "Granskning"));
 	}
 
 	public static String mockActualizationUpdateStatus(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
-		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		final var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"actualization_update-errand-status---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
@@ -115,9 +131,16 @@ public class Actualization {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
 				"displayPhaseParameter", "Granskning"));
 
-		return mockCaseDataPatch(caseId, scenarioName, state,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"actualization_check-phase-action_task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Aktualisering", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE, "COMPLETED", "Granskning")));
+			equalToJson(createPatchBody("Aktualisering")));
+
+		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_check-phase-action_task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE, "COMPLETED", "Granskning")),
+			Map.of("phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE,
+				"phaseStatusParameter", "COMPLETED",
+				"displayPhaseParameter", "Granskning"));
 	}
 
 	private static String phaseAction(boolean isAutomatic) {

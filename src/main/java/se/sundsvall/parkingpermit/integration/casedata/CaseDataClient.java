@@ -6,6 +6,7 @@ import static se.sundsvall.parkingpermit.integration.casedata.configuration.Case
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.Note;
 import generated.se.sundsvall.casedata.PageErrand;
@@ -39,25 +40,25 @@ public interface CaseDataClient {
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchNewDecision(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable("errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody Decision patchDecision);
 
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchDecisionWithId(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable("errandId") Long errandId,
-		@PathVariable("decisionId") Long decisionId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@PathVariable Long decisionId,
 		@RequestBody PatchDecision patchDecision);
 
 	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> deleteDecision(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable("errandId") Long errandId,
-		@PathVariable("decisionId") Long decisionId);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@PathVariable Long decisionId);
 
 	/**
 	 * Gets an errand by id.
@@ -67,9 +68,9 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
 	Errand getErrandById(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId);
 
 	/**
 	 * Gets attachment by errand id
@@ -81,9 +82,9 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/attachments", produces = APPLICATION_JSON_VALUE)
 	List<Attachment> getErrandAttachments(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId);
 
 	/**
 	 * Get errands with or without query. The query is very flexible and allows you as a client to control a lot yourself.
@@ -96,9 +97,9 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands", produces = APPLICATION_JSON_VALUE)
 	PageErrand getErrandsByQueryFilter(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@RequestParam(name = "filter") String filter);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@RequestParam String filter);
 
 	/**
 	 * Updates an errand.
@@ -109,9 +110,9 @@ public interface CaseDataClient {
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchErrand(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody PatchErrand patchErrand);
 
 	/**
@@ -123,9 +124,9 @@ public interface CaseDataClient {
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addStakeholderToErrand(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody Stakeholder stakeholder);
 
 	/**
@@ -137,16 +138,16 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders/{stakeholderId}", produces = APPLICATION_JSON_VALUE)
 	Stakeholder getStakeholder(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable("errandId") Long errandId,
-		@PathVariable(name = "stakeholderId") Long stakeholderId);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@PathVariable Long stakeholderId);
 
 	@PatchMapping("/{municipalityId}/{namespace}/errands/{errandId}/status")
 	ResponseEntity<Void> patchStatus(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody Status status);
 
 	/**
@@ -157,9 +158,9 @@ public interface CaseDataClient {
 	 */
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/messages", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addMessage(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable("errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody MessageRequest messageRequest);
 
 	/**
@@ -170,10 +171,10 @@ public interface CaseDataClient {
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", produces = APPLICATION_JSON_VALUE)
 	List<Note> getNotesByErrandId(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
-		@RequestParam(name = "noteType", required = false) String noteType);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@RequestParam(required = false) String noteType);
 
 	/**
 	 * Create and add note.
@@ -183,9 +184,9 @@ public interface CaseDataClient {
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addNoteToErrand(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
 		@RequestBody Note note);
 
 	/**
@@ -196,8 +197,24 @@ public interface CaseDataClient {
 	 */
 	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes/{noteId}")
 	ResponseEntity<Void> deleteNoteById(
-		@PathVariable(name = "municipalityId") String municipalityId,
-		@PathVariable(name = "namespace") String namespace,
-		@PathVariable(name = "errandId") Long errandId,
-		@PathVariable(name = "noteId") Long noteId);
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@PathVariable Long noteId);
+
+	/**
+	 * Adds new extra parameters to errand or updates value of existing ones.
+	 *
+	 * @param  municipalityId                       municipality id of the municipality that owns the errand
+	 * @param  namespace                            namespace in which the errand resides
+	 * @param  errandId                             id of the errand to update
+	 * @param  extraParameters                      list of extra parameters to add or update errand with
+	 * @throws org.zalando.problem.ThrowableProblem on error
+	 */
+	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/extraparameters", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	List<ExtraParameter> patchErrandExtraParameters(
+		@PathVariable String municipalityId,
+		@PathVariable String namespace,
+		@PathVariable Long errandId,
+		@RequestBody List<ExtraParameter> extraParameters);
 }

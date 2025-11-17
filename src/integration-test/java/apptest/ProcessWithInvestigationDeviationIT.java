@@ -13,9 +13,11 @@ import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
 import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
-import static apptest.mock.api.CaseData.mockCaseDataPatch;
+import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Templating.mockRenderPdf;
 import static apptest.verification.ProcessPathway.actualizationPathway;
@@ -40,15 +42,18 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
-import apptest.verification.Tuples;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Duration;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
@@ -73,34 +78,43 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_002_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_001_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1213";
-		final var scenarioName = "test_investigation_002_createProcessForPhaseActionNotComplete";
+		final var scenarioName = "test_investigation_001_createProcessForPhaseActionNotComplete";
 
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterActualization = mockActualization(caseId, scenarioName, false);
+		var state = mockActualization(caseId, scenarioName, false);
+
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization, false);
-		final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, false);
-		final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterUpdateStatus, "willNotComplete", true, false);
-		final var stateAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules, "willNotComplete", false);
-		final var stateAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecision,
+		state = mockInvestigationUpdatePhase(caseId, scenarioName, state, false);
+		state = mockInvestigationUpdateStatus(caseId, scenarioName, state, false);
+		state = mockInvestigationExecuteRules(caseId, scenarioName, state, "-willNotComplete", true, false);
+		state = mockInvestigationConstructDecision(caseId, scenarioName, state, "-willNotComplete", false);
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Utredning"));
-		final var stateAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseNotCompletedGet,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
-			equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
+			equalToJson(createPatchBody("Utredning")));
 
-		final var stateAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterCheckPhaseNotCompletedPatch, false);
-		final var stateAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules2, false);
-		mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision2, false);
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"investigation_check-phase-action_task-worker---api-casedata-patch-extraparameters-willNotComplete",
+			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING", "Utredning")),
+			Map.of("phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "WAITING",
+				"displayPhaseParameter", "Utredning"));
+
+		state = mockInvestigationExecuteRules(caseId, scenarioName, state, false);
+		state = mockInvestigationConstructDecision(caseId, scenarioName, state, false);
+		mockInvestigationCheckPhaseAction(caseId, scenarioName, state, false);
+
 		// Normal mocks
 		mockDecision(caseId, scenarioName, false);
 		mockExecution(caseId, scenarioName, false);
@@ -167,10 +181,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_investigation_003_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_002_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1314";
-		var scenarioName = "test_investigation_003_createProcessForCancelInInvestigation";
+		var scenarioName = "test_investigation_002_createProcessForCancelInInvestigation";
 		if (isAutomatic) {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
@@ -178,15 +192,15 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterActualization = mockActualization(caseId, scenarioName, isAutomatic);
+		var state = mockActualization(caseId, scenarioName, isAutomatic);
 
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization, isAutomatic);
-		final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
-		final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterUpdateStatus, isAutomatic);
-		final var stateAfterConstructDecision = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules, isAutomatic);
+		state = mockInvestigationUpdatePhase(caseId, scenarioName, state, isAutomatic);
+		state = mockInvestigationUpdateStatus(caseId, scenarioName, state, isAutomatic);
+		state = mockInvestigationExecuteRules(caseId, scenarioName, state, isAutomatic);
+		state = mockInvestigationConstructDecision(caseId, scenarioName, state, isAutomatic);
 
-		final var stateAfterCheckPhaseCancel = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecision,
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
@@ -194,11 +208,18 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", "CANCEL",
 				"displayPhaseParameter", "Utredning"));
 
-		final var stateAfterPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseCancel,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-patch-errand",
-			equalToJson(createPatchBody("Utredning", "CANCEL", "CANCELED", "Utredning")));
+			equalToJson(createPatchBody("Utredning")));
 
-		mockCanceled(caseId, scenarioName, stateAfterPatch);
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"investigation_check-phase-action_task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody("CANCEL", "CANCELED", "Utredning")),
+			Map.of("phaseActionParameter", "CANCEL",
+				"phaseStatusParameter", "CANCELED",
+				"displayPhaseParameter", "Utredning"));
+
+		mockCanceled(caseId, scenarioName, state);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -238,28 +259,29 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_004_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_003_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1617";
-		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRToComplete";
+		final var scenarioName = "test_investigation_003_createProcessValidationErrorInBRToComplete";
 
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		final var stateAfterActualization = mockActualization(caseId, scenarioName, false);
+		var state = mockActualization(caseId, scenarioName, false);
+
 		// Mock deviation
-		final var stateAfterUpdatePhase = mockInvestigationUpdatePhase(caseId, scenarioName, stateAfterActualization, false);
-		final var stateAfterUpdateStatus = mockInvestigationUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, false);
+		state = mockInvestigationUpdatePhase(caseId, scenarioName, state, false);
+		state = mockInvestigationUpdateStatus(caseId, scenarioName, state, false);
 		// Returns validation error
-		final var stateAfterExecuteRules = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterUpdateStatus, "willNotComplete", false, false);
-		final var stateAfterConstructDecisionGet = mockCaseDataGet(caseId, scenarioName, stateAfterExecuteRules,
+		state = mockInvestigationExecuteRules(caseId, scenarioName, state, "willNotComplete", false, false);
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"construct-recommended-decision-task-worker-rejection---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Utredning"));
-		final var stateAfterConstructDecisionPatch = mockCaseDataDecisionPatch(caseId, scenarioName, stateAfterConstructDecisionGet,
+		state = mockCaseDataDecisionPatch(caseId, scenarioName, state,
 			"investigation_execute-rules-task-worker-rejection---api-businessrules-engine",
 			equalToJson("""
 				{
@@ -267,28 +289,32 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				    "created": "${json-unit.any-string}",
 				    "decisionType": "RECOMMENDED",
 				    "decisionOutcome": "REJECTION",
-				    "description": "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande).",
-				    "law": [],
-				    "attachments": [],
-				    "extraParameters": {}
+				    "description": "Rekommenderat beslut är avslag. Saknar giltigt värde för: 'disability.walkingDistance.max' (uppgift om maximal gångsträcka för den sökande)."
 				}
 				"""));
 		// Will loop back and wait for update
-		final var stateAfterCheckPhaseNotCompletedGet = mockCaseDataGet(caseId, scenarioName, stateAfterConstructDecisionPatch,
+		state = mockCaseDataGet(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-get-errand-willNotComplete",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Utredning",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", "UNKNOWN",
 				"displayPhaseParameter", "Utredning"));
-		final var stateAfterCheckPhaseNotCompletedPatch = mockCaseDataPatch(caseId, scenarioName, stateAfterCheckPhaseNotCompletedGet,
+		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
 			"investigation_check-phase-action_task-worker---api-casedata-patch-errand-willNotComplete",
-			equalToJson(createPatchBody("Utredning", "UNKNOWN", "WAITING", "Utredning")));
+			equalToJson(createPatchBody("Utredning")));
+		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"investigation_check-phase-action_task-worker---api-casedata-patch-extraparameters-willNotComplete",
+			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING", "Utredning")),
+			Map.of("phaseActionParameter", "UNKNOWN",
+				"phaseStatusParameter", "WAITING",
+				"displayPhaseParameter", "Utredning"));
 
 		// Passes on second attempt
-		final var stateAfterExecuteRules2 = mockInvestigationExecuteRules(caseId, scenarioName, stateAfterCheckPhaseNotCompletedPatch, false);
-		final var stateAfterConstructDecision2 = mockInvestigationConstructDecision(caseId, scenarioName, stateAfterExecuteRules2, false);
-		mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision2, false);
+		state = mockInvestigationExecuteRules(caseId, scenarioName, state, false);
+		state = mockInvestigationConstructDecision(caseId, scenarioName, state, false);
+		mockInvestigationCheckPhaseAction(caseId, scenarioName, state, false);
+
 		// Normal mocks
 		mockDecision(caseId, scenarioName, false);
 		mockExecution(caseId, scenarioName, false);
@@ -352,10 +378,10 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_005_createProcessValidationErrorInBRAutomatic() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_004_createProcessValidationErrorInBRAutomatic() throws JsonProcessingException, ClassNotFoundException {
 
 		final var caseId = "1617";
-		final var scenarioName = "test_investigation_005_createProcessValidationErrorInBRAutomatic";
+		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRAutomatic";
 
 		// Setup mocks
 		mockApiGatewayToken();
@@ -432,23 +458,21 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				     "name" : "beslut.pdf",
 				     "extension" : "pdf",
 				     "mimeType" : "application/pdf",
-				     "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4",
-				     "extraParameters" : { }
+				     "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
 				   } ],
-				   "extraParameters" : { },
 				   "created" : "${json-unit.any-string}"
 				 }
 				"""));
 
 		final var stateAfterConstructDecision = mockCaseDataPatchStatus(caseId, scenarioName, stateAfterPatchDecision,
 			"investigation_construct-decision_task-worker---api-casedata-patch-status-errand",
-				equalToJson("""
-					{
-					    "statusType": "Beslutad",
-					    "description": "Beslutad",
-					    "created": "${json-unit.any-string}"
-					}
-					"""));
+			equalToJson("""
+				{
+				    "statusType": "Beslutad",
+				    "description": "Beslutad",
+				    "created": "${json-unit.any-string}"
+				}
+				"""));
 
 		mockInvestigationCheckPhaseAction(caseId, scenarioName, stateAfterConstructDecision, false);
 		// Normal mocks

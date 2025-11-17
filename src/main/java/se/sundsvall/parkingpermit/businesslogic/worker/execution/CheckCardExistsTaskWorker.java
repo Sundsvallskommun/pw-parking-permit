@@ -6,6 +6,8 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 
 import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -30,9 +32,9 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for CardExistsTask");
 			clearUpdateAvailable(externalTask);
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
@@ -48,7 +50,8 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 	private boolean isCardCreated(Errand errand) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameter -> CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER.equals(extraParameter.getKey()))
-			.map(extraParameter -> extraParameter.getValues().getFirst())
+			.map(ExtraParameter::getValues)
+			.map(List::getFirst)
 			.anyMatch(StringUtils::isNotEmpty);
 	}
 }
