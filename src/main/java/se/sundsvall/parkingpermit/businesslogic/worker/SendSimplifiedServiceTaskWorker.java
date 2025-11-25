@@ -43,6 +43,10 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 
 			final var messageId = messagingService.sendMessageSimplifiedService(municipalityId, errand).toString();
 
+			if (isBlank(messageId)) {
+				logInfo("Could not send simplified service message to applicant for errand with id {}", errand.getId());
+			}
+
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
 		} catch (final Exception exception) {
 			logException(externalTask, exception);

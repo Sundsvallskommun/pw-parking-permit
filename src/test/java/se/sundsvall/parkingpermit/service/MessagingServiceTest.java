@@ -24,6 +24,7 @@ import generated.se.sundsvall.messaging.MessageResult;
 import generated.se.sundsvall.messaging.WebMessageRequest;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,11 +37,14 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
 import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
 import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
+import se.sundsvall.parkingpermit.util.CommonTextProperties;
+import se.sundsvall.parkingpermit.util.TextProperties;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingServiceTest {
 
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String ORGANIZATION_NUMBER = "1122334455";
 	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 
 	@Mock
@@ -54,6 +58,12 @@ class MessagingServiceTest {
 
 	@Mock
 	private MessagingMapper messagingMapperMock;
+
+	@Mock
+	private TextProperties textPropertiesMock;
+
+	@Mock
+	private CommonTextProperties commonTextPropertiesMock;
 
 	@InjectMocks
 	private MessagingService messagingService;
@@ -221,36 +231,34 @@ class MessagingServiceTest {
 		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand));
+		final var messageId = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
 
 		// Assert
-		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
-		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
+		assertThat(messageId).isNull();
 		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
 		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
 		verifyNoInteractions(templatingClientMock);
 	}
 
 	@Test
-	void noMessageIdReturnedFromMessagingLetterResourceSimplifiedService() {
+	void noMessageIdReturnedFromMessagingDigitalMailResourceSimplifiedService() {
 
 		// Arrange
 		final var errand = createErrand(false);
-		final var letterRequest = new LetterRequest();
+		final var digitalMailRequest = new DigitalMailRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
-		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID))).thenReturn(letterRequest);
-		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+		when(textPropertiesMock.getCommons()).thenReturn(Map.of(MUNICIPALITY_ID, commonTextPropertiesMock));
+		when(commonTextPropertiesMock.getOrganizationNumber()).thenReturn(ORGANIZATION_NUMBER);
+		when(messagingMapperMock.toDigitalMailRequestSimplifiedService(any(), eq(MUNICIPALITY_ID))).thenReturn(digitalMailRequest);
+		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any(), any())).thenReturn(messageBatchResult);
 
 		// Act
-		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand));
+		final var messageId = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
 
 		// Assert
-		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
-		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
-		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
-		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
+		assertThat(messageId).isNull();
+		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
 		verifyNoInteractions(templatingClientMock);
 	}
@@ -265,15 +273,17 @@ class MessagingServiceTest {
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
+		when(textPropertiesMock.getCommons()).thenReturn(Map.of(MUNICIPALITY_ID, commonTextPropertiesMock));
+		when(commonTextPropertiesMock.getOrganizationNumber()).thenReturn(ORGANIZATION_NUMBER);
 		when(messagingMapperMock.toDigitalMailRequest(any(), any(), eq(MUNICIPALITY_ID), eq(true))).thenReturn(digitalMailRequest);
-		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any(), any())).thenReturn(messageBatchResult);
 
 		// Act
 		final var uuid = messagingService.sendDecisionMessage(MUNICIPALITY_ID, errand, renderResponse, true);
 
 		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
-		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, digitalMailRequest);
+		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
 		verifyNoInteractions(templatingClientMock);
 	}
 
@@ -309,8 +319,10 @@ class MessagingServiceTest {
 		final var messageResult = new MessageResult();
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
+		when(textPropertiesMock.getCommons()).thenReturn(Map.of(MUNICIPALITY_ID, commonTextPropertiesMock));
+		when(commonTextPropertiesMock.getOrganizationNumber()).thenReturn(ORGANIZATION_NUMBER);
 		when(messagingMapperMock.toDigitalMailRequest(any(), any(), eq(MUNICIPALITY_ID), eq(true))).thenReturn(digitalMailRequest);
-		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
+		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any(), any())).thenReturn(messageBatchResult);
 
 		// Act
 		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendDecisionMessage(MUNICIPALITY_ID, errand, renderResponse, true));
@@ -319,7 +331,7 @@ class MessagingServiceTest {
 		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
 		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
-		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, digitalMailRequest);
+		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
 		verifyNoInteractions(templatingClientMock);
 	}
 

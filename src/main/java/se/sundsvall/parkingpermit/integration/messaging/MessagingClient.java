@@ -47,11 +47,12 @@ public interface MessagingClient {
 	 * Send a single digital mail
 	 *
 	 * @param  municipalityId                       id of municipality
+	 * @param  organizationNumber                   organization number of the sending organization
 	 * @param  digitalMailRequest                   request containing message to send
 	 * @return                                      a MessageBatchResult with delivery results and id for sent message
 	 * @throws org.zalando.problem.ThrowableProblem on error
 	 */
-	@PostMapping(path = "/{municipalityId}/digital-mail", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	MessageBatchResult sendDigitalMail(@PathVariable final String municipalityId,
+	@PostMapping(path = "/{municipalityId}/{organizationNumber}/digital-mail", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	MessageBatchResult sendDigitalMail(@PathVariable final String municipalityId, @PathVariable final String organizationNumber,
 		@RequestBody final DigitalMailRequest digitalMailRequest);
 }
