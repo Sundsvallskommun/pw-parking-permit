@@ -145,8 +145,12 @@ class TextPropertiesTest {
 
 	private String normalizeHtml(String html) {
 		Document doc = Jsoup.parse(html);
-		doc.outputSettings().prettyPrint(true);
-		doc.outputSettings().indentAmount(2);
-		return doc.outerHtml().replaceAll("\\r\\n", "\n").trim();
+		doc.outputSettings()
+			.prettyPrint(true)
+			.indentAmount(2);
+		return doc.outerHtml()
+			.replace("\r\n", "\n")
+			.replace("\r", "\n")
+			.trim();
 	}
 }
