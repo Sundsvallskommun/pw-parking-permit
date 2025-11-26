@@ -182,6 +182,7 @@ resilience4j.circuitbreaker:
 texts:
   commons:
     2281:
+      organization-number: 2120002411
       department: SBK(Gatuavdelningen, Trafiksektionen)
       contact-info-email: sundsvalls.kommun@sundsvall.se
       contact-info-phonenumber: +46 60 191000
@@ -189,6 +190,7 @@ texts:
       contact-info-url: https://sundsvall.se/
       filename: beslut.pdf
     2260:
+      organization-number: 2120002387
       department: Ånge kommun
       contact-info-email: ange@ange.se
       contact-info-phonenumber: +46 690 250100
@@ -199,16 +201,55 @@ texts:
     2281:
       description: Personen är folkbokförd i Sundsvalls kommun. Rekommenderat beslut är att godkänna ansökan.
       subject: Beslut från Sundsvalls kommun
-      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
+      htmlBody: |-
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Beslut</title>
+          </head>
+          <body>
+            <p><strong>Hej</strong></p>
+            <p>Du har fått ett beslut från Sundsvalls kommun.</p>
+            <p>Med vänlig hälsning<br><strong>Sundsvalls kommun</strong></p>
+          </body>
+        </html>
     2260:
       description: Personen är folkbokförd i Ånge kommun. Rekommenderat beslut är att godkänna ansökan.
       subject: Beslut från Ånge kommun
-      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
+      htmlBody: |-
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Beslut</title>
+          </head>
+          <body>
+            <p><strong>Hej</strong></p>
+            <p>Du har fått ett beslut från Ånge kommun.</p>
+            <p>Med vänlig hälsning<br><strong>Ånge kommun</strong></p>
+          </body>
+        </html>
   denials:
     2281:
       message: Ärendet avskrivs
       subject: Beslut från Sundsvalls kommun
-      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Sundsvalls kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Sundsvalls kommun</strong></p>
+      htmlBody: |-
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Beslut</title>
+          </head>
+          <body>
+            <p><strong>Hej</strong></p>
+            <p>Du har fått ett beslut från Sundsvalls kommun.</p>
+            <p>Med vänlig hälsning<br><strong>Sundsvalls kommun</strong></p>
+          </body>
+        </html>
       plainBody: |-
         Hej
         
@@ -221,7 +262,20 @@ texts:
     2260:
       message: Ärendet avskrivs
       subject: Beslut från Ånge kommun
-      htmlBody: <p><strong>Hej</strong></p><p>Du har f&aring;tt ett beslut fr&aring;n Ånge kommun.</p><p>Med v&auml;nlig h&auml;lsning<br /><strong>Ånge kommun</strong></p>
+      htmlBody: |-
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Beslut</title>
+          </head>
+          <body>
+            <p><strong>Hej</strong></p>
+            <p>Du har fått ett beslut från Ånge kommun.</p>
+            <p>Med vänlig hälsning<br><strong>Ånge kommun</strong></p>
+          </body>
+        </html>
       plainBody: |-
         Hej
         
@@ -237,10 +291,21 @@ texts:
       message: Kontrollmeddelande för förenklad delgivning
       subject: Kontrollmeddelande för förenklad delgivning
       htmlBody: |-
-        <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
-        <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
-        <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
-        <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <title>Kontrollmeddelande</title>
+          </head>
+          <body>
+            <p><strong>Kontrollmeddelande för förenklad delgivning</strong></p>
+            <p>Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.</p>
+            <p>När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.</p>
+            <p>Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till</p>
+            <p><a href="mailto:kontakt@sundsvall.se">kontakt@sundsvall.se</a> eller telefon till 060-19 10 00.</p>
+          </body>
+        </html>
       plainBody: |-
         Kontrollmeddelande för förenklad delgivning
         
@@ -253,10 +318,21 @@ texts:
       message: Kontrollmeddelande för förenklad delgivning
       subject: Kontrollmeddelande för förenklad delgivning
       htmlBody: |-
-        <p><strong>Kontrollmeddelande f&ouml;r f&ouml;renklad delgivning</strong></p><p>Vi har nyligen delgivit dig ett beslut via brev. Du f&aring;r nu ett kontrollmeddelande f&ouml;r att s&auml;kerst&auml;lla att du mottagit informationen.</p>
-        <p>N&aumlr det har g&aringtt tv&aring veckor fr&aringn det att beslutet skickades anses du blivit delgiven och du har d&aring tre veckor p&aring dig att &oumlverklaga beslutet.</p>
-        <p>Om du bara f&aringtt kontkontrollmeddelandet men inte sj&auml;lva delgivningen med beslutet m&aring;ste du kontakta oss via e-post till</p>
-        <p><a href="mailto:ange@ange.se">ange@ange.se</a> eller telefon till 0690-25 01 00.</p>
+        <!doctype html>
+          <html lang="sv">
+          <head>
+            <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <title>Kontrollmeddelande</title>
+          </head>
+          <body>
+            <p><strong>Kontrollmeddelande för förenklad delgivning</strong></p>
+            <p>Vi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.</p>
+            <p>När det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.</p>
+            <p>Om du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till</p>
+            <p><a href="mailto:ange@ange.se">ange@ange.se</a> eller telefon till 0690-25 01 00.</p>
+          </body>
+        </html>
       plainBody: |-
         Kontrollmeddelande för förenklad delgivning
         

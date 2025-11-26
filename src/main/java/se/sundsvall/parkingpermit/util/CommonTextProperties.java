@@ -2,6 +2,8 @@ package se.sundsvall.parkingpermit.util;
 
 public class CommonTextProperties {
 
+	private String organizationNumber;
+
 	private String department;
 	private String contactInfoEmail;
 	private String contactInfoPhonenumber;
@@ -9,6 +11,14 @@ public class CommonTextProperties {
 	private String contactInfoUrl;
 	private String filename;
 	private Boolean sendDigitalMail = true;
+
+	public String getOrganizationNumber() {
+		return organizationNumber;
+	}
+
+	public void setOrganizationNumber(String organizationNumber) {
+		this.organizationNumber = organizationNumber;
+	}
 
 	public String getDepartment() {
 		return department;

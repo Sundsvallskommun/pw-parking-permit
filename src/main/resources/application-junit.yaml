@@ -90,5 +90,7 @@ config:
     client-secret: ${config.common.client-secret}
 texts:
   commons:
+    2281:
+      organization-number: 1122334455
     2260:
       sendDigitalMail: false
