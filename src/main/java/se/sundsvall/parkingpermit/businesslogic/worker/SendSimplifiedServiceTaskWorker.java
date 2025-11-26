@@ -6,6 +6,8 @@ import static se.sundsvall.parkingpermit.Constants.MUNICIPALITY_ID_ANGE;
 
 import generated.se.sundsvall.casedata.Errand;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -41,9 +43,12 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 				return;
 			}
 
-			final var messageId = messagingService.sendMessageSimplifiedService(municipalityId, errand).toString();
+			final var messageId = Optional.ofNullable(messagingService.sendMessageSimplifiedService(municipalityId, errand))
+				.map(UUID::toString)
+				.orElse(null);
 
-			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
+			Optional.ofNullable(messageId).ifPresentOrElse(id -> externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, id)),
+				() -> externalTaskService.complete(externalTask));
 		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());

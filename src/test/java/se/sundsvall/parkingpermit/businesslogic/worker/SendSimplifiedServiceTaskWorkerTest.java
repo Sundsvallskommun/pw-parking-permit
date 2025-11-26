@@ -6,7 +6,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
@@ -130,8 +130,32 @@ class SendSimplifiedServiceTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenThrow(Problem.valueOf(NOT_FOUND, "No errand found"));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Verify and assert
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(externalTaskServiceMock, never()).complete(any(), any());
+		verify(externalTaskServiceMock, never()).complete(any());
+		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Not Found: No errand found");
+		verifyNoInteractions(camundaClientMock, messagingServiceMock);
+	}
+
+	@Test
+	void executeWhenNullFromSendMessageSimplifiedService() {
+		// Mock
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(messagingServiceMock.sendMessageSimplifiedService(MUNICIPALITY_ID, errandMock)).thenThrow(Problem.valueOf(BAD_GATEWAY, "No message id received from messaging service"));
+		when(messagingServiceMock.sendMessageSimplifiedService(MUNICIPALITY_ID, errandMock)).thenReturn(null);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -143,8 +167,8 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).sendMessageSimplifiedService(MUNICIPALITY_ID, errandMock);
+		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verify(externalTaskServiceMock, never()).complete(any());
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(camundaClientMock, failureHandlerMock);
 	}
 }
