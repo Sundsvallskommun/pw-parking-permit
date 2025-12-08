@@ -15,7 +15,7 @@
 		<!-- Service properties -->
 		<camunda.version>7.24.0</camunda.version>
 		<jsoup.version>1.21.2</jsoup.version>
-		<apache-commons-text.version>1.14.0</apache-commons-text.version>
+		<apache-commons-text.version>1.15.0</apache-commons-text.version>
 		<re2j.version>1.8</re2j.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
