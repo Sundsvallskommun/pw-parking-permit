@@ -8,7 +8,7 @@ import java.util.Objects;
 @Schema(description = "Start process response")
 public class StartProcessResponse {
 
-	@Schema(description = "Process ID", example = "5", accessMode = READ_ONLY)
+	@Schema(description = "Process ID", examples = "5", accessMode = READ_ONLY)
 	private String processId;
 
 	public StartProcessResponse() {}
