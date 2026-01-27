@@ -22,6 +22,7 @@ import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -58,40 +59,16 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
 			final var variables = new HashMap<String, Object>();
 
-			Optional.ofNullable(errand.getStatuses()).orElse(emptyList()).stream()
-				.filter(status -> CASEDATA_STATUS_CASE_DECIDED.equals(status.getStatusType()) || CASEDATA_STATUS_DECISION_EXECUTED.equals(status.getStatusType()))
-				.findFirst()
-				.ifPresentOrElse(status -> {
-					if (isFinalDecision(errand)) {
-						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
-						logInfo("Decision is made.");
-						variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
-					} else {
-						variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
-						variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-						caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
-						caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
-
-						logInfo("Decision is not made yet.");
-					}
-				}, () -> {
-					variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
-					variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
-					caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(), toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
-					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
-
-					logInfo("Decision is not made yet.");
-				});
-
-			Optional.ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
-				.filter(decision -> isApproved(decision.getDecisionOutcome()))
-				.findFirst()
-				.ifPresentOrElse(decision -> variables.put(CAMUNDA_VARIABLE_IS_APPROVED, true),
-					() -> variables.put(CAMUNDA_VARIABLE_IS_APPROVED, false));
-
 			if (isCancel(errand)) {
+				logInfo("Errand is canceled.");
+				// isFinalDecision and isApproved must be set because they are used in model
+				variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
+				variables.put(CAMUNDA_VARIABLE_IS_APPROVED, false);
 				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
 				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
+			} else {
+				handleDecisionStatus(errand, municipalityId, namespace, variables);
+				handleApprovalStatus(errand, variables);
 			}
 
 			externalTaskService.complete(externalTask, variables);
@@ -101,15 +78,43 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
+	private void handleDecisionStatus(Errand errand, String municipalityId, String namespace, Map<String, Object> variables) {
+		boolean hasDecisionStatus = Optional.ofNullable(errand.getStatuses()).orElse(emptyList()).stream()
+			.anyMatch(status -> CASEDATA_STATUS_CASE_DECIDED.equals(status.getStatusType())
+				|| CASEDATA_STATUS_DECISION_EXECUTED.equals(status.getStatusType()));
+
+		if (hasDecisionStatus && isFinalDecision(errand)) {
+			variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
+			logInfo("Decision is made.");
+			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE,
+				getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
+		} else {
+			variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
+			variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
+			patchErrandToWaiting(municipalityId, namespace, errand);
+			logInfo("Decision is not made yet.");
+		}
+	}
+
+	private void handleApprovalStatus(Errand errand, Map<String, Object> variables) {
+		boolean isApproved = Optional.ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
+			.anyMatch(decision -> isApproved(decision.getDecisionOutcome()));
+		variables.put(CAMUNDA_VARIABLE_IS_APPROVED, isApproved);
+	}
+
+	private void patchErrandToWaiting(String municipalityId, String namespace, Errand errand) {
+		caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(),
+			toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
+		caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(),
+			toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
+	}
+
 	private boolean isApproved(Decision.DecisionOutcomeEnum decisionOutcome) {
 		return APPROVAL.equals(decisionOutcome);
 	}
 
 	private boolean isFinalDecision(Errand errand) {
-		if (errand.getDecisions() == null) {
-			return false;
-		}
-		return errand.getDecisions().stream()
+		return Optional.ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
 			.anyMatch(decision -> FINAL.equals(decision.getDecisionType()));
 	}
 }

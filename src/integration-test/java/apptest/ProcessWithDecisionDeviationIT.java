@@ -174,9 +174,9 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_decision_002_createProcessForCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_002_createProcessForNotFinalAndCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
 		final var caseId = "1516";
-		var scenarioName = "test_decision_002_createProcessForCancelDecision";
+		var scenarioName = "test_decision_002_createProcessForNotFinalAndCancelDecision";
 		if (isAutomatic) {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
@@ -192,7 +192,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 		state = mockDecisionUpdateStatus(caseId, scenarioName, state, isAutomatic);
 		state = mockCaseDataGet(caseId, scenarioName, state,
 			"check-decision-task-worker---api-casedata-get-errand",
-			Map.of("decisionTypeParameter", "FINAL",
+			Map.of("decisionTypeParameter", "RECOMMENDED",
 				"phaseActionParameter", "CANCEL",
 				"phaseParameter", "Beslut",
 				"displayPhaseParameter", "Beslut",
@@ -480,4 +480,64 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {
+		true, false
+	})
+	void test_decision_005_createProcessForFinalAndCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+		final var caseId = "1516";
+		var scenarioName = "test_decision_005_createProcessForFinalAndCancelDecision";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
+
+		// Setup mocks
+		mockApiGatewayToken();
+		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		var state = mockInvestigation(caseId, scenarioName, isAutomatic);
+
+		// Mock deviation
+		state = mockDecisionUpdatePhase(caseId, scenarioName, state, isAutomatic);
+		state = mockDecisionUpdateStatus(caseId, scenarioName, state, isAutomatic);
+		state = mockCaseDataGet(caseId, scenarioName, state,
+			"check-decision-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseActionParameter", "CANCEL",
+				"phaseParameter", "Beslut",
+				"displayPhaseParameter", "Beslut",
+				"statusTypeParameter", "Beslutad"));
+
+		mockCanceled(caseId, scenarioName, state);
+
+		// Start process
+		final var startResponse = setupCall()
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/1516")
+			.withHttpMethod(POST)
+			.withExpectedResponseStatus(ACCEPTED)
+			.sendRequest()
+			.andReturnBody(StartProcessResponse.class);
+
+		// Wait for process to finish
+		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+
+		// Verify wiremock stubs
+		verifyAllStubs();
+
+		// Verify process pathway.
+		assertProcessPathway(startResponse.getProcessId(), false, Tuples.create()
+			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
+			.with(actualizationPathway())
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+			.with(investigationPathway())
+			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+			.with(decisionPathway())
+			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+			.with(canceledPathway())
+			.with(tuple("End process", "end_process")));
+	}
+
 }

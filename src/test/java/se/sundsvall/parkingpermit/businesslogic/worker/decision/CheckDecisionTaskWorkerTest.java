@@ -194,19 +194,12 @@ class CheckDecisionTaskWorkerTest {
 
 		// Arrange
 		final var phaseActionCancel = "CANCEL";
-		final var status = new Status();
-		status.statusType(CASEDATA_STATUS_CASE_RECEIVED);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
-		when(errandMock.getId()).thenReturn(ERRAND_ID);
-		when(errandMock.getNamespace()).thenReturn(NAMESPACE);
-		when(errandMock.getExternalCaseId()).thenReturn(EXTERNAL_CASE_ID);
-		when(errandMock.getDecisions()).thenReturn(List.of(createDecision(APPROVAL)));
-		when(errandMock.getStatuses()).thenReturn(List.of(status));
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem(phaseActionCancel)));
 
 		// Act
@@ -214,24 +207,14 @@ class CheckDecisionTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_PHASE_ACTION, phaseActionCancel,
-			CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED, CAMUNDA_VARIABLE_IS_APPROVED, true));
+			CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED, CAMUNDA_VARIABLE_IS_APPROVED, false));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
-		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
-
-		assertThat(patchErrandCaptor.getValue()).hasAllNullFieldsOrPropertiesExcept("externalCaseId", "phase");
-		assertThat(patchErrandCaptor.getValue().getExternalCaseId()).isEqualTo(EXTERNAL_CASE_ID);
-		assertThat(patchErrandCaptor.getValue().getPhase()).isEqualTo("Beslut");
-		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
-			.containsExactlyInAnyOrder(
-				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
-				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
+		verifyNoMoreInteractions(externalTaskServiceMock, camundaClientMock, caseDataClientMock);
 	}
 
 	@Test
