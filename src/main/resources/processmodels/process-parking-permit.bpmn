@@ -157,8 +157,8 @@
       <bpmn:sequenceFlow id="Flow_19hpw08" name="Final decision and Ånge" sourceRef="gateway_is_decision_final" targetRef="external_task_decision_handling_task">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision &amp;&amp; municipalityId== '2260'}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_0zwxuup" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision}</bpmn:conditionExpression>
+      <bpmn:sequenceFlow id="Flow_0zwxuup" name="Final decision or CANCEL" sourceRef="gateway_is_decision_final" targetRef="end_decision_phase">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${finalDecision || phaseAction == 'CANCEL'}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:subProcess id="actualization_phase" name="Actualization">
@@ -310,11 +310,11 @@
         <bpmn:incoming>Flow_1it1t2z</bpmn:incoming>
         <bpmn:outgoing>Flow_0bjkytl</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:exclusiveGateway id="gateway_investigation_is_phase_action_complete_or_automatic" name="Is phase action complete or automatic?">
+      <bpmn:exclusiveGateway id="gateway_investigation_is_phase_action_complete_or_automatic" name="Is phase action complete or automatic?" default="Flow_1h4ufhv">
         <bpmn:incoming>Flow_0bjkytl</bpmn:incoming>
         <bpmn:outgoing>Flow_01rblge</bpmn:outgoing>
         <bpmn:outgoing>Flow_00l0hzv</bpmn:outgoing>
-        <bpmn:outgoing>Flow_1efl7vk</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1h4ufhv</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:endEvent id="end_investigation_canceled" name="End when canceled">
         <bpmn:incoming>Flow_01rblge</bpmn:incoming>
@@ -326,9 +326,8 @@
       <bpmn:sequenceFlow id="Flow_00l0hzv" name="Yes" sourceRef="gateway_investigation_is_phase_action_complete_or_automatic" targetRef="end_investigation_phase">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'COMPLETE' || phaseAction == 'AUTOMATIC'}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_1efl7vk" name="No" sourceRef="gateway_investigation_is_phase_action_complete_or_automatic" targetRef="investigation_phase_action_is_update_available" />
       <bpmn:intermediateCatchEvent id="investigation_phase_action_is_update_available" name="Wait for update">
-        <bpmn:incoming>Flow_1efl7vk</bpmn:incoming>
+        <bpmn:incoming>Flow_1h4ufhv</bpmn:incoming>
         <bpmn:outgoing>Flow_1ydem7q</bpmn:outgoing>
         <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1ucqirx">
           <bpmn:condition xsi:type="bpmn:tFormalExpression">${updateAvailable}</bpmn:condition>
@@ -356,6 +355,7 @@
       </bpmn:serviceTask>
       <bpmn:sequenceFlow id="Flow_1aruz2s" sourceRef="external_task_investigation_update_phase" targetRef="external_task_investigation_update_errand_status" />
       <bpmn:sequenceFlow id="Flow_01n12yz" sourceRef="external_task_investigation_update_errand_status" targetRef="external_task_investigation_execute_rules" />
+      <bpmn:sequenceFlow id="Flow_1h4ufhv" name="No" sourceRef="gateway_investigation_is_phase_action_complete_or_automatic" targetRef="investigation_phase_action_is_update_available" />
     </bpmn:subProcess>
     <bpmn:subProcess id="call_activity_handling" name="Handling">
       <bpmn:incoming>Flow_0848exc</bpmn:incoming>
@@ -1001,6 +1001,9 @@
       <bpmndi:BPMNEdge id="Flow_0zwxuup_di" bpmnElement="Flow_0zwxuup">
         <di:waypoint x="875" y="250" />
         <di:waypoint x="1222" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="216" width="68" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1184,105 +1187,105 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1qh8u63">
     <bpmndi:BPMNPlane id="BPMNPlane_0t7ceew" bpmnElement="investigation_phase">
       <bpmndi:BPMNShape id="Event_0kbmzjk_di" bpmnElement="start_investigation_phase">
-        <dc:Bounds x="172" y="212" width="36" height="36" />
+        <dc:Bounds x="172" y="252" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="159" y="255" width="62" height="40" />
+          <dc:Bounds x="159" y="295" width="62" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0rauact_di" bpmnElement="end_investigation_phase">
-        <dc:Bounds x="1222" y="212" width="36" height="36" />
+        <dc:Bounds x="1222" y="252" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1201" y="256" width="84" height="27" />
+          <dc:Bounds x="1201" y="296" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1962k00_di" bpmnElement="external_task_investigation_execute_rules">
-        <dc:Bounds x="630" y="190" width="100" height="80" />
+        <dc:Bounds x="630" y="230" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_10b2e1a_di" bpmnElement="external_task_investigation_construct_decision">
-        <dc:Bounds x="780" y="190" width="100" height="80" />
+        <dc:Bounds x="780" y="230" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1tgditk" bpmnElement="external_task_investigation_check_phase_action_task">
-        <dc:Bounds x="930" y="190" width="100" height="80" />
+        <dc:Bounds x="930" y="230" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1is737r" bpmnElement="gateway_investigation_is_phase_action_complete_or_automatic" isMarkerVisible="true">
-        <dc:Bounds x="1085" y="205" width="50" height="50" />
+        <dc:Bounds x="1085" y="245" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1123" y="169" width="74" height="40" />
+          <dc:Bounds x="1123" y="209" width="74" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1wzph3o" bpmnElement="end_investigation_canceled">
-        <dc:Bounds x="1222" y="342" width="36" height="36" />
+        <dc:Bounds x="1222" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1218" y="386" width="49" height="27" />
+          <dc:Bounds x="1218" y="426" width="49" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ndmt73_di" bpmnElement="investigation_phase_action_is_update_available">
-        <dc:Bounds x="852" y="42" width="36" height="36" />
+        <dc:Bounds x="852" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="835" y="85" width="75" height="14" />
+          <dc:Bounds x="836" y="125" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0ju7ftw" bpmnElement="external_task_investigation_update_errand_status">
-        <dc:Bounds x="450" y="190" width="100" height="80" />
+        <dc:Bounds x="450" y="230" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0en976b_di" bpmnElement="external_task_investigation_update_phase">
-        <dc:Bounds x="260" y="190" width="100" height="80" />
+        <dc:Bounds x="260" y="230" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0vhktxr_di" bpmnElement="Flow_0vhktxr">
-        <di:waypoint x="208" y="230" />
-        <di:waypoint x="260" y="230" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1nil6o2_di" bpmnElement="Flow_1nil6o2">
-        <di:waypoint x="730" y="230" />
-        <di:waypoint x="780" y="230" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1it1t2z_di" bpmnElement="Flow_1it1t2z">
-        <di:waypoint x="880" y="230" />
-        <di:waypoint x="930" y="230" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_0dnhvfs" bpmnElement="Flow_0bjkytl">
-        <di:waypoint x="1030" y="230" />
-        <di:waypoint x="1085" y="230" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_1y61vv7" bpmnElement="Flow_01rblge">
-        <di:waypoint x="1110" y="255" />
-        <di:waypoint x="1110" y="360" />
-        <di:waypoint x="1222" y="360" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1117" y="296" width="45" height="27" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="208" y="270" />
+        <di:waypoint x="260" y="270" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_00l0hzv_di" bpmnElement="Flow_00l0hzv">
-        <di:waypoint x="1135" y="230" />
-        <di:waypoint x="1222" y="230" />
+        <di:waypoint x="1135" y="270" />
+        <di:waypoint x="1222" y="270" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1160" y="233" width="19" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1efl7vk_di" bpmnElement="Flow_1efl7vk">
-        <di:waypoint x="1110" y="205" />
-        <di:waypoint x="1110" y="60" />
-        <di:waypoint x="888" y="60" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1118" y="130" width="15" height="14" />
+          <dc:Bounds x="1161" y="273" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ydem7q_di" bpmnElement="Flow_1ydem7q">
-        <di:waypoint x="852" y="60" />
-        <di:waypoint x="680" y="60" />
-        <di:waypoint x="680" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1aruz2s_di" bpmnElement="Flow_1aruz2s">
-        <di:waypoint x="360" y="230" />
-        <di:waypoint x="450" y="230" />
+        <di:waypoint x="852" y="100" />
+        <di:waypoint x="680" y="100" />
+        <di:waypoint x="680" y="230" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01n12yz_di" bpmnElement="Flow_01n12yz">
-        <di:waypoint x="550" y="230" />
-        <di:waypoint x="630" y="230" />
+        <di:waypoint x="550" y="270" />
+        <di:waypoint x="630" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nil6o2_di" bpmnElement="Flow_1nil6o2">
+        <di:waypoint x="730" y="270" />
+        <di:waypoint x="780" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1it1t2z_di" bpmnElement="Flow_1it1t2z">
+        <di:waypoint x="880" y="270" />
+        <di:waypoint x="930" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_0dnhvfs" bpmnElement="Flow_0bjkytl">
+        <di:waypoint x="1030" y="270" />
+        <di:waypoint x="1085" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1y61vv7" bpmnElement="Flow_01rblge">
+        <di:waypoint x="1110" y="295" />
+        <di:waypoint x="1110" y="400" />
+        <di:waypoint x="1222" y="400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1117" y="336" width="45" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h4ufhv_di" bpmnElement="Flow_1h4ufhv">
+        <di:waypoint x="1110" y="245" />
+        <di:waypoint x="1110" y="100" />
+        <di:waypoint x="888" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1118" y="170" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1aruz2s_di" bpmnElement="Flow_1aruz2s">
+        <di:waypoint x="360" y="270" />
+        <di:waypoint x="450" y="270" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
