@@ -240,7 +240,7 @@ class CheckDecisionTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_FINAL_DECISION, false, CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING,
-			CAMUNDA_VARIABLE_IS_APPROVED, true));
+			CAMUNDA_VARIABLE_IS_APPROVED, false));
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);

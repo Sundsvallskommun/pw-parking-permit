@@ -98,6 +98,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
 	private void handleApprovalStatus(Errand errand, Map<String, Object> variables) {
 		boolean isApproved = Optional.ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
+			.filter(decision -> FINAL.equals(decision.getDecisionType()))
 			.anyMatch(decision -> isApproved(decision.getDecisionOutcome()));
 		variables.put(CAMUNDA_VARIABLE_IS_APPROVED, isApproved);
 	}
