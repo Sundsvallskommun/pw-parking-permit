@@ -1,19 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.PROPOSED;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static generated.se.sundsvall.partyassets.Status.ACTIVE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
-
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
@@ -32,6 +18,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.PROPOSED;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static generated.se.sundsvall.partyassets.Status.ACTIVE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 @ExtendWith(MockitoExtension.class)
 class PartyAssetsServiceTest {

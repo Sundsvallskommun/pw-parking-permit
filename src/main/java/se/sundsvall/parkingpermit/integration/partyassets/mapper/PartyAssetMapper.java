@@ -1,11 +1,11 @@
 package se.sundsvall.parkingpermit.integration.partyassets.mapper;
 
-import static java.util.Objects.isNull;
-
 import generated.se.sundsvall.partyassets.Asset;
 import generated.se.sundsvall.partyassets.AssetUpdateRequest;
 import java.util.HashMap;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 public final class PartyAssetMapper {
 

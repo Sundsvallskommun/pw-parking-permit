@@ -1,7 +1,5 @@
 package se.sundsvall.parkingpermit.integration.rpa.configuration;
 
-import static java.util.Collections.emptySet;
-
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +10,8 @@ import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.JsonPathErrorDecoder;
 import se.sundsvall.dept44.configuration.feign.interceptor.OAuth2RequestInterceptor;
 import se.sundsvall.dept44.configuration.feign.retryer.ActionRetryer;
+
+import static java.util.Collections.emptySet;
 
 @Import(FeignConfiguration.class)
 public class RpaConfiguration {

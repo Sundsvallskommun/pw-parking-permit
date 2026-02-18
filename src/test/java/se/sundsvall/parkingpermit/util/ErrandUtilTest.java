@@ -1,15 +1,5 @@
 package se.sundsvall.parkingpermit.util;
 
-import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
-import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.ORGANIZATION;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.zalando.problem.Status.NOT_FOUND;
-
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.Address.AddressCategoryEnum;
 import generated.se.sundsvall.casedata.Errand;
@@ -20,6 +10,16 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.ORGANIZATION;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 class ErrandUtilTest {
 

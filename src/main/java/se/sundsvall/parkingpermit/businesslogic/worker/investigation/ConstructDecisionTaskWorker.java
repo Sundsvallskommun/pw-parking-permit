@@ -1,27 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
-import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.CONFLICT;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
-import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
-import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
-import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
-import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
-import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
-
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
@@ -43,6 +21,28 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
+
+import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.CONFLICT;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
+import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
+import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
+import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")

@@ -1,13 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
-
 import generated.se.sundsvall.citizen.CitizenAddress;
 import generated.se.sundsvall.citizen.CitizenExtended;
 import java.util.HashMap;
@@ -23,6 +15,14 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
 @Component
 @ExternalTaskSubscription("VerifyResidentOfMunicipalityTask")

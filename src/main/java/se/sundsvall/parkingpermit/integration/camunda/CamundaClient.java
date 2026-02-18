@@ -1,9 +1,5 @@
 package se.sundsvall.parkingpermit.integration.camunda;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration.CLIENT_ID;
-
 import generated.se.sundsvall.camunda.ActivityInstanceDto;
 import generated.se.sundsvall.camunda.DeploymentDto;
 import generated.se.sundsvall.camunda.DeploymentWithDefinitionsDto;
@@ -30,6 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static se.sundsvall.parkingpermit.integration.camunda.configuration.CamundaConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.camunda.url}", configuration = CamundaConfiguration.class, dismiss404 = true)
 @CircuitBreaker(name = CLIENT_ID)

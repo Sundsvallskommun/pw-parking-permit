@@ -1,10 +1,5 @@
 package se.sundsvall.parkingpermit.integration.supportmanagement.mapper;
 
-import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
-
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
 import generated.se.sundsvall.supportmanagement.ContactChannel;
@@ -15,6 +10,11 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 class SupportManagementMapperTest {
 

@@ -1,12 +1,5 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
-import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
@@ -17,6 +10,13 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+
+import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 class TemplatingMapperTest {
 	private static final String ERRAND_NUMBER = "errandNumber";

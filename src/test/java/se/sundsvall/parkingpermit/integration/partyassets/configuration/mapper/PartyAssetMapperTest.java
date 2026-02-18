@@ -1,12 +1,12 @@
 package se.sundsvall.parkingpermit.integration.partyassets.configuration.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import generated.se.sundsvall.partyassets.Asset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class PartyAssetMapperTest {

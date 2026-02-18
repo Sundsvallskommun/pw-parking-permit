@@ -1,5 +1,13 @@
 package se.sundsvall.parkingpermit.integration.templating.mapper;
 
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.templating.RenderRequest;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+
 import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.Objects.isNull;
@@ -9,14 +17,6 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getAddress;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
-
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.templating.RenderRequest;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 
 public final class TemplatingMapper {
 

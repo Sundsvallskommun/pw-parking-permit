@@ -1,16 +1,5 @@
 package se.sundsvall.parkingpermit.service.mapper;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.CONFLICT;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
-import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
-import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
-import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
@@ -23,6 +12,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.zalando.problem.Problem;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.util.ErrandUtil;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.CONFLICT;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 public final class PartyAssetsMapper {
 
