@@ -1,20 +1,5 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
-import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
-import static java.nio.charset.Charset.defaultCharset;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
-
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.messaging.DigitalMailAttachment;
 import generated.se.sundsvall.messaging.DigitalMailParty;
@@ -42,6 +27,21 @@ import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
+import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
+import static java.nio.charset.Charset.defaultCharset;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingMapperTest {

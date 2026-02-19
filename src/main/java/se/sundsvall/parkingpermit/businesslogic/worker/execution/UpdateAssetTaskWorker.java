@@ -1,13 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CASE_DATA_REASON_APPEAL;
-import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.RelatedErrand;
@@ -24,6 +16,14 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CASE_DATA_REASON_APPEAL;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @Component
 @ExternalTaskSubscription("UpdateAssetTask")

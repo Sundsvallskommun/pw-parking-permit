@@ -1,18 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.CAPACITY_DRIVER;
-import static se.sundsvall.parkingpermit.Constants.CAPACITY_PASSENGER;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
-import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
-import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
-import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementMailingErrand;
-
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.templating.RenderResponse;
@@ -30,6 +17,19 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAPACITY_DRIVER;
+import static se.sundsvall.parkingpermit.Constants.CAPACITY_PASSENGER;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
+import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
+import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
+import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementMailingErrand;
 
 @Component
 @ExternalTaskSubscription("DecisionHandlingTask")

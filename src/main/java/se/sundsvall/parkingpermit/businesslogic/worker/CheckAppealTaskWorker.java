@@ -1,8 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
-
 import generated.se.sundsvall.casedata.Errand;
 import java.util.HashMap;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
@@ -12,6 +9,9 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 
 @Component
 @ExternalTaskSubscription("CheckAppealTask")

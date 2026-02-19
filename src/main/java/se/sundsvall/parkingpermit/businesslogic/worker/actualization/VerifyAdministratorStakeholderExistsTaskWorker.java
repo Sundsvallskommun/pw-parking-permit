@@ -1,16 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.actualization;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.util.HashMap;
@@ -22,6 +11,17 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 
 @Component
 @ExternalTaskSubscription("VerifyAdministratorStakeholderExists")

@@ -1,29 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.time.OffsetDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
-import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
@@ -55,6 +31,30 @@ import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.time.OffsetDateTime.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 
 @ExtendWith(MockitoExtension.class)
 class AutomaticDenialDecisionTaskWorkerTest {

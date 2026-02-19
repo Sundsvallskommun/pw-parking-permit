@@ -1,10 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.List;
@@ -18,6 +13,11 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 
 @Component
 @ExternalTaskSubscription("CardExistsTask")

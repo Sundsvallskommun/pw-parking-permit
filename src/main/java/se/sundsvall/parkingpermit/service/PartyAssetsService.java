@@ -1,10 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper.toAssetUpdateRequest;
-import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.partyassets.Asset;
 import generated.se.sundsvall.partyassets.AssetUpdateRequest;
@@ -12,6 +7,11 @@ import generated.se.sundsvall.partyassets.Status;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.integration.partyassets.PartyAssetsClient;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static se.sundsvall.parkingpermit.integration.partyassets.mapper.PartyAssetMapper.toAssetUpdateRequest;
+import static se.sundsvall.parkingpermit.service.mapper.PartyAssetsMapper.toAssetCreateRequest;
 
 @Service
 public class PartyAssetsService {

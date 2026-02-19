@@ -1,21 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static generated.se.sundsvall.partyassets.Status.ACTIVE;
-import static java.util.Collections.emptyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.RelatedErrand;
@@ -34,6 +18,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
+
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static generated.se.sundsvall.partyassets.Status.ACTIVE;
+import static java.util.Collections.emptyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateAssetTaskWorkerTest {

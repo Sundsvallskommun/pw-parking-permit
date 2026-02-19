@@ -1,5 +1,21 @@
 package se.sundsvall.parkingpermit.integration.supportmanagement.mapper;
 
+import generated.se.sundsvall.casedata.ContactInformation;
+import generated.se.sundsvall.supportmanagement.ContactChannel;
+import generated.se.sundsvall.supportmanagement.Errand;
+import generated.se.sundsvall.supportmanagement.ErrandLabel;
+import generated.se.sundsvall.supportmanagement.Label;
+import generated.se.sundsvall.supportmanagement.Stakeholder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zalando.problem.Problem;
+
 import static generated.se.sundsvall.supportmanagement.Priority.MEDIUM;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -20,22 +36,6 @@ import static se.sundsvall.parkingpermit.Constants.SM_STATUS_NEW;
 import static se.sundsvall.parkingpermit.Constants.SM_SUBJECT_CARD_MANAGEMENT_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.SM_SUBJECT_MAILING_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
-
-import generated.se.sundsvall.casedata.ContactInformation;
-import generated.se.sundsvall.supportmanagement.ContactChannel;
-import generated.se.sundsvall.supportmanagement.Errand;
-import generated.se.sundsvall.supportmanagement.ErrandLabel;
-import generated.se.sundsvall.supportmanagement.Label;
-import generated.se.sundsvall.supportmanagement.Stakeholder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zalando.problem.Problem;
 
 public final class SupportManagementMapper {
 

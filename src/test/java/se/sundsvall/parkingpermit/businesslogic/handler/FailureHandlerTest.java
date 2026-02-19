@@ -1,9 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.handler;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import se.sundsvall.parkingpermit.Application;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("junit")

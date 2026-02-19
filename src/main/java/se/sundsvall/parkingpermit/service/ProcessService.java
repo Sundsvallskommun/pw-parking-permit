@@ -1,5 +1,12 @@
 package se.sundsvall.parkingpermit.service;
 
+import java.util.Map;
+import org.camunda.bpm.engine.variable.type.ValueType;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+import se.sundsvall.dept44.requestid.RequestId;
+import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
@@ -11,13 +18,6 @@ import static se.sundsvall.parkingpermit.Constants.TRUE;
 import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toPatchVariablesDto;
 import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toStartProcessInstanceDto;
 import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toVariableValueDto;
-
-import java.util.Map;
-import org.camunda.bpm.engine.variable.type.ValueType;
-import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import se.sundsvall.dept44.requestid.RequestId;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 @Service
 public class ProcessService {

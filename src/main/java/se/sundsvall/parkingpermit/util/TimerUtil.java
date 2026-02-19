@@ -1,11 +1,11 @@
 package se.sundsvall.parkingpermit.util;
 
-import static java.util.Objects.nonNull;
-
 import generated.se.sundsvall.casedata.Decision;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Date;
+
+import static java.util.Objects.nonNull;
 
 public final class TimerUtil {
 

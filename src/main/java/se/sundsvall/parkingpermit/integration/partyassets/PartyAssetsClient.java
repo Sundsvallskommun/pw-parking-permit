@@ -1,8 +1,5 @@
 package se.sundsvall.parkingpermit.integration.partyassets;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration.CLIENT_ID;
-
 import generated.se.sundsvall.partyassets.Asset;
 import generated.se.sundsvall.partyassets.AssetCreateRequest;
 import generated.se.sundsvall.partyassets.AssetUpdateRequest;
@@ -17,6 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.partyassets.url}", configuration = PartyAssetsConfiguration.class)
 @CircuitBreaker(name = CLIENT_ID)

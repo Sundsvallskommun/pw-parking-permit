@@ -1,7 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-
 import java.util.Map;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -12,6 +10,8 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 
 @Component
 @ExternalTaskSubscription("SendDenialDecisionTask")

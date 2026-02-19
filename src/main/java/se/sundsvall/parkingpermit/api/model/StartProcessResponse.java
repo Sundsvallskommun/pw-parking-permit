@@ -1,9 +1,9 @@
 package se.sundsvall.parkingpermit.api.model;
 
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Schema(description = "Start process response")
 public class StartProcessResponse {

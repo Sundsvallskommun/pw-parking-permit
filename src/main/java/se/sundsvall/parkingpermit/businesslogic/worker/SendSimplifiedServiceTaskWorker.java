@@ -1,9 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.MUNICIPALITY_ID_ANGE;
-
 import generated.se.sundsvall.casedata.Errand;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +12,10 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.MUNICIPALITY_ID_ANGE;
 
 @Component
 @ExternalTaskSubscription("SendSimplifiedServiceTask")

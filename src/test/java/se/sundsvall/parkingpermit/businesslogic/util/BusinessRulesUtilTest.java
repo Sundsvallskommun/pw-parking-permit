@@ -1,13 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.util;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
 import generated.se.sundsvall.businessrules.Result;
 import generated.se.sundsvall.businessrules.ResultDetail;
 import generated.se.sundsvall.businessrules.ResultValue;
@@ -18,6 +10,14 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.RECOMMENDED;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class BusinessRulesUtilTest {
 

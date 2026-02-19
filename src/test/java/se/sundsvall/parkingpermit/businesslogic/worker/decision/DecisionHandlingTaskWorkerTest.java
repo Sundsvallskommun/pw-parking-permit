@@ -1,32 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.decision;
 
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
-import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
-import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
-import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
-import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
-import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
-import static se.sundsvall.parkingpermit.Constants.SM_LABEL_PARKING_PERMIT;
-import static se.sundsvall.parkingpermit.Constants.SM_LABEL_URBAN_DEVELOPMENT;
-import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
-
 import generated.se.sundsvall.casedata.Address;
 import generated.se.sundsvall.casedata.ContactInformation;
 import generated.se.sundsvall.casedata.Decision;
@@ -62,6 +35,33 @@ import se.sundsvall.parkingpermit.util.ApprovalTextProperties;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
+import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
+import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
+import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.SM_LABEL_URBAN_DEVELOPMENT;
+import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 
 @ExtendWith(MockitoExtension.class)
 class DecisionHandlingTaskWorkerTest {

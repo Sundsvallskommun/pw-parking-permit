@@ -1,33 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
-import static se.sundsvall.parkingpermit.Constants.FALSE;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
-import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
-import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
-
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.PatchErrand;
@@ -55,6 +27,34 @@ import org.zalando.problem.Status;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
+import static se.sundsvall.parkingpermit.Constants.FALSE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
 class CheckErrandPhaseActionTaskWorkerTest {

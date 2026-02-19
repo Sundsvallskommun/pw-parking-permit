@@ -1,5 +1,27 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.execution;
 
+import generated.se.sundsvall.casedata.Errand;
+import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.casedata.Note;
+import generated.se.sundsvall.casedata.PatchErrand;
+import generated.se.sundsvall.casedata.Stakeholder;
+import generated.se.sundsvall.partyassets.Asset;
+import java.util.List;
+import org.camunda.bpm.client.exception.EngineException;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.task.ExternalTask;
+import org.camunda.bpm.client.task.ExternalTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
+import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.service.PartyAssetsService;
+
 import static generated.se.sundsvall.casedata.NoteType.PUBLIC;
 import static generated.se.sundsvall.partyassets.Status.ACTIVE;
 import static generated.se.sundsvall.partyassets.Status.BLOCKED;
@@ -22,28 +44,6 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
-
-import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.ExtraParameter;
-import generated.se.sundsvall.casedata.Note;
-import generated.se.sundsvall.casedata.PatchErrand;
-import generated.se.sundsvall.casedata.Stakeholder;
-import generated.se.sundsvall.partyassets.Asset;
-import java.util.List;
-import org.camunda.bpm.client.exception.EngineException;
-import org.camunda.bpm.client.exception.RestException;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
-import se.sundsvall.parkingpermit.service.PartyAssetsService;
 
 @ExtendWith(MockitoExtension.class)
 class HandleLostCardTaskWorkerTest {

@@ -1,12 +1,5 @@
 package se.sundsvall.parkingpermit.integration.messaging.mapper;
 
-import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
-import static generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum.ANY;
-import static generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum.TEXT_HTML;
-import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
-import static java.nio.charset.Charset.defaultCharset;
-import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
-
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.messaging.DigitalMailAttachment;
 import generated.se.sundsvall.messaging.DigitalMailParty;
@@ -28,6 +21,13 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.messaging.LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
+import static generated.se.sundsvall.messaging.LetterAttachment.DeliveryModeEnum.ANY;
+import static generated.se.sundsvall.messaging.LetterRequest.ContentTypeEnum.TEXT_HTML;
+import static generated.se.sundsvall.messaging.WebMessageRequest.OepInstanceEnum.EXTERNAL;
+import static java.nio.charset.Charset.defaultCharset;
+import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_ID;
 
 @Service
 public class MessagingMapper {

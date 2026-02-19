@@ -1,12 +1,5 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
-import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBOUND;
-import static java.util.Optional.ofNullable;
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
-import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
-
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -18,6 +11,13 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+
+import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBOUND;
+import static java.util.Optional.ofNullable;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 
 @Component
 @ExternalTaskSubscription("AddMessageToErrandTask")

@@ -1,14 +1,5 @@
 package se.sundsvall.parkingpermit.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import generated.se.sundsvall.supportmanagement.Errand;
 import generated.se.sundsvall.supportmanagement.Label;
 import generated.se.sundsvall.supportmanagement.Labels;
@@ -23,6 +14,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.parkingpermit.integration.supportmanagement.SupportManagementClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class SupportManagementServiceTest {

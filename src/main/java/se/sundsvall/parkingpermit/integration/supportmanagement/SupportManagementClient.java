@@ -1,10 +1,5 @@
 package se.sundsvall.parkingpermit.integration.supportmanagement;
 
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static se.sundsvall.parkingpermit.integration.supportmanagement.configuration.SupportManagementConfiguration.CLIENT_ID;
-
 import generated.se.sundsvall.supportmanagement.Errand;
 import generated.se.sundsvall.supportmanagement.Labels;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -17,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.parkingpermit.integration.supportmanagement.configuration.SupportManagementConfiguration;
+
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static se.sundsvall.parkingpermit.integration.supportmanagement.configuration.SupportManagementConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.support-management.url}", configuration = SupportManagementConfiguration.class)
 @CircuitBreaker(name = CLIENT_ID)
