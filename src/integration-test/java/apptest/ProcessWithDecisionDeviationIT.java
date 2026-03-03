@@ -52,7 +52,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.mock.DecisionHandlingCase;
 import apptest.mock.DecisionHandlingFollowUp;
@@ -81,7 +81,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_decision_001_createProcessForDecisionNotFinalToFinal() throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_001_createProcessForDecisionNotFinalToFinal() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "789";
 		final var scenarioName = "test_decision_001_createProcessForDecisionNotFinalToFinal";
@@ -174,7 +174,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_decision_002_createProcessForNotFinalAndCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_002_createProcessForNotFinalAndCancelDecision(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 		final var caseId = "1516";
 		var scenarioName = "test_decision_002_createProcessForNotFinalAndCancelDecision";
 		if (isAutomatic) {
@@ -233,7 +233,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_decision_003_createProcessForDecisionRejected(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_003_createProcessForDecisionRejected(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 		final var caseId = "1718";
 		var scenarioName = "test_decision_003_createProcessForDecisionRejected";
 		if (isAutomatic) {
@@ -298,7 +298,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_decision_004_createProcessForDecisionAnge() throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_004_createProcessForDecisionAnge() throws JacksonException, ClassNotFoundException {
 
 		final var municipalityIdAnge = "2260";
 		final var caseId = "789";
@@ -485,7 +485,7 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_decision_005_createProcessForFinalAndCancelDecision(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_decision_005_createProcessForFinalAndCancelDecision(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 		final var caseId = "1516";
 		var scenarioName = "test_decision_005_createProcessForFinalAndCancelDecision";
 		if (isAutomatic) {

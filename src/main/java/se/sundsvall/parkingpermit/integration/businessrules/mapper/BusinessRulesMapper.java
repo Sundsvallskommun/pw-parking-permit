@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.parkingpermit.Constants.BUSINESS_RULES_KEY_ATTACHMENT_MEDICAL_CONFIRMATION;
 import static se.sundsvall.parkingpermit.Constants.BUSINESS_RULES_KEY_ATTACHMENT_PASSPORT_PHOTO;
 import static se.sundsvall.parkingpermit.Constants.BUSINESS_RULES_KEY_ATTACHMENT_SIGNATURE;

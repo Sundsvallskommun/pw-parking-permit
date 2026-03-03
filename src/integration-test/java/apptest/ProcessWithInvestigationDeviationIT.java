@@ -51,7 +51,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -78,7 +78,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_001_createProcessForPhaseActionNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_001_createProcessForPhaseActionNotComplete() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1213";
 		final var scenarioName = "test_investigation_001_createProcessForPhaseActionNotComplete";
@@ -181,7 +181,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_investigation_002_createProcessForCancelInInvestigation(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_002_createProcessForCancelInInvestigation(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1314";
 		var scenarioName = "test_investigation_002_createProcessForCancelInInvestigation";
@@ -259,7 +259,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_003_createProcessValidationErrorInBRToComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_003_createProcessValidationErrorInBRToComplete() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1617";
 		final var scenarioName = "test_investigation_003_createProcessValidationErrorInBRToComplete";
@@ -378,7 +378,7 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_investigation_004_createProcessValidationErrorInBRAutomatic() throws JsonProcessingException, ClassNotFoundException {
+	void test_investigation_004_createProcessValidationErrorInBRAutomatic() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1617";
 		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRAutomatic";

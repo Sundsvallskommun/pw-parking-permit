@@ -13,8 +13,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.DefaultProblem;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.parkingpermit.integration.rpa.RpaClient;
 import se.sundsvall.parkingpermit.integration.rpa.configuration.RpaProperties;
 
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.CONFLICT;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class RpaServiceTest {
@@ -102,7 +102,7 @@ class RpaServiceTest {
 		final var queues = List.of("Queue-1", "Queue-2", "Queue-3");
 
 		// Act
-		final var e = assertThrows(DefaultProblem.class, () -> rpaService.addQueueItems(queues, null, MUNICIPALITY_ID));
+		final var e = assertThrows(ThrowableProblem.class, () -> rpaService.addQueueItems(queues, null, MUNICIPALITY_ID));
 
 		// Assert and verify
 		assertThat(e.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -117,7 +117,7 @@ class RpaServiceTest {
 		when(rpaPropertiesMock.folderIds()).thenReturn(Map.of());
 
 		// Act & Assert
-		final var exception = assertThrows(DefaultProblem.class, () -> rpaService.addQueueItems(queues, id, MUNICIPALITY_ID));
+		final var exception = assertThrows(ThrowableProblem.class, () -> rpaService.addQueueItems(queues, id, MUNICIPALITY_ID));
 		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 		assertThat(exception.getDetail()).isEqualTo("No folder ID found for municipality ID: " + MUNICIPALITY_ID);
 	}

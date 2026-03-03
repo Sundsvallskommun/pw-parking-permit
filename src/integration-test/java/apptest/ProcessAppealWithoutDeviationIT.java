@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -61,7 +61,7 @@ class ProcessAppealWithoutDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test001_createProcessForAppeal(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test001_createProcessForAppeal(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "123";
 		var scenarioName = "test_appeal_001_createProcessForAppeal";

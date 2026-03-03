@@ -9,14 +9,14 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.util.ErrandUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.CONFLICT;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;

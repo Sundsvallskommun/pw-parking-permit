@@ -43,7 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -73,7 +73,7 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_execution_001_createProcessForCardNotExistsToExists(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_execution_001_createProcessForCardNotExistsToExists(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1415";
 		var scenarioName = "test_execution_001_createProcessForCardNotExistsToExists";
@@ -178,7 +178,7 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test_execution_002_createProcessForCitizenWhenLostCard(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test_execution_002_createProcessForCitizenWhenLostCard(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1416";
 		var scenarioName = "test002_createProcessForCitizenWhenLostCard";

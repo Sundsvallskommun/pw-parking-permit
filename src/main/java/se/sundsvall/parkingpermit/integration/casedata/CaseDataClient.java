@@ -34,9 +34,9 @@ public interface CaseDataClient {
 	/**
 	 * Updates a decision.
 	 *
-	 * @param  patchDecision                        for patching decision
-	 * @param  errandId                             of case to update
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  patchDecision                                for patching decision
+	 * @param  errandId                                     of case to update
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchNewDecision(
@@ -63,8 +63,8 @@ public interface CaseDataClient {
 	/**
 	 * Gets an errand by id.
 	 *
-	 * @param  errandId                             of errand to get
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  errandId                                     of errand to get
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", produces = APPLICATION_JSON_VALUE)
 	Errand getErrandById(
@@ -92,8 +92,8 @@ public interface CaseDataClient {
 	 * <p>
 	 * filter example: caseType:'LOST_PARKING_PERMIT' and stakeholders.personId:'744e719d-aedc-45b8-b9a6-1ada0e087910'
 	 *
-	 * @param  filter                               the filter to use
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  filter                                       the filter to use
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands", produces = APPLICATION_JSON_VALUE)
 	PageErrand getErrandsByQueryFilter(
@@ -104,9 +104,9 @@ public interface CaseDataClient {
 	/**
 	 * Updates an errand.
 	 *
-	 * @param  patchErrand                          for patching errand
-	 * @param  errandId                             of errand to update
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  patchErrand                                  for patching errand
+	 * @param  errandId                                     of errand to update
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> patchErrand(
@@ -118,9 +118,9 @@ public interface CaseDataClient {
 	/**
 	 * Adds a new stakeholder to an errand.
 	 *
-	 * @param  errandId                             of errand to update
-	 * @param  stakeholder                          the stakeholder to add to the errand
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  errandId                                     of errand to update
+	 * @param  stakeholder                                  the stakeholder to add to the errand
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addStakeholderToErrand(
@@ -132,9 +132,9 @@ public interface CaseDataClient {
 	/**
 	 * Get stakeholder matching sent in id.
 	 *
-	 * @param  stakeholderId                        of stakeholder to fetch
-	 * @return                                      Stakeholder containing information of the requested stakeholder
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  stakeholderId                                of stakeholder to fetch
+	 * @return                                              Stakeholder containing information of the requested stakeholder
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/stakeholders/{stakeholderId}", produces = APPLICATION_JSON_VALUE)
 	Stakeholder getStakeholder(
@@ -153,8 +153,8 @@ public interface CaseDataClient {
 	/**
 	 * Add a message to an errand.
 	 *
-	 * @param  messageRequest                       containing information for message to add
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  messageRequest                               containing information for message to add
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/messages", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addMessage(
@@ -166,8 +166,8 @@ public interface CaseDataClient {
 	/**
 	 * Gets notes by errand id.
 	 *
-	 * @param  errandId                             of errand containing notes to get
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  errandId                                     of errand containing notes to get
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@GetMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", produces = APPLICATION_JSON_VALUE)
 	List<Note> getNotesByErrandId(
@@ -179,8 +179,8 @@ public interface CaseDataClient {
 	/**
 	 * Create and add note.
 	 *
-	 * @param  note                                 note to add
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  note                                         note to add
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> addNoteToErrand(
@@ -192,8 +192,8 @@ public interface CaseDataClient {
 	/**
 	 * Delete note by note id.
 	 *
-	 * @param  noteId                               of note to delete
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  noteId                                       of note to delete
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/notes/{noteId}")
 	ResponseEntity<Void> deleteNoteById(
@@ -205,11 +205,11 @@ public interface CaseDataClient {
 	/**
 	 * Adds new extra parameters to errand or updates value of existing ones.
 	 *
-	 * @param  municipalityId                       municipality id of the municipality that owns the errand
-	 * @param  namespace                            namespace in which the errand resides
-	 * @param  errandId                             id of the errand to update
-	 * @param  extraParameters                      list of extra parameters to add or update errand with
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  municipalityId                               municipality id of the municipality that owns the errand
+	 * @param  namespace                                    namespace in which the errand resides
+	 * @param  errandId                                     id of the errand to update
+	 * @param  extraParameters                              list of extra parameters to add or update errand with
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/extraparameters", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	List<ExtraParameter> patchErrandExtraParameters(

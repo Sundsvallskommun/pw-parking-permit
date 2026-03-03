@@ -51,7 +51,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -81,7 +81,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test001_createProcessForNonCitizen(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test001_createProcessForNonCitizen(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "456";
 		var scenarioName = "test_actualization_001_createProcessForNonCitizen";
@@ -133,7 +133,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test002_createProcessForCancelInActualization(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test002_createProcessForCancelInActualization(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "789";
 		var scenarioName = "test_actualization_002_createProcessForCancelInActualization";
@@ -210,7 +210,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test003_createProcessForActualizationNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test003_createProcessForActualizationNotComplete() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1011";
 		final var scenarioName = "test_actualization_003_createProcessForActualizationNotComplete";
@@ -313,7 +313,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test004_createProcessForCancelInActualizationWhenVerifyingAdministrator(boolean isAutomatic) throws JsonProcessingException, ClassNotFoundException {
+	void test004_createProcessForCancelInActualizationWhenVerifyingAdministrator(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1920";
 		var scenarioName = "test_actualization_004_createProcessForCancelInActualizationWhenVerifyingAdministrator";
@@ -376,7 +376,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test005_createProcessWaitingForStakeholderUpdateInActualization() throws JsonProcessingException, ClassNotFoundException {
+	void test005_createProcessWaitingForStakeholderUpdateInActualization() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "2021";
 		final var scenarioName = "test_actualization_005_createProcessWaitingForStakeholderUpdateInActualization(";

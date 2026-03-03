@@ -8,8 +8,8 @@ import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import org.springframework.http.HttpStatus;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
 import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.VISITING_ADDRESS;
@@ -19,7 +19,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 class ErrandUtilTest {
 
@@ -60,7 +60,7 @@ class ErrandUtilTest {
 	void getStakeholderWithStakeholderTypeAndRoleWhenNoMatches() {
 		final var e = assertThrows(ThrowableProblem.class, () -> ErrandUtil.getStakeholder(ERRAND, PERSON, ROLE_CONTROL_OFFICIAL));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Errand is missing stakeholder of type 'PERSON' with role 'CONTROL_OFFICIAL'");
 	}
 
