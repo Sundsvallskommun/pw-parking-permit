@@ -3,9 +3,9 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -46,7 +46,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 			final var attachment = toMessageAttachment(textProvider.getCommonTexts(municipalityId).getFilename(), APPLICATION_PDF_VALUE, pdf);
 			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)
-				.orElseThrow(() -> Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "Id of sent message could not be retrieved from stored process variables"));
+				.orElseThrow(() -> Problem.valueOf(HttpStatus.INTERNAL_SERVER_ERROR, "Id of sent message could not be retrieved from stored process variables"));
 
 			caseDataClient.addMessage(municipalityId, namespace, caseNumber, toMessageRequest(messageId, textProvider.getDenialTexts(municipalityId).getSubject(), textProvider.getDenialTexts(municipalityId).getPlainBody(), errand, OUTBOUND,
 				"ProcessEngine", attachment));

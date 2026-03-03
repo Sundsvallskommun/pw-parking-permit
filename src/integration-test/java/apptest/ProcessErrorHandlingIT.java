@@ -12,13 +12,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import java.time.Duration;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 
@@ -42,7 +42,7 @@ class ProcessErrorHandlingIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test_updateProcessNotFound() throws JsonProcessingException, ClassNotFoundException {
+	void test_updateProcessNotFound() throws JacksonException, ClassNotFoundException {
 
 		// Arrange
 		final var nonExistingProcessInstanceId = UUID.randomUUID().toString();

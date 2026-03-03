@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -109,7 +109,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		// Setup
 		final var status = "testStatus";
 		final var statusDescription = "testStatusDescription";
-		final var problem = Problem.valueOf(org.zalando.problem.Status.I_AM_A_TEAPOT, "Big and stout");
+		final var problem = Problem.valueOf(org.springframework.http.HttpStatus.I_AM_A_TEAPOT, "Big and stout");
 
 		// Mock to simulate exception upon updating errand with new status
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -69,7 +69,7 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 	}
 
 	@Test
-	void test001_createProcessForFollowUpNotComplete() throws JsonProcessingException, ClassNotFoundException {
+	void test001_createProcessForFollowUpNotComplete() throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "1011";
 		final var scenarioName = "test_actualization_001_createProcessForFollowUpNotComplete";

@@ -12,7 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.DefaultProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -155,7 +155,7 @@ class BusinessRulesMapperTest {
 		when(errandMock.getCaseType()).thenReturn(type);
 
 		assertThatThrownBy(() -> BusinessRulesMapper.toRuleEngineRequest(errandMock, emptyList()))
-			.isInstanceOf(DefaultProblem.class)
+			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: No applicant found in errand: null");
 
 	}
@@ -168,7 +168,7 @@ class BusinessRulesMapperTest {
 
 		// Act and assert
 		assertThatThrownBy(() -> BusinessRulesMapper.toRuleEngineRequest(errandMock, emptyList()))
-			.isInstanceOf(DefaultProblem.class)
+			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: Unsupported case type " + unknownCaseType);
 	}
 
@@ -180,7 +180,7 @@ class BusinessRulesMapperTest {
 
 		// Act and assert
 		assertThatThrownBy(() -> BusinessRulesMapper.toRuleEngineRequest(errandMock, emptyList()))
-			.isInstanceOf(DefaultProblem.class)
+			.isInstanceOf(ThrowableProblem.class)
 			.hasMessage("Bad Request: Case type is null");
 	}
 }

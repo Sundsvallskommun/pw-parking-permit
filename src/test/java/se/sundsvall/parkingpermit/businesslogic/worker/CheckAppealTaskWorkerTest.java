@@ -10,9 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
@@ -123,7 +123,7 @@ class CheckAppealTaskWorkerTest {
 	@Test
 	void executeThrowsException() {
 		// Setup
-		final var problem = Problem.valueOf(Status.I_AM_A_TEAPOT, "Big and stout");
+		final var problem = Problem.valueOf(HttpStatus.I_AM_A_TEAPOT, "Big and stout");
 
 		// Mock to simulate exception upon patching errand with new phase
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);

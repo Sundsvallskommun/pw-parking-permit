@@ -19,7 +19,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
 import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
 import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
@@ -166,8 +166,7 @@ class MessagingServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(MUNICIPALITY_ID, errand, renderResponse));
 
 		// Assert
-		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
-		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
 		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
 		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
@@ -190,8 +189,7 @@ class MessagingServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendMessageToNonCitizen(MUNICIPALITY_ID, errand, renderResponse));
 
 		// Assert
-		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
-		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
 		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
@@ -328,8 +326,7 @@ class MessagingServiceTest {
 		final var exception = assertThrows(ThrowableProblem.class, () -> messagingService.sendDecisionMessage(MUNICIPALITY_ID, errand, renderResponse, true));
 
 		// Assert
-		assertThat(exception.getStatus().getStatusCode()).isEqualTo(BAD_GATEWAY.getStatusCode());
-		assertThat(exception.getStatus().getReasonPhrase()).isEqualTo(BAD_GATEWAY.getReasonPhrase());
+		assertThat(exception.getStatus()).isEqualTo(BAD_GATEWAY);
 		assertThat(exception.getMessage()).isEqualTo("Bad Gateway: No message id received from messaging service");
 		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
 		verifyNoInteractions(templatingClientMock);

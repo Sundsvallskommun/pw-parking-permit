@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.parkingpermit.integration.rpa.RpaClient;
 import se.sundsvall.parkingpermit.integration.rpa.configuration.RpaProperties;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.parkingpermit.service.mapper.RpaMapper.toQueuesAddQueueItemParameters;
 
 @Service
@@ -43,7 +43,7 @@ public class RpaService {
 				try {
 					rpaClient.addQueueItem(folderId, toQueuesAddQueueItemParameters(queueName, caseId));
 				} catch (final ThrowableProblem e) {
-					if (nullSafeEquals(Status.CONFLICT, e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
+					if (nullSafeEquals(HttpStatus.CONFLICT, e.getStatus()) && isDuplicateMessageCode(e.getDetail())) {
 						// Queue item already exists
 						LOGGER.warn(DUPLICATE_MESSAGE, e.getDetail());
 						return;

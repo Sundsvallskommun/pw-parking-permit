@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
+import org.springframework.http.HttpStatus;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
@@ -131,11 +131,11 @@ class ProcessServiceTest {
 		when(camundaClientMock.getProcessInstance(any())).thenReturn(empty());
 
 		// Act
-		final var result = assertThrows(org.zalando.problem.ThrowableProblem.class, () -> processService.updateProcess(municipalityId, namespace, uuid));
+		final var result = assertThrows(se.sundsvall.dept44.problem.ThrowableProblem.class, () -> processService.updateProcess(municipalityId, namespace, uuid));
 
 		// Assert
 		assertThat(result)
-			.hasFieldOrPropertyWithValue("status", Status.NOT_FOUND)
+			.hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND)
 			.hasFieldOrPropertyWithValue("detail", "Process instance with ID '%s' does not exist!".formatted(uuid));
 
 		// Assert

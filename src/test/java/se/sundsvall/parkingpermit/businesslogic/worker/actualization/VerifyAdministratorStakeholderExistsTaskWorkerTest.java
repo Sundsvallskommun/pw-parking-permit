@@ -16,8 +16,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import org.springframework.http.HttpStatus;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -193,7 +193,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 	@Test
 	void executeThrowsException() {
 		// Arrange
-		final var problem = Problem.valueOf(Status.I_AM_A_TEAPOT, "Big and stout");
+		final var problem = Problem.valueOf(HttpStatus.I_AM_A_TEAPOT, "Big and stout");
 
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE)));
 		when(stakeholderMock.getRoles()).thenReturn(List.of("ADMINISTRATOR"));

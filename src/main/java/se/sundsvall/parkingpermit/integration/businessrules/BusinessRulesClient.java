@@ -18,10 +18,10 @@ public interface BusinessRulesClient {
 	/**
 	 * Method for execute rules in BusinessRules.
 	 *
-	 * @param  municipalityId                       the municipalityId.
-	 * @param  ruleEngineRequest                    request object with data for rules.
-	 * @return                                      response object with data from rules.
-	 * @throws org.zalando.problem.ThrowableProblem when called service responds with error code.
+	 * @param  municipalityId                               the municipalityId.
+	 * @param  ruleEngineRequest                            request object with data for rules.
+	 * @return                                              response object with data from rules.
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem when called service responds with error code.
 	 */
 	@PostMapping(path = "/{municipalityId}/engine", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	RuleEngineResponse runRuleEngine(@PathVariable String municipalityId, RuleEngineRequest ruleEngineRequest);

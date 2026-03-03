@@ -8,10 +8,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
@@ -102,7 +102,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			.filter(NumberUtils::isCreatable)
 			.map(Long::valueOf)
 			.findFirst()
-			.orElseThrow(() -> Problem.valueOf(Status.BAD_GATEWAY, "CaseData integration did not return any location for created stakeholder"));
+			.orElseThrow(() -> Problem.valueOf(HttpStatus.BAD_GATEWAY, "CaseData integration did not return any location for created stakeholder"));
 	}
 
 	private static boolean isProcessEngineStakeholder(Stakeholder stakeholder) {

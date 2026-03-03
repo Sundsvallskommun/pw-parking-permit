@@ -8,8 +8,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import org.springframework.http.HttpStatus;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.casedata.Address.AddressCategoryEnum.POSTAL_ADDRESS;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
@@ -99,7 +99,7 @@ class TemplatingMapperTest {
 
 		final var e = assertThrows(ThrowableProblem.class, () -> TemplatingMapper.toRenderDecisionRequest(errand, templateIdentifier));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(e.getMessage()).isEqualTo("Not Found: Errand is missing stakeholder with role 'APPLICANT'");
 	}
 

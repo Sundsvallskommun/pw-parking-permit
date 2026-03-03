@@ -22,10 +22,10 @@ public interface MessagingClient {
 	/**
 	 * Send a single web-message
 	 *
-	 * @param  municipalityId                       id of municipality
-	 * @param  webMessageRequest                    request containing message to send
-	 * @return                                      a MessageResult with delivery results and id for sent message
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  municipalityId                               id of municipality
+	 * @param  webMessageRequest                            request containing message to send
+	 * @return                                              a MessageResult with delivery results and id for sent message
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/webmessage", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	MessageResult sendWebMessage(@PathVariable final String municipalityId,
@@ -34,10 +34,11 @@ public interface MessagingClient {
 	/**
 	 * Send a single letter as digital mail with fallback as snail mail if recipient does not have digital mail
 	 *
-	 * @param  municipalityId                       id of municipality
-	 * @param  letterRequest                        request containing message to send
-	 * @return                                      a MessageBatchResult with delivery results and id for sent message
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  municipalityId                               id of municipality
+	 * @param  letterRequest                                request containing message to send
+	 * @return                                              a MessageBatchResult with delivery results and id for sent
+	 *                                                      message
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/letter", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	MessageBatchResult sendLetter(@PathVariable final String municipalityId,
@@ -46,11 +47,12 @@ public interface MessagingClient {
 	/**
 	 * Send a single digital mail
 	 *
-	 * @param  municipalityId                       id of municipality
-	 * @param  organizationNumber                   organization number of the sending organization
-	 * @param  digitalMailRequest                   request containing message to send
-	 * @return                                      a MessageBatchResult with delivery results and id for sent message
-	 * @throws org.zalando.problem.ThrowableProblem on error
+	 * @param  municipalityId                               id of municipality
+	 * @param  organizationNumber                           organization number of the sending organization
+	 * @param  digitalMailRequest                           request containing message to send
+	 * @return                                              a MessageBatchResult with delivery results and id for sent
+	 *                                                      message
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PostMapping(path = "/{municipalityId}/{organizationNumber}/digital-mail", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	MessageBatchResult sendDigitalMail(@PathVariable final String municipalityId, @PathVariable final String organizationNumber,

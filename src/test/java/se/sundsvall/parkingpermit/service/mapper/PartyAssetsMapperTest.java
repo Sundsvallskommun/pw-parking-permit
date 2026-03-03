@@ -9,7 +9,7 @@ import generated.se.sundsvall.partyassets.Status;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyMap;
