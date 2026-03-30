@@ -7,7 +7,9 @@ import generated.se.sundsvall.partyassets.AssetCreateRequest;
 import generated.se.sundsvall.partyassets.Status;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.Constants;
@@ -19,7 +21,9 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ERRAND_ID;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
+import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_KEY_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
@@ -31,14 +35,14 @@ public final class PartyAssetsMapper {
 	public static AssetCreateRequest toAssetCreateRequest(Errand nullableErrand) {
 		return ofNullable(nullableErrand)
 			.map(errand -> new AssetCreateRequest()
-				.addCaseReferenceIdsItem(Long.toString(errand.getId()))
-				.assetId(getArtefactPermitNumber(errand))
+				.assetId(errand.getErrandNumber())
 				.description(PARTY_ASSET_DESCRIPTION)
 				.issued(toIssued(errand))
 				.origin(PARTY_ASSET_ORIGIN)
 				.partyId(ErrandUtil.getStakeholder(errand, ROLE_APPLICANT).getPersonId())
 				.status(toStatus(getArtefactPermitStatus(errand)))
 				.type(PARTY_ASSET_TYPE)
+				.additionalParameters(getAdditionalParameters(errand))
 				.validTo(toValidTo(errand)))
 			.orElse(null);
 	}
@@ -91,5 +95,17 @@ public final class PartyAssetsMapper {
 				default -> throw Problem.valueOf(CONFLICT, "Unexpected value: " + caseDataStatus);
 			})
 			.orElse(null);
+	}
+
+	private static Map<String, String> getAdditionalParameters(Errand errand) {
+		final var parameters = new HashMap<String, String>();
+
+		ofNullable(getArtefactPermitNumber(errand))
+			.ifPresent(permitNumber -> parameters.put(PARTY_ASSET_KEY_PERMIT_NUMBER, permitNumber));
+
+		ofNullable(errand.getId())
+			.ifPresent(id -> parameters.put(CASEDATA_KEY_ERRAND_ID, id.toString()));
+
+		return parameters;
 	}
 }
