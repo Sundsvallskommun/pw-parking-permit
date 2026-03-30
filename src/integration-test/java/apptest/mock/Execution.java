@@ -103,11 +103,11 @@ public class Execution {
 			"execution_handle-lost-card-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
-					"caseReferenceIds":[],
-					"status":"BLOCKED",
-					"statusReason":"LOST",
-					"additionalParameters":{}
-				}
+       				"additionalParameters" : { },
+       				"jsonParameters" : [ ],
+       				"status" : "BLOCKED",
+       				"statusReason" : "LOST"
+     			}
 				"""));
 
 		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
@@ -176,18 +176,19 @@ public class Execution {
 			"execution_create-asset-task-worker---api-party-assets-post-asset",
 			equalToJson("""
 				       {
-							"partyId": "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-						  	"assetId": "12345",
-						  	"caseReferenceIds": [
-								"%s"
-						  	],
-						  	"origin": "CASEDATA",
-						  	"type": "PARKINGPERMIT",
-						  	"issued": "2024-05-17",
-						  	"validTo": "2025-05-17",
-						  	"description": "Parkeringstillstånd",
-						  	"additionalParameters": {}
-					  }
+				          "partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+				          "type" : "PARKINGPERMIT",
+				          "issued" : "2024-05-17",
+				          "additionalParameters" : {
+				            "permitNumber" : "12345",
+				            "errandId" : "%s"
+				          },
+				          "assetId" : "PRH-2022-000001",
+				          "description" : "Parkeringstillstånd",
+				          "jsonParameters" : [ ],
+				          "origin" : "CASEDATA",
+				          "validTo" : "2025-05-17"
+				        }
 				""".formatted(caseId)));
 	}
 
@@ -217,12 +218,12 @@ public class Execution {
 			"execution_update-asset-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
-					"caseReferenceIds" : [ ],
-					"additionalParameters" : {
-						"foo" : "bar",
-						"appealedErrand" : "123"
-					}
-				}
+       				"additionalParameters" : {
+         				"foo" : "bar",
+         				"appealedErrand" : "123"
+       				},
+       				"jsonParameters" : [ ]
+     			}
 				"""));
 
 	}
