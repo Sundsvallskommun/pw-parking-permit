@@ -71,9 +71,8 @@ class PartyAssetsServiceTest {
 
 		final var assetCreateRequest = assetCreateRequestArgumentCaptor.getValue();
 		assertThat(assetCreateRequest).isNotNull();
-		assertThat(assetCreateRequest.getAssetId()).isEqualTo(PERMIT_NUMBER);
+		assertThat(assetCreateRequest.getAssetId()).isEqualTo(errand.getErrandNumber());
 		assertThat(assetCreateRequest.getPartyId()).isEqualTo(getStakeholder(errand, ROLE_APPLICANT).getPersonId());
-		assertThat(assetCreateRequest.getCaseReferenceIds()).containsExactly(Long.toString(errand.getId()));
 		assertThat(assetCreateRequest.getType()).isEqualTo("PARKINGPERMIT");
 		assertThat(assetCreateRequest.getIssued()).isEqualTo(VALID_FROM.toLocalDate());
 		assertThat(assetCreateRequest.getValidTo()).isEqualTo(VALID_TO.toLocalDate());

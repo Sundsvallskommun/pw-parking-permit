@@ -8,17 +8,18 @@ import generated.se.sundsvall.partyassets.AssetCreateRequest;
 import generated.se.sundsvall.partyassets.Status;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static se.sundsvall.parkingpermit.Constants.*;
 
 class PartyAssetsMapperTest {
 	private static final String ERRAND_ID = "123";
+	private static final String ERRAND_NUMBER = "SGP-2026-00001";
 	private static final String PERMIT_NUMBER = "1234567890";
 	private static final OffsetDateTime VALID_FROM = OffsetDateTime.now();
 	private static final OffsetDateTime VALID_TO = VALID_FROM.plusDays(30);
@@ -37,7 +38,6 @@ class PartyAssetsMapperTest {
 			.extracting(
 				AssetCreateRequest::getAdditionalParameters,
 				AssetCreateRequest::getAssetId,
-				AssetCreateRequest::getCaseReferenceIds,
 				AssetCreateRequest::getDescription,
 				AssetCreateRequest::getIssued,
 				AssetCreateRequest::getOrigin,
@@ -46,9 +46,8 @@ class PartyAssetsMapperTest {
 				AssetCreateRequest::getType,
 				AssetCreateRequest::getValidTo)
 			.containsExactly(
-				emptyMap(),
-				PERMIT_NUMBER,
-				List.of(ERRAND_ID),
+				Map.of(PARTY_ASSET_KEY_PERMIT_NUMBER, PERMIT_NUMBER, CASEDATA_KEY_ERRAND_ID, ERRAND_ID),
+				ERRAND_NUMBER,
 				"Parkeringstillstånd",
 				VALID_FROM.toLocalDate(),
 				"CASEDATA",
@@ -68,7 +67,6 @@ class PartyAssetsMapperTest {
 			.extracting(
 				AssetCreateRequest::getAdditionalParameters,
 				AssetCreateRequest::getAssetId,
-				AssetCreateRequest::getCaseReferenceIds,
 				AssetCreateRequest::getDescription,
 				AssetCreateRequest::getIssued,
 				AssetCreateRequest::getOrigin,
@@ -77,9 +75,8 @@ class PartyAssetsMapperTest {
 				AssetCreateRequest::getType,
 				AssetCreateRequest::getValidTo)
 			.containsExactly(
-				emptyMap(),
-				null,
-				List.of(ERRAND_ID),
+				Map.of(CASEDATA_KEY_ERRAND_ID, ERRAND_ID),
+				ERRAND_NUMBER,
 				"Parkeringstillstånd",
 				VALID_FROM.toLocalDate(),
 				"CASEDATA",
@@ -111,6 +108,7 @@ class PartyAssetsMapperTest {
 	private Errand createErrand() {
 		final var errand = new Errand();
 		errand.setId(Long.valueOf(ERRAND_ID));
+		errand.setErrandNumber(ERRAND_NUMBER);
 		errand.setDecisions(createDecisions());
 		return errand;
 	}

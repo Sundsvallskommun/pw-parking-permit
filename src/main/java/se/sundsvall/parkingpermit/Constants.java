@@ -15,6 +15,7 @@ public final class Constants {
 	public static final String PARTY_ASSET_TYPE = "PARKINGPERMIT";
 	public static final String PARTY_ASSET_DESCRIPTION = "Parkeringstillstånd";
 	public static final String PARTY_ASSET_STATUS_ACTIVE = "ACTIVE";
+	public static final String PARTY_ASSET_KEY_PERMIT_NUMBER = "permitNumber";
 
 	public static final String CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY = "applicantNotResidentOfMunicipality";
 	public static final String CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR = "assignedToAdministrator";
@@ -69,6 +70,7 @@ public final class Constants {
 	public static final String CASEDATA_KEY_ARTEFACT_LOST_PERMIT_NUMBER = "artefact.lost.permit.number";
 	public static final String CASEDATA_KEY_DISABILITY_WALKING_DISTANCE_MAX = "disability.walkingDistance.max";
 	public static final String CASEDATA_KEY_ARTEFACT_PERMIT_STATUS = "artefact.permit.status";
+	public static final String CASEDATA_KEY_ERRAND_ID = "errandId";
 
 	public static final String CASEDATA_ATTACHMENT_CATEGORY_PASSPORT_PHOTO = "PASSPORT_PHOTO";
 	public static final String CASEDATA_ATTACHMENT_CATEGORY_MEDICAL_CONFIRMATION = "MEDICAL_CONFIRMATION";
