@@ -58,7 +58,7 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 
 				existingAsset.ifPresent(asset -> {
 					logInfo("Asset already exists, updating asset with id {}", asset.getId());
-					partyAssetsService.updateAssetWithNewAdditionalParameter(municipalityId, asset, caseNumber);
+					// TODO: Create a relation (draken-4043)
 				});
 			}
 
