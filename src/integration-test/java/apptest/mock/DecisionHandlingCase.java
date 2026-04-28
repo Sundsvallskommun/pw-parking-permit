@@ -107,7 +107,7 @@ public class DecisionHandlingCase {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		return mockPartyAssetsPost(scenarioName, municipalityId, state,
+		return mockPartyAssetsPost(caseId, scenarioName, municipalityId, state,
 			"execution_create-asset-task-worker---api-party-assets-post-asset",
 			equalToJson("""
 				       {
@@ -115,8 +115,7 @@ public class DecisionHandlingCase {
 				            "type" : "PARKINGPERMIT",
 				            "issued" : "2024-05-17",
 				            "additionalParameters" : {
-				                "permitNumber" : "12345",
-				                "errandId" : "%s"
+				                "permitNumber" : "12345"
 				            },
 				            "assetId" : "PRH-2022-000001",
 				            "description" : "Parkeringstillstånd",

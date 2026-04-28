@@ -8,9 +8,9 @@ import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.parkingpermit.integration.partyassets.configuration.PartyAssetsConfiguration;
@@ -29,7 +29,8 @@ public interface PartyAssetsClient {
 	 * @param assetCreateRequest request containing asset information.
 	 */
 	@PostMapping(path = "/{municipalityId}/assets", consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> createAsset(@PathVariable final String municipalityId, final @RequestBody AssetCreateRequest assetCreateRequest);
+	ResponseEntity<Void> createAsset(@PathVariable final String municipalityId, @RequestParam final String sourceReference,
+		@RequestBody final AssetCreateRequest assetCreateRequest);
 
 	/**
 	 * Get asset for party.
@@ -61,7 +62,7 @@ public interface PartyAssetsClient {
 	 * @param id                 the assetId.
 	 * @param assetUpdateRequest request containing asset information.
 	 */
-	@PutMapping(path = "/{municipalityId}/assets/{id}", consumes = APPLICATION_JSON_VALUE)
+	@PatchMapping(path = "/{municipalityId}/assets/{id}", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<Void> updateAsset(@PathVariable final String municipalityId, @PathVariable final String id,
 		final @RequestBody AssetUpdateRequest assetUpdateRequest);
 }

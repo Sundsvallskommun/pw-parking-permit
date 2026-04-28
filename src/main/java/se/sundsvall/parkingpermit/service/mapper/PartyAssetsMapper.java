@@ -21,7 +21,6 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ERRAND_ID;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_KEY_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_ORIGIN;
@@ -102,9 +101,6 @@ public final class PartyAssetsMapper {
 
 		ofNullable(getArtefactPermitNumber(errand))
 			.ifPresent(permitNumber -> parameters.put(PARTY_ASSET_KEY_PERMIT_NUMBER, permitNumber));
-
-		ofNullable(errand.getId())
-			.ifPresent(id -> parameters.put(CASEDATA_KEY_ERRAND_ID, id.toString()));
 
 		return parameters;
 	}

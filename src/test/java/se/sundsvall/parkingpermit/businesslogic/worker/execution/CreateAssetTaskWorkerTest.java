@@ -64,7 +64,7 @@ class CreateAssetTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(partyAssetsServiceMock).createAsset(MUNICIPALITY_ID, errand);
+		verify(partyAssetsServiceMock).createAsset(MUNICIPALITY_ID, NAMESPACE, errand);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);

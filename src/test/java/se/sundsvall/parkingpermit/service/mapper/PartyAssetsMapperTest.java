@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static se.sundsvall.parkingpermit.Constants.*;
@@ -46,7 +47,7 @@ class PartyAssetsMapperTest {
 				AssetCreateRequest::getType,
 				AssetCreateRequest::getValidTo)
 			.containsExactly(
-				Map.of(PARTY_ASSET_KEY_PERMIT_NUMBER, PERMIT_NUMBER, CASEDATA_KEY_ERRAND_ID, ERRAND_ID),
+				Map.of(PARTY_ASSET_KEY_PERMIT_NUMBER, PERMIT_NUMBER),
 				ERRAND_NUMBER,
 				"Parkeringstillstånd",
 				VALID_FROM.toLocalDate(),
@@ -75,7 +76,7 @@ class PartyAssetsMapperTest {
 				AssetCreateRequest::getType,
 				AssetCreateRequest::getValidTo)
 			.containsExactly(
-				Map.of(CASEDATA_KEY_ERRAND_ID, ERRAND_ID),
+				emptyMap(),
 				ERRAND_NUMBER,
 				"Parkeringstillstånd",
 				VALID_FROM.toLocalDate(),

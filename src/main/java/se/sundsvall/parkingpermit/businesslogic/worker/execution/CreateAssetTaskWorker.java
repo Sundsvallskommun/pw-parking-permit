@@ -31,7 +31,7 @@ public class CreateAssetTaskWorker extends AbstractTaskWorker {
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
-			partyAssetsService.createAsset(municipalityId, errand);
+			partyAssetsService.createAsset(municipalityId, namespace, errand);
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {

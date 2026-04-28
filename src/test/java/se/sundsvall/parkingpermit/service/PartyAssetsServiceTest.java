@@ -37,6 +37,7 @@ import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 class PartyAssetsServiceTest {
 
 	private static final String ERRAND_ID = "123";
+	private static final String NAMESPACE = "namespace";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String PERMIT_NUMBER = "1234567890";
 	private static final OffsetDateTime VALID_FROM = OffsetDateTime.now();
@@ -62,12 +63,13 @@ class PartyAssetsServiceTest {
 
 		// Arrange
 		final var errand = createErrand();
+		final var expectedSourceReference = "LINK|" + ERRAND_ID + ";case;casedata;" + NAMESPACE + "|";
 
 		// Act
-		partyAssetsService.createAsset(MUNICIPALITY_ID, errand);
+		partyAssetsService.createAsset(MUNICIPALITY_ID, NAMESPACE, errand);
 
 		// Assert
-		verify(partyAssetsClientMock).createAsset(eq(MUNICIPALITY_ID), assetCreateRequestArgumentCaptor.capture());
+		verify(partyAssetsClientMock).createAsset(eq(MUNICIPALITY_ID), eq(expectedSourceReference), assetCreateRequestArgumentCaptor.capture());
 
 		final var assetCreateRequest = assetCreateRequestArgumentCaptor.getValue();
 		assertThat(assetCreateRequest).isNotNull();
@@ -148,42 +150,6 @@ class PartyAssetsServiceTest {
 		// Assert
 		assertThat(result).isEmpty();
 		verifyNoInteractions(partyAssetsClientMock, responseEntityMock);
-	}
-
-	@Test
-	void updateAssetWithNewAdditionalParameter() {
-		// Arrange
-		final var asset = new Asset().id("1").assetId("assetId").partyId("partyId").status(ACTIVE);
-		final var caseNumber = 123L;
-
-		// Act
-		partyAssetsService.updateAssetWithNewAdditionalParameter(MUNICIPALITY_ID, asset, caseNumber);
-
-		// Assert
-		verify(partyAssetsClientMock).updateAsset(eq(MUNICIPALITY_ID), eq(asset.getId()), assetUpdateRequestArgumentCaptor.capture());
-
-		final var assetUpdateRequest = assetUpdateRequestArgumentCaptor.getValue();
-		assertThat(assetUpdateRequest).isNotNull();
-		assertThat(assetUpdateRequest.getAdditionalParameters()).hasSize(1);
-		assertThat(assetUpdateRequest.getAdditionalParameters()).containsEntry("appealedErrand", String.valueOf(caseNumber));
-	}
-
-	@Test
-	void updateAssetWithNewAdditionalParameterWhenAssetIsNull() {
-		// Act
-		partyAssetsService.updateAssetWithNewAdditionalParameter(MUNICIPALITY_ID, null, 123L);
-
-		// Assert
-		verifyNoInteractions(partyAssetsClientMock);
-	}
-
-	@Test
-	void updateAssetWithNewAdditionalParameterWhenCaseNumberIsNull() {
-		// Act
-		partyAssetsService.updateAssetWithNewAdditionalParameter(MUNICIPALITY_ID, new Asset(), null);
-
-		// Assert
-		verifyNoInteractions(partyAssetsClientMock);
 	}
 
 	private static Errand createErrand() {

@@ -11,8 +11,8 @@ import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGetByPartyIdAndStatus;
+import static apptest.mock.api.PartyAssets.mockPartyAssetsPatch;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
-import static apptest.mock.api.PartyAssets.mockPartyAssetsPut;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
@@ -99,12 +99,10 @@ public class Execution {
 		state = mockPartyAssetsGetByPartyIdAndStatus(scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-party-assets-get-assets", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
 
-		state = mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, state,
+		state = mockPartyAssetsPatch("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, state,
 			"execution_handle-lost-card-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
-       				"additionalParameters" : { },
-       				"jsonParameters" : [ ],
        				"status" : "BLOCKED",
        				"statusReason" : "LOST"
      			}
@@ -172,7 +170,7 @@ public class Execution {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		return mockPartyAssetsPost(scenarioName, state,
+		return mockPartyAssetsPost(caseId, scenarioName, state,
 			"execution_create-asset-task-worker---api-party-assets-post-asset",
 			equalToJson("""
 				       {
@@ -180,8 +178,7 @@ public class Execution {
 				          "type" : "PARKINGPERMIT",
 				          "issued" : "2024-05-17",
 				          "additionalParameters" : {
-				            "permitNumber" : "12345",
-				            "errandId" : "%s"
+				            "permitNumber" : "12345"
 				          },
 				          "assetId" : "PRH-2022-000001",
 				          "description" : "Parkeringstillstånd",
@@ -211,20 +208,10 @@ public class Execution {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		state = mockPartyAssetsGet(scenarioName, state,
+		return mockPartyAssetsGet(scenarioName, state,
 			"execution_update-asset-task-worker---api-party-assets-get-errand", "12345", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
 
-		return mockPartyAssetsPut("1c8f38a6-b492-4037-b7dc-de5bc6c629f0", scenarioName, state,
-			"execution_update-asset-task-worker---api-party-asset-put-asset",
-			equalToJson("""
-				{
-       				"additionalParameters" : {
-         				"foo" : "bar",
-         				"appealedErrand" : "123"
-       				},
-       				"jsonParameters" : [ ]
-     			}
-				"""));
+		//TODO add create relation (draken-4043)
 
 	}
 
