@@ -8,6 +8,7 @@ import generated.se.sundsvall.partyassets.Asset;
 import java.util.List;
 import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
@@ -15,13 +16,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
+import se.sundsvall.parkingpermit.service.RelationService;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static generated.se.sundsvall.partyassets.Status.ACTIVE;
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -36,7 +40,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateAssetTaskWorkerTest {
+class CreateRelationTaskWorkerTest {
 
 	private static final String REQUEST_ID = "RequestId";
 	private static final String MUNICIPALITY_ID = "2281";
@@ -48,6 +52,9 @@ class UpdateAssetTaskWorkerTest {
 
 	@Mock
 	private PartyAssetsService partyAssetsServiceMock;
+
+	@Mock
+	private RelationService relationServiceMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -65,7 +72,13 @@ class UpdateAssetTaskWorkerTest {
 	private FailureHandler failureHandlerMock;
 
 	@InjectMocks
-	private UpdateAssetTaskWorker worker;
+	private CreateRelationTaskWorker worker;
+
+	@Test
+	void verifyAnnotations() {
+		assertThat(worker.getClass()).hasAnnotations(Component.class, ExternalTaskSubscription.class);
+		assertThat(worker.getClass().getAnnotation(ExternalTaskSubscription.class).value()).isEqualTo("CreateRelationTask");
+	}
 
 	@Test
 	void execute() {
@@ -79,6 +92,7 @@ class UpdateAssetTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getRelatesTo()).thenReturn(List.of(relatedErrand));
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId)).thenReturn(appealedErrandMock);
 		when(appealedErrandMock.getStakeholders()).thenReturn(List.of(stakeholder));
@@ -98,6 +112,35 @@ class UpdateAssetTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId);
 		verify(partyAssetsServiceMock).getAssets(MUNICIPALITY_ID, "assetId", "personId", "ACTIVE");
+		verify(relationServiceMock).createRelation(MUNICIPALITY_ID, NAMESPACE, String.valueOf(ERRAND_ID), "id");
+		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoInteractions(failureHandlerMock);
+	}
+
+	@Test
+	void executeWhenNoAssetsFound() {
+		final var stakeholder = new Stakeholder().roles(List.of(ROLE_APPLICANT)).type(PERSON).personId("personId");
+		final var relatedErrandId = 456L;
+		final var relatedErrand = new RelatedErrand().errandId(relatedErrandId).relationReason("APPEAL");
+
+		// Arrange
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
+		when(errandMock.getRelatesTo()).thenReturn(List.of(relatedErrand));
+		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, relatedErrandId)).thenReturn(appealedErrandMock);
+		when(appealedErrandMock.getStakeholders()).thenReturn(List.of(stakeholder));
+		when(appealedErrandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter().key(CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER).values(List.of("assetId"))));
+		when(partyAssetsServiceMock.getAssets(anyString(), anyString(), anyString(), anyString())).thenReturn(emptyList());
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(partyAssetsServiceMock).getAssets(MUNICIPALITY_ID, "assetId", "personId", "ACTIVE");
+		verify(relationServiceMock, never()).createRelation(anyString(), anyString(), anyString(), anyString());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verifyNoInteractions(failureHandlerMock);
 	}

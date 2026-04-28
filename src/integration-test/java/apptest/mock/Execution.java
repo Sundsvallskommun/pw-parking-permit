@@ -13,6 +13,7 @@ import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGetByPartyIdAndStatus;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPatch;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
+import static apptest.mock.api.Relations.mockRelationsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
@@ -47,7 +48,7 @@ public class Execution {
 	public static String mockExecutionWhenAppeal(String caseId, String scenarioName, boolean isAutomatic) {
 
 		final var stateAfterUpdatePhase = mockExecutionUpdatePhase(caseId, scenarioName, "check-decision-task-worker---api-casedata-get-errand", isAutomatic);
-		final var stateAfterUpdateAsset = mockExecutionUpdateAsset(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
+		final var stateAfterUpdateAsset = mockExecutionCreateRelation(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		return mockSendSimplifiedService(caseId, scenarioName, stateAfterUpdateAsset);
 	}
 
@@ -103,9 +104,9 @@ public class Execution {
 			"execution_handle-lost-card-task-worker---api-party-asset-put-asset",
 			equalToJson("""
 				{
-       				"status" : "BLOCKED",
-       				"statusReason" : "LOST"
-     			}
+					"status" : "BLOCKED",
+					"statusReason" : "LOST"
+				}
 				"""));
 
 		state = mockCaseDataPatchErrand(caseId, scenarioName, state,
@@ -186,12 +187,12 @@ public class Execution {
 				          "origin" : "CASEDATA",
 				          "validTo" : "2025-05-17"
 				        }
-				""".formatted(caseId)));
+				"""));
 	}
 
-	public static String mockExecutionUpdateAsset(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
+	public static String mockExecutionCreateRelation(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
 		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
-			"execution_update-asset-task-worker---api-casedata-get-errand",
+			"execution_create-relation-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
@@ -200,7 +201,7 @@ public class Execution {
 				"permitNumberParameter", "12345"));
 
 		state = mockCaseDataGet("456", scenarioName, state,
-			"execution_update-asset-task-worker---api-casedata-get-appealed_errand",
+			"execution_create-relation-task-worker---api-casedata-get-appealed_errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
 				"phaseStatusParameter", "ONGOING",
@@ -208,10 +209,28 @@ public class Execution {
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
 
-		return mockPartyAssetsGet(scenarioName, state,
-			"execution_update-asset-task-worker---api-party-assets-get-errand", "12345", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
+		state = mockPartyAssetsGet(scenarioName, state,
+			"execution_create-relation-task-worker---api-party-assets-get-errand", "12345", "6b8928bb-9800-4d52-a9fa-20d88c81f1d6", "ACTIVE");
 
-		//TODO add create relation (draken-4043)
+		return mockRelationsPost(scenarioName, state,
+			"execution_create-relation-task-worker---api-relations-post-relation",
+			equalToJson("""
+				{
+				   "type" : "LINK",
+				   "source" : {
+				     "resourceId" : "123",
+				     "type" : "case",
+				     "service" : "casedata",
+				     "namespace" : "SBK_PARKING_PERMIT"
+				   },
+				   "target" : {
+				     "resourceId" : "1c8f38a6-b492-4037-b7dc-de5bc6c629f0",
+				     "type" : "asset",
+				     "service" : "partyassets",
+				     "namespace" : "SBK_PARKING_PERMIT"
+				   }
+				 }
+				"""));
 
 	}
 

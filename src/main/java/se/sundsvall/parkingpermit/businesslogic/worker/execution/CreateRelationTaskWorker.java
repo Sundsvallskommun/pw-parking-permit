@@ -4,9 +4,7 @@ import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.RelatedErrand;
 import generated.se.sundsvall.casedata.Stakeholder;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -16,6 +14,7 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
+import se.sundsvall.parkingpermit.service.RelationService;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -26,20 +25,23 @@ import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @Component
-@ExternalTaskSubscription("UpdateAssetTask")
-public class UpdateAssetTaskWorker extends AbstractTaskWorker {
+@ExternalTaskSubscription("CreateRelationTask")
+public class CreateRelationTaskWorker extends AbstractTaskWorker {
 
 	private final PartyAssetsService partyAssetsService;
+	private final RelationService relationService;
 
-	UpdateAssetTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, PartyAssetsService partyAssetService) {
+	CreateRelationTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, PartyAssetsService partyAssetService,
+		RelationService relationService) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.partyAssetsService = partyAssetService;
+		this.relationService = relationService;
 	}
 
 	@Override
 	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 		try {
-			logInfo("Execute Worker for UpdateAssetTask");
+			logInfo("Execute Worker for CreateRelationTask");
 			final var municipalityId = getMunicipalityId(externalTask);
 			final var namespace = getNamespace(externalTask);
 			final var caseNumber = getCaseNumber(externalTask);
@@ -53,12 +55,12 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 
 				final var assets = partyAssetsService.getAssets(municipalityId, getAssetId(appealedErrand), getStakeholderPersonIdOfApplicant(appealedErrand), PARTY_ASSET_STATUS_ACTIVE);
 
-				final var existingAsset = Optional.ofNullable(assets).orElse(emptyList()).stream()
+				final var existingAsset = ofNullable(assets).orElse(emptyList()).stream()
 					.findFirst();
 
 				existingAsset.ifPresent(asset -> {
-					logInfo("Asset already exists, updating asset with id {}", asset.getId());
-					// TODO: Create a relation (draken-4043)
+					logInfo("Asset already exists, create relation between case with id {} and asset with id {}", errand.getId(), asset.getId());
+					relationService.createRelation(municipalityId, namespace, String.valueOf(errand.getId()), asset.getId());
 				});
 			}
 
@@ -70,7 +72,7 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 	}
 
 	private String getStakeholderPersonIdOfApplicant(Errand errand) {
-		return Optional.ofNullable(errand.getStakeholders()).orElse(emptyList()).stream()
+		return ofNullable(errand.getStakeholders()).orElse(emptyList()).stream()
 			.filter(stakeholder -> stakeholder.getRoles().contains(ROLE_APPLICANT))
 			.findFirst()
 			.map(Stakeholder::getPersonId)
@@ -78,16 +80,17 @@ public class UpdateAssetTaskWorker extends AbstractTaskWorker {
 	}
 
 	private String getAssetId(Errand errand) {
-		return Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameter -> CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER.equals(extraParameter.getKey()))
 			.findFirst()
 			.map(ExtraParameter::getValues)
+			.filter(values -> !values.isEmpty())
 			.map(List::getFirst)
 			.orElse(null);
 	}
 
 	private RelatedErrand getAppealedErrand(Errand errand) {
-		return ofNullable(errand.getRelatesTo()).orElse(Collections.emptyList()).stream()
+		return ofNullable(errand.getRelatesTo()).orElse(emptyList()).stream()
 			.filter(relatedErrand -> CASE_DATA_REASON_APPEAL.equals(relatedErrand.getRelationReason()))
 			.findFirst()
 			.orElse(null);

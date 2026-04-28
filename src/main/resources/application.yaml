@@ -21,6 +21,8 @@ spring:
             token-uri: ${config.partyassets.token-uri}
           support-management:
             token-uri: ${config.support-management.token-uri}
+          relation:
+            token-uri: ${config.relation.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -63,6 +65,11 @@ spring:
             provider: support-management
             client-id: ${config.support-management.client-id}
             client-secret: ${config.support-management.client-secret}
+          relation:
+            authorization-grant-type: client_credentials
+            provider: relation
+            client-id: ${config.relation.client-id}
+            client-secret: ${config.relation.client-secret}
 
 #----------------------------------------
 # Open API
@@ -150,6 +157,10 @@ integration:
     url: ${config.support-management.base-url}
     connectTimeout: 5
     readTimeout: 20
+  relation:
+    url: ${config.relation.base-url}
+    connectTimeout: 5
+    readTimeout: 20
 
 
 #----------------------------------------
@@ -174,6 +185,8 @@ resilience4j.circuitbreaker:
     partyassets:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     support-management:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+    relation:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
       
 #----------------------------------------

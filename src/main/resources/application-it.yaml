@@ -69,6 +69,11 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+  relation:
+    base-url: http://localhost:${wiremock.server.port}/api-relation
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
 
 texts:
   simplified-services:
