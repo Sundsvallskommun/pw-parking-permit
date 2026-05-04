@@ -88,6 +88,11 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+  relation:
+    base-url: relation.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
 texts:
   commons:
     2281:

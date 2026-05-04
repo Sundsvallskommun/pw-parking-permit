@@ -79,7 +79,7 @@ public class ProcessPathway {
 			.with(tuple("Send message in parallel flow", "parallel_gateway_start"))
 			.with(tuple("Update phase", "external_task_execution_update_phase"))
 			.with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
-			.with(tuple("Update existing asset", "external_task_execution_update_asset"))
+			.with(tuple("Create relation with existing asset", "external_task_execution_create_relation"))
 			.with(tuple("End appeal", "execution_gateway_end_appeal"))
 			//Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
