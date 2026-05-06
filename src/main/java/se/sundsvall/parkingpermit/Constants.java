@@ -23,6 +23,7 @@ public final class Constants {
 	public static final String CAMUNDA_VARIABLE_MUNICIPALITY_ID = "municipalityId";
 	public static final String CAMUNDA_VARIABLE_NAMESPACE = "namespace";
 	public static final String CAMUNDA_VARIABLE_MESSAGE_ID = "messageId";
+	public static final String CAMUNDA_VARIABLE_SIMPLIFIED_SERVICE_MESSAGE_ID = "simplifiedServiceMessageId";
 	public static final String CAMUNDA_VARIABLE_REQUEST_ID = "requestId";
 	public static final String CAMUNDA_VARIABLE_UPDATE_AVAILABLE = "updateAvailable";
 	public static final String CAMUNDA_VARIABLE_FINAL_DECISION = "finalDecision";

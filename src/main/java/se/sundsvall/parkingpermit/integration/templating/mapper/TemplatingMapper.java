@@ -31,6 +31,13 @@ public final class TemplatingMapper {
 
 	private TemplatingMapper() {}
 
+	public static RenderRequest toRenderSimplifiedServiceRequest(String templateIdentifier) {
+		if (isBlank(templateIdentifier)) {
+			return null;
+		}
+		return new RenderRequest().identifier(templateIdentifier);
+	}
+
 	public static RenderRequest toRenderDecisionRequest(Errand errand, String templateIdentifier) {
 		if (isNull(errand) || isBlank(templateIdentifier)) {
 			return null;

@@ -3,18 +3,20 @@ package apptest.mock;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchBodyWhenLostCard;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
+import static apptest.mock.api.CaseData.mockCaseDataAddMessagePost;
 import static apptest.mock.api.CaseData.mockCaseDataAddNotePatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
 import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
-import static apptest.mock.api.Messaging.mockMessagingWebMessagePost;
+import static apptest.mock.api.Messaging.mockMessagingLetterPost;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGet;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsGetByPartyIdAndStatus;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPatch;
 import static apptest.mock.api.PartyAssets.mockPartyAssetsPost;
 import static apptest.mock.api.Relations.mockRelationsPost;
 import static apptest.mock.api.Rpa.mockRpaAddQueueItems;
+import static apptest.mock.api.Templating.mockRender;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
@@ -254,22 +256,61 @@ public class Execution {
 				"phaseStatusParameter", "",
 				"displayPhaseParameter", "Beslut"));
 
-		mockMessagingWebMessagePost(
+		mockRender(
 			equalToJson(
 				"""
-								{
-									"party" : {
-										"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-										"externalReferences" : [ {
-											"key" : "flowInstanceId",
-											"value" : "2971"
-										} ]
-					      			},
-					      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
-					      			"sendAsOwner" : false,
-					                "oepInstance" : "EXTERNAL"
-					    		}
+					{
+						"identifier": "it.simplified-service.template",
+						"metadata": []
+					}
 					"""));
-		return state;
+
+		mockMessagingLetterPost(
+			equalToJson(
+				"""
+					{
+						"party" : {
+							"addresses" : [ ],
+							"externalReferences" : [ ],
+							"partyIds" : [ "6b8928bb-9800-4d52-a9fa-20d88c81f1d6" ]
+						},
+						"subject" : "Kontrollmeddelande för förenklad delgivning",
+						"contentType" : "text/html",
+						"body" : "PGh0bWw+PGJvZHk+PHA+S29udHJvbGxtZWRkZWxhbmRlIGbDtnIgZsO2cmVua2xhZCBkZWxnaXZuaW5nPC9wPjwvYm9keT48L2h0bWw+",
+						"department" : "SBK(Gatuavdelningen, Trafiksektionen)",
+						"attachments" : [ ],
+						"sender" : {
+							"supportInfo" : {
+								"text" : "Kontakta oss via epost eller telefon.",
+								"emailAddress" : "sundsvalls.kommun@sundsvall.se",
+								"phoneNumber" : "+46 60 191000",
+								"url" : "https://sundsvall.se/"
+							}
+						}
+					}
+					"""));
+
+		final var stateAfterAddMessageGet = mockCaseDataGet(caseId, scenarioName, state,
+			"execution_add-simplified-service-message-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"phaseActionParameter", "",
+				"phaseStatusParameter", "",
+				"displayPhaseParameter", "Beslut"));
+
+		return mockCaseDataAddMessagePost(caseId, scenarioName, stateAfterAddMessageGet,
+			"execution_add-simplified-service-message-task-worker---api-post-message",
+			equalToJson(
+				"""
+					{
+						"messageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+						"direction": "OUTBOUND",
+						"externalCaseId": "2971",
+						"message": "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nkontakt@sundsvall.se eller telefon till 060-19 10 00.",
+						"sent": "${json-unit.any-string}",
+						"subject": "Kontrollmeddelande för förenklad delgivning",
+						"username": "ProcessEngine"
+					}
+					"""));
 	}
 }
