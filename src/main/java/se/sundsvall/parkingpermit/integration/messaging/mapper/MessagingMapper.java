@@ -17,7 +17,6 @@ import generated.se.sundsvall.messaging.WebMessageParty;
 import generated.se.sundsvall.messaging.WebMessageRequest;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.util.Base64;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import se.sundsvall.parkingpermit.util.TextProvider;
@@ -86,20 +85,19 @@ public class MessagingMapper {
 			.subject(textProvider.getDenialTexts(municipalityId).getSubject());
 	}
 
-	public LetterRequest toLetterRequestSimplifiedService(String partyId, String municipalityId, List<LetterAttachment> attachments) {
+	public LetterRequest toLetterRequestSimplifiedService(String partyId, String municipalityId, String base64Body) {
 		return new LetterRequest()
-			.body(Base64.getEncoder().encodeToString(textProvider.getSimplifiedServiceTexts(municipalityId).getHtmlBody().getBytes(defaultCharset())))
+			.body(base64Body)
 			.contentType(TEXT_HTML)
 			.department(textProvider.getCommonTexts(municipalityId).getDepartment())
 			.party(new LetterParty().addPartyIdsItem(UUID.fromString(partyId)))
 			.sender(toLetterSender(municipalityId))
-			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject())
-			.attachments(attachments);
+			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject());
 	}
 
-	public DigitalMailRequest toDigitalMailRequestSimplifiedService(String partyId, String municipalityId) {
+	public DigitalMailRequest toDigitalMailRequestSimplifiedService(String partyId, String municipalityId, String base64Body) {
 		return new DigitalMailRequest()
-			.body(Base64.getEncoder().encodeToString(textProvider.getSimplifiedServiceTexts(municipalityId).getHtmlBody().getBytes(defaultCharset())))
+			.body(base64Body)
 			.contentType(DigitalMailRequest.ContentTypeEnum.TEXT_HTML)
 			.department(textProvider.getCommonTexts(municipalityId).getDepartment())
 			.party(new DigitalMailParty().addPartyIdsItem(UUID.fromString(partyId)))

@@ -24,6 +24,7 @@ import se.sundsvall.parkingpermit.integration.messaging.MessagingClient;
 import se.sundsvall.parkingpermit.integration.messaging.mapper.MessagingMapper;
 import se.sundsvall.parkingpermit.integration.templating.TemplatingClient;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
+import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProperties;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -64,6 +65,9 @@ class MessagingServiceTest {
 
 	@Mock
 	private CommonTextProperties commonTextPropertiesMock;
+
+	@Mock
+	private SimplifiedServiceTextProperties simplifiedServiceTextPropertiesMock;
 
 	@InjectMocks
 	private MessagingService messagingService;
@@ -201,41 +205,54 @@ class MessagingServiceTest {
 
 		// Arrange
 		final var errand = createErrand(true);
-		final var webMessageRequest = new WebMessageRequest();
+		final var simplifiedServiceTemplateId = "simplified-service-template-id";
+		final var base64Body = "base64Body";
+		final var letterRequest = new LetterRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
-		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
-		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
+		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
+		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(letterRequest);
+		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
 		final var uuid = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
 
 		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
-		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
-		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
-		verifyNoInteractions(templatingClientMock);
+		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
+		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
 	}
 
 	@Test
-	void noMessageIdReturnedFromMessagingWebmessageResourceSimplifiedService() {
+	void noMessageIdReturnedFromMessagingLetterResourceSimplifiedService() {
 
 		// Arrange
 		final var errand = createErrand(true);
-		final var webMessageRequest = new WebMessageRequest();
-		final var messageResult = new MessageResult();
+		final var simplifiedServiceTemplateId = "simplified-service-template-id";
+		final var base64Body = "base64Body";
+		final var letterRequest = new LetterRequest();
+		final var messageBatchResult = new MessageBatchResult();
 
-		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
-		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
+		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
+		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(letterRequest);
+		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
 		final var messageId = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
 
 		// Assert
 		assertThat(messageId).isNull();
-		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
-		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
-		verifyNoInteractions(templatingClientMock);
+		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
+		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
 	}
 
 	@Test
@@ -243,12 +260,17 @@ class MessagingServiceTest {
 
 		// Arrange
 		final var errand = createErrand(false);
+		final var simplifiedServiceTemplateId = "simplified-service-template-id";
+		final var base64Body = "base64Body";
 		final var digitalMailRequest = new DigitalMailRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
+		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
+		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
+		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
 		when(textPropertiesMock.getCommons()).thenReturn(Map.of(MUNICIPALITY_ID, commonTextPropertiesMock));
 		when(commonTextPropertiesMock.getOrganizationNumber()).thenReturn(ORGANIZATION_NUMBER);
-		when(messagingMapperMock.toDigitalMailRequestSimplifiedService(any(), eq(MUNICIPALITY_ID))).thenReturn(digitalMailRequest);
+		when(messagingMapperMock.toDigitalMailRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(digitalMailRequest);
 		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any(), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -256,9 +278,10 @@ class MessagingServiceTest {
 
 		// Assert
 		assertThat(messageId).isNull();
+		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
 		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
-		verifyNoInteractions(templatingClientMock);
+		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
 	}
 
 	@Test

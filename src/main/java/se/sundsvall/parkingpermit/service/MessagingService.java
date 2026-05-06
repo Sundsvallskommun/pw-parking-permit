@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderDecisionRequest;
+import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderSimplifiedServiceRequest;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 @Service
@@ -81,13 +82,14 @@ public class MessagingService {
 	public UUID sendMessageSimplifiedService(String municipalityId, Errand errand) {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 		try {
-			if (isNotEmpty(errand.getExternalCaseId())) {
-				final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequestSimplifiedService(partyId, errand.getExternalCaseId(),
-					municipalityId));
-				return extractId(List.of(messageResult));
-			}
-			final var messageResult = messagingClient.sendDigitalMail(municipalityId, getOrganizationNumber(municipalityId), messagingMapper.toDigitalMailRequestSimplifiedService(partyId, municipalityId));
+			final var templateId = textProperties.getSimplifiedServices().get(municipalityId).getTemplateId();
+			final var base64Body = templatingClient.render(municipalityId, toRenderSimplifiedServiceRequest(templateId)).getOutput();
 
+			if (isNotEmpty(errand.getExternalCaseId())) {
+				final var messageResult = messagingClient.sendLetter(municipalityId, messagingMapper.toLetterRequestSimplifiedService(partyId, municipalityId, base64Body));
+				return extractId(messageResult.getMessages());
+			}
+			final var messageResult = messagingClient.sendDigitalMail(municipalityId, getOrganizationNumber(municipalityId), messagingMapper.toDigitalMailRequestSimplifiedService(partyId, municipalityId, base64Body));
 			return extractId(messageResult.getMessages());
 		} catch (final Exception e) {
 			logger.error(FAILED_TO_SEND_MESSAGE.formatted(errand.getId()), e);

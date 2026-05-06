@@ -8,6 +8,7 @@ public class SimplifiedServiceTextProperties {
 	private String plainBody;
 	private String description;
 	private String delay;
+	private String templateId;
 
 	public String getMessage() {
 		return message;
@@ -55,5 +56,13 @@ public class SimplifiedServiceTextProperties {
 
 	public void setDelay(String delay) {
 		this.delay = delay;
+	}
+
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
 	}
 }

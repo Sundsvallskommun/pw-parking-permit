@@ -259,7 +259,11 @@ public class CaseData {
 	}
 
 	public static String mockCaseDataAddMessagePost(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-		return stubFor(post(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/messages", caseId)))
+		return mockCaseDataAddMessagePost("2281", caseId, scenarioName, requiredScenarioState, newScenarioState, bodyPattern);
+	}
+
+	public static String mockCaseDataAddMessagePost(String municipalityId, String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo(String.format("/api-casedata/%s/SBK_PARKING_PERMIT/errands/%s/messages", municipalityId, caseId)))
 			.inScenario(scenarioName)
 			.whenScenarioStateIs(requiredScenarioState)
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))

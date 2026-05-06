@@ -18,7 +18,7 @@ import java.util.Map;
 public class DecisionHandlingFollowUp {
 
 	public static String mockFollowUp(final String municipalityId, final String caseId, final String scenarioName, final boolean isAutomatic) {
-		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(municipalityId, caseId, scenarioName, "execution_send-simplified-service-task-worker---api-casedata-get-errand", isAutomatic);
+		final var stateAfterUpdatePhase = mockFollowUpUpdatePhaseAtStart(municipalityId, caseId, scenarioName, "execution_add-simplified-service-message-task-worker---api-post-message", isAutomatic);
 		final var stateAfterCheckPhaseAction = mockFollowUpCheckPhaseAction(municipalityId, caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
 		final var stateAfterCleanUp = mockFollowUpCleanUpNotes(municipalityId, caseId, scenarioName, stateAfterCheckPhaseAction);
 		final var stateAfterUpdateStatus = mockFollowUpUpdateStatus(municipalityId, caseId, scenarioName, stateAfterCleanUp, isAutomatic);
