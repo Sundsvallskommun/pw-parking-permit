@@ -31,6 +31,8 @@ import static se.sundsvall.parkingpermit.Constants.MESSAGING_KEY_FLOW_INSTANCE_I
 @Service
 public class MessagingMapper {
 
+	private static final String SIMPLIFIED_SERVICE_PDF_FILENAME = "kontrollmeddelande.pdf";
+
 	private final TextProvider textProvider;
 
 	MessagingMapper(TextProvider textProvider) {
@@ -85,14 +87,23 @@ public class MessagingMapper {
 			.subject(textProvider.getDenialTexts(municipalityId).getSubject());
 	}
 
-	public LetterRequest toLetterRequestSimplifiedService(String partyId, String municipalityId, String base64Body) {
+	public LetterRequest toLetterRequestSimplifiedService(String partyId, String municipalityId, String base64Body, RenderResponse pdfRenderResponse) {
 		return new LetterRequest()
+			.addAttachmentsItem(toSimplifiedServiceLetterAttachment(pdfRenderResponse))
 			.body(base64Body)
 			.contentType(TEXT_HTML)
 			.department(textProvider.getCommonTexts(municipalityId).getDepartment())
 			.party(new LetterParty().addPartyIdsItem(UUID.fromString(partyId)))
 			.sender(toLetterSender(municipalityId))
 			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject());
+	}
+
+	private LetterAttachment toSimplifiedServiceLetterAttachment(RenderResponse pdfRenderResponse) {
+		return new LetterAttachment()
+			.content(pdfRenderResponse.getOutput())
+			.contentType(APPLICATION_PDF)
+			.deliveryMode(ANY)
+			.filename(SIMPLIFIED_SERVICE_PDF_FILENAME);
 	}
 
 	public DigitalMailRequest toDigitalMailRequestSimplifiedService(String partyId, String municipalityId, String base64Body) {

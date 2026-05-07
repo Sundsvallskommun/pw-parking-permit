@@ -223,6 +223,7 @@ class MessagingMapperTest {
 	@Test
 	void toLetterRequestSimplifiedService() {
 		final var base64Body = Base64.getEncoder().encodeToString(BODY.getBytes(defaultCharset()));
+		final var pdfRenderResponse = new RenderResponse().output(OUTPUT);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
@@ -232,7 +233,7 @@ class MessagingMapperTest {
 		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
 		when(simplifiedServiceTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
 
-		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID, base64Body);
+		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID, base64Body, pdfRenderResponse);
 
 		assertThat(request.getSubject()).isEqualTo(SUBJECT);
 		assertThat(request.getBody()).isEqualTo(base64Body);
@@ -251,7 +252,17 @@ class MessagingMapperTest {
 				CONTACTINFO_URL);
 		assertThat(request.getParty()).isNotNull().extracting(LetterParty::getPartyIds).asInstanceOf(LIST).containsExactly(PARTY_ID);
 		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
-		assertThat(request.getAttachments()).isNullOrEmpty();
+		assertThat(request.getAttachments()).hasSize(1)
+			.extracting(
+				LetterAttachment::getContent,
+				LetterAttachment::getContentType,
+				LetterAttachment::getDeliveryMode,
+				LetterAttachment::getFilename)
+			.containsExactly(tuple(
+				OUTPUT,
+				LetterAttachment.ContentTypeEnum.APPLICATION_PDF,
+				DeliveryModeEnum.ANY,
+				"kontrollmeddelande.pdf"));
 
 		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
 		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
