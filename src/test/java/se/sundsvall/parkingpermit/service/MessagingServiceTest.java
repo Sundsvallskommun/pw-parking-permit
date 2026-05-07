@@ -205,16 +205,62 @@ class MessagingServiceTest {
 
 		// Arrange
 		final var errand = createErrand(true);
+		final var webMessageRequest = new WebMessageRequest();
+		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
+
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
+		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+
+		// Act
+		final var uuid = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
+
+		// Assert
+		assertThat(uuid).isEqualTo(messageResult.getMessageId());
+		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
+		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void noMessageIdReturnedFromMessagingWebmessageResourceSimplifiedService() {
+
+		// Arrange
+		final var errand = createErrand(true);
+		final var webMessageRequest = new WebMessageRequest();
+		final var messageResult = new MessageResult();
+
+		when(messagingMapperMock.toWebMessageRequestSimplifiedService(any(), any(), eq(MUNICIPALITY_ID))).thenReturn(webMessageRequest);
+		when(messagingClientMock.sendWebMessage(eq(MUNICIPALITY_ID), any())).thenReturn(messageResult);
+
+		// Act
+		final var messageId = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
+
+		// Assert
+		assertThat(messageId).isNull();
+		verify(messagingClientMock).sendWebMessage(MUNICIPALITY_ID, webMessageRequest);
+		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
+		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
+		verifyNoInteractions(templatingClientMock);
+	}
+
+	@Test
+	void sendMessageSimplifiedServiceWithoutExternalCaseIdSendsLetterWithPdfAttachment() {
+
+		// Arrange
+		final var errand = createErrand(false);
 		final var simplifiedServiceTemplateId = "simplified-service-template-id";
-		final var base64Body = "base64Body";
+		final var htmlBody = "htmlBody";
+		final var pdfRenderResponse = new RenderResponse().output("pdfBase64");
 		final var letterRequest = new LetterRequest();
 		final var messageResult = new MessageResult().messageId(UUID.randomUUID());
 		final var messageBatchResult = new MessageBatchResult().addMessagesItem(messageResult);
 
 		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
 		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
-		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
-		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(letterRequest);
+		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(htmlBody));
+		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(pdfRenderResponse);
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(htmlBody), eq(pdfRenderResponse))).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -223,6 +269,7 @@ class MessagingServiceTest {
 		// Assert
 		assertThat(uuid).isEqualTo(messageResult.getMessageId());
 		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
+		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());
 		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
 		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
@@ -232,16 +279,18 @@ class MessagingServiceTest {
 	void noMessageIdReturnedFromMessagingLetterResourceSimplifiedService() {
 
 		// Arrange
-		final var errand = createErrand(true);
+		final var errand = createErrand(false);
 		final var simplifiedServiceTemplateId = "simplified-service-template-id";
-		final var base64Body = "base64Body";
+		final var htmlBody = "htmlBody";
+		final var pdfRenderResponse = new RenderResponse().output("pdfBase64");
 		final var letterRequest = new LetterRequest();
 		final var messageBatchResult = new MessageBatchResult();
 
 		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
 		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
-		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
-		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(letterRequest);
+		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(htmlBody));
+		when(templatingClientMock.renderPdf(eq(MUNICIPALITY_ID), any())).thenReturn(pdfRenderResponse);
+		when(messagingMapperMock.toLetterRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(htmlBody), eq(pdfRenderResponse))).thenReturn(letterRequest);
 		when(messagingClientMock.sendLetter(eq(MUNICIPALITY_ID), any())).thenReturn(messageBatchResult);
 
 		// Act
@@ -250,38 +299,10 @@ class MessagingServiceTest {
 		// Assert
 		assertThat(messageId).isNull();
 		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
+		verify(templatingClientMock).renderPdf(eq(MUNICIPALITY_ID), any());
 		verify(messagingClientMock).sendLetter(MUNICIPALITY_ID, letterRequest);
 		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
 		verify(messagingClientMock, never()).sendDigitalMail(eq(MUNICIPALITY_ID), any(), any());
-	}
-
-	@Test
-	void noMessageIdReturnedFromMessagingDigitalMailResourceSimplifiedService() {
-
-		// Arrange
-		final var errand = createErrand(false);
-		final var simplifiedServiceTemplateId = "simplified-service-template-id";
-		final var base64Body = "base64Body";
-		final var digitalMailRequest = new DigitalMailRequest();
-		final var messageBatchResult = new MessageBatchResult();
-
-		when(textPropertiesMock.getSimplifiedServices()).thenReturn(Map.of(MUNICIPALITY_ID, simplifiedServiceTextPropertiesMock));
-		when(simplifiedServiceTextPropertiesMock.getTemplateId()).thenReturn(simplifiedServiceTemplateId);
-		when(templatingClientMock.render(eq(MUNICIPALITY_ID), any())).thenReturn(new RenderResponse().output(base64Body));
-		when(textPropertiesMock.getCommons()).thenReturn(Map.of(MUNICIPALITY_ID, commonTextPropertiesMock));
-		when(commonTextPropertiesMock.getOrganizationNumber()).thenReturn(ORGANIZATION_NUMBER);
-		when(messagingMapperMock.toDigitalMailRequestSimplifiedService(any(), eq(MUNICIPALITY_ID), eq(base64Body))).thenReturn(digitalMailRequest);
-		when(messagingClientMock.sendDigitalMail(eq(MUNICIPALITY_ID), any(), any())).thenReturn(messageBatchResult);
-
-		// Act
-		final var messageId = messagingService.sendMessageSimplifiedService(MUNICIPALITY_ID, errand);
-
-		// Assert
-		assertThat(messageId).isNull();
-		verify(templatingClientMock).render(eq(MUNICIPALITY_ID), any());
-		verify(messagingClientMock).sendDigitalMail(MUNICIPALITY_ID, ORGANIZATION_NUMBER, digitalMailRequest);
-		verify(messagingClientMock, never()).sendWebMessage(eq(MUNICIPALITY_ID), any());
-		verify(messagingClientMock, never()).sendLetter(eq(MUNICIPALITY_ID), any());
 	}
 
 	@Test
