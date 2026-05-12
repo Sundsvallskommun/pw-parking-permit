@@ -275,48 +275,6 @@ class MessagingMapperTest {
 	}
 
 	@Test
-	void toDigitalMailRequestSimplifiedService() {
-		final var base64Body = Base64.getEncoder().encodeToString(BODY.getBytes(defaultCharset()));
-		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
-		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
-		when(commonTextPropertiesMock.getContactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
-		when(commonTextPropertiesMock.getContactInfoText()).thenReturn(CONTACTINFO_TEXT);
-		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
-		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
-		when(simplifiedServiceTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
-
-		final var request = messagingMapper.toDigitalMailRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID, base64Body);
-
-		assertThat(request.getSubject()).isEqualTo(SUBJECT);
-		assertThat(request.getBody()).isEqualTo(base64Body);
-		assertThat(request.getContentType()).isEqualTo(DigitalMailRequest.ContentTypeEnum.TEXT_HTML);
-		assertThat(request.getSender()).isNotNull();
-		assertThat(request.getSender().getSupportInfo()).isNotNull()
-			.extracting(
-				DigitalMailSenderSupportInfo::getEmailAddress,
-				DigitalMailSenderSupportInfo::getPhoneNumber,
-				DigitalMailSenderSupportInfo::getText,
-				DigitalMailSenderSupportInfo::getUrl)
-			.containsExactlyInAnyOrder(
-				CONTACTINFO_EMAIL,
-				CONTACTINFO_PHONENUMBER,
-				CONTACTINFO_TEXT,
-				CONTACTINFO_URL);
-		assertThat(request.getParty()).isNotNull().extracting(DigitalMailParty::getPartyIds).asInstanceOf(LIST).containsExactly(PARTY_ID);
-		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
-		assertThat(request.getAttachments()).isNull();
-		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
-		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
-		verify(commonTextPropertiesMock).getContactInfoEmail();
-		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
-		verify(commonTextPropertiesMock).getContactInfoText();
-		verify(commonTextPropertiesMock).getContactInfoUrl();
-		verify(commonTextPropertiesMock).getDepartment();
-		verify(simplifiedServiceTextPropertiesMock).getSubject();
-	}
-
-	@Test
 	void toDigitalMailRequestApproval() {
 		// Arrange
 		when(textProviderMock.getApprovalTexts(MUNICIPALITY_ID)).thenReturn(approvalTextPropertiesMock);

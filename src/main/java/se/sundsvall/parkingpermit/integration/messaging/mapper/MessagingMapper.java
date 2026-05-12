@@ -106,17 +106,6 @@ public class MessagingMapper {
 			.filename(SIMPLIFIED_SERVICE_PDF_FILENAME);
 	}
 
-	public DigitalMailRequest toDigitalMailRequestSimplifiedService(String partyId, String municipalityId, String base64Body) {
-		return new DigitalMailRequest()
-			.body(base64Body)
-			.contentType(DigitalMailRequest.ContentTypeEnum.TEXT_HTML)
-			.department(textProvider.getCommonTexts(municipalityId).getDepartment())
-			.party(new DigitalMailParty().addPartyIdsItem(UUID.fromString(partyId)))
-			.sender(toDigitalMailSender(municipalityId))
-			.subject(textProvider.getSimplifiedServiceTexts(municipalityId).getSubject())
-			.attachments(null);
-	}
-
 	public DigitalMailRequest toDigitalMailRequest(RenderResponse renderResponse, String partyId, String municipalityId, boolean isApproval) {
 		final var htmlBody = isApproval
 			? textProvider.getApprovalTexts(municipalityId).getHtmlBody()
