@@ -45,8 +45,10 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
@@ -102,9 +104,10 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 	}
 
 	@Test
-	void executeWhenErrandHasAdministratorAssigned() {
+	void executeWhenErrandHasAdministratorAssignedAndPhaseActionComplete() {
 		// Arrange
 		when(stakeholderMock.getRoles()).thenReturn(List.of("ADMINISTRATOR"));
+		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_COMPLETE)));
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -117,18 +120,27 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
-		verify(errandMock).getId();
-		verify(errandMock).getExtraParameters();
+		verify(errandMock, times(3)).getId();
+		verify(errandMock, times(2)).getExtraParameters();
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 
-		assertThat(variablesCaptor.getValue()).containsExactlyEntriesOf(
-			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true));
+		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
+			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true,
+				CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_COMPLETE));
+
+		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_COMPLETED)),
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_COMPLETE)));
 	}
 
 	@Test
 	void executeWhenErrandHasNoAdministratorAssigned() {
+		// Arrange
+		when(stakeholderMock.getRoles()).thenReturn(List.of("DOCTOR"));
+
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
@@ -141,7 +153,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
 		verify(errandMock, times(2)).getId();
-		verify(errandMock).getExtraParameters();
+		verify(errandMock, times(2)).getExtraParameters();
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -191,9 +203,41 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 	}
 
 	@Test
+	void executeWhenErrandHasAdministratorAssignedAndPhaseActionUnknown() {
+		// Arrange
+		when(stakeholderMock.getRoles()).thenReturn(List.of("ADMINISTRATOR"));
+
+		// Act
+		worker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert and verify
+		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
+		verify(errandMock).getStakeholders();
+		verify(errandMock, times(2)).getId();
+		verify(errandMock, times(3)).getExtraParameters();
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
+		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
+		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
+		verifyNoInteractions(failureHandlerMock);
+
+		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
+
+		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
+			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true,
+				CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING));
+	}
+
+	@Test
 	void executeThrowsException() {
 		// Arrange
-		final var problem = Problem.valueOf(HttpStatus.I_AM_A_TEAPOT, "Big and stout");
+		final var problem = Problem.valueOf(HttpStatus.BAD_GATEWAY, "Big and stout");
 
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(DISPLAY_PHASE)));
 		when(stakeholderMock.getRoles()).thenReturn(List.of("ADMINISTRATOR"));
@@ -211,18 +255,23 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
-		verify(errandMock).getId();
-		verify(errandMock).getExtraParameters();
+		verify(errandMock, times(2)).getId();
+		verify(errandMock, times(3)).getExtraParameters();
+		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 
-		assertThat(variablesCaptor.getValue()).containsExactlyEntriesOf(
-			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true));
+		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
+			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
+
+		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
+			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true,
+				CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING));
 
 		// Verify failure handling
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
-		verifyNoMoreInteractions(externalTaskServiceMock, camundaClientMock, caseDataClientMock);
 	}
 }

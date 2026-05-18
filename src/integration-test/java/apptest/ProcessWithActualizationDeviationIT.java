@@ -396,7 +396,7 @@ class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
 				"displayPhaseParameter", "Registrerad"), "APPROVAL", "DOCTOR");
 
 		state = mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
-			"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters",
+			"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters-no-administrator",
 			equalToJson(createPatchExtraParametersBody("UNKNOWN", "WAITING")),
 			Map.of("phaseActionParameter", "UNKNOWN",
 				"phaseStatusParameter", "WAITING"));

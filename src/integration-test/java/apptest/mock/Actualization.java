@@ -12,6 +12,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 
 import java.util.Map;
 
@@ -43,8 +44,8 @@ public class Actualization {
 
 		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
 			"actualization_update_phase-task-worker---api-casedata-patch-extraparameters",
-			equalToJson(createPatchExtraParametersBody(phaseAction(isAutomatic), "ONGOING", "Registrerad")),
-			Map.of("phaseActionParameter", phaseAction(isAutomatic),
+			equalToJson(createPatchExtraParametersBody(initialPhaseAction(isAutomatic), "ONGOING", "Registrerad")),
+			Map.of("phaseActionParameter", initialPhaseAction(isAutomatic),
 				"phaseStatusParameter", "ONGOING",
 				"displayPhaseParameter", "Registrerad"));
 	}
@@ -55,7 +56,7 @@ public class Actualization {
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
 				"phaseStatusParameter", "ONGOING",
-				"phaseActionParameter", phaseAction(isAutomatic),
+				"phaseActionParameter", initialPhaseAction(isAutomatic),
 				"displayPhaseParameter", "Registrerad"));
 
 		if (!MUNICIPALITY_ID.equals(municipalityId)) {
@@ -72,13 +73,23 @@ public class Actualization {
 	}
 
 	public static String mockActualizationVerifyAdministratorStakeholder(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
-		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(caseId, scenarioName, requiredScenarioState,
 			"actualization_verify-administrator-stakeholder---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Aktualisering",
 				"phaseStatusParameter", "ONGOING",
 				"phaseActionParameter", phaseAction(isAutomatic),
 				"displayPhaseParameter", "Registrerad"));
+
+		if (isAutomatic) {
+			return state;
+		}
+
+		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+			"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(PHASE_ACTION_COMPLETE, PHASE_STATUS_COMPLETED)),
+			Map.of("phaseActionParameter", PHASE_ACTION_COMPLETE,
+				"phaseStatusParameter", PHASE_STATUS_COMPLETED));
 	}
 
 	public static String mockActualizationUpdateDisplayPhase(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {
@@ -96,8 +107,8 @@ public class Actualization {
 
 		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
 			"actualization_update-display-phase---api-casedata-patch-extraparameters",
-			equalToJson(createPatchExtraParametersBody(phaseAction(isAutomatic), "ONGOING", "Granskning")),
-			Map.of("phaseActionParameter", phaseAction(isAutomatic),
+			equalToJson(createPatchExtraParametersBody(initialPhaseAction(isAutomatic), "ONGOING", "Granskning")),
+			Map.of("phaseActionParameter", initialPhaseAction(isAutomatic),
 				"phaseStatusParameter", "ONGOING",
 				"displayPhaseParameter", "Granskning"));
 	}
@@ -143,7 +154,11 @@ public class Actualization {
 				"displayPhaseParameter", "Granskning"));
 	}
 
-	private static String phaseAction(boolean isAutomatic) {
+	private static String initialPhaseAction(boolean isAutomatic) {
 		return isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN;
+	}
+
+	private static String phaseAction(boolean isAutomatic) {
+		return isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_COMPLETE;
 	}
 }
