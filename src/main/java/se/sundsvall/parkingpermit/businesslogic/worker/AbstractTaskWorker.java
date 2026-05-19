@@ -29,6 +29,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
@@ -116,9 +117,19 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	}
 
 	protected Decision getFinalDecision(final Errand errand) {
-		return errand.getDecisions().stream()
+		return ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
 			.filter(decision -> FINAL.equals(decision.getDecisionType()))
 			.findFirst()
 			.orElse(null);
+	}
+
+	protected String getPhaseAction(final Errand errand) {
+		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
+			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
+			.findFirst()
+			.map(ExtraParameter::getValues)
+			.filter(CollectionUtils::isNotEmpty)
+			.map(List::getFirst)
+			.orElse(PHASE_ACTION_UNKNOWN);
 	}
 }

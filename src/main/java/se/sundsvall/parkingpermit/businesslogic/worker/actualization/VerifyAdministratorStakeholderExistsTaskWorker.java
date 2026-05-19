@@ -17,9 +17,12 @@ import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 
@@ -53,7 +56,12 @@ public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTask
 				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
 				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 
-			} else if (!administratorIsAssigned) {
+			} else if (administratorIsAssigned && PHASE_ACTION_COMPLETE.equals(getPhaseAction(errand))) {
+				logInfo("Errand with id {} is assigned to an administrator and complete action has been requested, setting phase status to completed", errand.getId());
+				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_COMPLETED, PHASE_ACTION_COMPLETE));
+				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_COMPLETE);
+			} else if (!PHASE_ACTION_AUTOMATIC.equals(getPhaseAction(errand))) {
+				// If the errand is not set to automatic phase action, we set the phase status to waiting and phase action to unknown
 				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN));
 				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
 			}
