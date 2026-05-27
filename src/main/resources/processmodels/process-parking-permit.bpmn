@@ -231,18 +231,19 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_07ak4mt" sourceRef="external_task_actualization_verify_administrator_stakeholder_exists_task" targetRef="gateway_actualization_stakeholder_administrator_is_assigned" />
       <bpmn:serviceTask id="external_task_actualization_verify_administrator_stakeholder_exists_task" name="Verify that administrator stakeholder exists" camunda:type="external" camunda:topic="VerifyAdministratorStakeholderExists">
+        <bpmn:documentation>Verify that administrator stakeholder exists and check phaseAction</bpmn:documentation>
         <bpmn:incoming>Flow_0igjge4</bpmn:incoming>
         <bpmn:incoming>Flow_1m8s03k</bpmn:incoming>
         <bpmn:outgoing>Flow_07ak4mt</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:exclusiveGateway id="gateway_actualization_stakeholder_administrator_is_assigned" name="Is stakeholder with role ADMINISTRATOR assigned" default="actualization_stakholder_is_not_assigend">
+      <bpmn:exclusiveGateway id="gateway_actualization_stakeholder_administrator_is_assigned" name="Is stakeholder with role ADMINISTRATOR assigned and phaseAction is COMPLETE or AUTOMATIC" default="actualization_stakholder_is_not_assigend">
         <bpmn:incoming>Flow_07ak4mt</bpmn:incoming>
         <bpmn:outgoing>actualization_stakholder_is_assigend</bpmn:outgoing>
         <bpmn:outgoing>Flow_014wwms</bpmn:outgoing>
         <bpmn:outgoing>actualization_stakholder_is_not_assigend</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="actualization_stakholder_is_assigend" name="yes" sourceRef="gateway_actualization_stakeholder_administrator_is_assigned" targetRef="external_task_actualization_update_display_phase">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${assignedToAdministrator == 'true' &amp;&amp; phaseAction != 'CANCEL'} </bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${assignedToAdministrator &amp;&amp; (phaseAction == 'COMPLETE' || phaseAction == 'AUTOMATIC')} </bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_014wwms" sourceRef="gateway_actualization_stakeholder_administrator_is_assigned" targetRef="end_actualization_canceled">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseAction == 'CANCEL'}</bpmn:conditionExpression>
@@ -1065,11 +1066,12 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1kpvxnc_di" bpmnElement="external_task_actualization_verify_administrator_stakeholder_exists_task">
         <dc:Bounds x="780" y="200" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1tzi53t_di" bpmnElement="gateway_actualization_stakeholder_administrator_is_assigned" isMarkerVisible="true">
         <dc:Bounds x="955" y="215" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="898" y="173" width="83" height="53" />
+          <dc:Bounds x="889" y="140" width="82" height="80" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_09v0itr" bpmnElement="actualization_wait_for_stakeholder_update">
@@ -1153,7 +1155,7 @@
         <di:waypoint x="1005" y="240" />
         <di:waypoint x="1070" y="240" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1016" y="222" width="18" height="14" />
+          <dc:Bounds x="1017" y="222" width="17" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_014wwms_di" bpmnElement="Flow_014wwms">

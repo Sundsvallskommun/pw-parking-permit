@@ -12,7 +12,7 @@ public class ProcessPathway {
 			.with(tuple("Verify resident of municipality", "external_task_verify_resident_of_municipality_task"))
 			.with(tuple("Is citizen of municipality", "gateway_actualization_is_citizen_of_municipality"))
 			.with(tuple("Verify that administrator stakeholder exists", "external_task_actualization_verify_administrator_stakeholder_exists_task"))
-			.with(tuple("Is stakeholder with role ADMINISTRATOR assigned", "gateway_actualization_stakeholder_administrator_is_assigned"))
+			.with(tuple("Is stakeholder with role ADMINISTRATOR assigned and phaseAction is COMPLETE or AUTOMATIC", "gateway_actualization_stakeholder_administrator_is_assigned"))
 			.with(tuple("Update displayPhase", "external_task_actualization_update_display_phase"))
 			.with(tuple("Update errand status", "external_task_actualization_update_errand_status_to_under_review"))
 			.with(tuple("Check phase action", "external_task_actualization_check_phase_action_task"))
