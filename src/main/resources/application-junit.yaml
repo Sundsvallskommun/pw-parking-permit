@@ -93,6 +93,11 @@ config:
     token-uri: ${config.common.token-uri}
     client-id: ${config.common.client-id}
     client-secret: ${config.common.client-secret}
+  operaton:
+    base-url: operaton.base.url
+    token-uri: ${config.common.token-uri}
+    client-id: ${config.common.client-id}
+    client-secret: ${config.common.client-secret}
 texts:
   commons:
     2281:
