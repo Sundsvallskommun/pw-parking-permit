@@ -23,6 +23,8 @@ spring:
             token-uri: ${config.support-management.token-uri}
           relation:
             token-uri: ${config.relation.token-uri}
+          operaton:
+            token-uri: ${config.operaton.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -70,6 +72,11 @@ spring:
             provider: relation
             client-id: ${config.relation.client-id}
             client-secret: ${config.relation.client-secret}
+          operaton:
+            authorization-grant-type: client_credentials
+            provider: operaton
+            client-id: ${config.operaton.client-id}
+            client-secret: ${config.operaton.client-secret}
 
 #----------------------------------------
 # Open API
@@ -161,6 +168,10 @@ integration:
     url: ${config.relation.base-url}
     connectTimeout: 5
     readTimeout: 20
+  operaton:
+    url: ${config.operaton.base-url}
+    connectTimeout: 5
+    readTimeout: 20
 
 
 #----------------------------------------
@@ -188,7 +199,9 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     relation:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-      
+    operaton:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+
 #----------------------------------------
 # Text properties
 #----------------------------------------
