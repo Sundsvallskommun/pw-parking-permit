@@ -16,8 +16,8 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CARD_EXISTS;
 
 @Component
 @ExternalTaskSubscription("CardExistsTask")
@@ -40,7 +40,7 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 
 			final var cardExists = isCardCreated(errand);
 
-			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_CARD_EXISTS, cardExists));
+			externalTaskService.complete(externalTask, Map.of(PROCESS_VARIABLE_CARD_EXISTS, cardExists));
 		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());

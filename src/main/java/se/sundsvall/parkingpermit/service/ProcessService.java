@@ -11,11 +11,11 @@ import se.sundsvall.parkingpermit.integration.operaton.OperatonClient;
 import se.sundsvall.parkingpermit.integration.operaton.mapper.OperatonMapper;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_KEY;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.TENANTID_TEMPLATE;
 import static se.sundsvall.parkingpermit.Constants.TRUE;
 
@@ -49,17 +49,17 @@ public class ProcessService {
 
 	private generated.se.sundsvall.operaton.PatchVariablesDto operatonUpdateVariables(final String municipalityId, final String namespace) {
 		return OperatonMapper.toPatchVariablesDto(Map.of(
-			CAMUNDA_VARIABLE_MUNICIPALITY_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, municipalityId),
-			CAMUNDA_VARIABLE_NAMESPACE, OperatonMapper.toVariableValueDto(ValueType.STRING, namespace),
-			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, OperatonMapper.toVariableValueDto(ValueType.BOOLEAN, true),
-			CAMUNDA_VARIABLE_REQUEST_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
+			PROCESS_VARIABLE_MUNICIPALITY_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, municipalityId),
+			PROCESS_VARIABLE_NAMESPACE, OperatonMapper.toVariableValueDto(ValueType.STRING, namespace),
+			PROCESS_VARIABLE_UPDATE_AVAILABLE, OperatonMapper.toVariableValueDto(ValueType.BOOLEAN, true),
+			PROCESS_VARIABLE_REQUEST_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}
 
 	private generated.se.sundsvall.camunda.PatchVariablesDto camundaUpdateVariables(final String municipalityId, final String namespace) {
 		return CamundaMapper.toPatchVariablesDto(Map.of(
-			CAMUNDA_VARIABLE_MUNICIPALITY_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, municipalityId),
-			CAMUNDA_VARIABLE_NAMESPACE, CamundaMapper.toVariableValueDto(ValueType.STRING, namespace),
-			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, TRUE,
-			CAMUNDA_VARIABLE_REQUEST_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
+			PROCESS_VARIABLE_MUNICIPALITY_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, municipalityId),
+			PROCESS_VARIABLE_NAMESPACE, CamundaMapper.toVariableValueDto(ValueType.STRING, namespace),
+			PROCESS_VARIABLE_UPDATE_AVAILABLE, TRUE,
+			PROCESS_VARIABLE_REQUEST_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}
 }

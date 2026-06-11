@@ -18,11 +18,6 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPROVED;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
@@ -30,6 +25,11 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_FINAL_DECISION;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPROVED;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_PHASE_ACTION;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
@@ -62,10 +62,10 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 			if (isCancel(errand)) {
 				logInfo("Errand is canceled.");
 				// isFinalDecision and isApproved must be set because they are used in model
-				variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
-				variables.put(CAMUNDA_VARIABLE_IS_APPROVED, false);
-				variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
-				variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
+				variables.put(PROCESS_VARIABLE_FINAL_DECISION, false);
+				variables.put(PROCESS_VARIABLE_IS_APPROVED, false);
+				variables.put(PROCESS_VARIABLE_PHASE_ACTION, PHASE_ACTION_CANCEL);
+				variables.put(PROCESS_VARIABLE_PHASE_STATUS, PHASE_STATUS_CANCELED);
 			} else {
 				handleDecisionStatus(errand, municipalityId, namespace, variables);
 				handleApprovalStatus(errand, variables);
@@ -84,13 +84,13 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 				|| CASEDATA_STATUS_DECISION_EXECUTED.equals(status.getStatusType()));
 
 		if (hasDecisionStatus && isFinalDecision(errand)) {
-			variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, true);
+			variables.put(PROCESS_VARIABLE_FINAL_DECISION, true);
 			logInfo("Decision is made.");
-			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE,
+			variables.put(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE,
 				getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 		} else {
-			variables.put(CAMUNDA_VARIABLE_FINAL_DECISION, false);
-			variables.put(CAMUNDA_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
+			variables.put(PROCESS_VARIABLE_FINAL_DECISION, false);
+			variables.put(PROCESS_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);
 			patchErrandToWaiting(municipalityId, namespace, errand);
 			logInfo("Decision is not made yet.");
 		}
@@ -100,7 +100,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		boolean isApproved = Optional.ofNullable(errand.getDecisions()).orElse(emptyList()).stream()
 			.filter(decision -> FINAL.equals(decision.getDecisionType()))
 			.anyMatch(decision -> isApproved(decision.getDecisionOutcome()));
-		variables.put(CAMUNDA_VARIABLE_IS_APPROVED, isApproved);
+		variables.put(PROCESS_VARIABLE_IS_APPROVED, isApproved);
 	}
 
 	private void patchErrandToWaiting(String municipalityId, String namespace, Errand errand) {

@@ -11,7 +11,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MESSAGE_ID;
 
 @Component
 @ExternalTaskSubscription("SendDenialDecisionTask")
@@ -40,7 +40,7 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var messageId = messagingService.sendMessageToNonCitizen(municipalityId, errand, pdf).toString();
 
-			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
+			externalTaskService.complete(externalTask, Map.of(PROCESS_VARIABLE_MESSAGE_ID, messageId));
 		} catch (final Exception exception) {
 			logException(externalTask, exception);
 			failureHandler.handleException(externalTaskService, externalTask, exception.getMessage());

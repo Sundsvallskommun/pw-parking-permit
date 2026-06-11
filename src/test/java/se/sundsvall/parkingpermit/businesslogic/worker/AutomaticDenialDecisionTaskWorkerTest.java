@@ -48,12 +48,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 
 @ExtendWith(MockitoExtension.class)
@@ -127,10 +127,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
@@ -148,10 +148,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Verify and assert
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), stakeholderCaptor.capture());
 		verify(caseDataClientMock).getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId);
@@ -163,8 +163,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
-		assertThat(mapCaptor.getValue()).containsOnlyKeys(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(((Date) mapCaptor.getValue().get(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
+		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
+		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
 
 		assertThat(stakeholderCaptor.getValue())
 			.extracting(Stakeholder::getType, Stakeholder::getFirstName, Stakeholder::getLastName, Stakeholder::getRoles)
@@ -211,10 +211,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var output = "output";
 
 		// Mock
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(errandMock.getStakeholders()).thenReturn(List.of(
@@ -236,9 +236,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Verify and assert
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock, never()).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
@@ -251,8 +251,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
-		assertThat(mapCaptor.getValue()).containsOnlyKeys(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(((Date) mapCaptor.getValue().get(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
+		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
+		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);
@@ -287,10 +287,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnId() {
 		// Mock to simulate case data not returning stakeholder id upon creation
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.noContent().build());
@@ -299,10 +299,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Verify and assert
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
@@ -318,10 +318,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Test
 	void executeProcessEngineStakeholderCreationDoesNotReturnIdOfTypeLong() {
 		// Mock to simulate case data not returning stakeholder id upon creation
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/abc")).build());
@@ -330,10 +330,10 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Verify and assert
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(caseDataClientMock, never()).getStakeholder(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());

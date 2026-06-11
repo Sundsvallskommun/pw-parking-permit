@@ -25,11 +25,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_UPDATE_AVAILABLE;
 
 @ExtendWith(MockitoExtension.class)
 class CheckCardExistsTaskWorkerTest {
@@ -67,10 +67,10 @@ class CheckCardExistsTaskWorkerTest {
 		final var errand = new Errand()
 			.id(ERRAND_ID)
 			.extraParameters(List.of(new ExtraParameter("artefact.permit.number").addValuesItem(PERMIT_NUMBER)));
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errand);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 
@@ -78,12 +78,12 @@ class CheckCardExistsTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", true));
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -93,10 +93,10 @@ class CheckCardExistsTaskWorkerTest {
 		final var errand = new Errand()
 			.id(ERRAND_ID)
 			.extraParameters(emptyList());
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errand);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 
@@ -104,12 +104,12 @@ class CheckCardExistsTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", false));
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -119,10 +119,10 @@ class CheckCardExistsTaskWorkerTest {
 		final var errand = new Errand()
 			.id(ERRAND_ID)
 			.extraParameters(List.of(new ExtraParameter("artefact.permit.number").addValuesItem(PERMIT_NUMBER)));
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errand);
 		when(externalTaskMock.getProcessInstanceId()).thenReturn(PROCESS_INSTANCE_ID);
 
@@ -135,10 +135,10 @@ class CheckCardExistsTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", true));
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();

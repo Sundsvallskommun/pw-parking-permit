@@ -23,10 +23,10 @@ import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJEC
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.CAPACITY_DRIVER;
 import static se.sundsvall.parkingpermit.Constants.CAPACITY_PASSENGER;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.SM_NAMESPACE_CONTACTANGE;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementCardManagementErrand;
 import static se.sundsvall.parkingpermit.integration.supportmanagement.mapper.SupportManagementMapper.toSupportManagementMailingErrand;
@@ -78,7 +78,7 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 				createSupportManagementCardErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE);
 			} else {
 				createSupportManagementCardErrand(errand, municipalityId, SM_NAMESPACE_CONTACTANGE);
-				externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageId));
+				externalTaskService.complete(externalTask, Map.of(PROCESS_VARIABLE_MESSAGE_ID, messageId));
 				return;
 			}
 
