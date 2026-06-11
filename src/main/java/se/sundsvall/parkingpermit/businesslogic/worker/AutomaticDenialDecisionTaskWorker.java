@@ -17,6 +17,7 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -36,7 +37,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toDecision;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
-import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -47,11 +47,13 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
 	private final TextProvider textProvider;
+	private final TimerUtil timerUtil;
 
-	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
+	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider, TimerUtil timerUtil) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
+		this.timerUtil = timerUtil;
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			caseDataClient.patchNewDecision(municipalityId, namespace, errand.getId(), decision);
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
+			variables.put(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, timerUtil.getControlMessageTime(decision, textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

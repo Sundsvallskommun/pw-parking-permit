@@ -7,6 +7,7 @@ import generated.se.sundsvall.casedata.Law;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.net.URI;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -65,6 +67,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String ROLE_DOCTOR = "DOCTOR";
 	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
+	private static final Date CONTROL_MESSAGE_TIME = Date.from(Instant.parse("2024-01-02T00:00:00Z"));
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -98,6 +101,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 
 	@Mock
 	private SimplifiedServiceTextProperties simplifiedServiceTextPropertiesMock;
+
+	@Mock
+	private TimerUtil timerUtilMock;
 
 	@InjectMocks
 	private AutomaticDenialDecisionTaskWorker worker;
@@ -143,6 +149,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(TEMPLATE_ID);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
+		when(timerUtilMock.getControlMessageTime(any(), any())).thenReturn(CONTROL_MESSAGE_TIME);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -164,7 +171,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
 		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
+		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
 
 		assertThat(stakeholderCaptor.getValue())
 			.extracting(Stakeholder::getType, Stakeholder::getFirstName, Stakeholder::getLastName, Stakeholder::getRoles)
@@ -231,6 +238,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(denialTextPropertiesMock.getTemplateId()).thenReturn(TEMPLATE_ID);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
+		when(timerUtilMock.getControlMessageTime(any(), any())).thenReturn(CONTROL_MESSAGE_TIME);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -252,7 +260,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
 		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(now().plusDays(1).toInstant(), 2000);
+		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);

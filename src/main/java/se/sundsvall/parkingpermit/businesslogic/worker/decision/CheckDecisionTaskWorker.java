@@ -14,6 +14,7 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -32,18 +33,18 @@ import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_PHASE_STATUS
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
-import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 @Component
 @ExternalTaskSubscription("CheckDecisionTask")
 public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 
 	private final TextProvider textProvider;
+	private final TimerUtil timerUtil;
 
-	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, TextProvider textProvider) {
+	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, TextProvider textProvider, TimerUtil timerUtil) {
 		super(camundaClient, caseDataClient, failureHandler);
 		this.textProvider = textProvider;
-
+		this.timerUtil = timerUtil;
 	}
 
 	@Override
@@ -87,7 +88,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 			variables.put(PROCESS_VARIABLE_FINAL_DECISION, true);
 			logInfo("Decision is made.");
 			variables.put(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE,
-				getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
+				timerUtil.getControlMessageTime(getFinalDecision(errand), textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 		} else {
 			variables.put(PROCESS_VARIABLE_FINAL_DECISION, false);
 			variables.put(PROCESS_VARIABLE_PHASE_STATUS, PHASE_STATUS_WAITING);

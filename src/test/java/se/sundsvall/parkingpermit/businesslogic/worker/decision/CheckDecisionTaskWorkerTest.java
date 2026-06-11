@@ -6,6 +6,7 @@ import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.PatchErrand;
 import generated.se.sundsvall.casedata.Status;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.camunda.bpm.client.exception.EngineException;
 import org.camunda.bpm.client.exception.RestException;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +26,7 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
@@ -73,6 +74,7 @@ class CheckDecisionTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String PROCESS_INSTANCE_ID = "processInstanceId";
 	private static final String KEY_PHASE_ACTION = "process.phaseAction";
+	private static final Date CONTROL_MESSAGE_TIME = Date.from(Instant.parse("2024-01-02T00:00:00Z"));
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -97,6 +99,9 @@ class CheckDecisionTaskWorkerTest {
 
 	@Mock
 	private FailureHandler failureHandlerMock;
+
+	@Mock
+	private TimerUtil timerUtilMock;
 
 	@InjectMocks
 	private CheckDecisionTaskWorker worker;
@@ -127,6 +132,7 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getStatuses()).thenReturn(List.of(status));
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
+		when(timerUtilMock.getControlMessageTime(any(), any())).thenReturn(CONTROL_MESSAGE_TIME);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -136,7 +142,7 @@ class CheckDecisionTaskWorkerTest {
 		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_FINAL_DECISION, true)
 			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, true);
 		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isInstanceOf(Date.class);
-		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(DateTime.now().plusDays(1).toDate(), 1000);
+		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
@@ -169,6 +175,7 @@ class CheckDecisionTaskWorkerTest {
 		when(errandMock.getExtraParameters()).thenReturn(List.of(new ExtraParameter(KEY_PHASE_ACTION).addValuesItem("COMPLETE")));
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(simplifiedServiceTextPropertiesMock.getDelay()).thenReturn("P1D");
+		when(timerUtilMock.getControlMessageTime(any(), any())).thenReturn(CONTROL_MESSAGE_TIME);
 
 		// Act
 		worker.execute(externalTaskMock, externalTaskServiceMock);
@@ -178,7 +185,7 @@ class CheckDecisionTaskWorkerTest {
 		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_FINAL_DECISION, true)
 			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, false);
 		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isInstanceOf(Date.class);
-		assertThat(((Date) mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE))).isCloseTo(DateTime.now().plusDays(1).toDate(), 1000);
+		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
 
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
