@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper;
+import se.sundsvall.parkingpermit.integration.operaton.OperatonClient;
+import se.sundsvall.parkingpermit.integration.operaton.mapper.OperatonMapper;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
@@ -15,39 +18,48 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAIL
 import static se.sundsvall.parkingpermit.Constants.PROCESS_KEY;
 import static se.sundsvall.parkingpermit.Constants.TENANTID_TEMPLATE;
 import static se.sundsvall.parkingpermit.Constants.TRUE;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toPatchVariablesDto;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toStartProcessInstanceDto;
-import static se.sundsvall.parkingpermit.integration.camunda.mapper.CamundaMapper.toVariableValueDto;
 
 @Service
 public class ProcessService {
 
 	private final CamundaClient camundaClient;
 
-	ProcessService(CamundaClient camundaClient) {
+	private final OperatonClient operatonClient;
+
+	ProcessService(CamundaClient camundaClient, OperatonClient operatonClient) {
 		this.camundaClient = camundaClient;
+		this.operatonClient = operatonClient;
 	}
 
-	public String startProcess(String municipalityId, String namespace, Long caseNumber) {
-		return camundaClient.startProcessWithTenant(PROCESS_KEY, TENANTID_TEMPLATE, toStartProcessInstanceDto(municipalityId, namespace, caseNumber)).getId();
+	public String startProcess(final String municipalityId, final String namespace, final Long caseNumber) {
+		// New processes are always created in Operaton.
+		return operatonClient.startProcessWithTenant(PROCESS_KEY, TENANTID_TEMPLATE, OperatonMapper.toStartProcessInstanceDto(municipalityId, namespace, caseNumber)).getId();
 	}
 
-	public void updateProcess(String municipalityId, String namespace, String processInstanceId) {
-
-		verifyExistingProcessInstance(processInstanceId);
-
-		final var variablesToUpdate = Map.of(
-			CAMUNDA_VARIABLE_MUNICIPALITY_ID, toVariableValueDto(ValueType.STRING, municipalityId),
-			CAMUNDA_VARIABLE_NAMESPACE, toVariableValueDto(ValueType.STRING, namespace),
-			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, TRUE,
-			CAMUNDA_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get()));
-
-		camundaClient.setProcessInstanceVariables(processInstanceId, toPatchVariablesDto(variablesToUpdate));
-	}
-
-	private void verifyExistingProcessInstance(String processInstanceId) {
-		if (camundaClient.getProcessInstance(processInstanceId).isEmpty()) {
+	public void updateProcess(final String municipalityId, final String namespace, final String processInstanceId) {
+		// New processes live in Operaton, older ones still in Camunda. Probe Operaton first and fall back to Camunda.
+		if (operatonClient.getProcessInstance(processInstanceId).isPresent()) {
+			operatonClient.setProcessInstanceVariables(processInstanceId, operatonUpdateVariables(municipalityId, namespace));
+		} else if (camundaClient.getProcessInstance(processInstanceId).isPresent()) {
+			camundaClient.setProcessInstanceVariables(processInstanceId, camundaUpdateVariables(municipalityId, namespace));
+		} else {
 			throw Problem.valueOf(NOT_FOUND, "Process instance with ID '%s' does not exist!".formatted(processInstanceId));
 		}
+	}
+
+	private generated.se.sundsvall.operaton.PatchVariablesDto operatonUpdateVariables(final String municipalityId, final String namespace) {
+		return OperatonMapper.toPatchVariablesDto(Map.of(
+			CAMUNDA_VARIABLE_MUNICIPALITY_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, municipalityId),
+			CAMUNDA_VARIABLE_NAMESPACE, OperatonMapper.toVariableValueDto(ValueType.STRING, namespace),
+			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, OperatonMapper.toVariableValueDto(ValueType.BOOLEAN, true),
+			CAMUNDA_VARIABLE_REQUEST_ID, OperatonMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
+	}
+
+	private generated.se.sundsvall.camunda.PatchVariablesDto camundaUpdateVariables(final String municipalityId, final String namespace) {
+		return CamundaMapper.toPatchVariablesDto(Map.of(
+			CAMUNDA_VARIABLE_MUNICIPALITY_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, municipalityId),
+			CAMUNDA_VARIABLE_NAMESPACE, CamundaMapper.toVariableValueDto(ValueType.STRING, namespace),
+			CAMUNDA_VARIABLE_UPDATE_AVAILABLE, TRUE,
+			CAMUNDA_VARIABLE_REQUEST_ID, CamundaMapper.toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}
 }
