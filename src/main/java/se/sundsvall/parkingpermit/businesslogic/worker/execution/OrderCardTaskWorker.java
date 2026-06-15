@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.RpaService;
 
 import static java.util.Objects.isNull;
@@ -32,17 +32,17 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 	private final RpaService rpaService;
 
-	OrderCardTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, RpaService rpaService) {
-		super(camundaClient, caseDataClient, failureHandler);
+	OrderCardTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final RpaService rpaService) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.rpaService = rpaService;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			rpaService.addQueueItems(getQueueNames(errand), errand.getId(), municipalityId);

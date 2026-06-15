@@ -123,6 +123,14 @@ camunda:
       timeout: 10
 
 #----------------------------------------
+# Process engine selection (camunda | operaton)
+# Controls which engine the task workers target. Each deployed instance also points
+# camunda.bpm.client.base-url at the matching engine so it polls the right one.
+#----------------------------------------
+process-engine:
+  type: ${config.process-engine-type:camunda}
+
+#----------------------------------------
 # Integration settings
 #----------------------------------------
 # Rest client

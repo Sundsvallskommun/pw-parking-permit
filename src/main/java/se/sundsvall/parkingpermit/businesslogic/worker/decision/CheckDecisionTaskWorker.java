@@ -11,8 +11,8 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
 
@@ -41,14 +41,14 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 	private final TextProvider textProvider;
 	private final TimerUtil timerUtil;
 
-	CheckDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, TextProvider textProvider, TimerUtil timerUtil) {
-		super(camundaClient, caseDataClient, failureHandler);
+	CheckDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final TextProvider textProvider, final TimerUtil timerUtil) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.textProvider = textProvider;
 		this.timerUtil = timerUtil;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for CheckDecisionTask");
 			clearUpdateAvailable(externalTask);

@@ -18,9 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.UUID.randomUUID;
@@ -51,7 +51,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 	private static final String ROLE_DOCTOR = "DOCTOR";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -102,7 +102,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(MUNICIPALITY_ID, PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(MUNICIPALITY_ID, PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(MUNICIPALITY_ID, PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -195,7 +195,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(MUNICIPALITY_ID, PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -231,7 +231,7 @@ class VerifyResidentOfMunicipalityTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(citizenClientMock).getCitizen(MUNICIPALITY_ID, PERSON_ID.toString());
 		verify(errandMock).getStakeholders();
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(engineClientMock);
 	}
 
 	private Stakeholder createStakeholder(String personId, String role, String firstName, String lastName) {

@@ -18,8 +18,8 @@ import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
@@ -51,8 +51,8 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	private static final Period VALIDITY_PERIOD_ONE_YEAR = Period.parse("P1Y");
 	private final MessagingService messagingService;
 
-	ConstructDecisionTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
-		super(camundaClient, caseDataClient, failureHandler);
+	ConstructDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 	}
 
@@ -60,9 +60,9 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	protected void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for ConstructDecisionTaskWorker");
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			final var latestDecision = errand.getDecisions().stream()

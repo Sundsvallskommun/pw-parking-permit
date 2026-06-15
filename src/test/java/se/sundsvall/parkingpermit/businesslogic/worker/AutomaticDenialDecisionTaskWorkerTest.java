@@ -25,8 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
@@ -70,7 +70,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private static final Date CONTROL_MESSAGE_TIME = Date.from(Instant.parse("2024-01-02T00:00:00Z"));
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -168,7 +168,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
-		verifyNoInteractions(failureHandlerMock, camundaClientMock);
+		verifyNoInteractions(failureHandlerMock, engineClientMock);
 
 		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
 		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
@@ -257,7 +257,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(simplifiedServiceTextPropertiesMock).getDelay();
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
-		verifyNoInteractions(failureHandlerMock, camundaClientMock);
+		verifyNoInteractions(failureHandlerMock, engineClientMock);
 
 		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
 		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
@@ -320,7 +320,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
-		verifyNoInteractions(camundaClientMock, textProviderMock);
+		verifyNoInteractions(engineClientMock, textProviderMock);
 	}
 
 	@Test
@@ -351,7 +351,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
 		verify(externalTaskMock).getId();
-		verifyNoInteractions(camundaClientMock, textProviderMock);
+		verifyNoInteractions(engineClientMock, textProviderMock);
 
 	}
 

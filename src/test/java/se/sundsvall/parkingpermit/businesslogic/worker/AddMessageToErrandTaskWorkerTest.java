@@ -18,8 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
@@ -52,7 +52,7 @@ class AddMessageToErrandTaskWorkerTest {
 	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -135,7 +135,7 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(caseDataClientMock).addMessage(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), messageRequestCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoInteractions(failureHandlerMock, camundaClientMock);
+		verifyNoInteractions(failureHandlerMock, engineClientMock);
 
 		assertThat(messageRequestCaptor.getValue().getDirection()).isEqualTo(OUTBOUND);
 		assertThat(messageRequestCaptor.getValue().getMessageId()).isEqualTo(messageId);
@@ -177,6 +177,6 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(caseDataClientMock, never()).addMessage(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(engineClientMock);
 	}
 }

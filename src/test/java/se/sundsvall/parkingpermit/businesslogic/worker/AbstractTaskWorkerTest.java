@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,8 +31,8 @@ class AbstractTaskWorkerTest {
 
 	private static class Worker extends AbstractTaskWorker { // Test class extending the abstract class containing the clearUpdateAvailable method
 
-		Worker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-			super(camundaClient, caseDataClient, failureHandler);
+		Worker(EngineClient engineClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+			super(engineClient, caseDataClient, failureHandler);
 		}
 
 		@Override
@@ -42,7 +42,7 @@ class AbstractTaskWorkerTest {
 	}
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -70,8 +70,8 @@ class AbstractTaskWorkerTest {
 		worker.clearUpdateAvailable(externalTaskMock);
 
 		// Assert and verify
-		verify(camundaClientMock).setProcessInstanceVariable(uuid, key, value);
-		verifyNoMoreInteractions(camundaClientMock);
+		verify(engineClientMock).setProcessInstanceVariable(uuid, key, value);
+		verifyNoMoreInteractions(engineClientMock);
 	}
 
 	@Test

@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
@@ -35,54 +35,54 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
 	private final Logger logger;
 
-	private final CamundaClient camundaClient;
+	private final EngineClient engineClient;
 	protected final CaseDataClient caseDataClient;
 	protected final FailureHandler failureHandler;
 
-	protected AbstractTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+	protected AbstractTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
 		this.logger = LoggerFactory.getLogger(getClass());
-		this.camundaClient = camundaClient;
+		this.engineClient = engineClient;
 		this.caseDataClient = caseDataClient;
 		this.failureHandler = failureHandler;
 	}
 
-	protected void clearUpdateAvailable(ExternalTask externalTask) {
+	protected void clearUpdateAvailable(final ExternalTask externalTask) {
 		/*
 		 * Clearing process variable has to be a blocking operation.
 		 * Using ExternalTaskService.setVariables() will not work without creating race conditions.
 		 */
-		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		engineClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 	}
 
-	protected void setProcessInstanceVariable(ExternalTask externalTask, String variableName, VariableValueDto variableValue) {
-		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), variableName, variableValue);
+	protected void setProcessInstanceVariable(final ExternalTask externalTask, final String variableName, final VariableValueDto variableValue) {
+		engineClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), variableName, variableValue);
 	}
 
-	protected Errand getErrand(String municipalityId, String namespace, Long caseNumber) {
+	protected Errand getErrand(final String municipalityId, final String namespace, final Long caseNumber) {
 		return caseDataClient.getErrandById(municipalityId, namespace, caseNumber);
 	}
 
-	protected List<Attachment> getErrandAttachments(String municipalityId, String namespace, Long caseNumber) {
+	protected List<Attachment> getErrandAttachments(final String municipalityId, final String namespace, final Long caseNumber) {
 		return caseDataClient.getErrandAttachments(municipalityId, namespace, caseNumber);
 	}
 
-	protected void logInfo(String msg, Object... arguments) {
+	protected void logInfo(final String msg, final Object... arguments) {
 		logger.info(msg, arguments);
 	}
 
-	protected void logException(ExternalTask externalTask, Exception exception) {
+	protected void logException(final ExternalTask externalTask, final Exception exception) {
 		logger.error("Exception occurred in {} for task with id {} and businesskey {}", this.getClass().getSimpleName(), externalTask.getId(), externalTask.getBusinessKey(), exception);
 	}
 
-	protected abstract void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService);
+	protected abstract void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService);
 
 	@Override
-	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void execute(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		RequestId.init(externalTask.getVariable(PROCESS_VARIABLE_REQUEST_ID));
 		executeBusinessLogic(externalTask, externalTaskService);
 	}
 
-	protected boolean isCancel(Errand errand) {
+	protected boolean isCancel(final Errand errand) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
 			.findFirst()
@@ -93,7 +93,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.isPresent();
 	}
 
-	protected boolean isAutomatic(Errand errand) {
+	protected boolean isAutomatic(final Errand errand) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
 			.findFirst()
@@ -104,15 +104,15 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 			.isPresent();
 	}
 
-	protected String getMunicipalityId(ExternalTask externalTask) {
+	protected String getMunicipalityId(final ExternalTask externalTask) {
 		return externalTask.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 	}
 
-	protected String getNamespace(ExternalTask externalTask) {
+	protected String getNamespace(final ExternalTask externalTask) {
 		return externalTask.getVariable(PROCESS_VARIABLE_NAMESPACE);
 	}
 
-	protected Long getCaseNumber(ExternalTask externalTask) {
+	protected Long getCaseNumber(final ExternalTask externalTask) {
 		return externalTask.getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 	}
 

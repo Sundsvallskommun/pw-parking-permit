@@ -16,8 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +44,7 @@ class CheckCardExistsTaskWorkerTest {
 	private static final VariableValueDto FALSE = new VariableValueDto().type(ValueType.BOOLEAN.getName()).value(false);
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -83,7 +83,7 @@ class CheckCardExistsTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", true));
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -109,7 +109,7 @@ class CheckCardExistsTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", false));
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
 	}
 

@@ -22,8 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
@@ -77,7 +77,7 @@ class CheckDecisionTaskWorkerTest {
 	private static final Date CONTROL_MESSAGE_TIME = Date.from(Instant.parse("2024-01-02T00:00:00Z"));
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -147,8 +147,8 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verifyNoMoreInteractions(camundaClientMock);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verifyNoMoreInteractions(engineClientMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -191,8 +191,8 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verifyNoMoreInteractions(camundaClientMock);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verifyNoMoreInteractions(engineClientMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -219,9 +219,9 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verifyNoInteractions(failureHandlerMock);
-		verifyNoMoreInteractions(externalTaskServiceMock, camundaClientMock, caseDataClientMock);
+		verifyNoMoreInteractions(externalTaskServiceMock, engineClientMock, caseDataClientMock);
 	}
 
 	@Test
@@ -252,7 +252,7 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
@@ -295,7 +295,7 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandCaptor.capture());
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchExtraParameterCaptor.capture());
 		verifyNoInteractions(failureHandlerMock);
@@ -342,8 +342,8 @@ class CheckDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(camundaClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
-		verifyNoMoreInteractions(camundaClientMock);
+		verify(engineClientMock).setProcessInstanceVariable(PROCESS_INSTANCE_ID, PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		verifyNoMoreInteractions(engineClientMock);
 	}
 
 	private Decision createFinalDecision(DecisionOutcomeEnum decisionOutcome) {
