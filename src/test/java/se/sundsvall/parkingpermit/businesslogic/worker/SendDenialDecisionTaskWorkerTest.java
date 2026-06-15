@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
@@ -44,7 +44,7 @@ class SendDenialDecisionTaskWorkerTest {
 	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -108,7 +108,7 @@ class SendDenialDecisionTaskWorkerTest {
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
 		verify(messagingServiceMock).sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(PROCESS_VARIABLE_MESSAGE_ID, messageUUID.toString()));
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -140,6 +140,6 @@ class SendDenialDecisionTaskWorkerTest {
 		verify(messagingServiceMock).sendMessageToNonCitizen(MUNICIPALITY_ID, errandMock, pdf);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(engineClientMock);
 	}
 }

@@ -12,9 +12,9 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
@@ -32,20 +32,20 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
 	private final CitizenClient citizenClient;
 
-	VerifyResidentOfMunicipalityTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, CitizenClient citizenClient) {
-		super(camundaClient, caseDataClient, failureHandler);
+	VerifyResidentOfMunicipalityTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final CitizenClient citizenClient) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.citizenClient = citizenClient;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
 			final var variables = new HashMap<String, Object>(Map.of(PROCESS_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 

@@ -7,8 +7,8 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
@@ -28,12 +28,12 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 @ExternalTaskSubscription("CheckErrandPhaseActionTask")
 public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 
-	CheckErrandPhaseActionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-		super(camundaClient, caseDataClient, failureHandler);
+	CheckErrandPhaseActionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
+		super(engineClient, caseDataClient, failureHandler);
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			clearUpdateAvailable(externalTask);
 			final var municipalityId = getMunicipalityId(externalTask);

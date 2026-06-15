@@ -7,8 +7,8 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static generated.se.sundsvall.casedata.NoteType.INTERNAL;
 import static java.util.Collections.emptyList;
@@ -17,18 +17,18 @@ import static java.util.Collections.emptyList;
 @ExternalTaskSubscription("CleanUpNotesTask")
 public class CleanUpNotesTaskWorker extends AbstractTaskWorker {
 
-	CleanUpNotesTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-		super(camundaClient, caseDataClient, failureHandler);
+	CleanUpNotesTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
+		super(engineClient, caseDataClient, failureHandler);
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for CleanUpNotesTask");
 
-			final Long caseNumber = getCaseNumber(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final String municipalityId = getMunicipalityId(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
 
 			final var notes = caseDataClient.getNotesByErrandId(municipalityId, namespace, caseNumber, INTERNAL.getValue());
 

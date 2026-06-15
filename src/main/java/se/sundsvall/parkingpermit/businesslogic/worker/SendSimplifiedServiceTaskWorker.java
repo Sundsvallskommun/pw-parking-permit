@@ -9,8 +9,8 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -23,17 +23,17 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
 
-	SendSimplifiedServiceTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService) {
-		super(camundaClient, caseDataClient, failureHandler);
+	SendSimplifiedServiceTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing delivery of simplified service message to applicant for errand with id {}", errand.getId());
@@ -55,7 +55,7 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 		}
 	}
 
-	private boolean shouldNotSendMessage(String municipalityId, Errand errand) {
+	private boolean shouldNotSendMessage(final String municipalityId, final Errand errand) {
 		return MUNICIPALITY_ID_ANGE.equals(municipalityId) && isBlank(errand.getExternalCaseId());
 	}
 }

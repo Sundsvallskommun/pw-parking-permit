@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -42,7 +42,7 @@ class UpdateErrandStatusTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -97,7 +97,7 @@ class UpdateErrandStatusTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusCaptor.capture());
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 
 		assertThat(statusCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(statusCaptor.getValue().getDescription()).isEqualTo(statusDescription);
@@ -135,6 +135,6 @@ class UpdateErrandStatusTaskWorkerTest {
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
-		verifyNoInteractions(camundaClientMock);
+		verifyNoInteractions(engineClientMock);
 	}
 }

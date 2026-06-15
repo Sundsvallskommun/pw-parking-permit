@@ -7,8 +7,8 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPEAL;
@@ -17,16 +17,16 @@ import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPEAL;
 @ExternalTaskSubscription("CheckAppealTask")
 public class CheckAppealTaskWorker extends AbstractTaskWorker {
 
-	CheckAppealTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-		super(camundaClient, caseDataClient, failureHandler);
+	CheckAppealTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
+		super(engineClient, caseDataClient, failureHandler);
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Check if errand is an appeal for errand with id {}", errand.getId());

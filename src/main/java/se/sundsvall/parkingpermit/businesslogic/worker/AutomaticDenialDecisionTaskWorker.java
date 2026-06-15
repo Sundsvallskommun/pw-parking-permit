@@ -4,13 +4,14 @@ import generated.se.sundsvall.casedata.Stakeholder;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
@@ -47,19 +48,19 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private final TextProvider textProvider;
 	private final TimerUtil timerUtil;
 
-	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider, TimerUtil timerUtil) {
-		super(camundaClient, caseDataClient, failureHandler);
+	AutomaticDenialDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final TextProvider textProvider, final TimerUtil timerUtil) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
 		this.timerUtil = timerUtil;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());
 
@@ -101,7 +102,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 		return caseDataClient.getStakeholder(municipalityId, namespace, errandId, id);
 	}
 
-	private static boolean isProcessEngineStakeholder(Stakeholder stakeholder) {
+	private static boolean isProcessEngineStakeholder(final Stakeholder stakeholder) {
 		return stakeholder.getRoles().contains(ROLE_ADMINISTRATOR) &&
 			PROCESS_ENGINE_FIRST_NAME.equals(stakeholder.getFirstName()) &&
 			PROCESS_ENGINE_LAST_NAME.equals(stakeholder.getLastName());

@@ -9,8 +9,8 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -30,12 +30,12 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 @ExternalTaskSubscription("VerifyAdministratorStakeholderExists")
 public class VerifyAdministratorStakeholderExistsTaskWorker extends AbstractTaskWorker {
 
-	VerifyAdministratorStakeholderExistsTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-		super(camundaClient, caseDataClient, failureHandler);
+	VerifyAdministratorStakeholderExistsTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
+		super(engineClient, caseDataClient, failureHandler);
 	}
 
 	@Override
-	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	protected void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute task for evaluating if stakeholder with role 'ADMINISTRATOR' is present.");
 			clearUpdateAvailable(externalTask);
