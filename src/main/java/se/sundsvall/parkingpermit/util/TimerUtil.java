@@ -1,19 +1,29 @@
 package se.sundsvall.parkingpermit.util;
 
 import generated.se.sundsvall.casedata.Decision;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.Date;
+import org.springframework.stereotype.Component;
 
 import static java.util.Objects.nonNull;
 
-public final class TimerUtil {
+@Component
+public class TimerUtil {
 
-	private TimerUtil() {}
+	private final Clock clock;
 
-	public static Date getControlMessageTime(Decision decision, String controlMessageDelay) {
-		var decisionCreated = OffsetDateTime.now(ZoneId.systemDefault());
+	public TimerUtil() {
+		this(Clock.systemDefaultZone());
+	}
+
+	TimerUtil(Clock clock) {
+		this.clock = clock;
+	}
+
+	public Date getControlMessageTime(Decision decision, String controlMessageDelay) {
+		var decisionCreated = OffsetDateTime.now(clock);
 		if (nonNull(decision) && nonNull(decision.getCreated())) {
 			decisionCreated = decision.getCreated();
 		}

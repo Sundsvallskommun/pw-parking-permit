@@ -33,7 +33,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
@@ -41,6 +40,7 @@ import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
 import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
 import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
 import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachmentFilePart;
@@ -75,7 +75,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			final var latestDecision = errand.getDecisions().stream()
 				.max(Comparator.comparingInt(Decision::getVersion)).orElse(null);
 
-			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
+			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(PROCESS_VARIABLE_RULE_ENGINE_RESPONSE);
 			validateResponse(ruleEngineResponse);
 
 			final var isAutomatic = isAutomatic(errand);

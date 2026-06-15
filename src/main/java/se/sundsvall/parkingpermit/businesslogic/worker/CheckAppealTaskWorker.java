@@ -10,8 +10,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_IS_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPEAL;
 
 @Component
 @ExternalTaskSubscription("CheckAppealTask")
@@ -34,7 +34,7 @@ public class CheckAppealTaskWorker extends AbstractTaskWorker {
 			final var isAppeal = isAppeal(errand);
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_IS_APPEAL, isAppeal);
+			variables.put(PROCESS_VARIABLE_IS_APPEAL, isAppeal);
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

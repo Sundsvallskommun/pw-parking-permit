@@ -63,6 +63,10 @@ abstract class AbstractCamundaAppTest extends AbstractAppTest {
 		final var camundaBaseUrl = "http://" + "localhost:" + CAMUNDA.getMappedPort(8080) + "/engine-rest";
 		registry.add("integration.camunda.url", () -> camundaBaseUrl);
 		registry.add("camunda.bpm.client.base-url", () -> camundaBaseUrl);
+		// Operaton is an API-compatible fork of Camunda 7, so during this migration step the OperatonClient is pointed at
+		// the same engine container. New processes are routed to Operaton (see ProcessService) while the workers still poll
+		// this engine, so the whole flow runs against one container until a dedicated Operaton engine is introduced later.
+		registry.add("integration.operaton.url", () -> camundaBaseUrl);
 	}
 
 	@AfterAll

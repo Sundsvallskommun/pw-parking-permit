@@ -32,16 +32,16 @@ class CamundaMapperTest {
 		// Assert
 		assertThat(dto.getBusinessKey()).isEqualTo(String.valueOf(caseNumber));
 		assertThat(dto.getVariables().entrySet()).containsExactlyInAnyOrder(
-			entry(CAMUNDA_VARIABLE_MUNICIPALITY_ID, new VariableValueDto()
+			entry(PROCESS_VARIABLE_MUNICIPALITY_ID, new VariableValueDto()
 				.type(ValueType.STRING.getName())
 				.value(municipalityId)),
-			entry(CAMUNDA_VARIABLE_NAMESPACE, new VariableValueDto()
+			entry(PROCESS_VARIABLE_NAMESPACE, new VariableValueDto()
 				.type(ValueType.STRING.getName())
 				.value(namespace)),
-			entry(CAMUNDA_VARIABLE_CASE_NUMBER, new VariableValueDto()
+			entry(PROCESS_VARIABLE_CASE_NUMBER, new VariableValueDto()
 				.type(ValueType.LONG.getName())
 				.value(caseNumber)),
-			entry(CAMUNDA_VARIABLE_REQUEST_ID, new VariableValueDto()
+			entry(PROCESS_VARIABLE_REQUEST_ID, new VariableValueDto()
 				.type(ValueType.STRING.getName())
 				.value(RequestId.get())));
 	}

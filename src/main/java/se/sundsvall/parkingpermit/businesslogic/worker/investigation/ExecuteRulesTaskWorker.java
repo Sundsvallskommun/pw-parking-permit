@@ -39,7 +39,7 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 			final var ruleEngineResponse = businessRulesClient.runRuleEngine(municipalityId, toRuleEngineRequest(errand, attachments));
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse);
+			variables.put(Constants.PROCESS_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse);
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

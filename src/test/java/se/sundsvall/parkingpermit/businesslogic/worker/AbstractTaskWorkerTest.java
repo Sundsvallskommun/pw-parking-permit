@@ -91,7 +91,7 @@ class AbstractTaskWorkerTest {
 	void execute() {
 		final var requestId = UUID.randomUUID().toString();
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(requestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(requestId);
 
 		// Mock static RequestId to verify that static method is being called
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
