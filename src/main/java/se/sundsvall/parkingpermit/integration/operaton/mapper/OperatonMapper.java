@@ -1,8 +1,8 @@
-package se.sundsvall.parkingpermit.integration.camunda.mapper;
+package se.sundsvall.parkingpermit.integration.operaton.mapper;
 
-import generated.se.sundsvall.camunda.PatchVariablesDto;
-import generated.se.sundsvall.camunda.StartProcessInstanceDto;
-import generated.se.sundsvall.camunda.VariableValueDto;
+import generated.se.sundsvall.operaton.PatchVariablesDto;
+import generated.se.sundsvall.operaton.StartProcessInstanceDto;
+import generated.se.sundsvall.operaton.VariableValueDto;
 import java.util.Map;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import se.sundsvall.dept44.requestid.RequestId;
@@ -12,11 +12,11 @@ import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
 
-public final class CamundaMapper {
+public final class OperatonMapper {
 
-	private CamundaMapper() {}
+	private OperatonMapper() {}
 
-	public static StartProcessInstanceDto toStartProcessInstanceDto(String municipalityId, String namespace, Long caseNumber) {
+	public static StartProcessInstanceDto toStartProcessInstanceDto(final String municipalityId, final String namespace, final Long caseNumber) {
 		return new StartProcessInstanceDto()
 			.businessKey(Long.toString(caseNumber))
 			.variables(Map.of(
@@ -26,13 +26,13 @@ public final class CamundaMapper {
 				PROCESS_VARIABLE_REQUEST_ID, toVariableValueDto(ValueType.STRING, RequestId.get())));
 	}
 
-	public static VariableValueDto toVariableValueDto(ValueType valueType, Object value) {
+	public static VariableValueDto toVariableValueDto(final ValueType valueType, final Object value) {
 		return new VariableValueDto()
 			.type(valueType.getName())
 			.value(value);
 	}
 
-	public static PatchVariablesDto toPatchVariablesDto(Map<String, VariableValueDto> variablesToUpdate) {
+	public static PatchVariablesDto toPatchVariablesDto(final Map<String, VariableValueDto> variablesToUpdate) {
 		return new PatchVariablesDto()
 			.modifications(variablesToUpdate);
 	}

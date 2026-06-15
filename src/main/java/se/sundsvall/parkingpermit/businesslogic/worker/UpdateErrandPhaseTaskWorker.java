@@ -16,15 +16,15 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_DISPLAY_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_DISPLAY_PHASE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_PHASE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
 
@@ -42,8 +42,8 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 			final var municipalityId = getMunicipalityId(externalTask);
 			final var namespace = getNamespace(externalTask);
 			final var caseNumber = getCaseNumber(externalTask);
-			final String phase = externalTask.getVariable(CAMUNDA_VARIABLE_PHASE);
-			final String displayPhase = externalTask.getVariable(CAMUNDA_VARIABLE_DISPLAY_PHASE);
+			final String phase = externalTask.getVariable(PROCESS_VARIABLE_PHASE);
+			final String displayPhase = externalTask.getVariable(PROCESS_VARIABLE_DISPLAY_PHASE);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing update of phase for errand with id {}", errand.getId());
@@ -72,7 +72,7 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 
 			// Set phase action to unknown in the beginning of the phase
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_PHASE_ACTION, phaseAction);
+			variables.put(PROCESS_VARIABLE_PHASE_ACTION, phaseAction);
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {

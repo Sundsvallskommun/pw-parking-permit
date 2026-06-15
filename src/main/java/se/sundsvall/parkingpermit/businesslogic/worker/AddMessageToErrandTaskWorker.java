@@ -15,7 +15,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBOUND;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 
@@ -44,7 +44,7 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 
 			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var attachment = toMessageAttachment(textProvider.getCommonTexts(municipalityId).getFilename(), APPLICATION_PDF_VALUE, pdf);
-			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
+			final var messageId = ofNullable(externalTask.getVariable(PROCESS_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)
 				.orElseThrow(() -> Problem.valueOf(HttpStatus.INTERNAL_SERVER_ERROR, "Id of sent message could not be retrieved from stored process variables"));
 

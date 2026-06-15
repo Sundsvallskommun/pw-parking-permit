@@ -35,14 +35,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_LOST_PERMIT_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_STATUS_ACTIVE;
 import static se.sundsvall.parkingpermit.Constants.PARTY_ASSET_TYPE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,10 +90,10 @@ class HandleLostCardTaskWorkerTest {
 		final var assetParkingPermit = new Asset().id(idOfAsset).assetId(assetId).status(ACTIVE).type(PARTY_ASSET_TYPE);
 		final var assetOther = new Asset().id(idOfAsset).assetId(assetId).status(ACTIVE).type("OTHER");
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getCaseType()).thenReturn(CASE_TYPE_LOST_PARKING_PERMIT);
 		when(errandMock.getStakeholders()).thenReturn(List.of(stakeholder));
@@ -104,10 +104,10 @@ class HandleLostCardTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(partyAssetsServiceMock).getAssets(MUNICIPALITY_ID, personId, PARTY_ASSET_STATUS_ACTIVE);
 		verify(partyAssetsServiceMock).updateAssetWithNewStatus(MUNICIPALITY_ID, idOfAsset, BLOCKED, "LOST");
 		verify(caseDataClientMock).patchErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchErrandArgumentCaptor.capture());
@@ -131,10 +131,10 @@ class HandleLostCardTaskWorkerTest {
 		// Arrange
 		final var errand = new Errand().id(ERRAND_ID).caseType(CASE_TYPE_LOST_PARKING_PERMIT);
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errand);
 
 		final var thrownException = new EngineException("TestException", new RestException("message", "type", 1));
@@ -146,10 +146,10 @@ class HandleLostCardTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();

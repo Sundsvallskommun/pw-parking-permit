@@ -20,16 +20,16 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAILABLE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_UPDATE_AVAILABLE;
 
 public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
@@ -51,7 +51,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 		 * Clearing process variable has to be a blocking operation.
 		 * Using ExternalTaskService.setVariables() will not work without creating race conditions.
 		 */
-		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), CAMUNDA_VARIABLE_UPDATE_AVAILABLE, FALSE);
+		camundaClient.setProcessInstanceVariable(externalTask.getProcessInstanceId(), PROCESS_VARIABLE_UPDATE_AVAILABLE, FALSE);
 	}
 
 	protected void setProcessInstanceVariable(ExternalTask externalTask, String variableName, VariableValueDto variableValue) {
@@ -78,7 +78,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-		RequestId.init(externalTask.getVariable(CAMUNDA_VARIABLE_REQUEST_ID));
+		RequestId.init(externalTask.getVariable(PROCESS_VARIABLE_REQUEST_ID));
 		executeBusinessLogic(externalTask, externalTaskService);
 	}
 
@@ -105,15 +105,15 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	}
 
 	protected String getMunicipalityId(ExternalTask externalTask) {
-		return externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
+		return externalTask.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 	}
 
 	protected String getNamespace(ExternalTask externalTask) {
-		return externalTask.getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		return externalTask.getVariable(PROCESS_VARIABLE_NAMESPACE);
 	}
 
 	protected Long getCaseNumber(ExternalTask externalTask) {
-		return externalTask.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
+		return externalTask.getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 	}
 
 	protected Decision getFinalDecision(final Errand errand) {

@@ -20,7 +20,7 @@ import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getOptionalStakeholder;
 
@@ -42,7 +42,7 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 		try {
 			logInfo("Execute Worker for VerifyResidentOfMunicipalityTask");
 
-			final var variables = new HashMap<String, Object>(Map.of(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
+			final var variables = new HashMap<String, Object>(Map.of(PROCESS_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, false));
 			final String municipalityId = getMunicipalityId(externalTask);
 			final String namespace = getNamespace(externalTask);
 			final Long caseNumber = getCaseNumber(externalTask);
@@ -60,11 +60,11 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 						logInfo("Applicant with personId:'{}' does not belong to the required municipalityId:'{}'. Applicant belongs to:'{}'",
 							personId, municipalityId, applicantMunicipalityId);
 
-						variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
+						variables.put(PROCESS_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 					}
 				}, () -> {
 					logInfo("No municipalityId found for applicant with personId:'{}'", personId);
-					variables.put(CAMUNDA_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
+					variables.put(PROCESS_VARIABLE_APPLICANT_NOT_RESIDENT_OF_MUNICIPALITY, true);
 				});
 			});
 

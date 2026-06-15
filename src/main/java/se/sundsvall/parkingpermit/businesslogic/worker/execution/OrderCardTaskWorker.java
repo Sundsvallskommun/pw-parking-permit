@@ -15,11 +15,11 @@ import se.sundsvall.parkingpermit.service.RpaService;
 
 import static java.util.Objects.isNull;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXECUTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT_RENEWAL;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 @Component
@@ -46,7 +46,7 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			rpaService.addQueueItems(getQueueNames(errand), errand.getId(), municipalityId);
-			caseDataClient.patchStatus(externalTask.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID), namespace, errand.getId(), toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
+			caseDataClient.patchStatus(externalTask.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID), namespace, errand.getId(), toStatus(CASEDATA_STATUS_DECISION_EXECUTED, CASEDATA_STATUS_DECISION_EXECUTED));
 
 			externalTaskService.complete(externalTask);
 		} catch (final Exception exception) {
