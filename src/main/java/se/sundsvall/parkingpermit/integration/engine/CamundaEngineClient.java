@@ -1,6 +1,8 @@
 package se.sundsvall.parkingpermit.integration.engine;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
+import java.io.File;
+import java.time.OffsetDateTime;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
 class CamundaEngineClient implements EngineClient {
@@ -14,5 +16,10 @@ class CamundaEngineClient implements EngineClient {
 	@Override
 	public void setProcessInstanceVariable(final String processInstanceId, final String variableName, final VariableValueDto value) {
 		camundaClient.setProcessInstanceVariable(processInstanceId, variableName, value);
+	}
+
+	@Override
+	public void deploy(final String tenantId, final String deploymentSource, final Boolean deployChangedOnly, final Boolean enableDuplicateFiltering, final String deploymentName, final OffsetDateTime deploymentActivationTime, final File data) {
+		camundaClient.deploy(tenantId, deploymentSource, deployChangedOnly, enableDuplicateFiltering, deploymentName, deploymentActivationTime, data);
 	}
 }

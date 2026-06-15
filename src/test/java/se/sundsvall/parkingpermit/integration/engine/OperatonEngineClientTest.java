@@ -1,6 +1,8 @@
 package se.sundsvall.parkingpermit.integration.engine;
 
 import generated.se.sundsvall.camunda.VariableValueDto;
+import java.io.File;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.junit.jupiter.api.Test;
@@ -37,5 +39,16 @@ class OperatonEngineClientTest {
 		assertThat(valueCaptor.getValue().getType()).isEqualTo(ValueType.BOOLEAN.getName());
 		assertThat(valueCaptor.getValue().getValue()).isEqualTo(false);
 		assertThat(valueCaptor.getValue().getValueInfo()).isEqualTo(valueInfo);
+	}
+
+	@Test
+	void deployDelegatesToOperatonClient() {
+		final var data = new File("process.bpmn");
+		final var activationTime = OffsetDateTime.now();
+
+		new OperatonEngineClient(operatonClientMock).deploy("tenantId", "deploymentSource", true, true, "deploymentName", activationTime, data);
+
+		verify(operatonClientMock).deploy("tenantId", "deploymentSource", true, true, "deploymentName", activationTime, data);
+		verifyNoMoreInteractions(operatonClientMock);
 	}
 }
