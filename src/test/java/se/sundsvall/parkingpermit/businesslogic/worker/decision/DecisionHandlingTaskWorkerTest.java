@@ -27,8 +27,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.ApprovalTextProperties;
@@ -73,7 +73,7 @@ class DecisionHandlingTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -190,7 +190,7 @@ class DecisionHandlingTaskWorkerTest {
 					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
 						new ContactChannel().type("Phone").value("0701740605")))));
 
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock, supportManagementServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -267,7 +267,7 @@ class DecisionHandlingTaskWorkerTest {
 					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
 						new ContactChannel().type("Phone").value("0701740605")))));
 
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock, supportManagementServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -310,7 +310,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(supportManagementServiceMock, times(2)).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
 		verify(supportManagementServiceMock, times(2)).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -356,7 +356,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(supportManagementServiceMock).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
 		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -402,7 +402,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 	}
 
 	private Decision createFinalDecision(DecisionOutcomeEnum decisionOutcome) {

@@ -12,8 +12,8 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.TextProvider;
@@ -39,9 +39,9 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	private final MessagingService messagingService;
 	private final SupportManagementService supportManagementService;
 
-	DecisionHandlingTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler,
+	DecisionHandlingTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler,
 		final TextProvider textProvider, final MessagingService messagingService, final SupportManagementService supportManagementService) {
-		super(camundaClient, caseDataClient, failureHandler);
+		super(engineClient, caseDataClient, failureHandler);
 		this.textProvider = textProvider;
 		this.messagingService = messagingService;
 		this.supportManagementService = supportManagementService;
@@ -51,9 +51,9 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for DecisionHandlingTask");
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 

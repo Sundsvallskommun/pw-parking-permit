@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.stereotype.Component;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +43,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -96,7 +96,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).sendMessageSimplifiedService(MUNICIPALITY_ID, errandMock);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(PROCESS_VARIABLE_MESSAGE_ID, messageUUID.toString()));
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 
 	@ParameterizedTest
@@ -120,7 +120,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID_ANGE, NAMESPACE, ERRAND_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoInteractions(messagingServiceMock, camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(messagingServiceMock, engineClientMock, failureHandlerMock);
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Not Found: No errand found");
-		verifyNoInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoInteractions(engineClientMock, messagingServiceMock);
 	}
 
 	@Test
@@ -169,6 +169,6 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(messagingServiceMock).sendMessageSimplifiedService(MUNICIPALITY_ID, errandMock);
 		verify(externalTaskServiceMock).complete(externalTaskMock);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verifyNoInteractions(camundaClientMock, failureHandlerMock);
+		verifyNoInteractions(engineClientMock, failureHandlerMock);
 	}
 }

@@ -9,8 +9,8 @@ import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper.toRuleEngineRequest;
 
@@ -20,18 +20,18 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 
 	private final BusinessRulesClient businessRulesClient;
 
-	ExecuteRulesTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, BusinessRulesClient businessRulesClient) {
-		super(camundaClient, caseDataClient, failureHandler);
+	ExecuteRulesTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final BusinessRulesClient businessRulesClient) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.businessRulesClient = businessRulesClient;
 	}
 
 	@Override
-	protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	protected void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for ExecuteRulesTaskWorker");
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			final var attachments = getErrandAttachments(municipalityId, namespace, caseNumber);
