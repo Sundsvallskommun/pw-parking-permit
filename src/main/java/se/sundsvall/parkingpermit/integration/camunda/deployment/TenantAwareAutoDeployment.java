@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -30,14 +30,14 @@ public class TenantAwareAutoDeployment {
 	private static final String FILETYPE_FORM = "form";
 	private static final Resource[] NO_RESOURCES = {};
 
-	private final CamundaClient camundaClient;
+	private final EngineClient engineClient;
 
 	private final DeploymentProperties deployments;
 
 	private final ResourcePatternResolver patternResolver;
 
-	TenantAwareAutoDeployment(CamundaClient camundaClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
-		this.camundaClient = camundaClient;
+	TenantAwareAutoDeployment(EngineClient engineClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
+		this.engineClient = engineClient;
 		this.deployments = deployments;
 		this.patternResolver = patternResolver;
 	}
@@ -46,7 +46,7 @@ public class TenantAwareAutoDeployment {
 	private String applicationName;
 
 	@PostConstruct
-	public void deployCamundaResources() {
+	public void deployProcessResources() {
 		if (isNull(deployments) || !deployments.isAutoDeployEnabled()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public class TenantAwareAutoDeployment {
 					IOUtils.copy(camundaResource.getInputStream(), out);
 				}
 
-				camundaClient.deploy(
+				engineClient.deploy(
 					processArchive.tenant(), // tenantId
 					camundaResource.getFilename(),
 					true, // changedOnly
