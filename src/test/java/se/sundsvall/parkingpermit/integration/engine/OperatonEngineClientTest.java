@@ -44,7 +44,7 @@ class OperatonEngineClientTest {
 	@Test
 	void deployDelegatesToOperatonClient() {
 		final var data = new File("process.bpmn");
-		final var activationTime = OffsetDateTime.now();
+		final var activationTime = OffsetDateTime.parse("2026-01-01T00:00:00Z");
 
 		new OperatonEngineClient(operatonClientMock).deploy("tenantId", "deploymentSource", true, true, "deploymentName", activationTime, data);
 

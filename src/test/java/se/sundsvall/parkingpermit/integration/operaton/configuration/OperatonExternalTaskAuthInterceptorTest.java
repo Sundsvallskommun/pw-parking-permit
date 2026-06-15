@@ -28,7 +28,8 @@ class OperatonExternalTaskAuthInterceptorTest {
 
 	@Test
 	void addsBearerTokenHeader() {
-		final var accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, "the-token", Instant.now(), Instant.now().plusSeconds(60));
+		final var issuedAt = Instant.parse("2026-01-01T00:00:00Z");
+		final var accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, "the-token", issuedAt, issuedAt.plusSeconds(60));
 		final var authorizedClient = mock(OAuth2AuthorizedClient.class);
 		when(authorizedClient.getAccessToken()).thenReturn(accessToken);
 		when(authorizedClientManagerMock.authorize(any(OAuth2AuthorizeRequest.class))).thenReturn(authorizedClient);
