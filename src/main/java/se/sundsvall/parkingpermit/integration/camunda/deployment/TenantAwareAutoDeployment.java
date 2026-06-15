@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -27,20 +27,20 @@ public class TenantAwareAutoDeployment {
 	private static final Resource[] NO_RESOURCES = {};
 	private static final String DEPLOYMENT_CONTENT_TYPE = "application/octet-stream";
 
-	private final CamundaClient camundaClient;
+	private final EngineClient engineClient;
 
 	private final DeploymentProperties deployments;
 
 	private final ResourcePatternResolver patternResolver;
 
-	TenantAwareAutoDeployment(CamundaClient camundaClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
-		this.camundaClient = camundaClient;
+	TenantAwareAutoDeployment(EngineClient engineClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
+		this.engineClient = engineClient;
 		this.deployments = deployments;
 		this.patternResolver = patternResolver;
 	}
 
 	@PostConstruct
-	public void deployCamundaResources() {
+	public void deployProcessResources() {
 		if (isNull(deployments) || !deployments.isAutoDeployEnabled()) {
 			return;
 		}
@@ -65,7 +65,7 @@ public class TenantAwareAutoDeployment {
 				 */
 				final var content = readContent(camundaResource);
 
-				camundaClient.deploy(
+				engineClient.deploy(
 					processArchive.tenant(), // tenantId
 					camundaResource.getFilename(),
 					true, // changedOnly

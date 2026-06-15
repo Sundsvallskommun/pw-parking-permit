@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,7 +41,7 @@ class TenantAwareAutoDeploymentTest {
 	private static final String FILETYPE_FORM = "form";
 
 	@Mock
-	private CamundaClient deploymentApiMock;
+	private EngineClient deploymentApiMock;
 
 	@Mock
 	private DeploymentProperties deploymentPropertiesMock;
@@ -65,7 +66,7 @@ class TenantAwareAutoDeploymentTest {
 
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(false);
 
-		tenantAwareAutoDeployment.deployCamundaResources();
+		tenantAwareAutoDeployment.deployProcessResources();
 
 		verify(deploymentPropertiesMock, atLeastOnce()).isAutoDeployEnabled();
 		verifyNoInteractions(deploymentApiMock, resourcePatternResolverMock);
@@ -75,7 +76,7 @@ class TenantAwareAutoDeploymentTest {
 	void autoDeployEnabledButNoDefinedProcesses() {
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
 
-		tenantAwareAutoDeployment.deployCamundaResources();
+		tenantAwareAutoDeployment.deployProcessResources();
 
 		verify(deploymentPropertiesMock, atLeastOnce()).isAutoDeployEnabled();
 		verifyNoInteractions(deploymentApiMock, resourcePatternResolverMock);
@@ -89,7 +90,7 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.name()).thenReturn(name);
 
-		tenantAwareAutoDeployment.deployCamundaResources();
+		tenantAwareAutoDeployment.deployProcessResources();
 
 		verify(deploymentPropertiesMock, atLeastOnce()).isAutoDeployEnabled();
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN);
@@ -104,7 +105,7 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 
-		final var exception = assertThrows(IllegalArgumentException.class, () -> tenantAwareAutoDeployment.deployCamundaResources());
+		final var exception = assertThrows(IllegalArgumentException.class, () -> tenantAwareAutoDeployment.deployProcessResources());
 
 		verifyNoInteractions(deploymentApiMock);
 		assertThat(exception.getMessage()).isEqualTo("Processname must be set");
@@ -124,7 +125,7 @@ class TenantAwareAutoDeploymentTest {
 		when(processArchiveMock.dmnResourcePattern()).thenReturn(custom_pattern_dmn);
 		when(processArchiveMock.formResourcePattern()).thenReturn(custom_pattern_form);
 
-		tenantAwareAutoDeployment.deployCamundaResources();
+		tenantAwareAutoDeployment.deployProcessResources();
 
 		verify(deploymentPropertiesMock, atLeastOnce()).isAutoDeployEnabled();
 		verify(resourcePatternResolverMock).getResources(custom_pattern_bpmn);
@@ -151,7 +152,7 @@ class TenantAwareAutoDeploymentTest {
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(processFile.getInputStream());
 
-		tenantAwareAutoDeployment.deployCamundaResources();
+		tenantAwareAutoDeployment.deployProcessResources();
 
 		verify(deploymentPropertiesMock, atLeastOnce()).isAutoDeployEnabled();
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN);
@@ -172,7 +173,7 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(resourcePatternResolverMock.getResources(any())).thenThrow(originException);
 
-		final var exception = assertThrows(DeploymentException.class, () -> tenantAwareAutoDeployment.deployCamundaResources());
+		final var exception = assertThrows(DeploymentException.class, () -> tenantAwareAutoDeployment.deployProcessResources());
 
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN);
 		verifyNoMoreInteractions(resourcePatternResolverMock);
@@ -188,14 +189,14 @@ class TenantAwareAutoDeploymentTest {
 		when(deploymentPropertiesMock.isAutoDeployEnabled()).thenReturn(true);
 		when(deploymentPropertiesMock.getProcesses()).thenReturn(List.of(processArchiveMock));
 		when(processArchiveMock.name()).thenReturn(name);
-		when(deploymentApiMock.deploy(any(), any(), anyBoolean(), anyBoolean(), any(), any(), any())).thenThrow(originException);
+		doThrow(originException).when(deploymentApiMock).deploy(any(), any(), anyBoolean(), anyBoolean(), any(), any(), any());
 		when(resourcePatternResolverMock.getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN)).thenReturn(new Resource[] {
 			resourceMock
 		});
 		when(resourceMock.getFilename()).thenReturn(PROCESSMODEL_FILE);
 		when(resourceMock.getInputStream()).thenReturn(new ClassPathResource(PROCESSMODEL_PATH + PROCESSMODEL_FILE).getInputStream());
 
-		final var exception = assertThrows(DeploymentException.class, () -> tenantAwareAutoDeployment.deployCamundaResources());
+		final var exception = assertThrows(DeploymentException.class, () -> tenantAwareAutoDeployment.deployProcessResources());
 
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN);
 		verify(deploymentApiMock).deploy(any(), any(), anyBoolean(), anyBoolean(), any(), any(), any());
