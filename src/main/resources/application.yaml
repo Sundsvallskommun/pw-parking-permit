@@ -104,18 +104,12 @@ logbook:
 camunda:
   bpm:
     client:
-      base-url: ${config.camunda.base-url}
+      # URL to the process engine REST API that the external task client polls to fetch and lock external tasks.
+      base-url: ${config.process-engine-base-url}
       backoff:
         initTime: 500
         factor: 2
         maxTime: 15000
-    deployment:
-      processes:
-        - name: Parking permit process
-          tenant: PARKING_PERMIT
-          bpmnResourcePattern: classpath*:processmodels/*.bpmn
-          dmnResourcePattern: classpath*:processmodels/*.dmn
-          formResourcePattern: classpath*:processmodels/*.form
   worker:
     max:
       retries: 3
@@ -123,12 +117,20 @@ camunda:
       timeout: 10
 
 #----------------------------------------
-# Process engine selection (camunda | operaton)
-# Controls which engine the task workers target. Each deployed instance also points
-# camunda.bpm.client.base-url at the matching engine so it polls the right one.
+# Process engine selection (Camunda | Operaton)
+# 'type' controls which engine the task workers target. Each deployed instance points the external
+# task client at the matching engine via config.process-engine-base-url so it polls the right one.
+# 'deployment' lists the processes deployed at startup (engine-agnostic, via EngineClient).
 #----------------------------------------
 process-engine:
-  type: ${config.process-engine-type:camunda}
+  type: ${config.process-engine-type}
+  deployment:
+    processes:
+      - name: Parking permit process
+        tenant: PARKING_PERMIT
+        bpmnResourcePattern: classpath*:processmodels/*.bpmn
+        dmnResourcePattern: classpath*:processmodels/*.dmn
+        formResourcePattern: classpath*:processmodels/*.form
 
 #----------------------------------------
 # Integration settings
@@ -288,7 +290,7 @@ texts:
         Hej
         
         Du har fått ett beslut från Sundsvalls kommun.
-  
+        
         Med vänlig hälsning
         Sundsvalls kommun
       description: Personen inte folkbokförd i Sundsvalls kommun.

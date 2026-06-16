@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -31,19 +30,14 @@ public class TenantAwareAutoDeployment {
 	private static final Resource[] NO_RESOURCES = {};
 
 	private final EngineClient engineClient;
-
 	private final DeploymentProperties deployments;
-
 	private final ResourcePatternResolver patternResolver;
 
-	TenantAwareAutoDeployment(EngineClient engineClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
+	TenantAwareAutoDeployment(final EngineClient engineClient, final DeploymentProperties deployments, final ResourcePatternResolver patternResolver) {
 		this.engineClient = engineClient;
 		this.deployments = deployments;
 		this.patternResolver = patternResolver;
 	}
-
-	@Value("${spring.application.name:spring-app}")
-	private String applicationName;
 
 	@PostConstruct
 	public void deployProcessResources() {
@@ -58,18 +52,18 @@ public class TenantAwareAutoDeployment {
 		});
 	}
 
-	private void deployResources(ProcessArchive processArchive, List<Resource> resourcesToDeploy, String type) {
+	private void deployResources(final ProcessArchive processArchive, final List<Resource> resourcesToDeploy, final String type) {
 		// Validate that name is present
 		requireNotBlank(processArchive.name(), "Processname must be set");
 
-		for (final Resource camundaResource : resourcesToDeploy) {
+		for (final var camundaResource : resourcesToDeploy) {
 			try {
 				// We have to create a tmpFile because we need to read the files via InputStream to work also in a jar-packed
 				// environment but the OpenAPI will need a File. We still have to set the file ending correct in the temp file
 				// (because otherwise the deployer will not pick it up as e.g. BPMN file)
-				final String tmpDirectoryName = FileUtils.getTempDirectory().getAbsolutePath();
-				final String filename = getResourceFilename(camundaResource, type);
-				final File tmpFile = new File(tmpDirectoryName + File.separator + filename);
+				final var tmpDirectoryName = FileUtils.getTempDirectory().getAbsolutePath();
+				final var filename = getResourceFilename(camundaResource, type);
+				final var tmpFile = new File(tmpDirectoryName + File.separator + filename);
 				tmpFile.deleteOnExit();
 				try (FileOutputStream out = new FileOutputStream(tmpFile)) {
 					IOUtils.copy(camundaResource.getInputStream(), out);
@@ -89,7 +83,7 @@ public class TenantAwareAutoDeployment {
 		}
 	}
 
-	private List<Resource> getResources(String path) {
+	private List<Resource> getResources(final String path) {
 		try {
 			return Arrays.asList(ofNullable(patternResolver.getResources(path)).orElse(NO_RESOURCES));
 		} catch (final IOException e) {
@@ -97,7 +91,7 @@ public class TenantAwareAutoDeployment {
 		}
 	}
 
-	private String getResourceFilename(Resource camundaResource, String type) throws IOException {
+	private String getResourceFilename(final Resource camundaResource, final String type) throws IOException {
 		if (camundaResource.getFilename() != null) {
 			return camundaResource.getFilename();
 		}
