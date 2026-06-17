@@ -28,12 +28,10 @@ public class TenantAwareAutoDeployment {
 	private static final String DEPLOYMENT_CONTENT_TYPE = "application/octet-stream";
 
 	private final EngineClient engineClient;
-
 	private final DeploymentProperties deployments;
-
 	private final ResourcePatternResolver patternResolver;
 
-	TenantAwareAutoDeployment(EngineClient engineClient, DeploymentProperties deployments, ResourcePatternResolver patternResolver) {
+	TenantAwareAutoDeployment(final EngineClient engineClient, final DeploymentProperties deployments, final ResourcePatternResolver patternResolver) {
 		this.engineClient = engineClient;
 		this.deployments = deployments;
 		this.patternResolver = patternResolver;
@@ -52,11 +50,11 @@ public class TenantAwareAutoDeployment {
 		});
 	}
 
-	private void deployResources(ProcessArchive processArchive, List<Resource> resourcesToDeploy, String type) {
+	private void deployResources(final ProcessArchive processArchive, final List<Resource> resourcesToDeploy, final String type) {
 		// Validate that name is present
 		requireNotBlank(processArchive.name(), "Processname must be set");
 
-		for (final Resource camundaResource : resourcesToDeploy) {
+		for (final var camundaResource : resourcesToDeploy) {
 			try {
 				/*
 				 * The resource is read through an InputStream so that deployment also works from a jar-packed environment, and
@@ -85,7 +83,7 @@ public class TenantAwareAutoDeployment {
 		}
 	}
 
-	private List<Resource> getResources(String path) {
+	private List<Resource> getResources(final String path) {
 		try {
 			return Arrays.asList(ofNullable(patternResolver.getResources(path)).orElse(NO_RESOURCES));
 		} catch (final IOException e) {
@@ -93,7 +91,7 @@ public class TenantAwareAutoDeployment {
 		}
 	}
 
-	private String getResourceFilename(Resource camundaResource, String type) throws IOException {
+	private String getResourceFilename(final Resource camundaResource, final String type) throws IOException {
 		if (camundaResource.getFilename() != null) {
 			return camundaResource.getFilename();
 		}

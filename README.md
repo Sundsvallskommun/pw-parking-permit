@@ -17,21 +17,23 @@
 	<tbody>
 		<tr>
 			<td class="code">camunda.bpm.client.base-url</td>
-			<td>URL address to Camunda instance rest engine to use</td>
+			<td>URL address to the process engine rest api the external task client polls. Value comes from
+			config.process-engine-base-url (with fallback to config.camunda.base-url), set per instance to the
+			engine this instance targets</td>
 			<td><strong>null</strong></td>
 		</tr>
 		<tr>
-			<td class="code">camunda.bpm.deployment</td>
+			<td class="code">process-engine.deployment</td>
 			<td>The node contains information about the processes that shall be deployed</td>
 			<td><strong>null</strong></td>
 		</tr>
 		<tr>
-			<td class="code">camunda.bpm.deployment.autoDeployEnabled</td>
+			<td class="code">process-engine.deployment.autoDeployEnabled</td>
 			<td>When set to <strong>false</strong> then autodeploy is disabled</td>
 			<td><strong>true</strong></td>
 		</tr>
 		<tr>
-			<td class="code">camunda.bpm.deployment.processes</td>
+			<td class="code">process-engine.deployment.processes</td>
 			<td>When deployment node is present, the processes node should contain a list<br />
 			of one or more processes to deploy (in one or more tenant namespaces)</td>
 			<td><strong>emtpy list</strong></td>
