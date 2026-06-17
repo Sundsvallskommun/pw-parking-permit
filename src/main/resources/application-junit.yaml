@@ -15,19 +15,20 @@ camunda:
   bpm:
     client:
       disable-auto-fetching: true
-    deployment:
-      autoDeployEnabled: false
-      processes:
-        - name: process_name_1
-          tenant: tenant_id_1
-          bpmnResourcePattern: bpmnResourcePattern_1
-          dmnResourcePattern: dmnResourcePattern_1
-          formResourcePattern: formResourcePattern_1
-        - name: process_name_2
-          tenant: tenant_id_2
-          bpmnResourcePattern: bpmnResourcePattern_2
-          dmnResourcePattern: dmnResourcePattern_2
-          formResourcePattern: formResourcePattern_2
+process-engine:
+  deployment:
+    autoDeployEnabled: false
+    processes:
+      - name: process_name_1
+        tenant: tenant_id_1
+        bpmnResourcePattern: bpmnResourcePattern_1
+        dmnResourcePattern: dmnResourcePattern_1
+        formResourcePattern: formResourcePattern_1
+      - name: process_name_2
+        tenant: tenant_id_2
+        bpmnResourcePattern: bpmnResourcePattern_2
+        dmnResourcePattern: dmnResourcePattern_2
+        formResourcePattern: formResourcePattern_2
 #----------------------------------------
 # Rpa settings
 # folderId per municipalityId
@@ -41,6 +42,8 @@ integration:
 # Integration settings
 #----------------------------------------
 config:
+  process-engine-type: camunda
+  process-engine-base-url: ${config.camunda.base-url}
   common:
     token-uri: token.url
     client-id: client.id

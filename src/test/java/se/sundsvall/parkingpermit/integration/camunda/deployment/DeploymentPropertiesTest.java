@@ -23,7 +23,7 @@ class DeploymentPropertiesTest {
 	@Test
 	void testAnnotation() {
 		assertThat(DeploymentProperties.class).hasAnnotation(ConfigurationProperties.class);
-		assertThat(DeploymentProperties.class.getAnnotation(ConfigurationProperties.class).value()).isEqualTo("camunda.bpm.deployment");
+		assertThat(DeploymentProperties.class.getAnnotation(ConfigurationProperties.class).value()).isEqualTo("process-engine.deployment");
 	}
 
 	@Test
