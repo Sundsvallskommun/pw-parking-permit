@@ -25,6 +25,6 @@ public class OperatonExternalTaskClientConfiguration {
 		final var authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
 		authorizedClientManager.setAuthorizedClientProvider(OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build());
 
-		return new OperatonExternalTaskAuthInterceptor(authorizedClientManager);
+		return new OperatonExternalTaskAuthInterceptor(authorizedClientManager, authorizedClientService);
 	}
 }
