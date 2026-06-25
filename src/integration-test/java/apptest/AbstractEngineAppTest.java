@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +58,15 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 	}
 
 	/**
-	 * Deletes every process instance left on the engine after a test, so state cannot leak between the test classes that
-	 * share the same engine container. Needed because the container is reused across {@code @DirtiesContext} contexts:
-	 * without this, an instance that outlives its own test (e.g. after a failure, or because the slower Operaton engine
-	 * has not drained it yet) gets picked up by the next class's external task workers and corrupts that class's WireMock
-	 * scenario state. Filtered on the parking-permit tenant so the engine's own example processes are left untouched.
+	 * Gives every test a clean slate on the shared engine container before it runs. The container is reused across
+	 * {@code @DirtiesContext} contexts, so a process instance that outlived an earlier test (after a failure, or because
+	 * the slower Operaton engine had not drained it yet) would otherwise be picked up by this context's external task
+	 * workers and corrupt this test's WireMock scenario state. We delete the tenant's instances and then clear the
+	 * WireMock request journal, so a stray request from a leftover worker racing the context startup cannot trip the
+	 * {@code failFast} near-miss check before the test's own flow even begins.
 	 */
-	@AfterEach
-	void purgeProcessInstances() throws Exception {
+	@BeforeEach
+	void resetSharedEngineState() throws Exception {
 		final var listRequest = HttpRequest.newBuilder(URI.create(engineBaseUrl + "/process-instance?tenantIdIn=" + TENANT_ID_PARKING_PERMIT)).GET().build();
 		final var listResponse = HTTP_CLIENT.send(listRequest, HttpResponse.BodyHandlers.ofString());
 		final JsonNode instances = OBJECT_MAPPER.readTree(listResponse.body());
@@ -75,6 +76,7 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 				.DELETE().build();
 			HTTP_CLIENT.send(deleteRequest, HttpResponse.BodyHandlers.discarding());
 		}
+		wiremock.resetRequests();
 	}
 
 	protected List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
