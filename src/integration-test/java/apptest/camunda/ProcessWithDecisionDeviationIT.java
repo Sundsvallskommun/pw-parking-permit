@@ -1,4 +1,4 @@
-package apptest;
+package apptest.camunda;
 
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;

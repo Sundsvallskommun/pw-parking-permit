@@ -1,18 +1,16 @@
-package apptest;
+package apptest.operaton;
 
-import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
-import static apptest.mock.Decision.mockDecision;
-import static apptest.mock.Execution.mockExecution;
+import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
+import static apptest.mock.Decision.mockDecisionUpdatePhase;
+import static apptest.mock.Decision.mockDecisionUpdateStatus;
+import static apptest.mock.Execution.mockExecutionWhenAppeal;
 import static apptest.mock.FollowUp.mockFollowUp;
-import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
-import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
-import static apptest.verification.ProcessPathway.executionPathway;
+import static apptest.verification.ProcessPathway.executionPathwayWhenAppeal;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
-import static apptest.verification.ProcessPathway.investigationPathway;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -24,7 +22,7 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
-import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
+import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 
 import java.time.Duration;
 
@@ -42,7 +40,7 @@ import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
-class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
+class ProcessAppealWithoutDeviationIT extends AbstractOperatonAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
@@ -63,26 +61,28 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 	@ValueSource(booleans = {
 		true, false
 	})
-	void test001_createProcessForCitizen(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
+	void test001_createProcessForAppeal(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "123";
-		var scenarioName = "test001_createProcessForCitizen";
+		var scenarioName = "test_appeal_001_createProcessForAppeal";
 		if (isAutomatic) {
 			scenarioName = scenarioName.concat("_Automatic");
 		}
 
 		// Setup mocks
 		mockApiGatewayToken();
-		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName, isAutomatic);
-		mockInvestigation(caseId, scenarioName, isAutomatic);
-		mockDecision(caseId, scenarioName, isAutomatic);
-		mockExecution(caseId, scenarioName, isAutomatic);
+
+		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_APPEAL);
+		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
+		final var stateAfterUpdateStatus = mockDecisionUpdateStatus(caseId, scenarioName, stateAfterUpdatePhase, isAutomatic);
+
+		mockDecisionCheckIfDecisionMade(caseId, scenarioName, stateAfterUpdateStatus);
+		mockExecutionWhenAppeal(caseId, scenarioName, isAutomatic);
 		mockFollowUp(caseId, scenarioName, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()
-			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/123")
+			.withServicePath("/2281/SBK_PARKING_PERMIT/process/start/" + caseId)
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.sendRequest()
@@ -99,14 +99,10 @@ class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 			.with(tuple("Start process", "start_process"))
 			.with(tuple("Check appeal", "external_task_check_appeal"))
 			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
-			.with(actualizationPathway())
-			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
-			.with(investigationPathway())
-			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
 			.with(decisionPathway())
 			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
 			.with(handlingPathway())
-			.with(executionPathway())
+			.with(executionPathwayWhenAppeal())
 			.with(followUpPathway())
 			.with(tuple("End process", "end_process")));
 	}
