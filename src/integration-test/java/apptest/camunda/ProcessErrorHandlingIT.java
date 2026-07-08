@@ -1,4 +1,4 @@
-package apptest;
+package apptest.camunda;
 
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static java.time.Duration.ZERO;

@@ -1,4 +1,4 @@
-package apptest;
+package apptest.camunda;
 
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
 import static apptest.mock.Decision.mockDecisionCheckIfDecisionMade;
