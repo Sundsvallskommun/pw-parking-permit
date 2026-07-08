@@ -1,4 +1,4 @@
-package apptest;
+package apptest.operaton;
 
 import static apptest.mock.Actualization.mockActualizationCheckPhaseAction;
 import static apptest.mock.Actualization.mockActualizationUpdateDisplayPhase;
@@ -60,7 +60,7 @@ import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
-class ProcessWithActualizationDeviationIT extends AbstractCamundaAppTest {
+class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";

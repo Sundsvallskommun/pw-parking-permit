@@ -1,4 +1,4 @@
-package apptest;
+package apptest.camunda;
 
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -7,9 +7,16 @@ import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import static apptest.verification.ProcessPathway.actualizationPathway;
+import static apptest.verification.ProcessPathway.decisionPathway;
+import static apptest.verification.ProcessPathway.executionPathway;
+import static apptest.verification.ProcessPathway.followUpPathway;
+import static apptest.verification.ProcessPathway.handlingPathway;
+import static apptest.verification.ProcessPathway.investigationPathway;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.setDefaultPollDelay;
 import static org.awaitility.Awaitility.setDefaultPollInterval;
@@ -22,34 +29,26 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import tools.jackson.core.JacksonException;
 
+import apptest.verification.Tuples;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 /**
- * Runs the standard happy-path flow with {@code process-engine.type=operaton}, so the worker write-path
- * (clearUpdateAvailable -&gt; OperatonEngineClient -&gt; OperatonClient) executes against a live engine. The engine
- * container is shared with the Camunda flow tests since Operaton is API-compatible with Camunda 7 - this verifies the
- * Operaton wiring, not the WSO2 transport (see step 4 for the external-task-client OAuth against api-service-operaton).
+ * Standard happy-path flow without deviations.
  */
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
-class ProcessWithoutDeviationOperatonIT extends AbstractCamundaAppTest {
+class ProcessWithoutDeviationIT extends AbstractCamundaAppTest {
 
 	private static final int DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS = 30;
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
-
-	@DynamicPropertySource
-	static void operatonEngine(DynamicPropertyRegistry registry) {
-		registry.add("process-engine.type", () -> "operaton");
-	}
 
 	@BeforeEach
 	void setup() {
@@ -63,20 +62,26 @@ class ProcessWithoutDeviationOperatonIT extends AbstractCamundaAppTest {
 			.until(() -> camundaClient.getDeployments(null, null, TENANT_ID_PARKING_PERMIT).size(), equalTo(1));
 	}
 
-	@Test
-	void test001_createProcessForCitizenWithOperatonEngine() throws JacksonException, ClassNotFoundException {
+	@ParameterizedTest
+	@ValueSource(booleans = {
+		true, false
+	})
+	void test001_createProcessForCitizen(boolean isAutomatic) throws JacksonException, ClassNotFoundException {
 
 		final var caseId = "123";
-		final var scenarioName = "test001_createProcessForCitizen";
+		var scenarioName = "test001_createProcessForCitizen";
+		if (isAutomatic) {
+			scenarioName = scenarioName.concat("_Automatic");
+		}
 
 		// Setup mocks
 		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
-		mockActualization(caseId, scenarioName, false);
-		mockInvestigation(caseId, scenarioName, false);
-		mockDecision(caseId, scenarioName, false);
-		mockExecution(caseId, scenarioName, false);
-		mockFollowUp(caseId, scenarioName, false);
+		mockActualization(caseId, scenarioName, isAutomatic);
+		mockInvestigation(caseId, scenarioName, isAutomatic);
+		mockDecision(caseId, scenarioName, isAutomatic);
+		mockExecution(caseId, scenarioName, isAutomatic);
+		mockFollowUp(caseId, scenarioName, isAutomatic);
 
 		// Start process
 		final var startResponse = setupCall()
@@ -86,11 +91,26 @@ class ProcessWithoutDeviationOperatonIT extends AbstractCamundaAppTest {
 			.sendRequest()
 			.andReturnBody(StartProcessResponse.class);
 
-		// Wait for the process to finish - completion requires every worker (incl. the Operaton-routed
-		// clearUpdateAvailable) to succeed against the engine.
+		// Wait for process to finish
 		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
 
 		// Verify wiremock stubs
 		verifyAllStubs();
+
+		// Verify process pathway.
+		assertProcessPathway(startResponse.getProcessId(), true, Tuples.create()
+			.with(tuple("Start process", "start_process"))
+			.with(tuple("Check appeal", "external_task_check_appeal"))
+			.with(tuple("Gateway isAppeal", "gateway_is_appeal"))
+			.with(actualizationPathway())
+			.with(tuple("Gateway isCitizen", "gateway_is_citizen"))
+			.with(investigationPathway())
+			.with(tuple("Is canceled in investigation", "gateway_investigation_canceled"))
+			.with(decisionPathway())
+			.with(tuple("Is canceled in decision or not approved", "gateway_decision_canceled"))
+			.with(handlingPathway())
+			.with(executionPathway())
+			.with(followUpPathway())
+			.with(tuple("End process", "end_process")));
 	}
 }
