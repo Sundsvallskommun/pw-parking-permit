@@ -17,9 +17,9 @@
 	<tbody>
 		<tr>
 			<td class="code">camunda.bpm.client.base-url</td>
-			<td>URL address to the process engine rest api the external task client polls. Value comes from
-			config.process-engine-base-url (with fallback to config.camunda.base-url), set per instance to the
-			engine this instance targets</td>
+			<td>URL address to the process engine rest api the external task client polls. Derived from
+			config.process-engine-type, which selects config.camunda.base-url or config.operaton.base-url,
+			so polling always hits the engine this instance targets</td>
 			<td><strong>null</strong></td>
 		</tr>
 		<tr>
