@@ -43,7 +43,6 @@ integration:
 #----------------------------------------
 config:
   process-engine-type: camunda
-  process-engine-base-url: ${config.camunda.base-url}
   common:
     token-uri: token.url
     client-id: client.id

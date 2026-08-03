@@ -23,7 +23,6 @@ integration:
 #----------------------------------------
 config:
   process-engine-type: camunda
-  process-engine-base-url: ${config.camunda.base-url}
   camunda:
     base-url: http://localhost:${wiremock.server.port}/api-camunda/engine-rest
   common:

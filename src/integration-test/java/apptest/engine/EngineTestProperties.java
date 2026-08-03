@@ -10,6 +10,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
  * the Camunda Feign client ({@code integration.camunda.url}, which the test helpers also use to read process history),
  * and the Operaton Feign client ({@code integration.operaton.url}). {@code process-engine.type} selects which engine the
  * workers' write-path targets. Since Operaton is API-compatible with Camunda 7, the read helpers work against either.
+ * <p>
+ * Note that setting {@code camunda.bpm.client.base-url} explicitly overrides the derivation from
+ * {@code process-engine.type} that application.yaml performs, so these tests do not cover it - see
+ * {@code ExternalTaskClientBaseUrlDerivationTest}.
  */
 public final class EngineTestProperties {
 

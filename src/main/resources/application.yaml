@@ -105,7 +105,8 @@ camunda:
   bpm:
     client:
       # URL to the process engine REST API that the external task client polls to fetch and lock external tasks.
-      base-url: ${config.process-engine-base-url}
+      # Derived from process-engine.type, so polling always hits the same engine the workers write to.
+      base-url: ${config.${process-engine.type}.base-url}
       backoff:
         initTime: 500
         factor: 2
@@ -118,8 +119,8 @@ camunda:
 
 #----------------------------------------
 # Process engine selection (Camunda | Operaton)
-# 'type' controls which engine the task workers target. Each deployed instance points the external
-# task client at the matching engine via config.process-engine-base-url so it polls the right one.
+# 'type' controls which engine the task workers target, and selects the external task client's poll
+# URL from config.camunda.base-url / config.operaton.base-url - the two cannot drift apart.
 # 'deployment' lists the processes deployed at startup (engine-agnostic, via EngineClient).
 #----------------------------------------
 process-engine:
