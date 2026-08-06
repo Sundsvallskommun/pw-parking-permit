@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.integration.casedata.mapper;
 
+import feign.form.FormData;
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum;
@@ -15,20 +16,27 @@ import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import generated.se.sundsvall.casedata.Status;
 import generated.se.sundsvall.templating.RenderResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import tools.jackson.databind.ObjectMapper;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
 
 public class CaseDataMapper {
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private CaseDataMapper() {}
 
@@ -91,18 +99,39 @@ public class CaseDataMapper {
 			.article(article);
 	}
 
-	public static Attachment toAttachment(final String category, final String name, final String extension, final String mimeType, final RenderResponse renderedContent) {
-		final var bean = new Attachment()
+	/**
+	 * Creates the attachment metadata. Since CaseData major version 13 the binary content is no longer carried by the
+	 * metadata but uploaded as a separate multipart part, see
+	 * {@link #toAttachmentFilePart(String, String, RenderResponse)}.
+	 */
+	public static Attachment toAttachment(final String category, final String name, final String extension, final String mimeType) {
+		return new Attachment()
 			.category(category)
 			.name(name)
 			.extension(extension)
 			.mimeType(mimeType);
+	}
 
-		ofNullable(renderedContent)
+	/**
+	 * Creates the 'attachment' multipart part, holding the attachment metadata as JSON.
+	 */
+	public static FormData toAttachmentMetadataPart(final Attachment attachment) {
+		return new FormData(APPLICATION_JSON_VALUE, null, OBJECT_MAPPER.writeValueAsBytes(attachment));
+	}
+
+	/**
+	 * Creates the 'file' multipart part, holding the decoded binary content of the rendered document. An absent or blank
+	 * rendering yields an empty part rather than a null one, since a missing part would be rejected by CaseData with a
+	 * less telling error than an empty file.
+	 */
+	public static FormData toAttachmentFilePart(final String fileName, final String mimeType, final RenderResponse renderedContent) {
+		final var content = ofNullable(renderedContent)
 			.map(RenderResponse::getOutput)
-			.ifPresent(bean::setFile);
+			.filter(StringUtils::isNotBlank)
+			.map(output -> Base64.getDecoder().decode(output.getBytes(StandardCharsets.UTF_8)))
+			.orElseGet(() -> new byte[0]);
 
-		return bean;
+		return new FormData(mimeType, fileName, content);
 	}
 
 	public static MessageAttachment toMessageAttachment(final String fileName, final String contentType, final RenderResponse renderedContent) {

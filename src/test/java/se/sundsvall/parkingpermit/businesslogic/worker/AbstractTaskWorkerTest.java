@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.camunda.bpm.engine.variable.type.ValueType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -53,6 +55,9 @@ class AbstractTaskWorkerTest {
 	@Mock
 	private CaseDataClient caseDataClientMock;
 
+	@Mock
+	private FailureHandler failureHandlerMock;
+
 	@InjectMocks
 	private Worker worker;
 
@@ -74,6 +79,14 @@ class AbstractTaskWorkerTest {
 		verifyNoMoreInteractions(camundaClientMock);
 	}
 
+	@BeforeEach
+	void clearRequestId() {
+		// Guard against request id state leaking in from another test on this thread
+		for (var i = 0; (i < 10) && (RequestId.get() != null); i++) {
+			RequestId.reset();
+		}
+	}
+
 	@Test
 	void execute() {
 		final var requestId = UUID.randomUUID().toString();
@@ -87,7 +100,58 @@ class AbstractTaskWorkerTest {
 
 			// Verify static method
 			requestIdMock.verify(() -> RequestId.init(requestId));
+			requestIdMock.verify(RequestId::reset);
 		}
+	}
+
+	/**
+	 * RequestId.init() only writes to the MDC when the thread local counter is zero. Without a matching reset() every task
+	 * after the first one on a worker thread would keep logging under the request id of that first task.
+	 */
+	@Test
+	void executeSetsRequestIdPerTaskAndClearsItAfterwards() {
+		// Arrange
+		final var firstRequestId = UUID.randomUUID().toString();
+		final var secondRequestId = UUID.randomUUID().toString();
+		final var observedRequestIds = new ArrayList<String>();
+
+		final var recordingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+			@Override
+			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+				observedRequestIds.add(RequestId.get());
+			}
+		};
+
+		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(firstRequestId, secondRequestId);
+
+		// Act - two tasks executed in sequence on the same thread
+		recordingWorker.execute(externalTaskMock, externalTaskServiceMock);
+		recordingWorker.execute(externalTaskMock, externalTaskServiceMock);
+
+		// Assert
+		assertThat(observedRequestIds).containsExactly(firstRequestId, secondRequestId);
+		assertThat(RequestId.get()).isNull();
+	}
+
+	@Test
+	void executeClearsRequestIdWhenBusinessLogicThrows() {
+		// Arrange
+		final var requestId = UUID.randomUUID().toString();
+		final var throwingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+			@Override
+			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+				throw new IllegalStateException("Boom");
+			}
+		};
+
+		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(requestId);
+
+		// Act
+		assertThatThrownBy(() -> throwingWorker.execute(externalTaskMock, externalTaskServiceMock))
+			.isInstanceOf(IllegalStateException.class);
+
+		// Assert
+		assertThat(RequestId.get()).isNull();
 	}
 
 	@Test

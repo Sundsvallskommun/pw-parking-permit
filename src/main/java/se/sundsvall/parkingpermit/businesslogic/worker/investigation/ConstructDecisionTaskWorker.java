@@ -4,6 +4,7 @@ import generated.se.sundsvall.businessrules.RuleEngineResponse;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
+import generated.se.sundsvall.templating.RenderResponse;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
@@ -40,15 +42,19 @@ import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
 import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachmentFilePart;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachmentMetadataPart;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
+import static se.sundsvall.parkingpermit.util.LocationUtil.extractIdFromLocation;
 
 @Component
 @ExternalTaskSubscription("InvestigationConstructDecisionTask")
 public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 
 	private static final Period VALIDITY_PERIOD_ONE_YEAR = Period.parse("P1Y");
+	private static final String DECISION_FILENAME = "beslut.pdf";
 	private final MessagingService messagingService;
 
 	ConstructDecisionTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
@@ -79,16 +85,24 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 				.map(result -> BusinessRulesUtil.constructDecision(result, isAutomatic))
 				.orElseThrow(() -> Problem.valueOf(CONFLICT, "No applicable result found in rule engine response"));
 
+			// The document is rendered before the decision is created, so that a failing rendering does not leave a decision
+			// without its document behind
+			RenderResponse decisionPdf = null;
 			if (isAutomatic) {
 				decision = decorateDecisionForAutomatic(errand, decision);
+				decisionPdf = messagingService.renderPdfDecision(errand.getMunicipalityId(), errand, getTemplateId(errand, decision));
 			}
 
 			if (isDecisionsNotEqual(latestDecision, decision)) {
-				caseDataClient.patchNewDecision(
+				final var response = caseDataClient.patchNewDecision(
 					municipalityId,
 					errand.getNamespace(),
 					caseNumber,
 					decision.version(Optional.ofNullable(latestDecision).map(theDecision -> theDecision.getVersion() + 1).orElse(0)));
+
+				if (isAutomatic) {
+					addDecisionAttachment(municipalityId, errand, caseNumber, extractIdFromLocation(response, "decision"), decisionPdf);
+				}
 			}
 
 			if (isAutomatic) {
@@ -156,12 +170,20 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			decision.setValidTo(getValidTo(disabilityDuration));
 		}
 
-		final var pdf = messagingService.renderPdfDecision(errand.getMunicipalityId(), errand, getTemplateId(errand, decision));
-
 		return decision
 			.decidedBy(getStakeholder(errand, ROLE_ADMINISTRATOR))
-			.addAttachmentsItem(toAttachment(CATEGORY_BESLUT, "beslut.pdf", "pdf", "application/pdf", pdf))
 			.addLawItem(toLaw(LAW_HEADING, LAW_SFS, LAW_CHAPTER, LAW_ARTICLE));
+	}
+
+	/**
+	 * Uploads the decision document. The upload is a separate call since CaseData rejects attachments sent as part of the
+	 * decision payload, and it is deliberately done only when a decision has actually been created - an unchanged decision
+	 * keeps the document it already has.
+	 */
+	private void addDecisionAttachment(final String municipalityId, final Errand errand, final Long caseNumber, final Long decisionId, final RenderResponse pdf) {
+		caseDataClient.postDecisionAttachment(municipalityId, errand.getNamespace(), caseNumber, decisionId,
+			toAttachmentMetadataPart(toAttachment(CATEGORY_BESLUT, DECISION_FILENAME, "pdf", APPLICATION_PDF_VALUE)),
+			toAttachmentFilePart(DECISION_FILENAME, APPLICATION_PDF_VALUE, pdf));
 	}
 
 	private String getTemplateId(final Errand errand, final Decision decision) {

@@ -6,6 +6,7 @@ import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
@@ -78,28 +79,27 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 
 	@Override
 	public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+		/*
+		 * RequestId.init() only writes to the MDC when the thread local counter is zero and increments it afterwards.
+		 * Without a matching reset() the counter never returns to zero, which would make every task after the first one on
+		 * a given worker thread log under the request id of that first task.
+		 */
 		RequestId.init(externalTask.getVariable(CAMUNDA_VARIABLE_REQUEST_ID));
-		executeBusinessLogic(externalTask, externalTaskService);
+		try {
+			executeBusinessLogic(externalTask, externalTaskService);
+		} finally {
+			RequestId.reset();
+		}
 	}
 
 	protected boolean isCancel(Errand errand) {
-		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
-			.findFirst()
-			.map(ExtraParameter::getValues)
-			.filter(CollectionUtils::isNotEmpty)
-			.map(List::getFirst)
+		return findExtraParameterValue(errand, CASEDATA_KEY_PHASE_ACTION)
 			.filter(PHASE_ACTION_CANCEL::equals)
 			.isPresent();
 	}
 
 	protected boolean isAutomatic(Errand errand) {
-		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
-			.findFirst()
-			.map(ExtraParameter::getValues)
-			.filter(CollectionUtils::isNotEmpty)
-			.map(List::getFirst)
+		return findExtraParameterValue(errand, CASEDATA_KEY_PHASE_ACTION)
 			.filter(PHASE_ACTION_AUTOMATIC::equals)
 			.isPresent();
 	}
@@ -124,12 +124,20 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	}
 
 	protected String getPhaseAction(final Errand errand) {
+		return findExtraParameterValue(errand, CASEDATA_KEY_PHASE_ACTION)
+			.orElse(PHASE_ACTION_UNKNOWN);
+	}
+
+	/**
+	 * Returns the first value of the extra parameter matching the provided key, or an empty optional if the parameter is
+	 * absent or holds no values.
+	 */
+	protected Optional<String> findExtraParameterValue(final Errand errand, final String key) {
 		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameters -> CASEDATA_KEY_PHASE_ACTION.equals(extraParameters.getKey()))
+			.filter(extraParameter -> key.equals(extraParameter.getKey()))
 			.findFirst()
 			.map(ExtraParameter::getValues)
 			.filter(CollectionUtils::isNotEmpty)
-			.map(List::getFirst)
-			.orElse(PHASE_ACTION_UNKNOWN);
+			.map(List::getFirst);
 	}
 }

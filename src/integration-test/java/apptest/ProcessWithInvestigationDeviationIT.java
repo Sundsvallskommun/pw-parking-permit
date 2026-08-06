@@ -14,6 +14,7 @@ import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
+import static apptest.mock.api.CaseData.mockCaseDataDecisionAttachmentPost;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
@@ -453,18 +454,14 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 				     "updated" : "2022-12-02T15:13:45.371676+01:00"
 				   },
 				   "decidedAt" : "${json-unit.any-string}",
-				   "attachments" : [ {
-				     "category" : "BESLUT",
-				     "name" : "beslut.pdf",
-				     "extension" : "pdf",
-				     "mimeType" : "application/pdf",
-				     "file" : "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
-				   } ],
 				   "created" : "${json-unit.any-string}"
 				 }
 				"""));
 
-		final var stateAfterConstructDecision = mockCaseDataPatchStatus(caseId, scenarioName, stateAfterPatchDecision,
+		final var stateAfterDecisionAttachment = mockCaseDataDecisionAttachmentPost(caseId, scenarioName, stateAfterPatchDecision,
+			"investigation_construct-decision_task-worker---api-casedata-add-decision-attachment");
+
+		final var stateAfterConstructDecision = mockCaseDataPatchStatus(caseId, scenarioName, stateAfterDecisionAttachment,
 			"investigation_construct-decision_task-worker---api-casedata-patch-status-errand",
 			equalToJson("""
 				{

@@ -1,15 +1,19 @@
 package se.sundsvall.parkingpermit.businesslogic.worker.investigation;
 
+import feign.form.FormData;
 import generated.se.sundsvall.businessrules.Result;
 import generated.se.sundsvall.businessrules.ResultDetail;
 import generated.se.sundsvall.businessrules.ResultValue;
 import generated.se.sundsvall.businessrules.RuleEngineResponse;
+import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Status;
 import generated.se.sundsvall.templating.RenderResponse;
+import java.net.URI;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 import org.camunda.bpm.client.exception.EngineException;
@@ -26,9 +30,11 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
+import tools.jackson.databind.ObjectMapper;
 
 import static generated.se.sundsvall.businessrules.ResultValue.FAIL;
 import static generated.se.sundsvall.businessrules.ResultValue.PASS;
@@ -41,6 +47,8 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -49,6 +57,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
@@ -57,6 +67,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
+import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,6 +77,8 @@ class ConstructDecisionTaskWorkerTest {
 	private static final long ERRAND_ID = 123L;
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
+	private static final long DECISION_ID = 456L;
+	private static final String BASE64_CONTENT = "ZmlsZW91dHB1dCBhcyBiYXNlNjQgc3RyaW5n";
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -88,6 +101,12 @@ class ConstructDecisionTaskWorkerTest {
 
 	@Captor
 	private ArgumentCaptor<Long> errandIdArgumentCaptor;
+
+	@Captor
+	private ArgumentCaptor<FormData> attachmentMetadataCaptor;
+
+	@Captor
+	private ArgumentCaptor<FormData> attachmentFileCaptor;
 
 	@InjectMocks
 	private ConstructDecisionTaskWorker worker;
@@ -161,8 +180,10 @@ class ConstructDecisionTaskWorkerTest {
 		if (isAutomatic) {
 			when(errandMock.getId()).thenReturn(ERRAND_ID);
 			when(errandMock.getMunicipalityId()).thenReturn(MUNICIPALITY_ID);
-			when(messagingServiceMock.renderPdfDecision(eq(MUNICIPALITY_ID), eq(errandMock), anyString())).thenReturn(new RenderResponse());
+			when(messagingServiceMock.renderPdfDecision(eq(MUNICIPALITY_ID), eq(errandMock), anyString())).thenReturn(new RenderResponse().output(BASE64_CONTENT));
 			when(errandMock.getStakeholders()).thenReturn(List.of(new Stakeholder().roles(List.of("ADMINISTRATOR"))));
+			when(caseDataClientMock.patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any()))
+				.thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + DECISION_ID)).build());
 		}
 
 		// Act
@@ -190,10 +211,25 @@ class ConstructDecisionTaskWorkerTest {
 			assertThat(decisionArgumentCaptor.getValue().getValidTo()).isNull();
 		}
 
+		// The decision payload must not carry attachments, they are uploaded through the decision attachment endpoint
+		assertThat(decisionArgumentCaptor.getValue().getAttachments()).isNull();
+
 		if (isAutomatic) {
 			verify(caseDataClientMock).patchStatus(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), statusArgumentCaptor.capture());
 			assertThat(statusArgumentCaptor.getValue().getStatusType()).isEqualTo(CASEDATA_STATUS_CASE_DECIDED);
 			assertThat(statusArgumentCaptor.getValue().getDescription()).isEqualTo(CASEDATA_STATUS_CASE_DECIDED);
+
+			verify(caseDataClientMock).postDecisionAttachment(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), eq(DECISION_ID),
+				attachmentMetadataCaptor.capture(), attachmentFileCaptor.capture());
+
+			assertThat(attachmentMetadataCaptor.getValue().getContentType()).isEqualTo(APPLICATION_JSON_VALUE);
+			assertThat(new ObjectMapper().readValue(attachmentMetadataCaptor.getValue().getData(), Attachment.class))
+				.extracting(Attachment::getCategory, Attachment::getName, Attachment::getExtension, Attachment::getMimeType)
+				.containsExactly(CATEGORY_BESLUT, "beslut.pdf", "pdf", APPLICATION_PDF_VALUE);
+			assertThat(attachmentFileCaptor.getValue().getFileName()).isEqualTo("beslut.pdf");
+			assertThat(attachmentFileCaptor.getValue().getData()).isEqualTo(Base64.getDecoder().decode(BASE64_CONTENT));
+		} else {
+			verify(caseDataClientMock, never()).postDecisionAttachment(anyString(), anyString(), anyLong(), anyLong(), any(), any());
 		}
 
 		verify(externalTaskServiceMock).complete(externalTaskMock);
