@@ -115,14 +115,14 @@ class AbstractTaskWorkerTest {
 		final var secondRequestId = UUID.randomUUID().toString();
 		final var observedRequestIds = new ArrayList<String>();
 
-		final var recordingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+		final var recordingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				observedRequestIds.add(RequestId.get());
 			}
 		};
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(firstRequestId, secondRequestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(firstRequestId, secondRequestId);
 
 		// Act - two tasks executed in sequence on the same thread
 		recordingWorker.execute(externalTaskMock, externalTaskServiceMock);
@@ -137,14 +137,14 @@ class AbstractTaskWorkerTest {
 	void executeClearsRequestIdWhenBusinessLogicThrows() {
 		// Arrange
 		final var requestId = UUID.randomUUID().toString();
-		final var throwingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+		final var throwingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				throw new IllegalStateException("Boom");
 			}
 		};
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(requestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(requestId);
 
 		// Act
 		assertThatThrownBy(() -> throwingWorker.execute(externalTaskMock, externalTaskServiceMock))

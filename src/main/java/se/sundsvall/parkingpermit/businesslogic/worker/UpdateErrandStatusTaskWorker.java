@@ -9,8 +9,8 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_STATUS;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_STATUS_DESCRIPTION;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_STATUS_DESCRIPTION;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStatus;
 
 @Component
@@ -31,10 +31,10 @@ public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing update of status for errand with id {}", errand.getId());
 
-			final var status = Optional.ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_STATUS))
+			final var status = Optional.ofNullable(externalTask.getVariable(PROCESS_VARIABLE_STATUS))
 				.map(Object::toString)
-				.orElseThrow(() -> new IllegalStateException("Process variable '%s' is not set".formatted(CAMUNDA_VARIABLE_STATUS)));
-			final var statusDescription = Optional.ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_STATUS_DESCRIPTION)).map(Object::toString).orElse(status);
+				.orElseThrow(() -> new IllegalStateException("Process variable '%s' is not set".formatted(PROCESS_VARIABLE_STATUS)));
+			final var statusDescription = Optional.ofNullable(externalTask.getVariable(PROCESS_VARIABLE_STATUS_DESCRIPTION)).map(Object::toString).orElse(status);
 			caseDataClient.patchStatus(municipalityId, namespace, errand.getId(), toStatus(status, statusDescription));
 
 			externalTaskService.complete(externalTask);

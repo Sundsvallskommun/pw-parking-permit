@@ -4,7 +4,6 @@ import generated.se.sundsvall.casedata.Stakeholder;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;

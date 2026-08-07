@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.integration.operaton;
 
+import feign.form.FormData;
 import generated.se.sundsvall.operaton.DeploymentWithDefinitionsDto;
 import generated.se.sundsvall.operaton.PatchVariablesDto;
 import generated.se.sundsvall.operaton.ProcessInstanceDto;
@@ -7,7 +8,6 @@ import generated.se.sundsvall.operaton.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.operaton.StartProcessInstanceDto;
 import generated.se.sundsvall.operaton.VariableValueDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -57,7 +57,7 @@ public interface OperatonClient {
 		@PathVariable("enable-duplicate-filtering") Boolean enableDuplicateFiltering,
 		@PathVariable("deployment-name") String deploymentName,
 		@PathVariable("deployment-activation-time") OffsetDateTime deploymentActivationTime,
-		@PathVariable("data") File data);
+		@PathVariable("data") FormData data);
 
 	@GetMapping(path = "process-instance/{id}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	Optional<ProcessInstanceDto> getProcessInstance(@PathVariable String id);

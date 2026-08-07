@@ -1,7 +1,7 @@
 package se.sundsvall.parkingpermit.integration.engine;
 
+import feign.form.FormData;
 import generated.se.sundsvall.camunda.VariableValueDto;
-import java.io.File;
 import java.time.OffsetDateTime;
 
 /**
@@ -15,5 +15,5 @@ public interface EngineClient {
 
 	void setProcessInstanceVariable(String processInstanceId, String variableName, VariableValueDto value);
 
-	void deploy(String tenantId, String deploymentSource, Boolean deployChangedOnly, Boolean enableDuplicateFiltering, String deploymentName, OffsetDateTime deploymentActivationTime, File data);
+	void deploy(String tenantId, String deploymentSource, Boolean deployChangedOnly, Boolean enableDuplicateFiltering, String deploymentName, OffsetDateTime deploymentActivationTime, FormData data);
 }
