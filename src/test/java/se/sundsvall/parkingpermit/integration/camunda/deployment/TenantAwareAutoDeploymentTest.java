@@ -1,9 +1,8 @@
 package se.sundsvall.parkingpermit.integration.camunda.deployment;
 
-import java.io.File;
+import feign.form.FormData;
 import java.io.IOException;
 import java.util.List;
-import org.assertj.core.api.FileAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -59,7 +58,7 @@ class TenantAwareAutoDeploymentTest {
 	private TenantAwareAutoDeployment tenantAwareAutoDeployment;
 
 	@Captor
-	private ArgumentCaptor<File> fileCaptor;
+	private ArgumentCaptor<FormData> formDataCaptor;
 
 	@Test
 	void autoDeployDisabled() {
@@ -158,9 +157,11 @@ class TenantAwareAutoDeploymentTest {
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_BPMN);
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_DMN);
 		verify(resourcePatternResolverMock).getResources(DEFAULT_PATTERN_PREFIX + FILETYPE_FORM);
-		verify(deploymentApiMock).deploy(eq(tenant), eq(PROCESSMODEL_FILE), eq(true), eq(true), eq(deploymentName), isNull(), fileCaptor.capture());
+		verify(deploymentApiMock).deploy(eq(tenant), eq(PROCESSMODEL_FILE), eq(true), eq(true), eq(deploymentName), isNull(), formDataCaptor.capture());
 
-		new FileAssert(fileCaptor.getValue()).hasSameTextualContentAs(processFile.getFile());
+		// The file name has to keep the extension, since the deployer uses it to recognize the resource type
+		assertThat(formDataCaptor.getValue().getFileName()).isEqualTo(PROCESSMODEL_FILE);
+		assertThat(formDataCaptor.getValue().getData()).isEqualTo(processFile.getContentAsByteArray());
 	}
 
 	@Test

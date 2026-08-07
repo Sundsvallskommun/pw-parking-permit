@@ -12,11 +12,16 @@ import static java.util.Collections.emptyMap;
 @Component
 public class FailureHandler {
 
-	@Value("${camunda.worker.max.retries}")
-	private int maxRetries;
+	private final int maxRetries;
 
-	@Value("${camunda.worker.retry.timeout}")
-	private long retryTimeout;
+	private final long retryTimeout;
+
+	FailureHandler(
+		@Value("${camunda.worker.max.retries}") final int maxRetries,
+		@Value("${camunda.worker.retry.timeout}") final long retryTimeout) {
+		this.maxRetries = maxRetries;
+		this.retryTimeout = retryTimeout;
+	}
 
 	public void handleException(ExternalTaskService externalTaskService, ExternalTask externalTask, String message) {
 		externalTaskService.handleFailure(externalTask.getId(), externalTask.getWorkerId(),

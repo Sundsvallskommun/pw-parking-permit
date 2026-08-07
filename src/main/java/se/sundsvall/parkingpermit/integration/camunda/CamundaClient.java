@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.integration.camunda;
 
+import feign.form.FormData;
 import generated.se.sundsvall.camunda.ActivityInstanceDto;
 import generated.se.sundsvall.camunda.DeploymentDto;
 import generated.se.sundsvall.camunda.DeploymentWithDefinitionsDto;
@@ -14,7 +15,6 @@ import generated.se.sundsvall.camunda.ProcessInstanceWithVariablesDto;
 import generated.se.sundsvall.camunda.StartProcessInstanceDto;
 import generated.se.sundsvall.camunda.VariableValueDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public interface CamundaClient {
 		@PathVariable("enable-duplicate-filtering") Boolean enableDuplicateFiltering,
 		@PathVariable("deployment-name") String deploymentName,
 		@PathVariable("deployment-activation-time") OffsetDateTime deploymentActivationTime,
-		@PathVariable("data") File data);
+		@PathVariable("data") FormData data);
 
 	@GetMapping(path = "deployment", produces = APPLICATION_JSON_VALUE, consumes = MULTIPART_FORM_DATA_VALUE)
 	List<DeploymentDto> getDeployments(@RequestParam("source") String source, @RequestParam("nameLike") String nameLike, @RequestParam("tenantIdIn") String tenantIdIn);

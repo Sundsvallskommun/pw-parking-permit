@@ -1,11 +1,7 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import generated.se.sundsvall.casedata.Errand;
-import generated.se.sundsvall.casedata.ExtraParameter;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.collections4.CollectionUtils;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -14,8 +10,6 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
@@ -49,8 +43,8 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Check phase action for errand with id {}", errand.getId());
 
-			final var phaseAction = find(errand, CASEDATA_KEY_PHASE_ACTION).orElse(PHASE_ACTION_UNKNOWN);
-			final var displayPhase = find(errand, CASEDATA_KEY_DISPLAY_PHASE).orElse(null);
+			final var phaseAction = findExtraParameterValue(errand, CASEDATA_KEY_PHASE_ACTION).orElse(PHASE_ACTION_UNKNOWN);
+			final var displayPhase = findExtraParameterValue(errand, CASEDATA_KEY_DISPLAY_PHASE).orElse(null);
 
 			switch (phaseAction) {
 				case PHASE_ACTION_COMPLETE, PHASE_ACTION_AUTOMATIC -> {
@@ -83,21 +77,8 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean isPhaseStatusNotWaiting(Errand errand) {
-		return !PHASE_STATUS_WAITING.equals(Optional.ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameters -> CASEDATA_KEY_PHASE_STATUS.equals(extraParameters.getKey()))
-			.findFirst()
-			.map(ExtraParameter::getValues)
-			.filter(CollectionUtils::isNotEmpty)
-			.map(List::getFirst)
-			.orElse(null));
-	}
-
-	private Optional<String> find(Errand errand, String key) {
-		return ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
-			.filter(extraParameters -> key.equals(extraParameters.getKey()))
-			.findFirst()
-			.map(ExtraParameter::getValues)
-			.filter(CollectionUtils::isNotEmpty)
-			.map(List::getFirst);
+		return findExtraParameterValue(errand, CASEDATA_KEY_PHASE_STATUS)
+			.filter(PHASE_STATUS_WAITING::equals)
+			.isEmpty();
 	}
 }

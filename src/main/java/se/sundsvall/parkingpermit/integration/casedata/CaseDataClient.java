@@ -1,13 +1,12 @@
 package se.sundsvall.parkingpermit.integration.casedata;
 
+import feign.form.FormData;
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
 import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.casedata.MessageRequest;
 import generated.se.sundsvall.casedata.Note;
-import generated.se.sundsvall.casedata.PageErrand;
-import generated.se.sundsvall.casedata.PatchDecision;
 import generated.se.sundsvall.casedata.PatchErrand;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Status;
@@ -22,9 +21,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static se.sundsvall.parkingpermit.integration.casedata.configuration.CaseDataConfiguration.CLIENT_ID;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.casedata.url}", configuration = CaseDataConfiguration.class)
@@ -36,6 +38,7 @@ public interface CaseDataClient {
 	 *
 	 * @param  patchDecision                                for patching decision
 	 * @param  errandId                                     of case to update
+	 * @return                                              response carrying the location of the created decision
 	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
 	 */
 	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions", consumes = APPLICATION_JSON_VALUE)
@@ -45,20 +48,23 @@ public interface CaseDataClient {
 		@PathVariable Long errandId,
 		@RequestBody Decision patchDecision);
 
-	@PatchMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> patchDecisionWithId(
+	/**
+	 * Creates an attachment on a decision. CaseData expects the attachment metadata as a JSON part named 'attachment' and
+	 * the binary content as a file part named 'file'. Since CaseData major version 13 attachments can no longer be sent as
+	 * part of the decision payload.
+	 *
+	 * @param  attachment                                   the attachment metadata, serialized as JSON
+	 * @param  file                                         the decoded (binary) file content
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
+	 */
+	@PostMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = ALL_VALUE)
+	ResponseEntity<Void> postDecisionAttachment(
 		@PathVariable String municipalityId,
 		@PathVariable String namespace,
 		@PathVariable Long errandId,
 		@PathVariable Long decisionId,
-		@RequestBody PatchDecision patchDecision);
-
-	@DeleteMapping(path = "/{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}", consumes = APPLICATION_JSON_VALUE)
-	ResponseEntity<Void> deleteDecision(
-		@PathVariable String municipalityId,
-		@PathVariable String namespace,
-		@PathVariable Long errandId,
-		@PathVariable Long decisionId);
+		@RequestPart("attachment") FormData attachment,
+		@RequestPart("file") FormData file);
 
 	/**
 	 * Gets an errand by id.
@@ -73,7 +79,7 @@ public interface CaseDataClient {
 		@PathVariable Long errandId);
 
 	/**
-	 * Gets attachment by errand id
+	 * Gets attachment metadata by errand id. The metadata does not carry the binary content.
 	 *
 	 * @param  municipalityId municipality id
 	 * @param  namespace      namespace
@@ -85,21 +91,6 @@ public interface CaseDataClient {
 		@PathVariable String municipalityId,
 		@PathVariable String namespace,
 		@PathVariable Long errandId);
-
-	/**
-	 * Get errands with or without query. The query is very flexible and allows you as a client to control a lot yourself.
-	 * Unfortunately you are not able to use the filter with extraParameter-fields.
-	 * <p>
-	 * filter example: caseType:'LOST_PARKING_PERMIT' and stakeholders.personId:'744e719d-aedc-45b8-b9a6-1ada0e087910'
-	 *
-	 * @param  filter                                       the filter to use
-	 * @throws se.sundsvall.dept44.problem.ThrowableProblem on error
-	 */
-	@GetMapping(path = "/{municipalityId}/{namespace}/errands", produces = APPLICATION_JSON_VALUE)
-	PageErrand getErrandsByQueryFilter(
-		@PathVariable String municipalityId,
-		@PathVariable String namespace,
-		@RequestParam String filter);
 
 	/**
 	 * Updates an errand.

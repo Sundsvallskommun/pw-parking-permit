@@ -1,14 +1,18 @@
 package apptest.mock.api;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
@@ -18,6 +22,9 @@ import java.util.Map;
 import com.github.tomakehurst.wiremock.matching.ContentPattern;
 
 public class CaseData {
+
+	/** Id of the decision that the decision creation stub reports back through its Location header. */
+	public static final long DECISION_ID = 2L;
 
 	public static String mockCaseDataGet(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, Map<String, Object> transformParameters) {
 		return mockCaseDataGet(caseId, scenarioName, requiredScenarioState, newScenarioState, transformParameters, "APPROVAL", "ADMINISTRATOR");
@@ -148,7 +155,35 @@ public class CaseData {
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withRequestBody(bodyPattern)
 			.willReturn(aResponse()
-				.withStatus(NO_CONTENT_204)
+				.withStatus(CREATED_201)
+				.withHeader("Content-Type", "*/*")
+				.withHeader("Location", String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/decisions/", caseId) + DECISION_ID))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
+
+	/**
+	 * Stubs the multipart upload of a decision attachment. The metadata is sent as a JSON part named 'attachment' and the
+	 * binary content as a file part named 'file'.
+	 */
+	public static String mockCaseDataDecisionAttachmentPost(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState) {
+		return stubFor(post(urlEqualTo(String.format("/api-casedata/2281/SBK_PARKING_PERMIT/errands/%s/decisions/%s/attachments", caseId, DECISION_ID)))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withHeader("Content-Type", containing("multipart/form-data"))
+			.withMultipartRequestBody(aMultipart("attachment")
+				.withBody(equalToJson("""
+					{
+						"category": "BESLUT",
+						"name": "beslut.pdf",
+						"extension": "pdf",
+						"mimeType": "application/pdf"
+					}
+					""", true, true)))
+			.withMultipartRequestBody(aMultipart("file"))
+			.willReturn(aResponse()
+				.withStatus(CREATED_201)
 				.withHeader("Content-Type", "*/*"))
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();

@@ -234,7 +234,7 @@ class CheckErrandPhaseActionTaskWorkerTest {
 	@Test
 	void executeThrowsException() {
 		// Setup
-		final var problem = Problem.valueOf(HttpStatus.I_AM_A_TEAPOT, "Big and stout");
+		final var problem = Problem.valueOf(HttpStatus.EXPECTATION_FAILED, "Big and stout");
 
 		// Mock to simulate exception upon patching errand with new phase
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);

@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.businesslogic.worker;
 
+import feign.form.FormData;
 import generated.se.sundsvall.casedata.Attachment;
 import generated.se.sundsvall.casedata.Decision;
 import generated.se.sundsvall.casedata.Errand;
@@ -7,6 +8,7 @@ import generated.se.sundsvall.casedata.Law;
 import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.net.URI;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ import se.sundsvall.parkingpermit.util.CommonTextProperties;
 import se.sundsvall.parkingpermit.util.DenialTextProperties;
 import se.sundsvall.parkingpermit.util.SimplifiedServiceTextProperties;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import tools.jackson.databind.ObjectMapper;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -47,6 +50,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
@@ -65,6 +69,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 	private static final String ROLE_DOCTOR = "DOCTOR";
 	private static final String TEMPLATE_ID = "sbk.prh.decision.all.rejection.municipality";
+	private static final String BASE64_CONTENT = "ZmlsZW91dHB1dCBhcyBiYXNlNjQgc3RyaW5n";
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Mock
 	private CamundaClient camundaClientMock;
@@ -111,6 +117,12 @@ class AutomaticDenialDecisionTaskWorkerTest {
 	@Captor
 	private ArgumentCaptor<Map<String, Object>> mapCaptor;
 
+	@Captor
+	private ArgumentCaptor<FormData> attachmentMetadataCaptor;
+
+	@Captor
+	private ArgumentCaptor<FormData> attachmentFileCaptor;
+
 	@Test
 	void verifyAnnotations() {
 		assertThat(worker.getClass()).hasAnnotations(Component.class, ExternalTaskSubscription.class);
@@ -124,7 +136,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var description = "description";
 		final var stakeholderId = new Random().nextLong();
 		final var stakeholder = new Stakeholder().id(stakeholderId);
-		final var output = "output";
+		final var decisionId = new Random().nextLong();
 
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -135,7 +147,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		when(errandMock.getId()).thenReturn(ERRAND_ID);
 		when(caseDataClientMock.addStakeholderToErrand(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + stakeholderId)).build());
 		when(caseDataClientMock.getStakeholder(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID, stakeholderId)).thenReturn(stakeholder);
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID)).thenReturn(new RenderResponse().output(output));
+		when(caseDataClientMock.patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + decisionId)).build());
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID)).thenReturn(new RenderResponse().output(BASE64_CONTENT));
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getFilename()).thenReturn(filename);
@@ -160,6 +173,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(textProviderMock).getCommonTexts(MUNICIPALITY_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID);
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
+		verify(caseDataClientMock).postDecisionAttachment(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), eq(decisionId), attachmentMetadataCaptor.capture(), attachmentFileCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
@@ -186,19 +200,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				"13",
 				"13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
 				"Trafikförordningen (1998:1276)"));
-		assertThat(decisionCaptor.getValue().getAttachments())
-			.extracting(
-				Attachment::getCategory,
-				Attachment::getExtension,
-				Attachment::getFile,
-				Attachment::getName,
-				Attachment::getMimeType)
-			.containsExactly(tuple(
-				CATEGORY_BESLUT,
-				"pdf",
-				output,
-				filename,
-				APPLICATION_PDF_VALUE));
+		// The decision payload must not carry attachments, they are uploaded through the decision attachment endpoint
+		assertThat(decisionCaptor.getValue().getAttachments()).isNull();
+		assertAttachmentParts(attachmentMetadataCaptor.getValue(), attachmentFileCaptor.getValue(), filename);
 	}
 
 	@Test
@@ -208,7 +212,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		final var description = "description";
 		final var stakeholderId = new Random().nextLong();
 		final var processEngineStakeholder = createStakeholder(stakeholderId, ROLE_ADMINISTRATOR, "Process", "Engine");
-		final var output = "output";
+		final var decisionId = new Random().nextLong();
 
 		// Mock
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
@@ -223,7 +227,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 			createStakeholder(null, ROLE_ADMINISTRATOR, "Process", "Enigne"),
 			processEngineStakeholder));
 
-		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID)).thenReturn(new RenderResponse().output(output));
+		when(caseDataClientMock.patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any())).thenReturn(ResponseEntity.created(URI.create("url/to/created/id/" + decisionId)).build());
+		when(messagingServiceMock.renderPdfDecision(MUNICIPALITY_ID, errandMock, TEMPLATE_ID)).thenReturn(new RenderResponse().output(BASE64_CONTENT));
 		when(textProviderMock.getDenialTexts(MUNICIPALITY_ID)).thenReturn(denialTextPropertiesMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getFilename()).thenReturn(filename);
@@ -248,6 +253,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(simplifiedServiceTextPropertiesMock).getDelay();
 		verify(caseDataClientMock).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), decisionCaptor.capture());
+		verify(caseDataClientMock).postDecisionAttachment(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), eq(decisionId), attachmentMetadataCaptor.capture(), attachmentFileCaptor.capture());
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, camundaClientMock);
 
@@ -269,19 +275,9 @@ class AutomaticDenialDecisionTaskWorkerTest {
 				"13",
 				"13 kap. 8§ Parkeringstillstånd för rörelsehindrade",
 				"Trafikförordningen (1998:1276)"));
-		assertThat(decisionCaptor.getValue().getAttachments())
-			.extracting(
-				Attachment::getCategory,
-				Attachment::getExtension,
-				Attachment::getFile,
-				Attachment::getName,
-				Attachment::getMimeType)
-			.containsExactly(tuple(
-				CATEGORY_BESLUT,
-				"pdf",
-				output,
-				filename,
-				APPLICATION_PDF_VALUE));
+		// The decision payload must not carry attachments, they are uploaded through the decision attachment endpoint
+		assertThat(decisionCaptor.getValue().getAttachments()).isNull();
+		assertAttachmentParts(attachmentMetadataCaptor.getValue(), attachmentFileCaptor.getValue(), filename);
 	}
 
 	@Test
@@ -345,6 +341,25 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskMock).getId();
 		verifyNoInteractions(camundaClientMock, textProviderMock);
 
+	}
+
+	private void assertAttachmentParts(final FormData metadataPart, final FormData filePart, final String filename) {
+		assertThat(metadataPart.getContentType()).isEqualTo(APPLICATION_JSON_VALUE);
+		assertThat(OBJECT_MAPPER.readValue(metadataPart.getData(), Attachment.class))
+			.extracting(
+				Attachment::getCategory,
+				Attachment::getExtension,
+				Attachment::getName,
+				Attachment::getMimeType)
+			.containsExactly(
+				CATEGORY_BESLUT,
+				"pdf",
+				filename,
+				APPLICATION_PDF_VALUE);
+
+		assertThat(filePart.getContentType()).isEqualTo(APPLICATION_PDF_VALUE);
+		assertThat(filePart.getFileName()).isEqualTo(filename);
+		assertThat(filePart.getData()).isEqualTo(Base64.getDecoder().decode(BASE64_CONTENT));
 	}
 
 	private Stakeholder createStakeholder(Long stakeholderId, String role, String firstName, String lastName) {

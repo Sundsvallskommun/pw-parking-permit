@@ -103,7 +103,7 @@ class ProcessResourceFailuresTest {
 		assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getViolations())
 			.extracting(Violation::field, Violation::message)
-			.containsExactly(tuple("startProcess.namespace", "can only contain A-Z, a-z, 0-9, -, and _"));
+			.containsExactly(tuple("startProcess.namespace", "not a valid namespace. Must be 2-32 characters and can only contain A-Z, a-z, 0-9, - and _"));
 
 		verifyNoInteractions(processServiceMock);
 	}

@@ -12,10 +12,12 @@ import generated.se.sundsvall.casedata.Stakeholder;
 import generated.se.sundsvall.casedata.Stakeholder.TypeEnum;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.ObjectMapper;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneId.systemDefault;
@@ -23,6 +25,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataMapperTest {
@@ -284,7 +287,7 @@ class CaseDataMapperTest {
 
 	@Test
 	void toAttachmentWithNullAsParameters() {
-		final var bean = CaseDataMapper.toAttachment(null, null, null, null, null);
+		final var bean = CaseDataMapper.toAttachment(null, null, null, null);
 
 		assertThat(bean).isNotNull().hasAllNullFieldsOrProperties();
 	}
@@ -295,24 +298,49 @@ class CaseDataMapperTest {
 		final var name = "name";
 		final var extension = "extension";
 		final var mimeType = "mimeType";
-		final var output = "ZmlsZW91dHB1dCBhcyBiYXNlNjQgc3RyaW5n";
-		final var renderedContent = new RenderResponse().output(output);
 
-		final var bean = CaseDataMapper.toAttachment(category, name, extension, mimeType, renderedContent);
+		final var bean = CaseDataMapper.toAttachment(category, name, extension, mimeType);
 
-		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("category", "name", "extension", "mimeType", "file")
+		assertThat(bean).isNotNull().hasAllNullFieldsOrPropertiesExcept("category", "name", "extension", "mimeType")
 			.extracting(
 				Attachment::getCategory,
 				Attachment::getName,
 				Attachment::getExtension,
-				Attachment::getMimeType,
-				Attachment::getFile)
+				Attachment::getMimeType)
 			.containsExactly(
 				category,
 				name,
 				extension,
-				mimeType,
-				output);
+				mimeType);
+	}
+
+	@Test
+	void toAttachmentMetadataPart() {
+		final var attachment = CaseDataMapper.toAttachment("POLICE_REPORT", "name", "extension", "mimeType");
+
+		final var bean = CaseDataMapper.toAttachmentMetadataPart(attachment);
+
+		assertThat(bean.getContentType()).isEqualTo(APPLICATION_JSON_VALUE);
+		assertThat(bean.getFileName()).isNull();
+		assertThat(new ObjectMapper().readValue(bean.getData(), Attachment.class)).isEqualTo(attachment);
+	}
+
+	@Test
+	void toAttachmentFilePart() {
+		final var output = "ZmlsZW91dHB1dCBhcyBiYXNlNjQgc3RyaW5n";
+
+		final var bean = CaseDataMapper.toAttachmentFilePart("name.pdf", "application/pdf", new RenderResponse().output(output));
+
+		assertThat(bean.getContentType()).isEqualTo("application/pdf");
+		assertThat(bean.getFileName()).isEqualTo("name.pdf");
+		assertThat(bean.getData()).isEqualTo(Base64.getDecoder().decode(output));
+	}
+
+	@Test
+	void toAttachmentFilePartWithoutRenderedContent() {
+		assertThat(CaseDataMapper.toAttachmentFilePart("name.pdf", "application/pdf", null).getData()).isEmpty();
+		assertThat(CaseDataMapper.toAttachmentFilePart("name.pdf", "application/pdf", new RenderResponse()).getData()).isEmpty();
+		assertThat(CaseDataMapper.toAttachmentFilePart("name.pdf", "application/pdf", new RenderResponse().output(" ")).getData()).isEmpty();
 	}
 
 	@Test

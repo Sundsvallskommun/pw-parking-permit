@@ -1,14 +1,10 @@
 package se.sundsvall.parkingpermit.integration.camunda.deployment;
 
+import feign.form.FormData;
 import jakarta.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -29,6 +25,7 @@ public class TenantAwareAutoDeployment {
 	private static final String FILETYPE_DMN = "dmn";
 	private static final String FILETYPE_FORM = "form";
 	private static final Resource[] NO_RESOURCES = {};
+	private static final String DEPLOYMENT_CONTENT_TYPE = "application/octet-stream";
 
 	private final CamundaClient camundaClient;
 
@@ -41,9 +38,6 @@ public class TenantAwareAutoDeployment {
 		this.deployments = deployments;
 		this.patternResolver = patternResolver;
 	}
-
-	@Value("${spring.application.name:spring-app}")
-	private String applicationName;
 
 	@PostConstruct
 	public void deployCamundaResources() {
@@ -64,16 +58,12 @@ public class TenantAwareAutoDeployment {
 
 		for (final Resource camundaResource : resourcesToDeploy) {
 			try {
-				// We have to create a tmpFile because we need to read the files via InputStream to work also in a jar-packed
-				// environment but the OpenAPI will need a File. We still have to set the file ending correct in the temp file
-				// (because otherwise the deployer will not pick it up as e.g. BPMN file)
-				final String tmpDirectoryName = FileUtils.getTempDirectory().getAbsolutePath();
-				final String filename = getResourceFilename(camundaResource, type);
-				final File tmpFile = new File(tmpDirectoryName + File.separator + filename);
-				tmpFile.deleteOnExit();
-				try (FileOutputStream out = new FileOutputStream(tmpFile)) {
-					IOUtils.copy(camundaResource.getInputStream(), out);
-				}
+				/*
+				 * The resource is read through an InputStream so that deployment also works from a jar-packed environment, and
+				 * is handed to the client as in memory form data. The file name has to carry the correct extension, since that
+				 * is what the deployer uses to recognize the resource as e.g. a BPMN file.
+				 */
+				final var content = readContent(camundaResource);
 
 				camundaClient.deploy(
 					processArchive.tenant(), // tenantId
@@ -82,10 +72,16 @@ public class TenantAwareAutoDeployment {
 					true, // duplicateFiltering
 					processArchive.name() + " (" + processArchive.tenant() + ") - " + camundaResource.getFilename(), // deploymentName
 					null,
-					tmpFile);
+					new FormData(DEPLOYMENT_CONTENT_TYPE, getResourceFilename(camundaResource, type), content));
 			} catch (final Exception e) {
 				throw new DeploymentException(e);
 			}
+		}
+	}
+
+	private byte[] readContent(Resource camundaResource) throws IOException {
+		try (var inputStream = camundaResource.getInputStream()) {
+			return inputStream.readAllBytes();
 		}
 	}
 

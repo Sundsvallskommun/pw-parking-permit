@@ -4,6 +4,7 @@ import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataAddMessagePost;
 import static apptest.mock.api.CaseData.mockCaseDataAddStakeholderPatch;
+import static apptest.mock.api.CaseData.mockCaseDataDecisionAttachmentPost;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionPatch;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
@@ -90,7 +91,7 @@ public class Denial {
 							}
 				"""));
 
-		return mockCaseDataDecisionPatch(caseId, scenarioName, state,
+		state = mockCaseDataDecisionPatch(caseId, scenarioName, state,
 			"automatic_denial_decision-task-worker---api-casedata-add-decision",
 			equalToJson(
 				"""
@@ -122,18 +123,12 @@ public class Denial {
 										"contactInformation": [],
 										"extraParameters": {}
 									},
-									"decidedAt": "${json-unit.any-string}",
-									"attachments": [
-										{
-											"category": "BESLUT",
-											"name": "beslut.pdf",
-											"extension": "pdf",
-											"mimeType": "application/pdf",
-											"file": "JVBERi0xLjcNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFuZyhzdi1TRSkgL1N0cnVjdFRyZWVSb290IDE0IDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4vTWV0YWRhdGEgMjUgMCBSL1ZpZXdlclByZWZlcmVuY2VzIDI2IDAgUj4"
-										}
-									]
+									"decidedAt": "${json-unit.any-string}"
 								}
 					"""));
+
+		return mockCaseDataDecisionAttachmentPost(caseId, scenarioName, state,
+			"automatic_denial_decision-task-worker---api-casedata-add-decision-attachment");
 	}
 
 	public static String mockDenialUpdateStatus(final String caseId, final String scenarioName, final String requiredScenarioState, boolean isAutomatic) {
