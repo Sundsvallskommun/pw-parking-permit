@@ -34,6 +34,22 @@ class TemplatingMapperTest {
 	}
 
 	@Test
+	void toRenderSimplifiedServiceRequestWithIdentifier() {
+		final var templateIdentifier = "templateIdentifier";
+
+		assertThat(TemplatingMapper.toRenderSimplifiedServiceRequest(templateIdentifier))
+			.hasAllNullFieldsOrPropertiesExcept("identifier", "metadata")
+			.hasFieldOrPropertyWithValue("identifier", templateIdentifier);
+	}
+
+	@Test
+	void toRenderSimplifiedServiceRequestWithBlankIdentifier() {
+		assertThat(TemplatingMapper.toRenderSimplifiedServiceRequest(null)).isNull();
+		assertThat(TemplatingMapper.toRenderSimplifiedServiceRequest("")).isNull();
+		assertThat(TemplatingMapper.toRenderSimplifiedServiceRequest(" ")).isNull();
+	}
+
+	@Test
 	void toRenderDecisionRequestWithIdentifierWithAllAttributes() {
 		final var templateIdentifier = "templateIdentifier";
 		assertThat(TemplatingMapper.toRenderDecisionRequest(createErrand(true), templateIdentifier))

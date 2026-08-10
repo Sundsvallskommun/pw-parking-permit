@@ -67,6 +67,7 @@ public class ProcessPathway {
 			//Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
+			.with(tuple("Add simplified service message to errand", "external_task_execution_add_simplified_service_message"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End execution phase", "end_execution_phase"));
@@ -84,6 +85,7 @@ public class ProcessPathway {
 			//Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
+			.with(tuple("Add simplified service message to errand", "external_task_execution_add_simplified_service_message"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
 			.with(tuple("End execution phase", "end_execution_phase"));
@@ -123,6 +125,7 @@ public class ProcessPathway {
 			.with(tuple("Add message to errand", "external_task_add_message"))
 			.with(tuple("Wait to send message", "timer_denial_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_send_simplified_service"))
+			.with(tuple("Add simplified service message to errand", "external_task_add_simplified_service_message"))
 			.with(tuple("End automatic denial phase", "end_automatic_denial_phase"))
 			.with(tuple("Automatic denial", "subprocess_automatic_denial"));
 	}

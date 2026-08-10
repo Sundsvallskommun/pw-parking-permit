@@ -14,7 +14,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_SIMPLIFIED_SERVICE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.Constants.MUNICIPALITY_ID_ANGE;
 
 @Component
@@ -47,7 +47,7 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 				.map(UUID::toString)
 				.orElse(null);
 
-			Optional.ofNullable(messageId).ifPresentOrElse(id -> externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, id)),
+			Optional.ofNullable(messageId).ifPresentOrElse(id -> externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_SIMPLIFIED_SERVICE_MESSAGE_ID, id)),
 				() -> externalTaskService.complete(externalTask));
 		} catch (final Exception exception) {
 			logException(externalTask, exception);

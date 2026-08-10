@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderDecisionRequest;
+import static se.sundsvall.parkingpermit.integration.templating.mapper.TemplatingMapper.toRenderSimplifiedServiceRequest;
 import static se.sundsvall.parkingpermit.util.ErrandUtil.getStakeholder;
 
 @Service
@@ -82,13 +83,19 @@ public class MessagingService {
 		final var partyId = getStakeholder(errand, PERSON, ROLE_APPLICANT).getPersonId();
 		try {
 			if (isNotEmpty(errand.getExternalCaseId())) {
-				final var messageResult = messagingClient.sendWebMessage(municipalityId, messagingMapper.toWebMessageRequestSimplifiedService(partyId, errand.getExternalCaseId(),
-					municipalityId));
+				final var messageResult = messagingClient.sendWebMessage(municipalityId,
+					messagingMapper.toWebMessageRequestSimplifiedService(partyId, errand.getExternalCaseId(), municipalityId));
 				return extractId(List.of(messageResult));
 			}
-			final var messageResult = messagingClient.sendDigitalMail(municipalityId, getOrganizationNumber(municipalityId), messagingMapper.toDigitalMailRequestSimplifiedService(partyId, municipalityId));
 
-			return extractId(messageResult.getMessages());
+			final var templateId = textProperties.getSimplifiedServices().get(municipalityId).getTemplateId();
+			final var renderRequest = toRenderSimplifiedServiceRequest(templateId);
+			final var htmlBody = templatingClient.render(municipalityId, renderRequest).getOutput();
+			final var pdf = templatingClient.renderPdf(municipalityId, renderRequest);
+
+			final var messageBatchResult = messagingClient.sendLetter(municipalityId,
+				messagingMapper.toLetterRequestSimplifiedService(partyId, municipalityId, htmlBody, pdf));
+			return extractId(messageBatchResult.getMessages());
 		} catch (final Exception e) {
 			logger.error(FAILED_TO_SEND_MESSAGE.formatted(errand.getId()), e);
 			return null;

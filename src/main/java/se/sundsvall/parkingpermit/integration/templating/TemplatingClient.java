@@ -25,4 +25,14 @@ public interface TemplatingClient {
 	 */
 	@PostMapping(path = "/{municipalityId}/render/pdf", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	RenderResponse renderPdf(@PathVariable String municipalityId, @RequestBody RenderRequest pdfRequest);
+
+	/**
+	 * Render a stored template (with optional parameters)
+	 *
+	 * @param  municipalityId the id of the municipality
+	 * @param  renderRequest  containing information regarding what template and version to use
+	 * @return                a RenderResponse containing the rendered output
+	 */
+	@PostMapping(path = "/{municipalityId}/render", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	RenderResponse render(@PathVariable String municipalityId, @RequestBody RenderRequest renderRequest);
 }
