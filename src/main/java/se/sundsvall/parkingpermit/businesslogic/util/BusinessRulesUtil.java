@@ -60,7 +60,7 @@ public final class BusinessRulesUtil {
 			.created(toOffsetDateTimeWithLocalOffset(OffsetDateTime.now(ZoneId.systemDefault())));
 
 		if (FINAL.equals(decisionType) && isAutomatic) {
-			decisison.setDecidedAt(OffsetDateTime.now());
+			decisison.setDecidedAt(OffsetDateTime.now(ZoneId.systemDefault()));
 		}
 		return decisison;
 	}

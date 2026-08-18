@@ -2,6 +2,7 @@ package se.sundsvall.parkingpermit.businesslogic.worker;
 
 import generated.se.sundsvall.casedata.Stakeholder;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
@@ -71,7 +72,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var decision = toDecision(FINAL, DISMISSAL, textProvider.getDenialTexts(municipalityId).getDescription())
 				.decidedBy(stakeholder)
-				.decidedAt(OffsetDateTime.now())
+				.decidedAt(OffsetDateTime.now(ZoneId.systemDefault()))
 				.addLawItem(toLaw(LAW_HEADING, LAW_SFS, LAW_CHAPTER, LAW_ARTICLE));
 
 			// The decision has to exist before its attachment can be uploaded, since CaseData rejects attachments sent as part
