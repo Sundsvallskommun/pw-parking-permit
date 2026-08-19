@@ -7,6 +7,7 @@ import generated.se.sundsvall.casedata.ExtraParameter;
 import generated.se.sundsvall.templating.RenderResponse;
 import java.time.OffsetDateTime;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -140,9 +141,9 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 			throw Problem.valueOf(BAD_REQUEST, "No valid validity period found");
 		}
 		if (VALIDITY_PERIOD_ONE_YEAR.equals(validityPeriod)) {
-			return OffsetDateTime.now().plus(Period.ofYears(1));
+			return OffsetDateTime.now(ZoneId.systemDefault()).plus(Period.ofYears(1));
 		}
-		return OffsetDateTime.now().plus(Period.ofYears(2));
+		return OffsetDateTime.now(ZoneId.systemDefault()).plus(Period.ofYears(2));
 	}
 
 	private boolean isValidDisabilityDuration(Period disabilityDuration) {
@@ -157,7 +158,7 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	private Decision decorateDecisionForAutomatic(Errand errand, Decision decision) {
 
 		if (APPROVAL.equals(decision.getDecisionOutcome())) {
-			decision.setValidFrom(OffsetDateTime.now());
+			decision.setValidFrom(OffsetDateTime.now(ZoneId.systemDefault()));
 
 			final var disabilityDuration = ofNullable(errand.getExtraParameters()).orElse(emptyList()).stream()
 				.filter(extraParameters -> CASEDATA_KEY_DISABILITY_DURATION.equals(extraParameters.getKey()))
