@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.integration.camunda.deployment;
+package se.sundsvall.parkingpermit.integration.engine.deployment;
 
 import org.junit.jupiter.api.Test;
 

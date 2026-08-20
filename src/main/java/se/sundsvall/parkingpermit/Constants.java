@@ -6,7 +6,7 @@ import org.camunda.bpm.engine.variable.type.ValueType;
 public final class Constants {
 
 	public static final String PROCESS_KEY = "process-parking-permit"; // Must match ID of process defined in bpmn schema
-	public static final String TENANTID_TEMPLATE = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
+	public static final String TENANT_ID = "PARKING_PERMIT"; // Namespace where process is deployed, a.k.a tenant (must match setting in application.yaml)
 
 	public static final String PARTY_ASSET_ORIGIN = "CASEDATA";
 	public static final String PARTY_ASSET_TYPE = "PARKINGPERMIT";

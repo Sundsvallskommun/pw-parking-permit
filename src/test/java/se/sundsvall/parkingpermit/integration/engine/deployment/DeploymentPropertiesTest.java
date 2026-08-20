@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.integration.camunda.deployment;
+package se.sundsvall.parkingpermit.integration.engine.deployment;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
+import se.sundsvall.parkingpermit.integration.engine.deployment.DeploymentProperties.ProcessArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;

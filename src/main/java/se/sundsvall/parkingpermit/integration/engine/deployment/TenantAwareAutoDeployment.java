@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.integration.camunda.deployment;
+package se.sundsvall.parkingpermit.integration.engine.deployment;
 
 import feign.form.FormData;
 import jakarta.annotation.PostConstruct;
@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.deployment.DeploymentProperties.ProcessArchive;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;

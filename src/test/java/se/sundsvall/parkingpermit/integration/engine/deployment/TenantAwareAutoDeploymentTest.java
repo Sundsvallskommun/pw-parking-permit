@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.integration.camunda.deployment;
+package se.sundsvall.parkingpermit.integration.engine.deployment;
 
 import feign.form.FormData;
 import java.io.IOException;
@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import se.sundsvall.parkingpermit.integration.camunda.deployment.DeploymentProperties.ProcessArchive;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.deployment.DeploymentProperties.ProcessArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
