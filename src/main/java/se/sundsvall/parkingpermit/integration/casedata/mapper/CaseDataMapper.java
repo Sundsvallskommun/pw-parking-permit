@@ -33,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS_DESCRIPTION;
 
 public class CaseDataMapper {
 
@@ -40,8 +41,8 @@ public class CaseDataMapper {
 
 	private CaseDataMapper() {}
 
-	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction, final String nullableDisplayPhase) {
-		final var extraParameters = toExtraParameterList(nullablePhaseStatus, nullablePhaseAction);
+	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction, final String nullableDisplayPhase, final String nullablePhaseStatusDescription) {
+		final var extraParameters = toExtraParameterList(nullablePhaseStatus, nullablePhaseAction, nullablePhaseStatusDescription);
 
 		// DisplayStatus is set if provided, or to an empty list if absent
 		ofNullable(nullableDisplayPhase).ifPresentOrElse(
@@ -51,7 +52,7 @@ public class CaseDataMapper {
 		return extraParameters;
 	}
 
-	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction) {
+	public static List<ExtraParameter> toExtraParameterList(final String nullablePhaseStatus, final String nullablePhaseAction, final String nullablePhaseStatusDescription) {
 		final var extraParameters = new ArrayList<ExtraParameter>();
 
 		// PhaseStatus is set if provided, or to an empty list if absent
@@ -63,7 +64,16 @@ public class CaseDataMapper {
 		ofNullable(nullablePhaseAction).ifPresentOrElse(phaseAction -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).values(List.of(phaseAction))),
 			() -> { throw new IllegalArgumentException("phaseAction cannot be null"); });
 
+		// PhaseStatusDescription is set if provided, or to an empty list if absent
+		ofNullable(nullablePhaseStatusDescription).ifPresentOrElse(
+			desc -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).values(List.of(desc))),
+			() -> extraParameters.add(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).values(emptyList())));
+
 		return extraParameters;
+	}
+
+	public static List<ExtraParameter> toPhaseStatusDescriptionParameter(final String phaseStatusDescription) {
+		return List.of(new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).values(List.of(phaseStatusDescription)));
 	}
 
 	public static PatchErrand toPatchErrand(final String externalCaseId, final String phase) {
