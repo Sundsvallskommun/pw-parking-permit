@@ -2,6 +2,7 @@ package apptest.mock;
 
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBodyDescriptionOnly;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
 import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
@@ -127,7 +128,7 @@ public class DecisionHandlingCase {
 	}
 
 	public static String mockExecutionCheckIfCardExists(final String municipalityId, final String caseId, final String scenarioName, final String requiredScenarioState, final boolean isAutomatic) {
-		return mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
+		var state = mockCaseDataGet(municipalityId, caseId, scenarioName, requiredScenarioState,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -135,6 +136,11 @@ public class DecisionHandlingCase {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
+
+		return mockCaseDataPatchExtraParameters(municipalityId, caseId, scenarioName, state,
+			"execution_check-if-card-exists-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBodyDescriptionOnly()),
+			Map.of());
 	}
 
 	public static String mockSendSimplifiedService(final String municipalityId, final String caseId, final String scenarioName, String requiredScenarioState) {

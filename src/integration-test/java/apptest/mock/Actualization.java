@@ -13,6 +13,7 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 import java.util.Map;
 
@@ -82,7 +83,11 @@ public class Actualization {
 				"displayPhaseParameter", "Registrerad"));
 
 		if (isAutomatic) {
-			return state;
+			return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,
+				"actualization_verify-administrator-stakeholder---api-casedata-patch-extraparameters",
+				equalToJson(createPatchExtraParametersBody(PHASE_ACTION_UNKNOWN, PHASE_STATUS_WAITING)),
+				Map.of("phaseActionParameter", PHASE_ACTION_UNKNOWN,
+					"phaseStatusParameter", PHASE_STATUS_WAITING));
 		}
 
 		return mockCaseDataPatchExtraParameters(caseId, scenarioName, state,

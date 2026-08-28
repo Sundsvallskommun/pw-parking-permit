@@ -43,12 +43,17 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAIL
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_ADMINISTRATOR;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,7 +138,8 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_COMPLETED)),
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_COMPLETE)));
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_COMPLETE)),
+			tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS)));
 	}
 
 	@Test
@@ -161,7 +167,8 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+			tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_ADMINISTRATOR)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
 			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, false,
@@ -194,7 +201,8 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_CANCELED)),
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)));
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_CANCEL)),
+			tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(Map.of(
 			CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, false,
@@ -219,7 +227,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
 		verify(errandMock, times(2)).getId();
-		verify(errandMock, times(3)).getExtraParameters();
+		verify(errandMock, times(2)).getExtraParameters();
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 		verifyNoMoreInteractions(camundaClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
@@ -227,7 +235,8 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 
 		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+			tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
 			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true,
@@ -256,13 +265,14 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(errandMock).getStakeholders();
 		verify(errandMock, times(2)).getId();
-		verify(errandMock, times(3)).getExtraParameters();
+		verify(errandMock, times(2)).getExtraParameters();
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), patchCaptor.capture());
 		verify(externalTaskServiceMock).complete(eq(externalTaskMock), variablesCaptor.capture());
 
 		assertThat(patchCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues).containsExactlyInAnyOrder(
 			tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
-			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)));
+			tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
+			tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE)));
 
 		assertThat(variablesCaptor.getValue()).containsExactlyInAnyOrderEntriesOf(
 			Map.of(CAMUNDA_VARIABLE_ASSIGNED_TO_ADMINISTRATOR, true,

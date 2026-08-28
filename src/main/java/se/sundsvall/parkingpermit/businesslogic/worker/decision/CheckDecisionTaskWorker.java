@@ -29,6 +29,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXEC
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
@@ -107,7 +108,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(),
 			toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
 		caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(),
-			toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
+			toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION, PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION));
 	}
 
 	private boolean isApproved(Decision.DecisionOutcomeEnum decisionOutcome) {

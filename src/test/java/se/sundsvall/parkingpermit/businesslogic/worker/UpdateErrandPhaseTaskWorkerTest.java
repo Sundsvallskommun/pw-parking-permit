@@ -46,12 +46,14 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_PHASE_IN_PROGRESS;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
 
 @ExtendWith(MockitoExtension.class)
@@ -155,11 +157,13 @@ class UpdateErrandPhaseTaskWorkerTest {
 		assertThat(patchErrand.getPhase()).isEqualTo(CASEDATA_PHASE_DECISION);
 
 		final var phaseStatus = CASEDATA_STATUS_CASE_FINALIZED.equals(status) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
+		final var phaseStatusDescription = PHASE_STATUS_DESCRIPTION_PHASE_IN_PROGRESS.formatted(CASEDATA_PHASE_DECISION);
 		assertThat(patchExtraParameterCaptor.getValue()).extracting(ExtraParameter::getKey, ExtraParameter::getValues)
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(phaseActionPersist)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(phaseStatus)));
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(phaseStatus)),
+				tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(phaseStatusDescription)));
 	}
 
 	@Test
