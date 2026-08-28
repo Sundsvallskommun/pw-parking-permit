@@ -71,4 +71,18 @@ public class Messaging {
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
+
+	public static void mockMessagingLetterPost(final ContentPattern<?> bodyPattern) {
+		mockMessagingLetterPost("2281", bodyPattern);
+	}
+
+	public static void mockMessagingLetterPost(final String municipalityId, final ContentPattern<?> bodyPattern) {
+		stubFor(post(urlEqualTo(String.format("/api-messaging/%s/letter", municipalityId)))
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/messaging/letter.json")));
+	}
 }

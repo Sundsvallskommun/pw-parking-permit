@@ -18,7 +18,7 @@ import java.util.Map;
 public class FollowUp {
 
 	public static String mockFollowUp(String caseId, String scenarioName, boolean isAutomatic) {
-		return mockFollowUp(caseId, scenarioName, "execution_send-simplified-service-task-worker---api-casedata-get-errand", isAutomatic);
+		return mockFollowUp(caseId, scenarioName, "execution_add-simplified-service-message-task-worker---api-post-message", isAutomatic);
 	}
 
 	public static String mockFollowUp(String caseId, String scenarioName, String requiredScenarioState, boolean isAutomatic) {

@@ -37,4 +37,18 @@ public class Templating {
 			.willSetStateTo(newScenarioState))
 			.getNewScenarioState();
 	}
+
+	public static void mockRender(final ContentPattern<?> bodyPattern) {
+		mockRender("2281", bodyPattern);
+	}
+
+	public static void mockRender(final String municipalityId, final ContentPattern<?> bodyPattern) {
+		stubFor(post(urlEqualTo(String.format("/api-templating/%s/render", municipalityId)))
+			.withRequestBody(bodyPattern)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.willReturn(aResponse()
+				.withStatus(200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/templating/render.json")));
+	}
 }

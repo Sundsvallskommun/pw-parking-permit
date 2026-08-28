@@ -99,3 +99,8 @@ texts:
       organization-number: 1122334455
     2260:
       sendDigitalMail: false
+  simplified-services:
+    2281:
+      templateId: junit.simplified-service.template
+    2260:
+      templateId: junit.simplified-service.template

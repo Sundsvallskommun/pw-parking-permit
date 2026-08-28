@@ -79,8 +79,10 @@ texts:
   simplified-services:
     2281:
       delay: "PT5S"
+      templateId: it.simplified-service.template
     2260:
       delay: "PT5S"
+      templateId: it.simplified-service.template
   commons:
     2260:
       sendDigitalMail: true

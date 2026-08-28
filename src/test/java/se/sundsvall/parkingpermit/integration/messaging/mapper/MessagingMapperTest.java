@@ -222,10 +222,8 @@ class MessagingMapperTest {
 
 	@Test
 	void toLetterRequestSimplifiedService() {
-		final var fileName = "fileName";
-		final var contentType = LetterAttachment.ContentTypeEnum.APPLICATION_PDF;
-		final var deliveryMode = LetterAttachment.DeliveryModeEnum.ANY;
-		final var attachments = List.of(new LetterAttachment().filename(fileName).contentType(contentType).deliveryMode(deliveryMode));
+		final var base64Body = Base64.getEncoder().encodeToString(BODY.getBytes(defaultCharset()));
+		final var pdfRenderResponse = new RenderResponse().output(OUTPUT);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
 		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
@@ -234,12 +232,11 @@ class MessagingMapperTest {
 		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
 		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
 		when(simplifiedServiceTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
-		when(simplifiedServiceTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
 
-		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID, attachments);
+		final var request = messagingMapper.toLetterRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID, base64Body, pdfRenderResponse);
 
 		assertThat(request.getSubject()).isEqualTo(SUBJECT);
-		assertThat(Base64.getDecoder().decode(request.getBody())).isEqualTo(BODY.getBytes(defaultCharset()));
+		assertThat(request.getBody()).isEqualTo(base64Body);
 		assertThat(request.getContentType()).isEqualTo(LetterRequest.ContentTypeEnum.TEXT_HTML);
 		assertThat(request.getSender()).isNotNull();
 		assertThat(request.getSender().getSupportInfo()).isNotNull()
@@ -257,65 +254,23 @@ class MessagingMapperTest {
 		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
 		assertThat(request.getAttachments()).hasSize(1)
 			.extracting(
-				LetterAttachment::getFilename,
+				LetterAttachment::getContent,
 				LetterAttachment::getContentType,
-				LetterAttachment::getDeliveryMode)
+				LetterAttachment::getDeliveryMode,
+				LetterAttachment::getFilename)
 			.containsExactly(tuple(
-				fileName,
-				contentType,
-				deliveryMode));
+				OUTPUT,
+				LetterAttachment.ContentTypeEnum.APPLICATION_PDF,
+				DeliveryModeEnum.ANY,
+				"kontrollmeddelande.pdf"));
 
 		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
-		verify(textProviderMock, times(2)).getSimplifiedServiceTexts(MUNICIPALITY_ID);
+		verify(textProviderMock).getSimplifiedServiceTexts(MUNICIPALITY_ID);
 		verify(commonTextPropertiesMock).getContactInfoEmail();
 		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
 		verify(commonTextPropertiesMock).getContactInfoText();
 		verify(commonTextPropertiesMock).getContactInfoUrl();
 		verify(commonTextPropertiesMock).getDepartment();
-		verify(simplifiedServiceTextPropertiesMock).getHtmlBody();
-		verify(simplifiedServiceTextPropertiesMock).getSubject();
-	}
-
-	@Test
-	void toDigitalMailRequestSimplifiedService() {
-		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
-		when(textProviderMock.getSimplifiedServiceTexts(MUNICIPALITY_ID)).thenReturn(simplifiedServiceTextPropertiesMock);
-		when(commonTextPropertiesMock.getContactInfoEmail()).thenReturn(CONTACTINFO_EMAIL);
-		when(commonTextPropertiesMock.getContactInfoPhonenumber()).thenReturn(CONTACTINFO_PHONENUMBER);
-		when(commonTextPropertiesMock.getContactInfoText()).thenReturn(CONTACTINFO_TEXT);
-		when(commonTextPropertiesMock.getContactInfoUrl()).thenReturn(CONTACTINFO_URL);
-		when(commonTextPropertiesMock.getDepartment()).thenReturn(DEPARTMENT);
-		when(simplifiedServiceTextPropertiesMock.getSubject()).thenReturn(SUBJECT);
-		when(simplifiedServiceTextPropertiesMock.getHtmlBody()).thenReturn(BODY);
-
-		final var request = messagingMapper.toDigitalMailRequestSimplifiedService(PARTY_ID.toString(), MUNICIPALITY_ID);
-
-		assertThat(request.getSubject()).isEqualTo(SUBJECT);
-		assertThat(Base64.getDecoder().decode(request.getBody())).isEqualTo(BODY.getBytes(defaultCharset()));
-		assertThat(request.getContentType()).isEqualTo(DigitalMailRequest.ContentTypeEnum.TEXT_HTML);
-		assertThat(request.getSender()).isNotNull();
-		assertThat(request.getSender().getSupportInfo()).isNotNull()
-			.extracting(
-				DigitalMailSenderSupportInfo::getEmailAddress,
-				DigitalMailSenderSupportInfo::getPhoneNumber,
-				DigitalMailSenderSupportInfo::getText,
-				DigitalMailSenderSupportInfo::getUrl)
-			.containsExactlyInAnyOrder(
-				CONTACTINFO_EMAIL,
-				CONTACTINFO_PHONENUMBER,
-				CONTACTINFO_TEXT,
-				CONTACTINFO_URL);
-		assertThat(request.getParty()).isNotNull().extracting(DigitalMailParty::getPartyIds).asInstanceOf(LIST).containsExactly(PARTY_ID);
-		assertThat(request.getDepartment()).isEqualTo(DEPARTMENT);
-		assertThat(request.getAttachments()).isNull();
-		verify(textProviderMock, times(5)).getCommonTexts(MUNICIPALITY_ID);
-		verify(textProviderMock, times(2)).getSimplifiedServiceTexts(MUNICIPALITY_ID);
-		verify(commonTextPropertiesMock).getContactInfoEmail();
-		verify(commonTextPropertiesMock).getContactInfoPhonenumber();
-		verify(commonTextPropertiesMock).getContactInfoText();
-		verify(commonTextPropertiesMock).getContactInfoUrl();
-		verify(commonTextPropertiesMock).getDepartment();
-		verify(simplifiedServiceTextPropertiesMock).getHtmlBody();
 		verify(simplifiedServiceTextPropertiesMock).getSubject();
 	}
 

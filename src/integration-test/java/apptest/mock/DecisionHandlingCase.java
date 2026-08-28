@@ -2,6 +2,7 @@ package apptest.mock;
 
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
+import static apptest.mock.api.CaseData.mockCaseDataAddMessagePost;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
 import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
@@ -149,19 +150,41 @@ public class DecisionHandlingCase {
 		mockMessagingWebMessagePost(municipalityId,
 			equalToJson(
 				"""
-								{
-									"party" : {
-										"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-										"externalReferences" : [ {
-											"key" : "flowInstanceId",
-											"value" : "2971"
-										} ]
-					      			},
-					      			"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nange@ange.se eller telefon till 0690-25 01 00.",
-					      			"sendAsOwner" : false,
-					                "oepInstance" : "EXTERNAL"
-					    		}
+					{
+						"party" : {
+							"partyId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+							"externalReferences" : [ {
+								"key" : "flowInstanceId",
+								"value" : "2971"
+							} ]
+						},
+						"message" : "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nange@ange.se eller telefon till 0690-25 01 00.",
+						"sendAsOwner" : false,
+						"oepInstance" : "EXTERNAL"
+					}
 					"""));
-		return state;
+
+		final var stateAfterAddMessageGet = mockCaseDataGet(municipalityId, caseId, scenarioName, state,
+			"execution_add-simplified-service-message-task-worker---api-casedata-get-errand",
+			Map.of("decisionTypeParameter", "FINAL",
+				"phaseParameter", "Beslut",
+				"phaseActionParameter", "",
+				"phaseStatusParameter", "",
+				"displayPhaseParameter", "Beslut"));
+
+		return mockCaseDataAddMessagePost(municipalityId, caseId, scenarioName, stateAfterAddMessageGet,
+			"execution_add-simplified-service-message-task-worker---api-post-message",
+			equalToJson(
+				"""
+					{
+						"messageId": "570c3e28-b640-49e9-899c-9d290eb0539a",
+						"direction": "OUTBOUND",
+						"externalCaseId": "2971",
+						"message": "Kontrollmeddelande för förenklad delgivning\\n\\nVi har nyligen delgivit dig ett beslut via brev. Du får nu ett kontrollmeddelande för att säkerställa att du mottagit informationen.\\nNär det har gått två veckor från det att beslutet skickades anses du blivit delgiven och du har då tre veckor på dig att överklaga beslutet.\\nOm du bara fått kontrollmeddelandet men inte själva delgivningen med beslutet måste du kontakta oss via e-post till\\nange@ange.se eller telefon till 0690-25 01 00.",
+						"sent": "${json-unit.any-string}",
+						"subject": "Kontrollmeddelande för förenklad delgivning",
+						"username": "ProcessEngine"
+					}
+					"""));
 	}
 }
