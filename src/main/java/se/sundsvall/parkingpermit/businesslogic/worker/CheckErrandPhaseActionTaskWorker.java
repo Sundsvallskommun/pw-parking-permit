@@ -20,6 +20,9 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
@@ -50,18 +53,18 @@ public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 				case PHASE_ACTION_COMPLETE, PHASE_ACTION_AUTOMATIC -> {
 					logInfo("Phase action is complete. Setting phase status to {}", PHASE_STATUS_COMPLETED);
 					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
-					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_COMPLETED, phaseAction, displayPhase));
+					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_COMPLETED, phaseAction, displayPhase, PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS));
 				}
 				case PHASE_ACTION_CANCEL -> {
 					logInfo("Phase action is cancel. Setting phase status to {}", PHASE_STATUS_CANCELED);
 					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
-					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_CANCELED, phaseAction, displayPhase));
+					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_CANCELED, phaseAction, displayPhase, PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED));
 				}
 				default -> {
 					if (isPhaseStatusNotWaiting(errand)) {
 						logInfo("Phase action is unknown. Setting phase status to {}", PHASE_STATUS_WAITING);
 						caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), errand.getPhase()));
-						caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, phaseAction, displayPhase));
+						caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, phaseAction, displayPhase, PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE));
 					}
 				}
 			}

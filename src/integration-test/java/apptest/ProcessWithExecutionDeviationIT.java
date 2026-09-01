@@ -12,7 +12,10 @@ import static apptest.mock.Execution.mockSendSimplifiedService;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
 import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
+import static apptest.mock.api.CaseData.createPatchExtraParametersBodyDescriptionOnly;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
+import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -28,6 +31,7 @@ import static org.awaitility.Awaitility.setDefaultPollDelay;
 import static org.awaitility.Awaitility.setDefaultPollInterval;
 import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT;
@@ -99,7 +103,11 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", ""));
-		final var stateAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, stateAfterCheckIfCardDoesNotExist,
+		final var stateAfterPatchNotExists = mockCaseDataPatchExtraParameters(caseId, scenarioName, stateAfterCheckIfCardDoesNotExist,
+			"execution_check-if-card-not-exists-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBody(PHASE_ACTION_UNKNOWN, "WAITING")),
+			Map.of());
+		final var stateAfterCheckIfCardExists = mockCaseDataGet(caseId, scenarioName, stateAfterPatchNotExists,
 			"execution_check-if-card-exists-task-worker---api-casedata-get-errand",
 			Map.of("decisionTypeParameter", "FINAL",
 				"phaseParameter", "Verkställa",
@@ -107,7 +115,11 @@ class ProcessWithExecutionDeviationIT extends AbstractCamundaAppTest {
 				"phaseActionParameter", isAutomatic ? PHASE_ACTION_AUTOMATIC : PHASE_ACTION_UNKNOWN,
 				"displayPhaseParameter", "Verkställa",
 				"permitNumberParameter", "12345"));
-		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterCheckIfCardExists, isAutomatic);
+		final var stateAfterPatchExists = mockCaseDataPatchExtraParameters(caseId, scenarioName, stateAfterCheckIfCardExists,
+			"execution_check-if-card-exists-task-worker---api-casedata-patch-extraparameters",
+			equalToJson(createPatchExtraParametersBodyDescriptionOnly()),
+			Map.of());
+		final var stateAfterCreateAsset = mockExecutionCreateAsset(caseId, scenarioName, stateAfterPatchExists, isAutomatic);
 		mockSendSimplifiedService(caseId, scenarioName, stateAfterCreateAsset);
 		// Normal mock
 		mockFollowUp(caseId, scenarioName, isAutomatic);

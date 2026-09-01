@@ -20,6 +20,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_FINALIZE
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_PHASE_IN_PROGRESS;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_ONGOING;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPatchErrand;
@@ -52,10 +53,9 @@ public class UpdateErrandPhaseTaskWorker extends AbstractTaskWorker {
 					logInfo("Setting phase to {}", phaseValue);
 					final var newDisplayPhase = ofNullable(displayPhase).orElse(phaseValue);
 					final var phaseStatus = isErrandFinalized(errand) ? PHASE_STATUS_COMPLETED : PHASE_STATUS_ONGOING;
-
 					// Set phase action to unknown to errand in the beginning of the phase and in the end of process
 					caseDataClient.patchErrand(municipalityId, namespace, errand.getId(), toPatchErrand(errand.getExternalCaseId(), phaseValue));
-					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(phaseStatus, phaseAction, newDisplayPhase));
+					caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(phaseStatus, phaseAction, newDisplayPhase, PHASE_STATUS_DESCRIPTION_PHASE_IN_PROGRESS.formatted(phaseValue)));
 				},
 				() -> logInfo("Phase is not set"));
 

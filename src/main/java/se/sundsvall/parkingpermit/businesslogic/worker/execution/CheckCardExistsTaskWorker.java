@@ -18,6 +18,12 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CARD_EXISTS;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_ARTEFACT_PERMIT_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_CARD_MANUFACTURED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_CARD;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toExtraParameterList;
+import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toPhaseStatusDescriptionParameter;
 
 @Component
 @ExternalTaskSubscription("CardExistsTask")
@@ -39,6 +45,12 @@ public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 
 			final var cardExists = isCardCreated(errand);
+
+			if (cardExists) {
+				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toPhaseStatusDescriptionParameter(PHASE_STATUS_DESCRIPTION_CARD_MANUFACTURED));
+			} else {
+				caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(), toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, PHASE_STATUS_DESCRIPTION_WAITING_FOR_CARD));
+			}
 
 			externalTaskService.complete(externalTask, Map.of(CAMUNDA_VARIABLE_CARD_EXISTS, cardExists));
 		} catch (final Exception exception) {

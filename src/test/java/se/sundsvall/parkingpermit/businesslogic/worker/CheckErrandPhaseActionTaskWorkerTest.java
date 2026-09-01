@@ -46,6 +46,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAIL
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
@@ -54,6 +55,9 @@ import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_COMPLETE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_COMPLETED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,7 +151,8 @@ class CheckErrandPhaseActionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+				tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE)));
 	}
 
 	@Test
@@ -264,18 +269,22 @@ class CheckErrandPhaseActionTaskWorkerTest {
 			Arguments.of("phaseAction", List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem("phaseAction"),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_WAITING),
-				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).addValuesItem(PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE))),
 			Arguments.of(PHASE_ACTION_CANCEL, List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_CANCEL),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_CANCELED),
-				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).addValuesItem(PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED))),
 			Arguments.of(PHASE_ACTION_AUTOMATIC, List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_AUTOMATIC),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_COMPLETED),
-				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))),
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).addValuesItem(PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS))),
 			Arguments.of(PHASE_ACTION_COMPLETE, List.of(
 				new ExtraParameter(CASEDATA_KEY_PHASE_ACTION).addValuesItem(PHASE_ACTION_COMPLETE),
 				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS).addValuesItem(PHASE_STATUS_COMPLETED),
-				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION))));
+				new ExtraParameter(CASEDATA_KEY_DISPLAY_PHASE).addValuesItem(CASEDATA_PHASE_DECISION),
+				new ExtraParameter(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION).addValuesItem(PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS))));
 	}
 }

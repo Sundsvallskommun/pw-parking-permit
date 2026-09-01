@@ -53,6 +53,7 @@ public final class Constants {
 	public static final String CASEDATA_KEY_PHASE_STATUS = "process.phaseStatus";
 	public static final String CASEDATA_KEY_PHASE_ACTION = "process.phaseAction";
 	public static final String CASEDATA_KEY_DISPLAY_PHASE = "process.displayPhase";
+	public static final String CASEDATA_KEY_PHASE_STATUS_DESCRIPTION = "process.phaseStatusDescription";
 	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY = "application.applicant.capacity";
 	public static final String CASEDATA_KEY_APPLICATION_APPLICANT_SIGNING_ABILITY = "application.applicant.signingAbility";
 	public static final String CASEDATA_KEY_LOST_PERMIT_POLICE_REPORT_NUMBER = "application.lostPermit.policeReportNumber";
@@ -82,6 +83,15 @@ public final class Constants {
 	public static final String PHASE_STATUS_ONGOING = "ONGOING";
 	public static final String PHASE_STATUS_WAITING = "WAITING";
 	public static final String PHASE_STATUS_CANCELED = "CANCELED";
+
+	public static final String PHASE_STATUS_DESCRIPTION_PHASE_IN_PROGRESS = "Fas %s pågår";
+	public static final String PHASE_STATUS_DESCRIPTION_PHASE_CHANGE_IN_PROGRESS = "Fasbyte pågår";
+	public static final String PHASE_STATUS_DESCRIPTION_WAITING_FOR_PHASE_CHANGE = "Väntar på fasbyte";
+	public static final String PHASE_STATUS_DESCRIPTION_ERRAND_CLOSED = "Ärendet är avslutat";
+	public static final String PHASE_STATUS_DESCRIPTION_WAITING_FOR_ADMINISTRATOR = "Väntar på att handläggare ska tilldelas";
+	public static final String PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION = "Väntar på beslut";
+	public static final String PHASE_STATUS_DESCRIPTION_CARD_MANUFACTURED = "Kort är tillverkat";
+	public static final String PHASE_STATUS_DESCRIPTION_WAITING_FOR_CARD = "Väntar på att kort ska tillverkas";
 
 	public static final String CASEDATA_PARKING_PERMIT_STATUS_ACTIVE = "Aktivt";
 	public static final String CASEDATA_PARKING_PERMIT_STATUS_BLOCKED = "Spärrat";

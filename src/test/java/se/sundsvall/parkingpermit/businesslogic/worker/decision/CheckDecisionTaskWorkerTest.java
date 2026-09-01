@@ -54,6 +54,7 @@ import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_UPDATE_AVAIL
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS;
+import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_STATUS_DESCRIPTION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_RECEIVED;
@@ -61,6 +62,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXEC
 import static se.sundsvall.parkingpermit.Constants.FALSE;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 
 @ExtendWith(MockitoExtension.class)
@@ -257,7 +259,8 @@ class CheckDecisionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+				tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION)));
 	}
 
 	@Test
@@ -302,7 +305,8 @@ class CheckDecisionTaskWorkerTest {
 			.containsExactlyInAnyOrder(
 				tuple(CASEDATA_KEY_PHASE_ACTION, List.of(PHASE_ACTION_UNKNOWN)),
 				tuple(CASEDATA_KEY_DISPLAY_PHASE, List.of(CASEDATA_PHASE_DECISION)),
-				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)));
+				tuple(CASEDATA_KEY_PHASE_STATUS, List.of(PHASE_STATUS_WAITING)),
+				tuple(CASEDATA_KEY_PHASE_STATUS_DESCRIPTION, List.of(PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION)));
 	}
 
 	@Test

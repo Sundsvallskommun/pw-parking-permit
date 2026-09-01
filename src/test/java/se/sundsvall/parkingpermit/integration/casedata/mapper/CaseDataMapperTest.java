@@ -166,11 +166,13 @@ class CaseDataMapperTest {
 		final var phaseStatusKey = "process.phaseStatus";
 		final var phaseActionKey = "process.phaseAction";
 		final var displayPhaseKey = "process.displayPhase";
+		final var phaseStatusDescriptionKey = "process.phaseStatusDescription";
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
 		final var displayPhase = "displayPhase";
+		final var phaseStatusDescription = "phaseStatusDescription";
 
-		final var list = CaseDataMapper.toExtraParameterList(phaseStatus, phaseAction, displayPhase);
+		final var list = CaseDataMapper.toExtraParameterList(phaseStatus, phaseAction, displayPhase, phaseStatusDescription);
 
 		assertThat(list).isNotEmpty().allSatisfy(parameter -> {
 			assertThat(parameter.getId()).isNull();
@@ -184,6 +186,9 @@ class CaseDataMapperTest {
 		}, parameter -> {
 			assertThat(parameter.getKey()).isEqualTo(displayPhaseKey);
 			assertThat(parameter.getValues()).containsExactly(displayPhase);
+		}, parameter -> {
+			assertThat(parameter.getKey()).isEqualTo(phaseStatusDescriptionKey);
+			assertThat(parameter.getValues()).containsExactly(phaseStatusDescription);
 		});
 	}
 
@@ -192,8 +197,9 @@ class CaseDataMapperTest {
 		final var phaseStatusKey = "process.phaseStatus";
 		final var phaseActionKey = "process.phaseAction";
 		final var displayPhaseKey = "process.displayPhase";
+		final var phaseStatusDescriptionKey = "process.phaseStatusDescription";
 		final var phaseAction = "phaseAction";
-		final var list = CaseDataMapper.toExtraParameterList(null, phaseAction, null);
+		final var list = CaseDataMapper.toExtraParameterList(null, phaseAction, null, null);
 
 		assertThat(list).isNotEmpty().allSatisfy(parameter -> {
 			assertThat(parameter.getId()).isNull();
@@ -207,6 +213,9 @@ class CaseDataMapperTest {
 		}, parameter -> {
 			assertThat(parameter.getKey()).isEqualTo(displayPhaseKey);
 			assertThat(parameter.getValues()).isEmpty();
+		}, parameter -> {
+			assertThat(parameter.getKey()).isEqualTo(phaseStatusDescriptionKey);
+			assertThat(parameter.getValues()).isEmpty();
 		});
 	}
 
@@ -214,10 +223,12 @@ class CaseDataMapperTest {
 	void toExtraParameterListWithoutDisplayPhase() {
 		final var phaseStatusKey = "process.phaseStatus";
 		final var phaseActionKey = "process.phaseAction";
+		final var phaseStatusDescriptionKey = "process.phaseStatusDescription";
 		final var phaseStatus = "phaseStatus";
 		final var phaseAction = "phaseAction";
+		final var phaseStatusDescription = "phaseStatusDescription";
 
-		final var list = CaseDataMapper.toExtraParameterList(phaseStatus, phaseAction);
+		final var list = CaseDataMapper.toExtraParameterList(phaseStatus, phaseAction, phaseStatusDescription);
 
 		assertThat(list).isNotEmpty().allSatisfy(parameter -> {
 			assertThat(parameter.getId()).isNull();
@@ -228,6 +239,9 @@ class CaseDataMapperTest {
 		}, parameter -> {
 			assertThat(parameter.getKey()).isEqualTo(phaseActionKey);
 			assertThat(parameter.getValues()).containsExactly(phaseAction);
+		}, parameter -> {
+			assertThat(parameter.getKey()).isEqualTo(phaseStatusDescriptionKey);
+			assertThat(parameter.getValues()).containsExactly(phaseStatusDescription);
 		});
 	}
 
@@ -235,8 +249,9 @@ class CaseDataMapperTest {
 	void toExtraParameterListWithoutDisplayPhaseWithNullValue() {
 		final var phaseStatusKey = "process.phaseStatus";
 		final var phaseActionKey = "process.phaseAction";
+		final var phaseStatusDescriptionKey = "process.phaseStatusDescription";
 		final var phaseAction = "phaseAction";
-		final var list = CaseDataMapper.toExtraParameterList(null, phaseAction);
+		final var list = CaseDataMapper.toExtraParameterList(null, phaseAction, null);
 
 		assertThat(list).isNotEmpty().allSatisfy(parameter -> {
 			assertThat(parameter.getId()).isNull();
@@ -247,13 +262,27 @@ class CaseDataMapperTest {
 		}, parameter -> {
 			assertThat(parameter.getKey()).isEqualTo(phaseActionKey);
 			assertThat(parameter.getValues()).containsExactly(phaseAction);
+		}, parameter -> {
+			assertThat(parameter.getKey()).isEqualTo(phaseStatusDescriptionKey);
+			assertThat(parameter.getValues()).isEmpty();
 		});
 	}
 
 	@Test
 	void toExtraParameterListWithoutPhaseAction() {
-		assertThatThrownBy(() -> CaseDataMapper.toExtraParameterList(null, null)).hasMessage("phaseAction cannot be null");
 		assertThatThrownBy(() -> CaseDataMapper.toExtraParameterList(null, null, null)).hasMessage("phaseAction cannot be null");
+		assertThatThrownBy(() -> CaseDataMapper.toExtraParameterList(null, null, null, null)).hasMessage("phaseAction cannot be null");
+	}
+
+	@Test
+	void toPhaseStatusDescriptionParameter() {
+		final var description = "Test description";
+		final var list = CaseDataMapper.toPhaseStatusDescriptionParameter(description);
+
+		assertThat(list).hasSize(1).satisfiesExactly(parameter -> {
+			assertThat(parameter.getKey()).isEqualTo("process.phaseStatusDescription");
+			assertThat(parameter.getValues()).containsExactly(description);
+		});
 	}
 
 	@Test
