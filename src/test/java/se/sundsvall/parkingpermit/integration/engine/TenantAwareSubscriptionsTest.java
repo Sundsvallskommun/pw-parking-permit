@@ -21,8 +21,7 @@ class TenantAwareSubscriptionsTest {
 
 	@Test
 	void everySubscriptionIsScopedToTenant() {
-		assertThat(subscriptions).isNotEmpty();
-		assertThat(subscriptions).allSatisfy(subscription -> assertThat(subscription.getTenantIdIn())
+		assertThat(subscriptions).isNotEmpty().allSatisfy(subscription -> assertThat(subscription.getTenantIdIn())
 			.as("tenant filter for topic '%s'", subscription.getTopicName())
 			.isEqualTo(of(TENANT_ID)));
 	}

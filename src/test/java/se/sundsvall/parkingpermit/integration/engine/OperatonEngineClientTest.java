@@ -37,7 +37,7 @@ class OperatonEngineClientTest {
 		verify(operatonClientMock).setProcessInstanceVariable(eq("processInstanceId"), eq("variableName"), valueCaptor.capture());
 		verifyNoMoreInteractions(operatonClientMock);
 		assertThat(valueCaptor.getValue().getType()).isEqualTo(ValueType.BOOLEAN.getName());
-		assertThat(valueCaptor.getValue().getValue()).isEqualTo(false);
+		assertThat((Boolean) valueCaptor.getValue().getValue()).isFalse();
 		assertThat(valueCaptor.getValue().getValueInfo()).isEqualTo(valueInfo);
 	}
 

@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static java.util.Objects.nonNull;
@@ -14,6 +15,7 @@ public class TimerUtil {
 
 	private final Clock clock;
 
+	@Autowired
 	public TimerUtil() {
 		this(Clock.systemDefaultZone());
 	}

@@ -140,9 +140,8 @@ class CheckDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_FINAL_DECISION, true)
-			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, true);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isInstanceOf(Date.class);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
+			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, true)
+			.containsEntry(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, CONTROL_MESSAGE_TIME);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
@@ -183,9 +182,8 @@ class CheckDecisionTaskWorkerTest {
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_FINAL_DECISION, true)
-			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, false);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isInstanceOf(Date.class);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
+			.containsEntry(PROCESS_VARIABLE_IS_APPROVED, false)
+			.containsEntry(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, CONTROL_MESSAGE_TIME);
 
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);

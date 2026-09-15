@@ -184,8 +184,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, engineClientMock);
 
-		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
+		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)
+			.containsEntry(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, CONTROL_MESSAGE_TIME);
 
 		assertThat(stakeholderCaptor.getValue())
 			.extracting(Stakeholder::getType, Stakeholder::getFirstName, Stakeholder::getLastName, Stakeholder::getRoles)
@@ -265,8 +265,8 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
 		verifyNoInteractions(failureHandlerMock, engineClientMock);
 
-		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE);
-		assertThat(mapCaptor.getValue().get(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)).isEqualTo(CONTROL_MESSAGE_TIME);
+		assertThat(mapCaptor.getValue()).containsOnlyKeys(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE)
+			.containsEntry(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, CONTROL_MESSAGE_TIME);
 		assertThat(decisionCaptor.getValue().getCreated()).isCloseTo(now(), within(2, SECONDS));
 		assertThat(decisionCaptor.getValue().getDecisionType()).isEqualTo(FINAL);
 		assertThat(decisionCaptor.getValue().getDecisionOutcome()).isEqualTo(DISMISSAL);

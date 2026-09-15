@@ -38,8 +38,11 @@ class ExternalTaskClientBaseUrlDerivationTest {
 
 	@Test
 	void pollUrlCannotResolveWhenTypeIsNotSet() {
-		contextRunner.run(context -> assertThatThrownBy(() -> context.getEnvironment().getProperty(POLL_URL))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("process-engine.type"));
+		contextRunner.run(context -> {
+			final var environment = context.getEnvironment();
+			assertThatThrownBy(() -> environment.getProperty(POLL_URL))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("process-engine.type");
+		});
 	}
 }

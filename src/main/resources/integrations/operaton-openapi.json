@@ -13169,22 +13169,6 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserDto"
-							},
-							"examples": {
-								"example-1": {
-									"summary": "POST /user/create",
-									"value": {
-										"credentials": {
-											"password": "s3cret"
-										},
-										"profile": {
-											"firstName": "John",
-											"lastName": "Doe",
-											"id": "jonny1",
-											"email": "anEmailAddress"
-										}
-									}
-								}
 							}
 						}
 					}
@@ -15868,15 +15852,6 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserCredentialsDto"
-							},
-							"examples": {
-								"example-1": {
-									"summary": "PUT /user/jonny1/credentials",
-									"value": {
-										"password": "s3cr3t",
-										"authenticatedUserPassword": "demo"
-									}
-								}
 							}
 						}
 					}
