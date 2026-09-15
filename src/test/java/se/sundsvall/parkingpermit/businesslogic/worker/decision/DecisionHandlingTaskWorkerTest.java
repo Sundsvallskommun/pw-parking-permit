@@ -27,8 +27,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.ApprovalTextProperties;
@@ -50,12 +50,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_CASE_NUMBER;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MUNICIPALITY_ID;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_NAMESPACE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_CASE_NUMBER;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MUNICIPALITY_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_NAMESPACE;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_REQUEST_ID;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.Constants.ROLE_APPLICANT;
 import static se.sundsvall.parkingpermit.Constants.SM_LABEL_CARD_MANAGEMENT;
@@ -73,7 +73,7 @@ class DecisionHandlingTaskWorkerTest {
 	private static final String NAMESPACE = "SBK_PARKING_PERMIT";
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private CaseDataClient caseDataClientMock;
@@ -130,10 +130,10 @@ class DecisionHandlingTaskWorkerTest {
 		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("DRIVER")));
 		final var templateIdentifier = "sbk.rph.decision.driver.approval";
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
@@ -151,11 +151,11 @@ class DecisionHandlingTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
-		assertThat(mapCaptor.getValue()).containsEntry(CAMUNDA_VARIABLE_MESSAGE_ID, messageUUID.toString());
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_MESSAGE_ID, messageUUID.toString());
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
@@ -190,7 +190,7 @@ class DecisionHandlingTaskWorkerTest {
 					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
 						new ContactChannel().type("Phone").value("0701740605")))));
 
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock, supportManagementServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -206,10 +206,10 @@ class DecisionHandlingTaskWorkerTest {
 		final var externalErrandId = "externalErrandId";
 		final var decision = createFinalDecision(APPROVAL);
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
 		when(errandMock.getExternalCaseId()).thenReturn(externalErrandId);
@@ -228,11 +228,11 @@ class DecisionHandlingTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class), mapCaptor.capture());
-		assertThat(mapCaptor.getValue()).containsEntry(CAMUNDA_VARIABLE_MESSAGE_ID, messageUUID.toString());
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		assertThat(mapCaptor.getValue()).containsEntry(PROCESS_VARIABLE_MESSAGE_ID, messageUUID.toString());
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionWebMessage(MUNICIPALITY_ID, errandMock, pdf, decision);
@@ -267,7 +267,7 @@ class DecisionHandlingTaskWorkerTest {
 					.contactChannels(List.of(new ContactChannel().type("Email").value("kalle.anka@ange.se"),
 						new ContactChannel().type("Phone").value("0701740605")))));
 
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock, supportManagementServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock, supportManagementServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -281,10 +281,10 @@ class DecisionHandlingTaskWorkerTest {
 		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
 		final var templateIdentifier = "sbk.rph.decision.passenger.approval";
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getFilename()).thenReturn(fileName);
@@ -302,15 +302,15 @@ class DecisionHandlingTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(supportManagementServiceMock, times(2)).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
 		verify(supportManagementServiceMock, times(2)).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -325,10 +325,10 @@ class DecisionHandlingTaskWorkerTest {
 		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
 		final var templateIdentifier = "sbk.rph.decision.passenger.rejection";
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);
 		when(commonTextPropertiesMock.getFilename()).thenReturn(fileName);
@@ -348,15 +348,15 @@ class DecisionHandlingTaskWorkerTest {
 
 		// Assert and verify
 		verify(externalTaskServiceMock).complete(any(ExternalTask.class));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(supportManagementServiceMock).createErrand(eq(MUNICIPALITY_ID), eq(SM_NAMESPACE_CONTACTANGE), any(generated.se.sundsvall.supportmanagement.Errand.class));
 		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verify(supportManagementServiceMock).createAttachment(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE, smErrandId, fileName, pdf.getOutput());
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 		verifyNoInteractions(failureHandlerMock);
 	}
 
@@ -371,10 +371,10 @@ class DecisionHandlingTaskWorkerTest {
 		final var extraParameters = List.of(new ExtraParameter().key(CASEDATA_KEY_APPLICATION_APPLICANT_CAPACITY).values(List.of("PASSENGER")));
 		final var templateIdentifier = "sbk.rph.decision.passenger.approval";
 
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
-		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_REQUEST_ID)).thenReturn(REQUEST_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_CASE_NUMBER)).thenReturn(ERRAND_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID)).thenReturn(MUNICIPALITY_ID);
+		when(externalTaskMock.getVariable(PROCESS_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
@@ -392,17 +392,17 @@ class DecisionHandlingTaskWorkerTest {
 		worker.execute(externalTaskMock, externalTaskServiceMock);
 
 		// Assert and verify
-		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(CAMUNDA_VARIABLE_MESSAGE_ID, messageUUID.toString()));
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_REQUEST_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_CASE_NUMBER);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_MUNICIPALITY_ID);
-		verify(externalTaskMock).getVariable(CAMUNDA_VARIABLE_NAMESPACE);
+		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(PROCESS_VARIABLE_MESSAGE_ID, messageUUID.toString()));
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
+		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
 		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
 		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
-		verifyNoMoreInteractions(camundaClientMock, messagingServiceMock);
+		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 	}
 
 	private Decision createFinalDecision(DecisionOutcomeEnum decisionOutcome) {

@@ -9,10 +9,11 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
+import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.DISMISSAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
@@ -20,12 +21,12 @@ import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
 import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
 import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
 import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
 import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachmentFilePart;
@@ -34,7 +35,6 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toLaw;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toStakeholder;
 import static se.sundsvall.parkingpermit.util.LocationUtil.extractIdFromLocation;
-import static se.sundsvall.parkingpermit.util.TimerUtil.getControlMessageTime;
 
 @Component
 @ExternalTaskSubscription("AutomaticDenialDecisionTask")
@@ -45,19 +45,21 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
 	private final TextProvider textProvider;
+	private final TimerUtil timerUtil;
 
-	AutomaticDenialDecisionTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
-		super(camundaClient, caseDataClient, failureHandler);
+	AutomaticDenialDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final TextProvider textProvider, final TimerUtil timerUtil) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
+		this.timerUtil = timerUtil;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing automatic addition of dismissal to errand with id {}", errand.getId());
 
@@ -85,7 +87,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 				toAttachmentFilePart(filename, APPLICATION_PDF_VALUE, pdf));
 
 			final var variables = new HashMap<String, Object>();
-			variables.put(CAMUNDA_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, getControlMessageTime(decision, textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
+			variables.put(PROCESS_VARIABLE_TIME_TO_SEND_CONTROL_MESSAGE, timerUtil.getControlMessageTime(decision, textProvider.getSimplifiedServiceTexts(municipalityId).getDelay()));
 
 			externalTaskService.complete(externalTask, variables);
 		} catch (final Exception exception) {
@@ -99,7 +101,7 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 		return caseDataClient.getStakeholder(municipalityId, namespace, errandId, id);
 	}
 
-	private static boolean isProcessEngineStakeholder(Stakeholder stakeholder) {
+	private static boolean isProcessEngineStakeholder(final Stakeholder stakeholder) {
 		return stakeholder.getRoles().contains(ROLE_ADMINISTRATOR) &&
 			PROCESS_ENGINE_FIRST_NAME.equals(stakeholder.getFirstName()) &&
 			PROCESS_ENGINE_LAST_NAME.equals(stakeholder.getLastName());

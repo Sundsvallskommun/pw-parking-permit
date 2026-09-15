@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,8 +33,8 @@ class AbstractTaskWorkerTest {
 
 	private static class Worker extends AbstractTaskWorker { // Test class extending the abstract class containing the clearUpdateAvailable method
 
-		Worker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-			super(camundaClient, caseDataClient, failureHandler);
+		Worker(EngineClient engineClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
+			super(engineClient, caseDataClient, failureHandler);
 		}
 
 		@Override
@@ -44,7 +44,7 @@ class AbstractTaskWorkerTest {
 	}
 
 	@Mock
-	private CamundaClient camundaClientMock;
+	private EngineClient engineClientMock;
 
 	@Mock
 	private ExternalTask externalTaskMock;
@@ -75,8 +75,8 @@ class AbstractTaskWorkerTest {
 		worker.clearUpdateAvailable(externalTaskMock);
 
 		// Assert and verify
-		verify(camundaClientMock).setProcessInstanceVariable(uuid, key, value);
-		verifyNoMoreInteractions(camundaClientMock);
+		verify(engineClientMock).setProcessInstanceVariable(uuid, key, value);
+		verifyNoMoreInteractions(engineClientMock);
 	}
 
 	@BeforeEach
@@ -91,7 +91,7 @@ class AbstractTaskWorkerTest {
 	void execute() {
 		final var requestId = UUID.randomUUID().toString();
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(requestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(requestId);
 
 		// Mock static RequestId to verify that static method is being called
 		try (MockedStatic<RequestId> requestIdMock = mockStatic(RequestId.class)) {
@@ -115,14 +115,14 @@ class AbstractTaskWorkerTest {
 		final var secondRequestId = UUID.randomUUID().toString();
 		final var observedRequestIds = new ArrayList<String>();
 
-		final var recordingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+		final var recordingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				observedRequestIds.add(RequestId.get());
 			}
 		};
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(firstRequestId, secondRequestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(firstRequestId, secondRequestId);
 
 		// Act - two tasks executed in sequence on the same thread
 		recordingWorker.execute(externalTaskMock, externalTaskServiceMock);
@@ -137,14 +137,14 @@ class AbstractTaskWorkerTest {
 	void executeClearsRequestIdWhenBusinessLogicThrows() {
 		// Arrange
 		final var requestId = UUID.randomUUID().toString();
-		final var throwingWorker = new AbstractTaskWorker(camundaClientMock, caseDataClientMock, failureHandlerMock) {
+		final var throwingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				throw new IllegalStateException("Boom");
 			}
 		};
 
-		when(externalTaskMock.getVariable(Constants.CAMUNDA_VARIABLE_REQUEST_ID)).thenReturn(requestId);
+		when(externalTaskMock.getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID)).thenReturn(requestId);
 
 		// Act
 		assertThatThrownBy(() -> throwingWorker.execute(externalTaskMock, externalTaskServiceMock))

@@ -20,8 +20,8 @@ import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
@@ -33,7 +33,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISABILITY_DURATION;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_CASE_DECIDED;
 import static se.sundsvall.parkingpermit.Constants.CATEGORY_BESLUT;
@@ -41,6 +40,7 @@ import static se.sundsvall.parkingpermit.Constants.LAW_ARTICLE;
 import static se.sundsvall.parkingpermit.Constants.LAW_CHAPTER;
 import static se.sundsvall.parkingpermit.Constants.LAW_HEADING;
 import static se.sundsvall.parkingpermit.Constants.LAW_SFS;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_RULE_ENGINE_RESPONSE;
 import static se.sundsvall.parkingpermit.Constants.ROLE_ADMINISTRATOR;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toAttachmentFilePart;
@@ -58,8 +58,8 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	private static final String DECISION_FILENAME = "beslut.pdf";
 	private final MessagingService messagingService;
 
-	ConstructDecisionTaskWorker(final CamundaClient camundaClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
-		super(camundaClient, caseDataClient, failureHandler);
+	ConstructDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 	}
 
@@ -67,15 +67,15 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	protected void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
 			logInfo("Execute Worker for ConstructDecisionTaskWorker");
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			final var latestDecision = errand.getDecisions().stream()
 				.max(Comparator.comparingInt(Decision::getVersion)).orElse(null);
 
-			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(CAMUNDA_VARIABLE_RULE_ENGINE_RESPONSE);
+			final RuleEngineResponse ruleEngineResponse = externalTask.getVariable(PROCESS_VARIABLE_RULE_ENGINE_RESPONSE);
 			validateResponse(ruleEngineResponse);
 
 			final var isAutomatic = isAutomatic(errand);

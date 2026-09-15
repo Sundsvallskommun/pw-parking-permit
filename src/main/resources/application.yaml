@@ -23,6 +23,8 @@ spring:
             token-uri: ${config.support-management.token-uri}
           relation:
             token-uri: ${config.relation.token-uri}
+          operaton:
+            token-uri: ${config.operaton.token-uri}
         registration:
           casedata:
             authorization-grant-type: client_credentials
@@ -70,6 +72,11 @@ spring:
             provider: relation
             client-id: ${config.relation.client-id}
             client-secret: ${config.relation.client-secret}
+          operaton:
+            authorization-grant-type: client_credentials
+            provider: operaton
+            client-id: ${config.operaton.client-id}
+            client-secret: ${config.operaton.client-secret}
 
 #----------------------------------------
 # Open API
@@ -97,23 +104,34 @@ logbook:
 camunda:
   bpm:
     client:
-      base-url: ${config.camunda.base-url}
+      # URL to the process engine REST API that the external task client polls to fetch and lock external tasks.
+      # Derived from process-engine.type, so polling always hits the same engine the workers write to.
+      base-url: ${config.${process-engine.type}.base-url}
       backoff:
         initTime: 500
         factor: 2
         maxTime: 15000
-    deployment:
-      processes:
-        - name: Parking permit process
-          tenant: PARKING_PERMIT
-          bpmnResourcePattern: classpath*:processmodels/*.bpmn
-          dmnResourcePattern: classpath*:processmodels/*.dmn
-          formResourcePattern: classpath*:processmodels/*.form
   worker:
     max:
       retries: 3
     retry:
       timeout: 10
+
+#----------------------------------------
+# Process engine selection (Camunda | Operaton)
+# 'type' controls which engine the task workers target, and selects the external task client's poll
+# URL from config.camunda.base-url / config.operaton.base-url - the two cannot drift apart.
+# 'deployment' lists the processes deployed at startup (engine-agnostic, via EngineClient).
+#----------------------------------------
+process-engine:
+  type: ${config.process-engine-type}
+  deployment:
+    processes:
+      - name: Parking permit process
+        tenant: PARKING_PERMIT
+        bpmnResourcePattern: classpath*:processmodels/*.bpmn
+        dmnResourcePattern: classpath*:processmodels/*.dmn
+        formResourcePattern: classpath*:processmodels/*.form
 
 #----------------------------------------
 # Integration settings
@@ -161,6 +179,10 @@ integration:
     url: ${config.relation.base-url}
     connectTimeout: 5
     readTimeout: 20
+  operaton:
+    url: ${config.operaton.base-url}
+    connectTimeout: 5
+    readTimeout: 20
 
 
 #----------------------------------------
@@ -188,7 +210,9 @@ resilience4j.circuitbreaker:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
     relation:
       ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
-      
+    operaton:
+      ignoreExceptions: se.sundsvall.dept44.exception.ClientProblem
+
 #----------------------------------------
 # Text properties
 #----------------------------------------
@@ -267,7 +291,7 @@ texts:
         Hej
         
         Du har fått ett beslut från Sundsvalls kommun.
-  
+        
         Med vänlig hälsning
         Sundsvalls kommun
       description: Personen inte folkbokförd i Sundsvalls kommun.

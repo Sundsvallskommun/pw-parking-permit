@@ -7,15 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
-import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
+import se.sundsvall.parkingpermit.integration.engine.EngineClient;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
 import static generated.se.sundsvall.casedata.MessageRequest.DirectionEnum.OUTBOUND;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_MESSAGE_ID;
+import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_MESSAGE_ID;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageAttachment;
 import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMapper.toMessageRequest;
 
@@ -26,25 +26,25 @@ public class AddMessageToErrandTaskWorker extends AbstractTaskWorker {
 	private final MessagingService messagingService;
 	private final TextProvider textProvider;
 
-	AddMessageToErrandTaskWorker(CamundaClient camundaClient, CaseDataClient caseDataClient, FailureHandler failureHandler, MessagingService messagingService, TextProvider textProvider) {
-		super(camundaClient, caseDataClient, failureHandler);
+	AddMessageToErrandTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final TextProvider textProvider) {
+		super(engineClient, caseDataClient, failureHandler);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
 	}
 
 	@Override
-	public void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+	public void executeBusinessLogic(final ExternalTask externalTask, final ExternalTaskService externalTaskService) {
 		try {
-			final String municipalityId = getMunicipalityId(externalTask);
-			final String namespace = getNamespace(externalTask);
-			final Long caseNumber = getCaseNumber(externalTask);
+			final var municipalityId = getMunicipalityId(externalTask);
+			final var namespace = getNamespace(externalTask);
+			final var caseNumber = getCaseNumber(externalTask);
 
 			final var errand = getErrand(municipalityId, namespace, caseNumber);
 			logInfo("Executing addition of decision message to errand with id {}", errand.getId());
 
 			final var pdf = messagingService.renderPdfDecision(municipalityId, errand, textProvider.getDenialTexts(municipalityId).getTemplateId());
 			final var attachment = toMessageAttachment(textProvider.getCommonTexts(municipalityId).getFilename(), APPLICATION_PDF_VALUE, pdf);
-			final var messageId = ofNullable(externalTask.getVariable(CAMUNDA_VARIABLE_MESSAGE_ID))
+			final var messageId = ofNullable(externalTask.getVariable(PROCESS_VARIABLE_MESSAGE_ID))
 				.map(String::valueOf)
 				.orElseThrow(() -> Problem.valueOf(HttpStatus.INTERNAL_SERVER_ERROR, "Id of sent message could not be retrieved from stored process variables"));
 
