@@ -2,6 +2,7 @@ package apptest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import generated.se.sundsvall.camunda.HistoricActivityInstanceDto;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
 
+import static com.github.tomakehurst.wiremock.admin.model.ServeEventQuery.ALL_UNMATCHED;
 import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
@@ -41,6 +43,9 @@ import static org.hamcrest.Matchers.equalTo;
 public abstract class AbstractEngineAppTest extends AbstractAppTest {
 
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
+	private static final String TOKEN_PATH = "/api-gateway/token";
+	// The external task client's client registration carries no scope, unlike the token requests of the Feign clients
+	private static final String EXTERNAL_TASK_CLIENT_TOKEN_REQUEST = "grant_type=client_credentials";
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
@@ -78,6 +83,28 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 		wiremock.resetRequests();
 	}
 
+	/**
+	 * The external task client fetches a new token for every poll, in the background. One that lands while WireMock
+	 * reloads its stubs (between test cases, or after a verification) goes unmatched without the test being wrong, so such
+	 * requests are left out of the checks for unmatched requests. The Feign clients' token requests are not.
+	 */
+	@Override
+	public boolean verifyAllStubs() {
+		wiremock.getServeEvents(ALL_UNMATCHED).getServeEvents().stream()
+			.filter(serveEvent -> isExternalTaskClientTokenRequest(serveEvent.getRequest()))
+			.forEach(serveEvent -> wiremock.removeServeEvent(serveEvent.getId()));
+		return super.verifyAllStubs();
+	}
+
+	private boolean hasUnmatchedRequests() {
+		return wiremock.findNearMissesForUnmatchedRequests().getNearMisses().stream()
+			.anyMatch(nearMiss -> !isExternalTaskClientTokenRequest(nearMiss.getRequest()));
+	}
+
+	private static boolean isExternalTaskClientTokenRequest(final LoggedRequest request) {
+		return TOKEN_PATH.equals(request.getUrl()) && EXTERNAL_TASK_CLIENT_TOKEN_REQUEST.equals(request.getBodyAsString());
+	}
+
 	protected List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {
 		return getRoute(processInstanceId, new ArrayList<>());
 	}
@@ -97,7 +124,7 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(timeoutInSeconds, SECONDS)
-			.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+			.failFast("Wiremock has mismatch!", this::hasUnmatchedRequests)
 			.until(() -> camundaClient.getHistoricProcessInstance(processId).getState(), equalTo(COMPLETED));
 	}
 
@@ -105,7 +132,7 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 		await()
 			.ignoreExceptions()
 			.atMost(timeoutInSeconds, SECONDS)
-			.failFast("Wiremock has mismatch!", () -> !wiremock.findNearMissesForUnmatchedRequests().getNearMisses().isEmpty())
+			.failFast("Wiremock has mismatch!", this::hasUnmatchedRequests)
 			.until(() -> camundaClient.getEventSubscriptions().stream().filter(eventSubscription -> state.equals(eventSubscription.getActivityId())).count(), equalTo(1L));
 	}
 
