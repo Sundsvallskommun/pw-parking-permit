@@ -1,13 +1,13 @@
 package apptest.mock.api;
 
+import com.github.tomakehurst.wiremock.matching.ContentPattern;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.CREATED_201;
-
-import com.github.tomakehurst.wiremock.matching.ContentPattern;
 
 public class Relations {
 

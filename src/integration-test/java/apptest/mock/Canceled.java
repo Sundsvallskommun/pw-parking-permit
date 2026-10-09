@@ -1,5 +1,7 @@
 package apptest.mock;
 
+import java.util.Map;
+
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
@@ -9,8 +11,6 @@ import static apptest.mock.api.CaseData.mockCaseDataPatchErrand;
 import static apptest.mock.api.CaseData.mockCaseDataPatchExtraParameters;
 import static apptest.mock.api.CaseData.mockCaseDataPatchStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-
-import java.util.Map;
 
 public class Canceled {
 

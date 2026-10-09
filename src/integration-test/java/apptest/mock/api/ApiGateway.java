@@ -8,12 +8,12 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class ApiGateway {
 
-    public static void mockApiGatewayToken() {
-        stubFor(post(urlEqualTo("/api-gateway/token"))
-                .withBasicAuth("the-client-id", "the-client-secret")
-                .willReturn(aResponse()
-                        .withStatus(OK_200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("common/responses/api-gateway-retrieve-token.json")));
-    }
+	public static void mockApiGatewayToken() {
+		stubFor(post(urlEqualTo("/api-gateway/token"))
+			.withBasicAuth("the-client-id", "the-client-secret")
+			.willReturn(aResponse()
+				.withStatus(OK_200)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/api-gateway-retrieve-token.json")));
+	}
 }

@@ -1,5 +1,20 @@
 package apptest.camunda;
 
+import apptest.mock.DecisionHandlingCase;
+import apptest.mock.DecisionHandlingFollowUp;
+import apptest.verification.Tuples;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+import tools.jackson.core.JacksonException;
+
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -42,24 +57,6 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-
-import java.time.Duration;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.annotation.DirtiesContext;
-
-import tools.jackson.core.JacksonException;
-
-import apptest.mock.DecisionHandlingCase;
-import apptest.mock.DecisionHandlingFollowUp;
-import apptest.verification.Tuples;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -385,50 +382,50 @@ class ProcessWithDecisionDeviationIT extends AbstractCamundaAppTest {
 		final var stateAfterCreateSMErrand = mockSupportManagementPost(scenarioName, stateAfterGetSMMetadata, "decision_decision-handling-worker---api-support-management-post",
 			equalToJson("""
 				{
-         			"actions" : [ ],
-         			"businessRelated" : false,
-         			"description" : "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: PRH-2022-000001",
-         			"externalTags" : [ ],
-         			"jsonParameters" : [ ],
-         			"labels" : [
+				     			"actions" : [ ],
+				     			"businessRelated" : false,
+				     			"description" : "Hantering av kortet gällande parkeringstillstånd ska ske av kontaktcenter: PRH-2022-000001",
+				     			"externalTags" : [ ],
+				     			"jsonParameters" : [ ],
+				     			"labels" : [
 				     	{
-           					"id" : "URBAN_DEVELOPMENT_ID"
-         				}, {
-           					"id" : "URBAN_DEVELOPMENT/PARKING_PERMIT_ID"
-         				}, {
-           					"id" : "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID"
-         				}
+				       					"id" : "URBAN_DEVELOPMENT_ID"
+				     				}, {
+				       					"id" : "URBAN_DEVELOPMENT/PARKING_PERMIT_ID"
+				     				}, {
+				       					"id" : "URBAN_DEVELOPMENT/PARKING_PERMIT/CARD_MANAGEMENT_ID"
+				     				}
 				    ],
-         			"parameters" : [ ],
-         			"phases" : [ ],
-         			"priority" : "MEDIUM",
-         			"reporterUserId" : "ProcessEngine",
-         			"stakeholders" : [
+				     			"parameters" : [ ],
+				     			"phases" : [ ],
+				     			"priority" : "MEDIUM",
+				     			"reporterUserId" : "ProcessEngine",
+				     			"stakeholders" : [
 				     	{
-           					"address" : "STORGATAN 1",
-           					"city" : "SUNDSVALL",
-           					"contactChannels" : [
+				       					"address" : "STORGATAN 1",
+				       					"city" : "SUNDSVALL",
+				       					"contactChannels" : [
 				       			{
-             						"type" : "Email",
-             						"value" : "john.doe@example.com"
-           						},
+				         						"type" : "Email",
+				         						"value" : "john.doe@example.com"
+				       						},
 				       			{
-             						"type" : "Phone",
-             						"value" : "070-1740605"
-           						}
+				         						"type" : "Phone",
+				         						"value" : "070-1740605"
+				       						}
 				       		],
-           					"externalId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
-           					"externalIdType" : "PRIVATE",
-           					"firstName" : "John",
-           					"lastName" : "Doe",
-           					"parameters" : [ ],
-           					"role" : "CONTACT",
-           					"zipCode" : "850 00"
-         				}
+				       					"externalId" : "6b8928bb-9800-4d52-a9fa-20d88c81f1d6",
+				       					"externalIdType" : "PRIVATE",
+				       					"firstName" : "John",
+				       					"lastName" : "Doe",
+				       					"parameters" : [ ],
+				       					"role" : "CONTACT",
+				       					"zipCode" : "850 00"
+				     				}
 				     ],
-         			"status" : "NEW",
-         			"title" : "Korthantering av parkeringstillstånd"
-       			}
+				     			"status" : "NEW",
+				     			"title" : "Korthantering av parkeringstillstånd"
+				   			}
 				"""));
 
 		DecisionHandlingCase.mockExecution(municipalityIdAnge, caseId, scenarioName, stateAfterCreateSMErrand, true);

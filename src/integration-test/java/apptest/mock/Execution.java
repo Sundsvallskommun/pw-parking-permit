@@ -1,5 +1,7 @@
 package apptest.mock;
 
+import java.util.Map;
+
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchBodyWhenLostCard;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
@@ -20,8 +22,6 @@ import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_LOST_PARKING_PERMIT
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
-
-import java.util.Map;
 
 public class Execution {
 
