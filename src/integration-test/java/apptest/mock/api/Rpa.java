@@ -11,17 +11,17 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.CREATED_201;
 
 public class Rpa {
 
-    public static String mockRpaAddQueueItems(String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
-        return stubFor(post(urlEqualTo("/api-rpa/odata/Queues/UiPathODataSvc.AddQueueItem"))
-                .inScenario(scenarioName)
-                .whenScenarioStateIs(requiredScenarioState)
-                .withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
-                .withRequestBody(bodyPattern)
-                .willReturn(aResponse()
-                        .withStatus(CREATED_201)
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("common/responses/rpa/post-queue-items.json"))
-                .willSetStateTo(newScenarioState))
-                .getNewScenarioState();
-    }
+	public static String mockRpaAddQueueItems(String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
+		return stubFor(post(urlEqualTo("/api-rpa/odata/Queues/UiPathODataSvc.AddQueueItem"))
+			.inScenario(scenarioName)
+			.whenScenarioStateIs(requiredScenarioState)
+			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
+			.withRequestBody(bodyPattern)
+			.willReturn(aResponse()
+				.withStatus(CREATED_201)
+				.withHeader("Content-Type", "application/json")
+				.withBodyFile("common/responses/rpa/post-queue-items.json"))
+			.willSetStateTo(newScenarioState))
+			.getNewScenarioState();
+	}
 }

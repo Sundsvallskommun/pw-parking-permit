@@ -1,5 +1,9 @@
 package apptest.mock.api;
 
+import com.github.tomakehurst.wiremock.matching.ContentPattern;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -15,11 +19,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import com.github.tomakehurst.wiremock.matching.ContentPattern;
 
 public class CaseData {
 

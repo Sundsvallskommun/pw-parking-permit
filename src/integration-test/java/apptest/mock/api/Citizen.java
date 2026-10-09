@@ -1,5 +1,7 @@
 package apptest.mock.api;
 
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -7,8 +9,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
-
-import java.util.Map;
 
 public class Citizen {
 
