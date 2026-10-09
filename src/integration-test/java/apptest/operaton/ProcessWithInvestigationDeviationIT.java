@@ -24,7 +24,6 @@ import static apptest.mock.Investigation.mockInvestigationConstructDecision;
 import static apptest.mock.Investigation.mockInvestigationExecuteRules;
 import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
 import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionAttachmentPost;
@@ -82,7 +81,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_investigation_001_createProcessForPhaseActionNotComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, false);
 
@@ -188,7 +186,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, isAutomatic);
 
@@ -263,7 +260,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_investigation_003_createProcessValidationErrorInBRToComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, false);
 
@@ -382,7 +378,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRAutomatic";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, true);
 		// Mock deviation

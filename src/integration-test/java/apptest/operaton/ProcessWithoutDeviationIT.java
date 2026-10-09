@@ -17,7 +17,6 @@ import static apptest.mock.Decision.mockDecision;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathway;
@@ -72,7 +71,6 @@ class ProcessWithoutDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		mockInvestigation(caseId, scenarioName, isAutomatic);

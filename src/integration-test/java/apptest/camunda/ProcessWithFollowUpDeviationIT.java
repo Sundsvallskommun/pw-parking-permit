@@ -21,7 +21,6 @@ import static apptest.mock.FollowUp.mockFollowUpUpdatePhaseAtEnd;
 import static apptest.mock.FollowUp.mockFollowUpUpdatePhaseAtStart;
 import static apptest.mock.FollowUp.mockFollowUpUpdateStatus;
 import static apptest.mock.Investigation.mockInvestigation;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
@@ -72,7 +71,6 @@ class ProcessWithFollowUpDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_actualization_001_createProcessForFollowUpNotComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, false);
 		mockInvestigation(caseId, scenarioName, false);

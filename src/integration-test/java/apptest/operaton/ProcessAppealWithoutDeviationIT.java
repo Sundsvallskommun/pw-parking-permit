@@ -17,7 +17,6 @@ import static apptest.mock.Decision.mockDecisionUpdatePhase;
 import static apptest.mock.Decision.mockDecisionUpdateStatus;
 import static apptest.mock.Execution.mockExecutionWhenAppeal;
 import static apptest.mock.FollowUp.mockFollowUp;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.verification.ProcessPathway.decisionPathway;
 import static apptest.verification.ProcessPathway.executionPathwayWhenAppeal;
 import static apptest.verification.ProcessPathway.followUpPathway;
@@ -67,7 +66,6 @@ class ProcessAppealWithoutDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_APPEAL);
 		final var stateAfterUpdatePhase = mockDecisionUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);

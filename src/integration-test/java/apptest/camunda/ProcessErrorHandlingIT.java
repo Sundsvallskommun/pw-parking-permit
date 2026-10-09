@@ -10,7 +10,6 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import se.sundsvall.parkingpermit.Application;
 import tools.jackson.core.JacksonException;
 
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -50,7 +49,6 @@ class ProcessErrorHandlingIT extends AbstractCamundaAppTest {
 
 		// The update first probes Operaton, which goes through the OAuth2-secured gateway, so the token endpoint must be
 		// mocked.
-		mockApiGatewayToken();
 
 		// Update process
 		final var response = setupCall()

@@ -26,7 +26,6 @@ import static apptest.mock.Denial.mockDenial;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
@@ -87,7 +86,6 @@ class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		final var stateAfterCheckAppeal = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterUpdatePhase = mockActualizationUpdatePhase(caseId, scenarioName, stateAfterCheckAppeal, isAutomatic);
 		final var stateAfterVerifyResident = mockActualizationVerifyResident(caseId, scenarioName, stateAfterUpdatePhase, "other-municipality", isAutomatic);
@@ -139,7 +137,6 @@ class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		state = mockActualizationUpdatePhase(caseId, scenarioName, state, isAutomatic);
 		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", isAutomatic);
@@ -213,7 +210,6 @@ class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_actualization_003_createProcessForActualizationNotComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		state = mockActualizationUpdatePhase(caseId, scenarioName, state, false);
 		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", false);
@@ -319,7 +315,6 @@ class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT_RENEWAL);
 		state = mockActualizationUpdatePhase(caseId, scenarioName, state, isAutomatic);
 		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", isAutomatic);
@@ -379,7 +374,6 @@ class ProcessWithActualizationDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_actualization_005_createProcessWaitingForStakeholderUpdateInActualization(";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		var state = mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
 		state = mockActualizationUpdatePhase(caseId, scenarioName, state, false);
 		state = mockActualizationVerifyResident(caseId, scenarioName, state, "2281", false);

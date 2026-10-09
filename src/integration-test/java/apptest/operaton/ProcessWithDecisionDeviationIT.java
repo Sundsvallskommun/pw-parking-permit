@@ -25,7 +25,6 @@ import static apptest.mock.Denial.mockSendSimplifiedService;
 import static apptest.mock.Execution.mockExecution;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
@@ -84,7 +83,6 @@ class ProcessWithDecisionDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_decision_001_createProcessForDecisionNotFinalToFinal";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, false);
 		var state = mockInvestigation(caseId, scenarioName, false);
@@ -179,7 +177,6 @@ class ProcessWithDecisionDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		var state = mockInvestigation(caseId, scenarioName, isAutomatic);
@@ -238,7 +235,6 @@ class ProcessWithDecisionDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		var state = mockInvestigation(caseId, scenarioName, isAutomatic);
@@ -302,7 +298,6 @@ class ProcessWithDecisionDeviationIT extends AbstractOperatonAppTest {
 		final var scenarioName = "test_decision_004_createProcessForDecisionAnge";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, false);
 		final var stateAfterInvestigation = mockInvestigation(caseId, scenarioName, false);
@@ -496,7 +491,6 @@ class ProcessWithDecisionDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		var state = mockInvestigation(caseId, scenarioName, isAutomatic);

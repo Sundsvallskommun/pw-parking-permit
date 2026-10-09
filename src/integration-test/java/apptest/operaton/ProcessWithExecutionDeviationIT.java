@@ -23,7 +23,6 @@ import static apptest.mock.Execution.mockExecutionWhenLostCard;
 import static apptest.mock.Execution.mockSendSimplifiedService;
 import static apptest.mock.FollowUp.mockFollowUp;
 import static apptest.mock.Investigation.mockInvestigation;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.mockCaseDataGet;
 import static apptest.verification.ProcessPathway.actualizationPathway;
 import static apptest.verification.ProcessPathway.decisionPathway;
@@ -79,7 +78,6 @@ class ProcessWithExecutionDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		mockInvestigation(caseId, scenarioName, isAutomatic);
@@ -184,7 +182,6 @@ class ProcessWithExecutionDeviationIT extends AbstractOperatonAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_LOST_PARKING_PERMIT);
 		mockActualization(caseId, scenarioName, isAutomatic);
 		mockInvestigation(caseId, scenarioName, isAutomatic);
