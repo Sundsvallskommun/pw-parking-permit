@@ -64,7 +64,7 @@ public class ProcessPathway {
 			.with(tuple("Is card manufactured", "gateway_card_exists"))
 			.with(tuple("Create asset", "external_task_execution_create_asset"))
 			.with(tuple("End appeal", "execution_gateway_end_appeal"))
-			//Added delay to send control message to make it happen after the asset is created
+			// Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))
@@ -81,7 +81,7 @@ public class ProcessPathway {
 			.with(tuple("Gateway isAppeal", "execution_gateway_is_appeal"))
 			.with(tuple("Create relation with existing asset", "external_task_execution_create_relation"))
 			.with(tuple("End appeal", "execution_gateway_end_appeal"))
-			//Added delay to send control message to make it happen after the asset is created
+			// Added delay to send control message to make it happen after the asset is created
 			.with(tuple("Wait to send message", "timer_wait_to_send_message"))
 			.with(tuple("Send simplified service message", "external_task_execution_send_message_task"))
 			.with(tuple("End parallel gateway", "parallel_gateway_end"))

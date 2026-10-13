@@ -1,6 +1,15 @@
 package apptest.operaton;
 
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
+import java.time.Duration;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import tools.jackson.core.JacksonException;
+
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -12,16 +21,6 @@ import static org.awaitility.Awaitility.setDefaultTimeout;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-
-import tools.jackson.core.JacksonException;
-import java.time.Duration;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import se.sundsvall.dept44.problem.Problem;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
 
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
@@ -48,8 +47,8 @@ class ProcessErrorHandlingIT extends AbstractOperatonAppTest {
 		// Arrange
 		final var nonExistingProcessInstanceId = UUID.randomUUID().toString();
 
-		// The update first probes Operaton, which goes through the OAuth2-secured gateway, so the token endpoint must be mocked.
-		mockApiGatewayToken();
+		// The update first probes Operaton, which goes through the OAuth2-secured gateway, so the token endpoint must be
+		// mocked.
 
 		// Update process
 		final var response = setupCall()

@@ -1,5 +1,7 @@
 package apptest.mock.api;
 
+import com.github.tomakehurst.wiremock.matching.ContentPattern;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -12,15 +14,13 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
-import com.github.tomakehurst.wiremock.matching.ContentPattern;
-
 public class PartyAssets {
 
 	public static String mockPartyAssetsPost(String caseId, String scenarioName, String requiredScenarioState, String newScenarioState, ContentPattern<?> bodyPattern) {
 		return stubFor(post(urlPathEqualTo("/api-party-assets/2281/assets"))
 			.inScenario(scenarioName)
 			.whenScenarioStateIs(requiredScenarioState)
-			.withQueryParam("sourceReference", equalTo(String.format("LINK|%s;case;casedata;SBK_PARKING_PERMIT|",caseId)))
+			.withQueryParam("sourceReference", equalTo(String.format("LINK|%s;case;casedata;SBK_PARKING_PERMIT|", caseId)))
 			.withHeader("Authorization", equalTo("Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"))
 			.withRequestBody(bodyPattern)
 			.willReturn(aResponse()

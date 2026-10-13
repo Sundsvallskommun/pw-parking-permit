@@ -1,5 +1,18 @@
 package apptest.camunda;
 
+import apptest.verification.Tuples;
+import java.time.Duration;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.annotation.DirtiesContext;
+import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+import se.sundsvall.parkingpermit.Application;
+import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
+import tools.jackson.core.JacksonException;
+
 import static apptest.mock.Actualization.mockActualization;
 import static apptest.mock.Canceled.mockCanceled;
 import static apptest.mock.CheckAppeal.mockCheckAppeal;
@@ -11,7 +24,6 @@ import static apptest.mock.Investigation.mockInvestigationConstructDecision;
 import static apptest.mock.Investigation.mockInvestigationExecuteRules;
 import static apptest.mock.Investigation.mockInvestigationUpdatePhase;
 import static apptest.mock.Investigation.mockInvestigationUpdateStatus;
-import static apptest.mock.api.ApiGateway.mockApiGatewayToken;
 import static apptest.mock.api.CaseData.createPatchBody;
 import static apptest.mock.api.CaseData.createPatchExtraParametersBody;
 import static apptest.mock.api.CaseData.mockCaseDataDecisionAttachmentPost;
@@ -43,22 +55,6 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_PARKING_PERMIT;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_AUTOMATIC;
 
-import java.time.Duration;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.annotation.DirtiesContext;
-
-import tools.jackson.core.JacksonException;
-
-import apptest.verification.Tuples;
-import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
-import se.sundsvall.parkingpermit.Application;
-import se.sundsvall.parkingpermit.api.model.StartProcessResponse;
-
 @DirtiesContext
 @WireMockAppTestSuite(files = "classpath:/Wiremock/", classes = Application.class)
 class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
@@ -85,7 +81,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_investigation_001_createProcessForPhaseActionNotComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, false);
 
@@ -191,7 +186,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		}
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, isAutomatic);
 
@@ -266,7 +260,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_investigation_003_createProcessValidationErrorInBRToComplete";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		var state = mockActualization(caseId, scenarioName, false);
 
@@ -385,7 +378,6 @@ class ProcessWithInvestigationDeviationIT extends AbstractCamundaAppTest {
 		final var scenarioName = "test_investigation_004_createProcessValidationErrorInBRAutomatic";
 
 		// Setup mocks
-		mockApiGatewayToken();
 		mockCheckAppeal(caseId, scenarioName, CASE_TYPE_PARKING_PERMIT);
 		final var stateAfterActualization = mockActualization(caseId, scenarioName, true);
 		// Mock deviation
