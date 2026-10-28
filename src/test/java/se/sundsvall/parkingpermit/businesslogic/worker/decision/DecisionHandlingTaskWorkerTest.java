@@ -21,6 +21,8 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -120,8 +122,11 @@ class DecisionHandlingTaskWorkerTest {
 	@Captor
 	private ArgumentCaptor<generated.se.sundsvall.supportmanagement.Errand> supportManagementErrandCaptor;
 
-	@Test
-	void executeWhenDecisionIsApprovedAndSendDigital() {
+	@ParameterizedTest
+	@EnumSource(value = DecisionOutcomeEnum.class, names = {
+		"APPROVAL", "CONDITIONAL_APPROVAL"
+	})
+	void executeWhenDecisionIsApprovedAndSendDigital(final DecisionOutcomeEnum decisionOutcome) {
 
 		// Arrange
 		final var pdf = new RenderResponse();
@@ -136,7 +141,7 @@ class DecisionHandlingTaskWorkerTest {
 		when(externalTaskMock.getVariable(CAMUNDA_VARIABLE_NAMESPACE)).thenReturn(NAMESPACE);
 		when(caseDataClientMock.getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID)).thenReturn(errandMock);
 		when(errandMock.getErrandNumber()).thenReturn(ERRAND_NUMBER);
-		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(APPROVAL)));
+		when(errandMock.getDecisions()).thenReturn(List.of(createFinalDecision(decisionOutcome)));
 		when(errandMock.getStakeholders()).thenReturn(createApplicantAndAdministratorStakeholder());
 		when(errandMock.getExtraParameters()).thenReturn(extraParameters);
 		when(textProviderMock.getCommonTexts(MUNICIPALITY_ID)).thenReturn(commonTextPropertiesMock);

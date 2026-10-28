@@ -16,6 +16,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.CONDITIONAL_APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.parkingpermit.Constants.CAMUNDA_VARIABLE_FINAL_DECISION;
@@ -112,7 +113,7 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 	}
 
 	private boolean isApproved(Decision.DecisionOutcomeEnum decisionOutcome) {
-		return APPROVAL.equals(decisionOutcome);
+		return APPROVAL.equals(decisionOutcome) || CONDITIONAL_APPROVAL.equals(decisionOutcome);
 	}
 
 	private boolean isFinalDecision(Errand errand) {
