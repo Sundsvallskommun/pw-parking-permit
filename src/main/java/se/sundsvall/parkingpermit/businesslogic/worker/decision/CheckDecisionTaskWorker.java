@@ -17,6 +17,7 @@ import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.CONDITIONAL_APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_PHASE_DECISION;
@@ -25,6 +26,7 @@ import static se.sundsvall.parkingpermit.Constants.CASEDATA_STATUS_DECISION_EXEC
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_CANCEL;
 import static se.sundsvall.parkingpermit.Constants.PHASE_ACTION_UNKNOWN;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_CANCELED;
+import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION;
 import static se.sundsvall.parkingpermit.Constants.PHASE_STATUS_WAITING;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_FINAL_DECISION;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPROVED;
@@ -108,11 +110,11 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 		caseDataClient.patchErrand(municipalityId, errand.getNamespace(), errand.getId(),
 			toPatchErrand(errand.getExternalCaseId(), CASEDATA_PHASE_DECISION));
 		caseDataClient.patchErrandExtraParameters(municipalityId, namespace, errand.getId(),
-			toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION));
+			toExtraParameterList(PHASE_STATUS_WAITING, PHASE_ACTION_UNKNOWN, CASEDATA_PHASE_DECISION, PHASE_STATUS_DESCRIPTION_WAITING_FOR_DECISION));
 	}
 
 	private boolean isApproved(Decision.DecisionOutcomeEnum decisionOutcome) {
-		return APPROVAL.equals(decisionOutcome);
+		return APPROVAL.equals(decisionOutcome) || CONDITIONAL_APPROVAL.equals(decisionOutcome);
 	}
 
 	private boolean isFinalDecision(Errand errand) {
