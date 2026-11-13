@@ -11,7 +11,9 @@ import org.testcontainers.containers.wait.strategy.Wait;
  */
 public final class EngineContainers {
 
-	private static final String CAMUNDA_IMAGE = "camunda/camunda-bpm-platform:run-7.24.0";
+	// Camunda no longer publishes Camunda 7 CE images on Docker Hub. BPM Crafters build this one from the unmodified
+	// official CE distribution: https://github.com/bpm-crafters/process-engine-adapters-camunda-7
+	private static final String CAMUNDA_IMAGE = "bpmcrafters/camunda-bpm-platform:run-7.24.0";
 	private static final String OPERATON_IMAGE = "operaton/operaton:latest";
 
 	public static final GenericContainer<?> CAMUNDA = create(CAMUNDA_IMAGE);
