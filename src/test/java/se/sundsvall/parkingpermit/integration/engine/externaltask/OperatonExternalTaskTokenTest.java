@@ -1,5 +1,6 @@
 package se.sundsvall.parkingpermit.integration.engine.externaltask;
 
+import feign.RequestTemplate;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
@@ -124,7 +125,7 @@ class OperatonExternalTaskTokenTest {
 		// Another token replaces the cached one behind the back of the token instance
 		final var oAuth2RequestInterceptor = (OAuth2RequestInterceptor) ReflectionTestUtils.getField(token, "oAuth2RequestInterceptor");
 		oAuth2RequestInterceptor.removeToken("Bearer token-1");
-		final var template = new feign.RequestTemplate();
+		final var template = new RequestTemplate();
 		oAuth2RequestInterceptor.apply(template);
 		assertThat(template.headers().get("Authorization")).containsExactly("Bearer token-2");
 

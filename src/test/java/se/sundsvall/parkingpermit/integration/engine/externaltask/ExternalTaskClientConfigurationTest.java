@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ExternalTaskClientConfigurationTest {
 
@@ -23,29 +24,34 @@ class ExternalTaskClientConfigurationTest {
 			.run(context -> assertThat(context).getBean(ClientRequestInterceptor.class)
 				.isInstanceOf(OperatonExternalTaskAuthInterceptor.class)
 				.hasFieldOrPropertyWithValue("token", token));
+		verifyNoInteractions(token);
 	}
 
 	@Test
 	void interceptorNotRegisteredWhenEngineIsCamunda() {
 		contextRunner.withPropertyValues("process-engine.type=camunda")
 			.run(context -> assertThat(context).doesNotHaveBean(ClientRequestInterceptor.class));
+		verifyNoInteractions(token);
 	}
 
 	@Test
 	void interceptorNotRegisteredByDefault() {
 		contextRunner.run(context -> assertThat(context).doesNotHaveBean(ClientRequestInterceptor.class));
+		verifyNoInteractions(token);
 	}
 
 	@Test
 	void tokenEvictingBackoffStrategyRegisteredWhenEngineIsCamunda() {
 		contextRunner.withPropertyValues("process-engine.type=camunda")
 			.run(context -> assertBackoffStrategy(context.getBean(BackoffStrategy.class)));
+		verifyNoInteractions(token);
 	}
 
 	@Test
 	void tokenEvictingBackoffStrategyRegisteredWhenEngineIsOperaton() {
 		contextRunner.withPropertyValues("process-engine.type=operaton")
 			.run(context -> assertBackoffStrategy(context.getBean(BackoffStrategy.class)));
+		verifyNoInteractions(token);
 	}
 
 	private void assertBackoffStrategy(final BackoffStrategy backoffStrategy) {

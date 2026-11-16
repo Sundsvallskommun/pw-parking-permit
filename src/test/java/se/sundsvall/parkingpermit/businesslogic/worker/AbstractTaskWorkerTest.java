@@ -167,6 +167,7 @@ class AbstractTaskWorkerTest {
 
 	@Test
 	void businessLogicGetsServiceThatRetriesCompleteOnceOnUnauthorized() {
+		// Arrange
 		final var completingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -175,15 +176,20 @@ class AbstractTaskWorkerTest {
 		};
 		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).complete(externalTaskMock);
 
+		// Act
 		completingWorker.execute(externalTaskMock, externalTaskServiceMock);
 
+		// Assert
 		verify(externalTaskServiceMock, times(2)).complete(externalTaskMock);
-		verifyNoMoreInteractions(externalTaskServiceMock);
+		verify(externalTaskMock).getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID);
+		verifyNoMoreInteractions(externalTaskServiceMock, externalTaskMock);
+		verifyNoInteractions(engineClientMock, caseDataClientMock, failureHandlerMock);
 		assertEvictedOnce();
 	}
 
 	@Test
 	void businessLogicGetsServiceThatCompletesOnceWithoutEvictionOnSuccess() {
+		// Arrange
 		final var completingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -191,15 +197,19 @@ class AbstractTaskWorkerTest {
 			}
 		};
 
+		// Act
 		completingWorker.execute(externalTaskMock, externalTaskServiceMock);
 
+		// Assert
 		verify(externalTaskServiceMock).complete(externalTaskMock);
-		verifyNoMoreInteractions(externalTaskServiceMock);
-		verifyNoInteractions(tokenMock);
+		verify(externalTaskMock).getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID);
+		verifyNoMoreInteractions(externalTaskServiceMock, externalTaskMock);
+		verifyNoInteractions(tokenMock, engineClientMock, caseDataClientMock, failureHandlerMock);
 	}
 
 	@Test
 	void failureHandlerCalledWithGivenServiceRetriesHandleFailureOnceOnUnauthorized() throws Exception {
+		// Arrange
 		final var failureHandler = BeanUtils.instantiateClass(FailureHandler.class.getDeclaredConstructor(int.class, long.class), 3, 10L);
 		final var failingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandler, tokenMock) {
 			@Override
@@ -212,10 +222,17 @@ class AbstractTaskWorkerTest {
 		when(externalTaskMock.getRetries()).thenReturn(3);
 		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).handleFailure("taskId", "workerId", "message", 2, 10L);
 
+		// Act
 		failingWorker.execute(externalTaskMock, externalTaskServiceMock);
 
+		// Assert
 		verify(externalTaskServiceMock, times(2)).handleFailure("taskId", "workerId", "message", 2, 10L);
-		verifyNoMoreInteractions(externalTaskServiceMock);
+		verify(externalTaskMock).getVariable(Constants.PROCESS_VARIABLE_REQUEST_ID);
+		verify(externalTaskMock).getId();
+		verify(externalTaskMock).getWorkerId();
+		verify(externalTaskMock).getRetries();
+		verifyNoMoreInteractions(externalTaskServiceMock, externalTaskMock);
+		verifyNoInteractions(engineClientMock, caseDataClientMock, failureHandlerMock);
 		assertEvictedOnce();
 	}
 
