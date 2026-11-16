@@ -385,6 +385,9 @@ public class CaseData {
 			}, {
 				"key" : "process.phaseAction",
 				"values" : ["%s"]
+			}, {
+				"key" : "process.phaseStatusDescription",
+				"values" : ["${json-unit.any-string}"]
 			} ]""", phaseStatus, phaseAction);
 	}
 
@@ -397,9 +400,20 @@ public class CaseData {
 				"key" : "process.phaseAction",
 				"values" : ["%s"]
 			}, {
+				"key" : "process.phaseStatusDescription",
+				"values" : ["${json-unit.any-string}"]
+			}, {
 				"key" : "process.displayPhase",
 				"values" : ["%s"]
 			} ]""", phaseStatus, phaseAction, displayPhase);
+	}
+
+	public static String createPatchExtraParametersBodyDescriptionOnly() {
+		return """
+			[ {
+				"key" : "process.phaseStatusDescription",
+				"values" : ["${json-unit.any-string}"]
+			} ]""";
 	}
 
 	private static Map<String, Object> mergeParams(Map<String, Object> transformParameters, String caseId, String decisionOutcome, String role) {

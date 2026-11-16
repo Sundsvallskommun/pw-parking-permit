@@ -19,6 +19,7 @@ import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.APPROVAL;
+import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.CONDITIONAL_APPROVAL;
 import static generated.se.sundsvall.casedata.Decision.DecisionOutcomeEnum.REJECTION;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -153,6 +154,6 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 		final var decisionOutCome = Optional.ofNullable(getFinalDecision(errand))
 			.map(Decision::getDecisionOutcome)
 			.orElse(REJECTION);
-		return APPROVAL.equals(decisionOutCome);
+		return APPROVAL.equals(decisionOutCome) || CONDITIONAL_APPROVAL.equals(decisionOutCome);
 	}
 }

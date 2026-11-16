@@ -5,10 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "13.0"
+  version: "14.0"
 servers:
-- url: http://localhost:36179
-  description: Generated server url
+- url: /
 tags:
 - name: Notifications
   description: User notification operations
@@ -1023,398 +1022,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  /{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}:
-    get:
-      tags:
-      - Attachments
-      summary: Get a streamed attachment.
-      description: Fetches the binary content of the attachment that matches the provided
-        id in a streamed manner.
-      operationId: getAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    delete:
-      tags:
-      - Attachments
-      description: Delete attachment on errand.
-      operationId: deleteAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "204":
-          description: No content - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    patch:
-      tags:
-      - Attachments
-      description: "Update attachment metadata on errand. The binary content cannot\
-        \ be updated; replace it by deleting and recreating the attachment."
-      operationId: patchAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Attachment"
-        required: true
-      responses:
-        "204":
-          description: No content - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}/attachments/{attachmentId}:
-    get:
-      tags:
-      - Decisions
-      summary: Get a streamed decision attachment.
-      description: Fetches the binary content of the attachment that matches the provided
-        id in a streamed manner.
-      operationId: getDecisionAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: decisionId
-        in: path
-        description: Decision ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    delete:
-      tags:
-      - Decisions
-      description: Delete attachment on decision.
-      operationId: deleteDecisionAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: decisionId
-        in: path
-        description: Decision ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "204":
-          description: No content - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    patch:
-      tags:
-      - Decisions
-      description: Update attachment metadata on decision. The binary content cannot
-        be updated; replace it by deleting and recreating the attachment.
-      operationId: patchDecisionAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: decisionId
-        in: path
-        description: Decision ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: attachmentId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Attachment"
-        required: true
-      responses:
-        "204":
-          description: No content - Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/metadata/casetypes:
     get:
       tags:
@@ -1906,6 +1513,222 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/messages/email/batch:
+    post:
+      tags:
+      - Messages
+      summary: Send a batch email in context of an errand
+      description: "Sends one individual email per recipient specified in the request.\
+        \ This call blocks until Messaging's batch endpoint responds - bounded by\
+        \ the recipient limit on BulkEmailRequest and the messaging Feign client's\
+        \ read timeout - but Messaging delivers the batch asynchronously. A successful\
+        \ (204) response means Messaging accepted the batch for delivery, not that\
+        \ every email was actually delivered; a delivery that fails after acceptance\
+        \ is not reflected in this response."
+      operationId: sendBulkEmail
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkEmailRequest"
+        required: true
+      responses:
+        "204":
+          description: No content - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}/attachments:
+    get:
+      tags:
+      - Decisions
+      description: Get attachments metadata by decision id.
+      operationId: getAttachmentsByDecisionId
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: decisionId
+        in: path
+        description: Decision ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      responses:
+        "200":
+          description: OK - Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attachment"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+      - Decisions
+      description: Create attachment on decision. The metadata is supplied as a JSON
+        part named 'attachment' and the binary content as a file part named 'file'.
+      operationId: postDecisionAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: decisionId
+        in: path
+        description: Decision ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                attachment:
+                  $ref: "#/components/schemas/Attachment"
+                  description: Attachment metadata
+                file:
+                  type: string
+                  format: binary
+              required:
+              - attachment
+              - file
+        required: true
+      responses:
+        "201":
+          description: Created - Successful operation
+          headers:
+            Location:
+              description: Location of the created resource.
+              style: simple
+              schema:
+                type: string
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations:
     get:
       tags:
@@ -2196,6 +2019,74 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}/messages/mark-as-read:
+    post:
+      tags:
+      - Conversations
+      summary: Mark messages as read
+      description: Mark messages in a conversation as read. The errand number is used
+        as the part identifier sent to Message Exchange.
+      operationId: markAsRead
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: conversationId
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+        example: 1aefbbb8-de82-414b-b5d7-ba7c5bbe4506
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarkAsReadRequest"
+        required: true
+      responses:
+        "204":
+          description: Successful operation
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments:
     get:
       tags:
@@ -2258,8 +2149,8 @@ paths:
     post:
       tags:
       - Attachments
-      description: "Create attachment on errand. The metadata is supplied as a JSON\
-        \ part named 'attachment' and the binary content as a file part named 'file'."
+      description: Create attachment on errand. The metadata is supplied as a JSON
+        part named 'attachment' and the binary content as a file part named 'file'.
       operationId: postAttachment
       parameters:
       - name: municipalityId
@@ -2280,156 +2171,6 @@ paths:
       - name: errandId
         in: path
         description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                attachment:
-                  $ref: "#/components/schemas/Attachment"
-                  description: Attachment metadata
-                file:
-                  type: string
-                  format: binary
-              required:
-              - attachment
-              - file
-        required: true
-      responses:
-        "201":
-          description: Created - Successful operation
-          headers:
-            Location:
-              description: Location of the created resource.
-              style: simple
-              schema:
-                type: string
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-  /{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}/attachments:
-    get:
-      tags:
-      - Decisions
-      description: Get attachments metadata by decision id.
-      operationId: getAttachmentsByDecisionId
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: decisionId
-        in: path
-        description: Decision ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      responses:
-        "200":
-          description: OK - Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Attachment"
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-    post:
-      tags:
-      - Decisions
-      description: Create attachment on decision. The metadata is supplied as a JSON
-        part named 'attachment' and the binary content as a file part named 'file'.
-      operationId: postDecisionAttachment
-      parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: namespace
-        in: path
-        description: Namespace
-        required: true
-        schema:
-          type: string
-          pattern: "[\\w|\\-]+"
-        example: MY_NAMESPACE
-      - name: errandId
-        in: path
-        description: Errand ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-        example: 123
-      - name: decisionId
-        in: path
-        description: Decision ID
         required: true
         schema:
           type: integer
@@ -3722,6 +3463,214 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/decisions/{decisionId}/attachments/{attachmentId}:
+    get:
+      tags:
+      - Decisions
+      summary: Get a streamed decision attachment.
+      description: Fetches the binary content of the attachment that matches the provided
+        id in a streamed manner.
+      operationId: getDecisionAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: decisionId
+        in: path
+        description: Decision ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    delete:
+      tags:
+      - Decisions
+      description: Delete attachment on decision.
+      operationId: deleteDecisionAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: decisionId
+        in: path
+        description: Decision ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No content - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+      - Decisions
+      description: Update attachment metadata on decision. The binary content cannot
+        be updated; replace it by deleting and recreating the attachment.
+      operationId: patchDecisionAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: decisionId
+        in: path
+        description: Decision ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Attachment"
+        required: true
+      responses:
+        "204":
+          description: No content - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/{conversationId}:
     get:
       tags:
@@ -3851,6 +3800,190 @@ paths:
                 oneOf:
                 - $ref: "#/components/schemas/Problem"
                 - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}:
+    get:
+      tags:
+      - Attachments
+      summary: Get a streamed attachment.
+      description: Fetches the binary content of the attachment that matches the provided
+        id in a streamed manner.
+      operationId: getAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    delete:
+      tags:
+      - Attachments
+      description: Delete attachment on errand.
+      operationId: deleteAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No content - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    patch:
+      tags:
+      - Attachments
+      description: Update attachment metadata on errand. The binary content cannot
+        be updated; replace it by deleting and recreating the attachment.
+      operationId: patchAttachment
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 123
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Attachment"
+        required: true
+      responses:
+        "204":
+          description: No content - Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -4665,6 +4798,81 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{namespace}/errands/{errandId}/communication/conversations/count-read-by:
+    get:
+      tags:
+      - Conversations
+      summary: Get read-by counts per conversation
+      description: "Get read-by statistics for all conversations linked to an errand,\
+        \ optionally filtered by conversationId."
+      operationId: countReadBy
+      parameters:
+      - name: namespace
+        in: path
+        description: Namespace
+        required: true
+        schema:
+          type: string
+          pattern: "[\\w|\\-]+"
+        example: MY_NAMESPACE
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: errandId
+        in: path
+        description: Errand ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: includeSystemMessages
+        in: query
+        description: Include system-created messages in count
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      - name: conversationId
+        in: query
+        description: Filter to a specific conversation ID
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConversationReadByCount"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/{namespace}/errands/{errandId}/attachments/{attachmentId}/history:
     get:
       tags:
@@ -5076,16 +5284,16 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
-        title:
-          type: string
-        detail:
-          type: string
         status:
           type: integer
           format: int32
@@ -5104,13 +5312,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        instance:
-          type: string
-          format: uri
         detail:
           type: string
         causeAsProblem:
           $ref: "#/components/schemas/ThrowableProblem"
+        instance:
+          type: string
+          format: uri
     ThrowableProblem:
       type: object
       properties:
@@ -5379,6 +5587,8 @@ components:
           - REJECTION
           - DISMISSAL
           - CANCELLATION
+          - CONDITIONAL_APPROVAL
+          - REVOCATION
           examples:
           - GRANTED
         description:
@@ -5736,21 +5946,11 @@ components:
     JsonNode:
       type: object
       properties:
-        empty:
-          type: boolean
-        array:
-          type: boolean
-        "null":
-          type: boolean
-        object:
-          type: boolean
-        float:
-          type: boolean
         container:
           type: boolean
         number:
           type: boolean
-        missingNode:
+        floatingPointNumber:
           type: boolean
         nodeType:
           type: string
@@ -5768,9 +5968,11 @@ components:
           type: boolean
         integralNumber:
           type: boolean
-        pojo:
+        missingNode:
           type: boolean
-        floatingPointNumber:
+        valueNode:
+          type: boolean
+        pojo:
           type: boolean
         short:
           type: boolean
@@ -5791,7 +5993,15 @@ components:
           type: boolean
         binary:
           type: boolean
-        valueNode:
+        empty:
+          type: boolean
+        array:
+          type: boolean
+        "null":
+          type: boolean
+        object:
+          type: boolean
+        float:
           type: boolean
         embeddedValue:
           type: boolean
@@ -6250,6 +6460,56 @@ components:
         internal:
           type: boolean
           description: Is message internal
+    BulkEmailRequest:
+      type: object
+      properties:
+        recipients:
+          type: array
+          items:
+            type: string
+            format: email
+            description: "Email address for a recipient. One individual email is sent\
+              \ per recipient. Limited to 200 recipients per request, since each is\
+              \ sent as a synchronous call to Messaging's batch endpoint."
+            examples:
+            - recipient@recipient.se
+            minLength: 1
+          maxItems: 200
+          minItems: 0
+        subject:
+          type: string
+          description: Subject
+          examples:
+          - Subject
+          minLength: 1
+        message:
+          type: string
+          description: Message in plain text
+          examples:
+          - Message in plain text
+          minLength: 1
+        htmlMessage:
+          type: string
+          description: Message in HTML format
+          examples:
+          - <p>Hello world</p>
+        departmentName:
+          type: string
+          description: The department name to use when resolving which messaging settings
+            (i.e. sender address) to use
+          examples:
+          - CONVERSATION
+          minLength: 1
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageAttachment"
+            description: List with Base64 encoded email attachments
+      required:
+      - departmentName
+      - message
+      - recipients
+      - subject
     Conversation:
       type: object
       description: Conversation model
@@ -6326,55 +6586,6 @@ components:
           type: array
           items:
             type: string
-    ReadBy:
-      type: object
-      description: Readby model
-      properties:
-        identifier:
-          $ref: "#/components/schemas/Identifier"
-          description: The identifier of the person who read the message.
-          examples:
-          - joe01doe
-        readAt:
-          type: string
-          format: date-time
-          description: The timestamp when the message was read.
-          examples:
-          - 2023-01-01T12:00:00+01:00
-    ConversationAttachment:
-      type: object
-      description: ConversationAttachment model
-      properties:
-        id:
-          type: string
-          description: ConversationAttachment ID
-          examples:
-          - cb20c51f-fcf3-42c0-b613-de563634a8ec
-        fileName:
-          type: string
-          description: Name of the file
-          examples:
-          - my-file.txt
-        fileSize:
-          type: integer
-          format: int32
-          description: Size of the file in bytes
-          examples:
-          - 1024
-        mimeType:
-          type: string
-          description: Mime type of the file
-        hash:
-          type: string
-          description: Hash of the file content
-          examples:
-          - a3b4c5d6e7f8...
-        created:
-          type: string
-          format: date-time
-          description: The attachment created date
-          examples:
-          - 2023-01-01T00:00:00+01:00
     Message:
       type: object
       description: Message model
@@ -6439,6 +6650,68 @@ components:
           readOnly: true
       required:
       - content
+    ReadBy:
+      type: object
+      description: Readby model
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+          description: The identifier of the person who read the message.
+          examples:
+          - joe01doe
+        readAt:
+          type: string
+          format: date-time
+          description: The timestamp when the message was read.
+          examples:
+          - 2023-01-01T12:00:00+01:00
+    ConversationAttachment:
+      type: object
+      description: ConversationAttachment model
+      properties:
+        id:
+          type: string
+          description: ConversationAttachment ID
+          examples:
+          - cb20c51f-fcf3-42c0-b613-de563634a8ec
+        fileName:
+          type: string
+          description: Name of the file
+          examples:
+          - my-file.txt
+        fileSize:
+          type: integer
+          format: int32
+          description: Size of the file in bytes
+          examples:
+          - 1024
+        mimeType:
+          type: string
+          description: Mime type of the file
+        hash:
+          type: string
+          description: Hash of the file content
+          examples:
+          - a3b4c5d6e7f8...
+        created:
+          type: string
+          format: date-time
+          description: The attachment created date
+          examples:
+          - 2023-01-01T00:00:00+01:00
+    MarkAsReadRequest:
+      type: object
+      description: Request to mark messages as read
+      properties:
+        messageIds:
+          type: array
+          items:
+            type: string
+            description: Message IDs to mark as read
+            example: d82bd8ac-1507-4d9a-958d-369261eecc15
+          minItems: 1
+      required:
+      - messageIds
     PatchNotification:
       type: object
       properties:
@@ -6614,6 +6887,8 @@ components:
           - REJECTION
           - DISMISSAL
           - CANCELLATION
+          - CONDITIONAL_APPROVAL
+          - REVOCATION
           examples:
           - GRANTED
         description:
@@ -6668,27 +6943,22 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
         first:
           type: boolean
         last:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: "#/components/schemas/SortObject"
         paged:
           type: boolean
         pageNumber:
@@ -6697,16 +6967,21 @@ components:
         pageSize:
           type: integer
           format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
         unpaged:
           type: boolean
+        offset:
+          type: integer
+          format: int64
     SortObject:
       type: object
       properties:
-        empty:
-          type: boolean
         sorted:
           type: boolean
         unsorted:
+          type: boolean
+        empty:
           type: boolean
     CommitMetadata:
       type: object
@@ -6957,19 +7232,64 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
         first:
           type: boolean
         last:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
+    ConversationReadByCount:
+      type: object
+      description: Read-by statistics for a conversation
+      properties:
+        conversationId:
+          type: string
+          description: The SM conversation ID
+          example: 896a44d8-724b-11ed-a840-0242ac110002
+        messageCount:
+          type: integer
+          format: int64
+          description: Total number of messages in the conversation
+        readByCount:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadByCount"
+            description: Number of messages read per identifier
+        readByPartCount:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadByPartCount"
+            description: Number of messages read per part
+    ReadByCount:
+      type: object
+      description: Number of messages read by a specific identifier
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+          description: The identifier of the person the count refers to
+        count:
+          type: integer
+          format: int64
+          description: Number of messages read by the identifier
+    ReadByPartCount:
+      type: object
+      description: Number of messages read by a specific part
+      properties:
+        part:
+          type: string
+          description: The part the count refers to
+          example: KC-23010001
+        count:
+          type: integer
+          format: int64
+          description: Number of messages read by the part
     PageDecision:
       type: object
       properties:
@@ -6989,17 +7309,17 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
         first:
           type: boolean
         last:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
   securitySchemes: {}
