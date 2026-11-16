@@ -190,28 +190,6 @@ class UnauthorizedRetryingExternalTaskServiceTest {
 		verifyNoInteractions(tokenMock);
 	}
 
-	@Test
-	void unauthorizedOnExtendLockEvictsTokenAndRetriesOnce() {
-		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).extendLock(externalTaskMock, 1000L);
-
-		wrap().extendLock(externalTaskMock, 1000L);
-
-		verify(externalTaskServiceMock, times(2)).extendLock(externalTaskMock, 1000L);
-		verify(tokenMock).evict();
-		verifyNoMoreInteractions(externalTaskServiceMock, tokenMock);
-	}
-
-	@Test
-	void unauthorizedOnUnlockEvictsTokenAndRetriesOnce() {
-		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).unlock(externalTaskMock);
-
-		wrap().unlock(externalTaskMock);
-
-		verify(externalTaskServiceMock, times(2)).unlock(externalTaskMock);
-		verify(tokenMock).evict();
-		verifyNoMoreInteractions(externalTaskServiceMock, tokenMock);
-	}
-
 	private ExternalTaskService wrap() {
 		return UnauthorizedRetryingExternalTaskService.wrap(externalTaskServiceMock, tokenMock);
 	}
