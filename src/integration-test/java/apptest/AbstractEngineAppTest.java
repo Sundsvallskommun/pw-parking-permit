@@ -32,11 +32,10 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
- * Engine-neutral base for the testcontainer-driven process tests. Holds the shared assertion and await helpers; the
- * per-engine base classes (in the {@code apptest.camunda} and {@code apptest.operaton} packages) pick the engine by
- * delegating their {@code @DynamicPropertySource} to {@link apptest.engine.EngineTestProperties}. The
- * {@code camundaClient} is used purely as a read client for process history and works against either engine since
- * Operaton is API-compatible with Camunda 7.
+ * Base for the testcontainer-driven process tests. Holds the shared assertion and await helpers; the engine is wired in
+ * by {@code apptest.operaton.AbstractOperatonAppTest}, which delegates its {@code @DynamicPropertySource} to
+ * {@link apptest.engine.EngineTestProperties}. The {@code camundaClient} is used purely as a read client for process
+ * history and works against Operaton since it is API-compatible with Camunda 7.
  *
  * @see Camunda API for more details https://docs.camunda.org/rest/camunda-bpm-platform/7.17/
  */
