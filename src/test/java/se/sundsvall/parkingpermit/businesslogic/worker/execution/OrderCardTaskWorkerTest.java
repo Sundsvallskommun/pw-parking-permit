@@ -126,7 +126,7 @@ class OrderCardTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(thrownException.getMessage()));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);

@@ -18,6 +18,7 @@ import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -141,7 +142,7 @@ class CheckAppealTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(problem.getMessage()));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 	}

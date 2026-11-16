@@ -14,6 +14,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.service.SupportManagementService;
 import se.sundsvall.parkingpermit.util.TextProvider;
@@ -41,8 +42,8 @@ public class DecisionHandlingTaskWorker extends AbstractTaskWorker {
 	private final SupportManagementService supportManagementService;
 
 	DecisionHandlingTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler,
-		final TextProvider textProvider, final MessagingService messagingService, final SupportManagementService supportManagementService) {
-		super(engineClient, caseDataClient, failureHandler);
+		final TextProvider textProvider, final MessagingService messagingService, final SupportManagementService supportManagementService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.textProvider = textProvider;
 		this.messagingService = messagingService;
 		this.supportManagementService = supportManagementService;

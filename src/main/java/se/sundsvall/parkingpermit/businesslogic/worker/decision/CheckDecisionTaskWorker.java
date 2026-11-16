@@ -13,6 +13,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
 
@@ -43,8 +44,8 @@ public class CheckDecisionTaskWorker extends AbstractTaskWorker {
 	private final TextProvider textProvider;
 	private final TimerUtil timerUtil;
 
-	CheckDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final TextProvider textProvider, final TimerUtil timerUtil) {
-		super(engineClient, caseDataClient, failureHandler);
+	CheckDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final TextProvider textProvider, final TimerUtil timerUtil, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.textProvider = textProvider;
 		this.timerUtil = timerUtil;
 	}

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 
@@ -21,8 +22,8 @@ public class SendDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private final TextProvider textProvider;
 
 	SendDenialDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService,
-		TextProvider textProvider) {
-		super(engineClient, caseDataClient, failureHandler);
+		TextProvider textProvider, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
 	}

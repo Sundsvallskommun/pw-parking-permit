@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static se.sundsvall.parkingpermit.Constants.CASE_TYPE_APPEAL;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPEAL;
@@ -17,8 +18,8 @@ import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_IS_APPEAL;
 @ExternalTaskSubscription("CheckAppealTask")
 public class CheckAppealTaskWorker extends AbstractTaskWorker {
 
-	CheckAppealTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
-		super(engineClient, caseDataClient, failureHandler);
+	CheckAppealTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 	}
 
 	@Override

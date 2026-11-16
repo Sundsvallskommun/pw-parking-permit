@@ -281,7 +281,7 @@ class VerifyAdministratorStakeholderExistsTaskWorkerTest {
 		// Verify failure handling
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(problem.getMessage()));
 		verifyNoMoreInteractions(engineClientMock, caseDataClientMock, errandMock, externalTaskMock, externalTaskServiceMock);
 	}
 }

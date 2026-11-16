@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -23,8 +24,8 @@ public class SendSimplifiedServiceTaskWorker extends AbstractTaskWorker {
 
 	private final MessagingService messagingService;
 
-	SendSimplifiedServiceTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
-		super(engineClient, caseDataClient, failureHandler);
+	SendSimplifiedServiceTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.messagingService = messagingService;
 	}
 

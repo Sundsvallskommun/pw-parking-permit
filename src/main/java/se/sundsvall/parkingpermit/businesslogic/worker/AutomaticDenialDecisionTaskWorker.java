@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.MessagingService;
 import se.sundsvall.parkingpermit.util.TextProvider;
 import se.sundsvall.parkingpermit.util.TimerUtil;
@@ -47,8 +48,9 @@ public class AutomaticDenialDecisionTaskWorker extends AbstractTaskWorker {
 	private final TextProvider textProvider;
 	private final TimerUtil timerUtil;
 
-	AutomaticDenialDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final TextProvider textProvider, final TimerUtil timerUtil) {
-		super(engineClient, caseDataClient, failureHandler);
+	AutomaticDenialDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final TextProvider textProvider, final TimerUtil timerUtil,
+		final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.messagingService = messagingService;
 		this.textProvider = textProvider;
 		this.timerUtil = timerUtil;

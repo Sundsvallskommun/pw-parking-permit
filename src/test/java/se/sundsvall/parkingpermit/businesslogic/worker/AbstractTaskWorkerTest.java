@@ -4,6 +4,8 @@ import generated.se.sundsvall.camunda.VariableValueDto;
 import generated.se.sundsvall.casedata.Attachment;
 import java.util.ArrayList;
 import java.util.UUID;
+import org.camunda.bpm.client.exception.RestException;
+import org.camunda.bpm.client.exception.UnknownHttpErrorException;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.camunda.bpm.engine.variable.type.ValueType;
@@ -14,17 +16,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
 import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.Constants;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +41,8 @@ class AbstractTaskWorkerTest {
 
 	private static class Worker extends AbstractTaskWorker { // Test class extending the abstract class containing the clearUpdateAvailable method
 
-		Worker(EngineClient engineClient, CaseDataClient caseDataClient, FailureHandler failureHandler) {
-			super(engineClient, caseDataClient, failureHandler);
+		Worker(EngineClient engineClient, CaseDataClient caseDataClient, FailureHandler failureHandler, OperatonExternalTaskToken token) {
+			super(engineClient, caseDataClient, failureHandler, token);
 		}
 
 		@Override
@@ -57,6 +65,9 @@ class AbstractTaskWorkerTest {
 
 	@Mock
 	private FailureHandler failureHandlerMock;
+
+	@Mock
+	private OperatonExternalTaskToken tokenMock;
 
 	@InjectMocks
 	private Worker worker;
@@ -115,7 +126,7 @@ class AbstractTaskWorkerTest {
 		final var secondRequestId = UUID.randomUUID().toString();
 		final var observedRequestIds = new ArrayList<String>();
 
-		final var recordingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
+		final var recordingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				observedRequestIds.add(RequestId.get());
@@ -137,7 +148,7 @@ class AbstractTaskWorkerTest {
 	void executeClearsRequestIdWhenBusinessLogicThrows() {
 		// Arrange
 		final var requestId = UUID.randomUUID().toString();
-		final var throwingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock) {
+		final var throwingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
 			@Override
 			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 				throw new IllegalStateException("Boom");
@@ -152,6 +163,73 @@ class AbstractTaskWorkerTest {
 
 		// Assert
 		assertThat(RequestId.get()).isNull();
+	}
+
+	@Test
+	void businessLogicGetsServiceThatRetriesCompleteOnceOnUnauthorized() {
+		final var completingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
+			@Override
+			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+				externalTaskService.complete(externalTask);
+			}
+		};
+		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).complete(externalTaskMock);
+
+		completingWorker.execute(externalTaskMock, externalTaskServiceMock);
+
+		verify(externalTaskServiceMock, times(2)).complete(externalTaskMock);
+		verifyNoMoreInteractions(externalTaskServiceMock);
+		assertEvictedOnce();
+	}
+
+	@Test
+	void businessLogicGetsServiceThatCompletesOnceWithoutEvictionOnSuccess() {
+		final var completingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandlerMock, tokenMock) {
+			@Override
+			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+				externalTaskService.complete(externalTask);
+			}
+		};
+
+		completingWorker.execute(externalTaskMock, externalTaskServiceMock);
+
+		verify(externalTaskServiceMock).complete(externalTaskMock);
+		verifyNoMoreInteractions(externalTaskServiceMock);
+		verifyNoInteractions(tokenMock);
+	}
+
+	@Test
+	void failureHandlerCalledWithGivenServiceRetriesHandleFailureOnceOnUnauthorized() throws Exception {
+		final var failureHandler = BeanUtils.instantiateClass(FailureHandler.class.getDeclaredConstructor(int.class, long.class), 3, 10L);
+		final var failingWorker = new AbstractTaskWorker(engineClientMock, caseDataClientMock, failureHandler, tokenMock) {
+			@Override
+			protected void executeBusinessLogic(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+				failureHandler.handleException(externalTaskService, externalTask, "message");
+			}
+		};
+		when(externalTaskMock.getId()).thenReturn("taskId");
+		when(externalTaskMock.getWorkerId()).thenReturn("workerId");
+		when(externalTaskMock.getRetries()).thenReturn(3);
+		doThrow(unauthorized()).doNothing().when(externalTaskServiceMock).handleFailure("taskId", "workerId", "message", 2, 10L);
+
+		failingWorker.execute(externalTaskMock, externalTaskServiceMock);
+
+		verify(externalTaskServiceMock, times(2)).handleFailure("taskId", "workerId", "message", 2, 10L);
+		verifyNoMoreInteractions(externalTaskServiceMock);
+		assertEvictedOnce();
+	}
+
+	private void assertEvictedOnce() {
+		// evict() is package-private in another package, so the invocation is read from the mock instead of verified
+		assertThat(mockingDetails(tokenMock).getInvocations())
+			.extracting(invocation -> invocation.getMethod().getName())
+			.containsExactly("evict");
+	}
+
+	private static UnknownHttpErrorException unauthorized() {
+		final var restException = new RestException("message", "type", 0);
+		restException.setHttpStatusCode(401);
+		return new UnknownHttpErrorException("Unauthorized", restException);
 	}
 
 	@Test

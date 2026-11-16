@@ -171,7 +171,7 @@ class AddMessageToErrandTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateId);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MESSAGE_ID);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Internal Server Error: Id of sent message could not be retrieved from stored process variables");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Internal Server Error: Id of sent message could not be retrieved from stored process variables"));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(caseDataClientMock, never()).addMessage(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());

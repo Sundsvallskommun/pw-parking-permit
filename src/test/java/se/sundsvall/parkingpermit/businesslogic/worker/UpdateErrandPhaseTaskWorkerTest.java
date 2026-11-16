@@ -191,7 +191,7 @@ class UpdateErrandPhaseTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_DISPLAY_PHASE);
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, problem.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(problem.getMessage()));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verifyNoInteractions(engineClientMock);
