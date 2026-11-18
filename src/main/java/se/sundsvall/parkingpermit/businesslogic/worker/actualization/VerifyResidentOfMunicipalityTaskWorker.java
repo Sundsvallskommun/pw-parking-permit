@@ -15,6 +15,7 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.citizen.CitizenClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static java.util.Collections.emptyList;
@@ -32,8 +33,8 @@ public class VerifyResidentOfMunicipalityTaskWorker extends AbstractTaskWorker {
 
 	private final CitizenClient citizenClient;
 
-	VerifyResidentOfMunicipalityTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final CitizenClient citizenClient) {
-		super(engineClient, caseDataClient, failureHandler);
+	VerifyResidentOfMunicipalityTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final CitizenClient citizenClient, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.citizenClient = citizenClient;
 	}
 

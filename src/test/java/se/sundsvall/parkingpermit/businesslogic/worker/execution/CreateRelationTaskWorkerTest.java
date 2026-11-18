@@ -26,7 +26,9 @@ import static generated.se.sundsvall.casedata.Stakeholder.TypeEnum.PERSON;
 import static generated.se.sundsvall.partyassets.Status.ACTIVE;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -188,7 +190,7 @@ class CreateRelationTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(thrownException.getMessage()));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verify(externalTaskServiceMock, never()).complete(externalTaskMock);

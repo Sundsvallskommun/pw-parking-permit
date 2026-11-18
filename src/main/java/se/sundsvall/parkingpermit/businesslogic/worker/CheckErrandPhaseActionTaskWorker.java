@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_DISPLAY_PHASE;
 import static se.sundsvall.parkingpermit.Constants.CASEDATA_KEY_PHASE_ACTION;
@@ -31,8 +32,8 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 @ExternalTaskSubscription("CheckErrandPhaseActionTask")
 public class CheckErrandPhaseActionTaskWorker extends AbstractTaskWorker {
 
-	CheckErrandPhaseActionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
-		super(engineClient, caseDataClient, failureHandler);
+	CheckErrandPhaseActionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 	}
 
 	@Override

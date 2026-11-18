@@ -11,6 +11,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.RpaService;
 
 import static java.util.Objects.isNull;
@@ -32,8 +33,8 @@ public class OrderCardTaskWorker extends AbstractTaskWorker {
 
 	private final RpaService rpaService;
 
-	OrderCardTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final RpaService rpaService) {
-		super(engineClient, caseDataClient, failureHandler);
+	OrderCardTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final RpaService rpaService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.rpaService = rpaService;
 	}
 

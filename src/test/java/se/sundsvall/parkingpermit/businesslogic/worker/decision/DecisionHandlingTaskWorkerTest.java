@@ -405,7 +405,7 @@ class DecisionHandlingTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(messagingServiceMock).renderPdfDecision(MUNICIPALITY_ID, errandMock, templateIdentifier);
 		verify(messagingServiceMock).sendDecisionMessage(MUNICIPALITY_ID, errandMock, pdf, true);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(thrownException.getMessage()));
 		verify(supportManagementServiceMock).getMetadataLabels(MUNICIPALITY_ID, SM_NAMESPACE_CONTACTANGE);
 		verifyNoMoreInteractions(engineClientMock, messagingServiceMock);
 	}

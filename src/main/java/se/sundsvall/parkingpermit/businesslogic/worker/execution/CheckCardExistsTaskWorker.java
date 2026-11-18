@@ -13,6 +13,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -29,8 +30,8 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 @ExternalTaskSubscription("CardExistsTask")
 public class CheckCardExistsTaskWorker extends AbstractTaskWorker {
 
-	CheckCardExistsTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
-		super(engineClient, caseDataClient, failureHandler);
+	CheckCardExistsTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 	}
 
 	@Override

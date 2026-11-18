@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.parkingpermit.integration.camunda.CamundaClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static com.github.tomakehurst.wiremock.admin.model.ServeEventQuery.ALL_UNMATCHED;
 import static generated.se.sundsvall.camunda.HistoricProcessInstanceDto.StateEnum.COMPLETED;
@@ -43,8 +44,6 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 
 	private static final String TENANT_ID_PARKING_PERMIT = "PARKING_PERMIT";
 	private static final String TOKEN_PATH = "/api-gateway/token";
-	// The external task client's client registration carries no scope, unlike the token requests of the Feign clients
-	private static final String EXTERNAL_TASK_CLIENT_TOKEN_REQUEST = "grant_type=client_credentials";
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
@@ -52,6 +51,9 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 
 	@Autowired
 	protected CamundaClient camundaClient;
+
+	@Autowired
+	protected OperatonExternalTaskToken externalTaskToken;
 
 	@Value("${integration.camunda.url}")
 	private String engineBaseUrl;
@@ -83,9 +85,9 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 	}
 
 	/**
-	 * The external task client fetches a new token for every poll, in the background. One that lands while WireMock
-	 * reloads its stubs (between test cases, or after a verification) goes unmatched without the test being wrong, so such
-	 * requests are left out of the checks for unmatched requests. The Feign clients' token requests are not.
+	 * The external task client fetches its token in the background. A request that lands while WireMock reloads its stubs
+	 * goes unmatched without the test being wrong, so such requests, recognized by the token's own device scope, are left
+	 * out of the checks for unmatched requests. The Feign clients' token requests are not.
 	 */
 	@Override
 	public boolean verifyAllStubs() {
@@ -100,8 +102,8 @@ public abstract class AbstractEngineAppTest extends AbstractAppTest {
 			.anyMatch(nearMiss -> !isExternalTaskClientTokenRequest(nearMiss.getRequest()));
 	}
 
-	private static boolean isExternalTaskClientTokenRequest(final LoggedRequest request) {
-		return TOKEN_PATH.equals(request.getUrl()) && EXTERNAL_TASK_CLIENT_TOKEN_REQUEST.equals(request.getBodyAsString());
+	private boolean isExternalTaskClientTokenRequest(final LoggedRequest request) {
+		return TOKEN_PATH.equals(request.getUrl()) && request.getBodyAsString().contains(externalTaskToken.getDeviceScope());
 	}
 
 	protected List<HistoricActivityInstanceDto> getProcessInstanceRoute(String processInstanceId) {

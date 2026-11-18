@@ -1,4 +1,4 @@
-package se.sundsvall.parkingpermit.integration.camunda.configuration;
+package se.sundsvall.parkingpermit.integration.engine.externaltask;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

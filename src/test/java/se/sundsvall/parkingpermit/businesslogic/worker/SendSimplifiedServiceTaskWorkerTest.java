@@ -22,6 +22,7 @@ import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -143,7 +144,7 @@ class SendSimplifiedServiceTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(externalTaskServiceMock, never()).complete(any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Not Found: No errand found");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Not Found: No errand found"));
 		verifyNoInteractions(engineClientMock, messagingServiceMock);
 	}
 

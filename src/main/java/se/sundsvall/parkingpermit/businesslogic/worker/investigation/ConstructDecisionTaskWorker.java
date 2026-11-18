@@ -22,6 +22,7 @@ import se.sundsvall.parkingpermit.businesslogic.util.BusinessRulesUtil;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.MessagingService;
 
 import static generated.se.sundsvall.businessrules.ResultValue.NOT_APPLICABLE;
@@ -58,8 +59,8 @@ public class ConstructDecisionTaskWorker extends AbstractTaskWorker {
 	private static final String DECISION_FILENAME = "beslut.pdf";
 	private final MessagingService messagingService;
 
-	ConstructDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService) {
-		super(engineClient, caseDataClient, failureHandler);
+	ConstructDecisionTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final MessagingService messagingService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.messagingService = messagingService;
 	}
 

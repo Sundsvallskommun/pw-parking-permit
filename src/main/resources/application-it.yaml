@@ -99,6 +99,8 @@ texts:
 camunda:
   bpm:
     client:
+      # Topics subscribed after the first long poll wait for it to time out, so keep below the 30 s await of the process tests
+      async-response-timeout: 2000
       backoff:
         # A failed poll (its token request landing while WireMock reloads its stubs) must not leave the client
         # sleeping for the 15 s production maximum while a test waits for the process

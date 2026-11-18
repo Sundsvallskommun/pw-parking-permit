@@ -140,7 +140,7 @@ class ExecuteRuleTaskWorkerTest {
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(caseDataClientMock).getErrandAttachments(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of(PROCESS_VARIABLE_RULE_ENGINE_RESPONSE, ruleEngineResponse));
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "TestException");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("TestException"));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 		verifyNoMoreInteractions(caseDataClientMock, businessRulesClientMock, errandMock, externalTaskMock, failureHandlerMock);

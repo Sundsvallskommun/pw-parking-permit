@@ -16,6 +16,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
 
 import static generated.se.sundsvall.casedata.NoteType.PUBLIC;
@@ -37,8 +38,8 @@ public class HandleLostCardTaskWorker extends AbstractTaskWorker {
 
 	private final PartyAssetsService partyAssetsService;
 
-	HandleLostCardTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final PartyAssetsService partyAssetsService) {
-		super(engineClient, caseDataClient, failureHandler);
+	HandleLostCardTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final PartyAssetsService partyAssetsService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.partyAssetsService = partyAssetsService;
 	}
 

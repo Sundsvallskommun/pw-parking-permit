@@ -17,6 +17,8 @@ import se.sundsvall.dept44.requestid.RequestId;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.UnauthorizedRetryingExternalTaskService;
 
 import static generated.se.sundsvall.casedata.Decision.DecisionTypeEnum.FINAL;
 import static java.util.Collections.emptyList;
@@ -39,12 +41,14 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 	private final EngineClient engineClient;
 	protected final CaseDataClient caseDataClient;
 	protected final FailureHandler failureHandler;
+	private final OperatonExternalTaskToken token;
 
-	protected AbstractTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
+	protected AbstractTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final OperatonExternalTaskToken token) {
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.engineClient = engineClient;
 		this.caseDataClient = caseDataClient;
 		this.failureHandler = failureHandler;
+		this.token = token;
 	}
 
 	protected void clearUpdateAvailable(final ExternalTask externalTask) {
@@ -86,7 +90,7 @@ public abstract class AbstractTaskWorker implements ExternalTaskHandler {
 		 */
 		RequestId.init(externalTask.getVariable(PROCESS_VARIABLE_REQUEST_ID));
 		try {
-			executeBusinessLogic(externalTask, externalTaskService);
+			executeBusinessLogic(externalTask, UnauthorizedRetryingExternalTaskService.wrap(externalTaskService, token));
 		} finally {
 			RequestId.reset();
 		}

@@ -314,7 +314,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Bad Gateway: CaseData integration did not return any location for created stakeholder"));
 		verify(externalTaskMock).getId();
 		verifyNoInteractions(engineClientMock, textProviderMock);
 	}
@@ -345,7 +345,7 @@ class AutomaticDenialDecisionTaskWorkerTest {
 		verify(caseDataClientMock, never()).patchNewDecision(eq(MUNICIPALITY_ID), eq(NAMESPACE), any(), any());
 		verify(externalTaskServiceMock, never()).complete(any());
 		verify(externalTaskServiceMock, never()).complete(any(), any());
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Gateway: CaseData integration did not return any location for created stakeholder");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Bad Gateway: CaseData integration did not return any location for created stakeholder"));
 		verify(externalTaskMock).getId();
 		verifyNoInteractions(engineClientMock, textProviderMock);
 

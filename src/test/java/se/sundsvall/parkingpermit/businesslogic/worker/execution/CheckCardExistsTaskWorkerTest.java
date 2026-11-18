@@ -167,7 +167,7 @@ class CheckCardExistsTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(caseDataClientMock).patchErrandExtraParameters(eq(MUNICIPALITY_ID), eq(NAMESPACE), eq(ERRAND_ID), any());
 		verify(externalTaskServiceMock).complete(externalTaskMock, Map.of("cardExists", true));
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, thrownException.getMessage());
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq(thrownException.getMessage()));
 		verify(externalTaskMock).getId();
 		verify(externalTaskMock).getBusinessKey();
 	}

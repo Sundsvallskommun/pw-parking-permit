@@ -291,7 +291,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Conflict: No applicable result found in rule engine response");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Conflict: No applicable result found in rule engine response"));
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 	}
@@ -319,7 +319,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No results found in rule engine response");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Bad Request: No results found in rule engine response"));
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 
@@ -347,7 +347,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_CASE_NUMBER);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No rule engine response found");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Bad Request: No rule engine response found"));
 		verify(caseDataClientMock).getErrandById(MUNICIPALITY_ID, NAMESPACE, ERRAND_ID);
 		verifyNoMoreInteractions(caseDataClientMock);
 	}
@@ -407,7 +407,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Conflict: No disability duration found in errand");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Conflict: No disability duration found in errand"));
 	}
 
 	@Test
@@ -437,7 +437,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Bad Request: No valid validity period found");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Bad Request: No valid validity period found"));
 	}
 
 	@Test
@@ -466,7 +466,7 @@ class ConstructDecisionTaskWorkerTest {
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_MUNICIPALITY_ID);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_NAMESPACE);
 		verify(externalTaskMock).getVariable(PROCESS_VARIABLE_REQUEST_ID);
-		verify(failureHandlerMock).handleException(externalTaskServiceMock, externalTaskMock, "Text cannot be parsed to a Period");
+		verify(failureHandlerMock).handleException(any(ExternalTaskService.class), eq(externalTaskMock), eq("Text cannot be parsed to a Period"));
 	}
 
 	private RuleEngineResponse createRuleEngineResponse(String resultValue) {

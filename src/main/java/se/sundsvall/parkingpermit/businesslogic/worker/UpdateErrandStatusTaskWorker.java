@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_STATUS;
 import static se.sundsvall.parkingpermit.Constants.PROCESS_VARIABLE_STATUS_DESCRIPTION;
@@ -17,8 +18,8 @@ import static se.sundsvall.parkingpermit.integration.casedata.mapper.CaseDataMap
 @ExternalTaskSubscription("UpdateErrandStatusTask")
 public class UpdateErrandStatusTaskWorker extends AbstractTaskWorker {
 
-	UpdateErrandStatusTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler) {
-		super(engineClient, caseDataClient, failureHandler);
+	UpdateErrandStatusTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 	}
 
 	@Override

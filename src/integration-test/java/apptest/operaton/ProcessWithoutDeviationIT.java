@@ -23,6 +23,10 @@ import static apptest.verification.ProcessPathway.executionPathway;
 import static apptest.verification.ProcessPathway.followUpPathway;
 import static apptest.verification.ProcessPathway.handlingPathway;
 import static apptest.verification.ProcessPathway.investigationPathway;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.time.Duration.ZERO;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -88,6 +92,9 @@ class ProcessWithoutDeviationIT extends AbstractOperatonAppTest {
 
 		// Wait for process to finish
 		awaitProcessCompleted(startResponse.getProcessId(), DEFAULT_TESTCASE_TIMEOUT_IN_SECONDS);
+
+		// Verify that the external task client fetched a token of its own
+		wiremock.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo("/api-gateway/token")).withRequestBody(containing(externalTaskToken.getDeviceScope())));
 
 		// Verify wiremock stubs
 		verifyAllStubs();

@@ -11,6 +11,7 @@ import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.businessrules.BusinessRulesClient;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 
 import static se.sundsvall.parkingpermit.integration.businessrules.mapper.BusinessRulesMapper.toRuleEngineRequest;
 
@@ -20,8 +21,8 @@ public class ExecuteRulesTaskWorker extends AbstractTaskWorker {
 
 	private final BusinessRulesClient businessRulesClient;
 
-	ExecuteRulesTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final BusinessRulesClient businessRulesClient) {
-		super(engineClient, caseDataClient, failureHandler);
+	ExecuteRulesTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final BusinessRulesClient businessRulesClient, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.businessRulesClient = businessRulesClient;
 	}
 

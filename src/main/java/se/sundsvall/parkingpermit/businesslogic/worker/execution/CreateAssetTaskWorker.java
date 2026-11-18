@@ -8,6 +8,7 @@ import se.sundsvall.parkingpermit.businesslogic.handler.FailureHandler;
 import se.sundsvall.parkingpermit.businesslogic.worker.AbstractTaskWorker;
 import se.sundsvall.parkingpermit.integration.casedata.CaseDataClient;
 import se.sundsvall.parkingpermit.integration.engine.EngineClient;
+import se.sundsvall.parkingpermit.integration.engine.externaltask.OperatonExternalTaskToken;
 import se.sundsvall.parkingpermit.service.PartyAssetsService;
 
 @Component
@@ -16,8 +17,8 @@ public class CreateAssetTaskWorker extends AbstractTaskWorker {
 
 	private final PartyAssetsService partyAssetsService;
 
-	CreateAssetTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final PartyAssetsService partyAssetService) {
-		super(engineClient, caseDataClient, failureHandler);
+	CreateAssetTaskWorker(final EngineClient engineClient, final CaseDataClient caseDataClient, final FailureHandler failureHandler, final PartyAssetsService partyAssetService, final OperatonExternalTaskToken token) {
+		super(engineClient, caseDataClient, failureHandler, token);
 		this.partyAssetsService = partyAssetService;
 	}
 
